@@ -21,3 +21,37 @@ Global Flags:
 
 Use "openshift-install agent create [command] --help" for more information about a command.
 [root@bastion2025 kamal]#
+
+
+
+
+
+[root@bastion2025 kamal]# ./openshift-install agent create cluster-manifests
+WARNING Release Image Architecture not detected. Release Image Architecture is unknown
+WARNING imageContentSources is deprecated, please use ImageDigestSources
+WARNING Unable to validate the release image architecture, skipping validation
+INFO Configuration has 3 master replicas and 0 worker replicas
+INFO Consuming Install Config from target directory
+INFO Consuming Agent Config from target directory
+WARNING The imageDigestSources configuration in install-config.yaml should have at least one source field matching the releaseImage value bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+INFO Cluster-Manifests created in: cluster-manifests and mirror
+[root@bastion2025 kamal]# ll
+total 670364
+drwxr-x---. 2 root root       172 Jan  6 19:40 cluster-manifests
+drwxr-x---. 2 root root        50 Jan  6 19:40 mirror
+-rwxr-xr-x. 1 root root 686448792 Jan  6 19:21 openshift-install
+[root@bastion2025 kamal]# cd cluster-manifests/
+[root@bastion2025 cluster-manifests]# ll
+total 24
+-rw-r-----. 1 root root 1098 Jan  6 19:40 agent-cluster-install.yaml
+-rw-r-----. 1 root root  429 Jan  6 19:40 cluster-deployment.yaml
+-rw-r-----. 1 root root  268 Jan  6 19:40 cluster-image-set.yaml
+-rw-r-----. 1 root root 2126 Jan  6 19:40 infraenv.yaml
+-rw-r-----. 1 root root 2791 Jan  6 19:40 nmstateconfig.yaml
+-rw-r-----. 1 root root 3031 Jan  6 19:40 pull-secret.yaml
+[root@bastion2025 cluster-manifests]# cd ../mirror/
+[root@bastion2025 mirror]# ll
+total 8
+-rw-r-----. 1 root root 1383 Jan  6 19:40 ca-bundle.crt
+-rw-r-----. 1 root root  489 Jan  6 19:40 registries.conf
+[root@bastion2025 mirror]#
