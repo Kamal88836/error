@@ -1,3 +1,220 @@
-skdjbvnslkdf
-vsdfjjnvsdlf
-vsdkfbnkf;
+apiVersion: v1beta1
+kind: AgentConfig
+metadata:
+  name: srib-lab-ocp.lan
+
+# Rendezvous MUST be reachable by all nodes
+# Best practice: use master-1 IPv4
+rendezvousIP: 71.1.1.230
+
+hosts:
+- hostname: ocp-cp-1.lab1.srib-lab-ocp.lan
+  role: master
+  interfaces:
+  - name: ens3f3
+    macAddress: 50:7C:6F:4B:9F:83
+  rootDeviceHints:
+      deviceName: /dev/sda
+  networkConfig:
+    interfaces:
+    - name: ens3f3
+      type: ethernet
+      state: up
+      mtu: 8500    # if MTU is set as 8500, add network config file in cluster manifests
+      mac-address: "50:7C:6F:4B:9F:83"
+      ipv4:
+        enabled: true
+        address:
+        - ip: 71.1.1.230
+          prefix-length: 23
+      ipv6:
+        enabled: true
+        autoconf: false
+        dhcp: false
+        address:
+        - ip: 2405:100:200:71::1:564
+          prefix-length: 64
+    dns-resolver:
+      config:
+        server:
+        - 70.1.1.82
+        - 2405:100:200:70::1:1769
+    routes:
+      config:
+      - destination: 70.1.0.0/23
+        next-hop-address: 71.1.0.1
+        next-hop-interface: ens3f3
+      - destination: 2405:100:200:70::/64
+        next-hop-address: 2405:100:200:71::1
+        next-hop-interface: ens3f3
+
+- hostname: ocp-cp-2.lab1.srib-lab-ocp.lan
+  role: master
+  interfaces:
+  - name: ens3f3
+    macAddress: "50:7C:6F:4B:99:23"
+  rootDeviceHints:
+      deviceName: /dev/sda
+  networkConfig:
+    interfaces:
+    - name: ens3f3
+      type: ethernet
+      state: up
+      mtu: 8500    # if MTU is set as 8500, add network config file in cluster manifests
+      mac-address: "50:7C:6F:4B:99:23"
+      ipv4:
+        enabled: true
+        address:
+        - ip: 71.1.1.227
+          prefix-length: 23
+      ipv6:
+        enabled: true
+        autoconf: false
+        dhcp: false
+        address:
+        - ip: 2405:100:200:71::1:565
+          prefix-length: 64
+    dns-resolver:
+      config:
+        server:
+        - 70.1.1.82
+        - 2405:100:200:70::1:1769
+    routes:
+      config:
+      - destination: 70.1.0.0/23
+        next-hop-address: 71.1.0.1
+        next-hop-interface: ens3f3
+      - destination: 2405:100:200:70::/64
+        next-hop-address: 2405:100:200:71::1
+        next-hop-interface: ens3f3
+
+- hostname: ocp-cp-3.lab1.srib-lab-ocp.lan
+  role: master
+  interfaces:
+  - name: ens3f3
+    macAddress: "6C:FE:54:63:0B:6F"
+  rootDeviceHints:
+      deviceName: /dev/sda
+  networkConfig:
+    interfaces:
+    - name: ens3f3
+      type: ethernet
+      state: up
+      mtu: 8500    # if MTU is set as 8500, add network config file in cluster manifests
+      mac-address: "6C:FE:54:63:0B:6F"
+      ipv4:
+        enabled: true
+        address:
+        - ip: 71.1.1.229
+          prefix-length: 23
+      ipv6:
+        enabled: true
+        autoconf: false
+        dhcp: false
+        address:
+        - ip: 2405:100:200:71::1:566
+          prefix-length: 64
+    dns-resolver:
+      config:
+        server:
+        - 70.1.1.82
+        - 2405:100:200:70::1:1769
+    routes:
+      config:
+      - destination: 70.1.0.0/23
+        next-hop-address: 71.1.0.1
+        next-hop-interface: ens3f3
+      - destination: 2405:100:200:70::/64
+        next-hop-address: 2405:100:200:71::1
+        next-hop-interface: ens3f3
+
+
+
+apiVersion: v1
+baseDomain: srib-lab-ocp.lan
+cpuPartitioningMode: AllNodes
+imageContentSources:
+- mirrors:
+  - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-release
+- mirrors:
+  - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+metadata:
+  name: lab1
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+networking:
+  networkType: OVNKubernetes
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  - cidr: fd01::/48
+    hostPrefix: 64
+  serviceNetwork:
+  - 172.30.0.0/16
+  - fd02::/112
+  machineNetwork:
+  - cidr: 71.1.0.0/23
+  - cidr: 2405:100:200:71::/64
+platform:
+  baremetal:
+    apiVIPs:
+    - 71.1.1.245
+    - 2405:100:200:71::1:567
+    ingressVIPs:
+    - 71.1.1.246
+    - 2405:100:200:71::1:568
+
+fips: false
+pullSecret: '{
+        "auths": {
+                "bastion.srib-lab-ocp.lan:8443": {
+                        "auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="
+                },
+                "cloud.openshift.com": {
+                        "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
+                },
+                "quay.io": {
+                        "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
+                },
+                "registry.connect.redhat.com": {
+                        "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
+                },
+                "registry.redhat.io": {
+                        "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
+                }
+        }
+}'
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDAPGFJpMiG8iblhNBsF+xCtEouMcjbDxF3bARa3j01XOz8NmR8rXsfFofEvrV1hCobELtZI0E/RolhXZ4yD6Qz2LALgnHs25IkwUUmxc7jAtxTV7nWGcp2kwPFsapYgeEdRHzixQMB9ggMWvG8QmONuAWgnwIgj/UvvavEPqVoYls68bg+V/CtRCvYEl8tNLD5cb+o6Zey7dE9q+Rs4+hZ9RYLua7ymL743/5W+3TMr3kjoUibAyxYIeM81xlQ2beza7+zboK7gGLNmSuCcaLEE2NQgTXA3EWCGpJ8r2ZcVB3HOeZe0PIiK4AnnnWi06W4cEhFNOY9Ksz0fjqyfI4fSYJRP4rxlHbNyl6mpB1CbBkKVT/23n2b/pdtET86Wjo/PH2uUIc8JzGzqMuP9c7WIEUuNhcBvp60QBHyuEILNSRlvH+Td7djzaLN5aH9wHGgAAiAYrZrACpOP1tnvYV4j9MvAm8INOODYAgum9q9AevQ01lwkUWpU3Om/KSDOpU= root@bastion.srib-lab-ocp.lan'
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIDzzCCAregAwIBAgIUaO5AFL/m8IUEjOBDUywb6pFAcZgwDQYJKoZIhvcNAQEL
+  BQAwcjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+  azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xITAfBgNVBAMMGGJh
+  c3Rpb24uc3JpYi1sYWItb2NwLmxhbjAeFw0yNjAxMDkwODMwMjBaFw0yODEwMjkw
+  ODMwMjBaMHIxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJWQTERMA8GA1UEBwwITmV3
+  IFlvcmsxDTALBgNVBAoMBFF1YXkxETAPBgNVBAsMCERpdmlzaW9uMSEwHwYDVQQD
+  DBhiYXN0aW9uLnNyaWItbGFiLW9jcC5sYW4wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+  DwAwggEKAoIBAQC031dkC3Hm/a+6xwbhTu4HIDGOdNHAa9h4aKO1ebYU1/XUiDZX
+  iTFE1K0Twy0pSEVGNgG1fTJxD52NYMGXnfIb1vZJeyShzeL+BeVcucfPJDK044/J
+  LYezbCbLgIOJnM2j+JqOVn+1b0DXYt9A/kcHxJ0kI2FgCRBtJJ+JoiMdEzC6C20W
+  CEe1PPFhuvCvaCrpXdENAy4Vcd1vjVMqYxmwyxjDyaIFcHJ4GMJfnJnvsvqwy/lr
+  87cBfEtsCWHkvWW8yhA0x32QICpf4YXN5z01AmW+Et9+dT9WNzEi1bgyWXw2QeG5
+  GU7BM8raNrvlUomEEJcQnHw4wMNF27HlsJ2rAgMBAAGjXTBbMAsGA1UdDwQEAwIC
+  5DATBgNVHSUEDDAKBggrBgEFBQcDATAjBgNVHREEHDAaghhiYXN0aW9uLnNyaWIt
+  bGFiLW9jcC5sYW4wEgYDVR0TAQH/BAgwBgEB/wIBATANBgkqhkiG9w0BAQsFAAOC
+  AQEAWBMAbzr8n9QIbk1dagXhucJkKTXd+rOCauoDPj19bAaWkhte44nklJqlrcan
+  ty3Rrcz4O4JjCkxKtKI+dCKdT9lUSsEc0L8IQ9/1F7urPXbvXmEewTGvNn0gViNi
+  Ti6a634AUVE+anxta0bHrFJ9viautdFCVOlFfYnvh+2p6fJ2w8vMU9uPjqapfs9R
+  m3NV+M9EFS9OlQBqycFQYCxk8fCa++ECUzRUtRNZgrCNWDfm6NZpDh/2TUQEHAtP
+  0ch3NPL0dpFXUT1R2Ti3SncHbeTKYdTgtdPO9yqJoRilqZWV3rHZ61oEhkzAqKZg
+  SNDuixC1L9pFgZxuicLS1j15Gw==
+  -----END CERTIFICATE-----
+
