@@ -1,2 +1,161 @@
-ksudhnklas
-vdfkjvnlkd;afterfvasivkjlkMS
+[root@bastion kamal]# ./openshift-install agent create cluster-manifests
+WARNING Release Image Architecture not detected. Release Image Architecture is unknown
+WARNING imageContentSources is deprecated, please use ImageDigestSources
+INFO Configuration has 3 master replicas and 0 worker replicas
+ERROR <nmstatectl gc> failed, errorCode 1, stderr Traceback (most recent call last):  pkg=manifests
+ERROR   File "/usr/bin/nmstatectl", line 11, in <module>  pkg=manifests
+ERROR     load_entry_point('nmstate==1.4.6', 'console_scripts', 'nmstatectl')()  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/nmstatectl/nmstatectl.py", line 74, in main  pkg=manifests
+ERROR     return args.func(args)                    pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/nmstatectl/nmstatectl.py", line 397, in run_gen_config  pkg=manifests
+ERROR     libnmstate.generate_configurations(state), use_yaml=use_yaml  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/nmstate.py", line 429, in generate_configurations  pkg=manifests
+ERROR     net_state = NetState(desire_state, gen_conf_mode=True)  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/net_state.py", line 95, in __init__  pkg=manifests
+ERROR     raise e                                   pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/net_state.py", line 87, in __init__  pkg=manifests
+ERROR     self._dns, self._route, ignored_dns_ifaces  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/ifaces/ifaces.py", line 815, in gen_dns_metadata  pkg=manifests
+ERROR     self, route_state, ignored_dns_ifaces     pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/dns.py", line 185, in gen_metadata  pkg=manifests
+ERROR     "auto-dns:false" % server                 pkg=manifests
+ERROR libnmstate.error.NmstateValueError: Failed to find suitable interface for saving DNS name servers: 70.1.1.82, nmstate only support saving DNS to interface with static gateway or auto interface with auto-dns:false  pkg=manifests
+ERROR , input yaml <dns-resolver:                   pkg=manifests
+ERROR   config:                                     pkg=manifests
+ERROR     server:                                   pkg=manifests
+ERROR     - 70.1.1.82                               pkg=manifests
+ERROR     - 2405:100:200:70::1:1769                 pkg=manifests
+ERROR interfaces:                                   pkg=manifests
+ERROR - ipv4:                                       pkg=manifests
+ERROR     address:                                  pkg=manifests
+ERROR     - ip: 71.1.1.230                          pkg=manifests
+ERROR       prefix-length: 23                       pkg=manifests
+ERROR     enabled: true                             pkg=manifests
+ERROR   ipv6:                                       pkg=manifests
+ERROR     address:                                  pkg=manifests
+ERROR     - ip: 2405:100:200:71::1:564              pkg=manifests
+ERROR       prefix-length: 64                       pkg=manifests
+ERROR     autoconf: false                           pkg=manifests
+ERROR     dhcp: false                               pkg=manifests
+ERROR     enabled: true                             pkg=manifests
+ERROR   mac-address: 50:7C:6F:4B:9F:83              pkg=manifests
+ERROR   mtu: 8500                                   pkg=manifests
+ERROR   name: ens3f3                                pkg=manifests
+ERROR   state: up                                   pkg=manifests
+ERROR   type: ethernet                              pkg=manifests
+ERROR routes:                                       pkg=manifests
+ERROR   config:                                     pkg=manifests
+ERROR   - destination: 70.1.0.0/23                  pkg=manifests
+ERROR     next-hop-address: 71.1.0.1                pkg=manifests
+ERROR     next-hop-interface: ens3f3                pkg=manifests
+ERROR   - destination: 2405:100:200:70::/64         pkg=manifests
+ERROR     next-hop-address: 2405:100:200:71::1      pkg=manifests
+ERROR     next-hop-interface: ens3f3                pkg=manifests
+ERROR >                                             pkg=manifests
+ERROR <nmstatectl gc> failed, errorCode 1, stderr Traceback (most recent call last):  pkg=manifests
+ERROR   File "/usr/bin/nmstatectl", line 11, in <module>  pkg=manifests
+ERROR     load_entry_point('nmstate==1.4.6', 'console_scripts', 'nmstatectl')()  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/nmstatectl/nmstatectl.py", line 74, in main  pkg=manifests
+ERROR     return args.func(args)                    pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/nmstatectl/nmstatectl.py", line 397, in run_gen_config  pkg=manifests
+ERROR     libnmstate.generate_configurations(state), use_yaml=use_yaml  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/nmstate.py", line 429, in generate_configurations  pkg=manifests
+ERROR     net_state = NetState(desire_state, gen_conf_mode=True)  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/net_state.py", line 95, in __init__  pkg=manifests
+ERROR     raise e                                   pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/net_state.py", line 87, in __init__  pkg=manifests
+ERROR     self._dns, self._route, ignored_dns_ifaces  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/ifaces/ifaces.py", line 815, in gen_dns_metadata  pkg=manifests
+ERROR     self, route_state, ignored_dns_ifaces     pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/dns.py", line 185, in gen_metadata  pkg=manifests
+ERROR     "auto-dns:false" % server                 pkg=manifests
+ERROR libnmstate.error.NmstateValueError: Failed to find suitable interface for saving DNS name servers: 70.1.1.82, nmstate only support saving DNS to interface with static gateway or auto interface with auto-dns:false  pkg=manifests
+ERROR , input yaml <dns-resolver:                   pkg=manifests
+ERROR   config:                                     pkg=manifests
+ERROR     server:                                   pkg=manifests
+ERROR     - 70.1.1.82                               pkg=manifests
+ERROR     - 2405:100:200:70::1:1769                 pkg=manifests
+ERROR interfaces:                                   pkg=manifests
+ERROR - ipv4:                                       pkg=manifests
+ERROR     address:                                  pkg=manifests
+ERROR     - ip: 71.1.1.227                          pkg=manifests
+ERROR       prefix-length: 23                       pkg=manifests
+ERROR     enabled: true                             pkg=manifests
+ERROR   ipv6:                                       pkg=manifests
+ERROR     address:                                  pkg=manifests
+ERROR     - ip: 2405:100:200:71::1:565              pkg=manifests
+ERROR       prefix-length: 64                       pkg=manifests
+ERROR     autoconf: false                           pkg=manifests
+ERROR     dhcp: false                               pkg=manifests
+ERROR     enabled: true                             pkg=manifests
+ERROR   mac-address: 50:7C:6F:4B:99:23              pkg=manifests
+ERROR   mtu: 8500                                   pkg=manifests
+ERROR   name: ens3f3                                pkg=manifests
+ERROR   state: up                                   pkg=manifests
+ERROR   type: ethernet                              pkg=manifests
+ERROR routes:                                       pkg=manifests
+ERROR   config:                                     pkg=manifests
+ERROR   - destination: 70.1.0.0/23                  pkg=manifests
+ERROR     next-hop-address: 71.1.0.1                pkg=manifests
+ERROR     next-hop-interface: ens3f3                pkg=manifests
+ERROR   - destination: 2405:100:200:70::/64         pkg=manifests
+ERROR     next-hop-address: 2405:100:200:71::1      pkg=manifests
+ERROR     next-hop-interface: ens3f3                pkg=manifests
+ERROR >                                             pkg=manifests
+ERROR <nmstatectl gc> failed, errorCode 1, stderr Traceback (most recent call last):  pkg=manifests
+ERROR   File "/usr/bin/nmstatectl", line 11, in <module>  pkg=manifests
+ERROR     load_entry_point('nmstate==1.4.6', 'console_scripts', 'nmstatectl')()  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/nmstatectl/nmstatectl.py", line 74, in main  pkg=manifests
+ERROR     return args.func(args)                    pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/nmstatectl/nmstatectl.py", line 397, in run_gen_config  pkg=manifests
+ERROR     libnmstate.generate_configurations(state), use_yaml=use_yaml  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/nmstate.py", line 429, in generate_configurations  pkg=manifests
+ERROR     net_state = NetState(desire_state, gen_conf_mode=True)  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/net_state.py", line 95, in __init__  pkg=manifests
+ERROR     raise e                                   pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/net_state.py", line 87, in __init__  pkg=manifests
+ERROR     self._dns, self._route, ignored_dns_ifaces  pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/ifaces/ifaces.py", line 815, in gen_dns_metadata  pkg=manifests
+ERROR     self, route_state, ignored_dns_ifaces     pkg=manifests
+ERROR   File "/usr/lib/python3.6/site-packages/libnmstate/dns.py", line 185, in gen_metadata  pkg=manifests
+ERROR     "auto-dns:false" % server                 pkg=manifests
+ERROR libnmstate.error.NmstateValueError: Failed to find suitable interface for saving DNS name servers: 70.1.1.82, nmstate only support saving DNS to interface with static gateway or auto interface with auto-dns:false  pkg=manifests
+ERROR , input yaml <dns-resolver:                   pkg=manifests
+ERROR   config:                                     pkg=manifests
+ERROR     server:                                   pkg=manifests
+ERROR     - 70.1.1.82                               pkg=manifests
+ERROR     - 2405:100:200:70::1:1769                 pkg=manifests
+ERROR interfaces:                                   pkg=manifests
+ERROR - ipv4:                                       pkg=manifests
+ERROR     address:                                  pkg=manifests
+ERROR     - ip: 71.1.1.229                          pkg=manifests
+ERROR       prefix-length: 23                       pkg=manifests
+ERROR     enabled: true                             pkg=manifests
+ERROR   ipv6:                                       pkg=manifests
+ERROR     address:                                  pkg=manifests
+ERROR     - ip: 2405:100:200:71::1:566              pkg=manifests
+ERROR       prefix-length: 64                       pkg=manifests
+ERROR     autoconf: false                           pkg=manifests
+ERROR     dhcp: false                               pkg=manifests
+ERROR     enabled: true                             pkg=manifests
+ERROR   mac-address: 6C:FE:54:63:0B:6F              pkg=manifests
+ERROR   mtu: 8500                                   pkg=manifests
+ERROR   name: ens3f3                                pkg=manifests
+ERROR   state: up                                   pkg=manifests
+ERROR   type: ethernet                              pkg=manifests
+ERROR routes:                                       pkg=manifests
+ERROR   config:                                     pkg=manifests
+ERROR   - destination: 70.1.0.0/23                  pkg=manifests
+ERROR     next-hop-address: 71.1.0.1                pkg=manifests
+ERROR     next-hop-interface: ens3f3                pkg=manifests
+ERROR   - destination: 2405:100:200:70::/64         pkg=manifests
+ERROR     next-hop-address: 2405:100:200:71::1      pkg=manifests
+ERROR     next-hop-interface: ens3f3                pkg=manifests
+ERROR >                                             pkg=manifests
+FATAL failed to fetch Agent Manifests: failed to fetch dependency of "Agent Manifests": failed to generate asset "NMState Config": staticNetwork configuration is not valid: 3 errors occurred:
+FATAL   * failed to validate network yaml for host 0, failed to execute 'nmstatectl gc', error: Failed to find suitable interface for saving DNS name servers: 70.1.1.82, nmstate only support saving DNS to interface with static gateway or auto interface with auto-dns:false
+FATAL   * failed to validate network yaml for host 1, failed to execute 'nmstatectl gc', error: Failed to find suitable interface for saving DNS name servers: 70.1.1.82, nmstate only support saving DNS to interface with static gateway or auto interface with auto-dns:false
+FATAL   * failed to validate network yaml for host 2, failed to execute 'nmstatectl gc', error: Failed to find suitable interface for saving DNS name servers: 70.1.1.82, nmstate only support saving DNS to interface with static gateway or auto interface with auto-dns:false
+FATAL
+FATAL
+[root@bastion kamal]#
