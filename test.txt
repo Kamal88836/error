@@ -1,3 +1,138 @@
-[root@bastion kamal]# nmstatectl gc agent-config.yaml
---- {}
-[root@bastion kamal]#
+apiVersion: v1beta1
+kind: AgentConfig
+metadata:
+  name: srib-lab-ocp.lan
+
+rendezvousIP: 71.1.1.230
+
+hosts:
+- hostname: ocp-cp-1.lab1.srib-lab-ocp.lan
+  role: master
+  interfaces:
+  - name: ens3f3
+    macAddress: 50:7C:6F:4B:9F:83
+  rootDeviceHints:
+    deviceName: /dev/sda
+  networkConfig:
+    interfaces:
+    - name: ens3f3
+      type: ethernet
+      state: up
+      mtu: 8500
+      mac-address: "50:7C:6F:4B:9F:83"
+      ipv4:
+        enabled: true
+        dhcp: false
+        address:
+        - ip: 71.1.1.230
+          prefix-length: 23
+      ipv6:
+        enabled: true
+        autoconf: false
+        dhcp: false
+        address:
+        - ip: 2405:100:200:71::1:564
+          prefix-length: 64
+
+    dns-resolver:
+      config:
+        server:
+        - 70.1.1.82
+        - 2405:100:200:70::1:1769
+
+    routes:
+      config:
+      - destination: 0.0.0.0/0
+        next-hop-address: 71.1.0.1
+        next-hop-interface: ens3f3
+      - destination: ::/0
+        next-hop-address: 2405:100:200:71::1
+        next-hop-interface: ens3f3
+
+
+- hostname: ocp-cp-2.lab1.srib-lab-ocp.lan
+  role: master
+  interfaces:
+  - name: ens3f3
+    macAddress: 50:7C:6F:4B:99:23
+  rootDeviceHints:
+    deviceName: /dev/sda
+  networkConfig:
+    interfaces:
+    - name: ens3f3
+      type: ethernet
+      state: up
+      mtu: 8500
+      mac-address: "50:7C:6F:4B:99:23"
+      ipv4:
+        enabled: true
+        dhcp: false
+        address:
+        - ip: 71.1.1.227
+          prefix-length: 23
+      ipv6:
+        enabled: true
+        autoconf: false
+        dhcp: false
+        address:
+        - ip: 2405:100:200:71::1:565
+          prefix-length: 64
+
+    dns-resolver:
+      config:
+        server:
+        - 70.1.1.82
+        - 2405:100:200:70::1:1769
+
+    routes:
+      config:
+      - destination: 0.0.0.0/0
+        next-hop-address: 71.1.0.1
+        next-hop-interface: ens3f3
+      - destination: ::/0
+        next-hop-address: 2405:100:200:71::1
+        next-hop-interface: ens3f3
+
+
+- hostname: ocp-cp-3.lab1.srib-lab-ocp.lan
+  role: master
+  interfaces:
+  - name: ens3f3
+    macAddress: 6C:FE:54:63:0B:6F
+  rootDeviceHints:
+    deviceName: /dev/sda
+  networkConfig:
+    interfaces:
+    - name: ens3f3
+      type: ethernet
+      state: up
+      mtu: 8500
+      mac-address: "6C:FE:54:63:0B:6F"
+      ipv4:
+        enabled: true
+        dhcp: false
+        address:
+        - ip: 71.1.1.229
+          prefix-length: 23
+      ipv6:
+        enabled: true
+        autoconf: false
+        dhcp: false
+        address:
+        - ip: 2405:100:200:71::1:566
+          prefix-length: 64
+
+    dns-resolver:
+      config:
+        server:
+        - 70.1.1.82
+        - 2405:100:200:70::1:1769
+
+    routes:
+      config:
+      - destination: 0.0.0.0/0
+        next-hop-address: 71.1.0.1
+        next-hop-interface: ens3f3
+      - destination: ::/0
+        next-hop-address: 2405:100:200:71::1
+        next-hop-interface: ens3f3
