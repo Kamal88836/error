@@ -1,9 +1,32 @@
-[core@master1 ~]$ sudo -i
-[systemd]
-Failed Units: 2
-  chronyd.service
-  NetworkManager-wait-online.service
-[root@master1 ~]# toolbox
+[root@bastion ~]# oc debug node/master1.viairtel.samsungbsc.local
+Temporary namespace openshift-debug-rq8xl is created for debugging node...
+Starting pod/master1viairtelsamsungbsclocal-debug-m5l2c ...
+To use host binaries, run `chroot /host`
+Pod IP: 20.1.30.103
+If you don't see a command prompt, try pressing enter.
+sh-5.1# ls
+afs  bin  boot  dev  etc  home  host  lib  lib64  lost+found  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+sh-5.1# chroot /host
+sh-5.1# ls
+bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  ostree  proc  root  run  sbin  srv  sys  sysroot  tmp  usr  var
+sh-5.1# cd home/core/
+sh-5.1# ls
+WA_166_recover.sh  dm                 gsob_issue_jrnlctl_master1.txt  jrnctl0102.txt     jrnctl_1002.txt  jrnctlmas1.txt   shn.txt  tools.tar
+assets             extflows.txt       journalctl_1.log                jrnctl01_0802.txt  jrnctllong.txt   kern             shyam
+core_gspb_04.zst   gen_int_flows.txt  jrnctl01.txt                    jrnctl01_0902.txt  jrnctlm1.txt     ovn-k8s-mp0.txt  temp
+timed out waiting for input: auto-logout
+timed out waiting for input: auto-logout
+
+Removing debug pod ...
+Temporary namespace openshift-debug-rq8xl was removed.
+[root@bastion ~]# oc debug node/master1.viairtel.samsungbsc.local
+Temporary namespace openshift-debug-cbjjm is created for debugging node...
+Starting pod/master1viairtelsamsungbsclocal-debug-4bnlf ...
+To use host binaries, run `chroot /host`
+Pod IP: 20.1.30.103
+If you don't see a command prompt, try pressing enter.
+sh-5.1# chroot /host
+sh-5.1# toolbox
 .toolboxrc file detected, overriding defaults...
 Checking if there is a newer version of nwharbor.sec.samsung.net/team-ocp/rhel9/support-tools available...
 WARN[0000] Using cgroups-v1 which is deprecated in favor of cgroups-v2 with Podman v5 and will be removed in a future version. Set environment variable `PODMAN_IGNORE_CGROUPSV1_WARNING` to hide this warning.
@@ -16,6 +39,124 @@ toolbox-root
 Container started successfully. To exit, type 'exit'.
 WARN[0000] Using cgroups-v1 which is deprecated in favor of cgroups-v2 with Podman v5 and will be removed in a future version. Set environment variable `PODMAN_IGNORE_CGROUPSV1_WARNING` to hide this warning.
 Error: attaching to container 3e7b223997330a1065bf51b25e8fe7f4e3afa6011702338359311524f7726d85: you can only attach to running containers
-[root@master1 ~]# sos report
--bash: sos: command not found
-[root@master1 ~]#
+sh-5.1# sosreport
+sh: sosreport: command not found
+sh-5.1#
+exit
+sh-5.1# sos report
+Unable to read kernel builtins: [Errno 2] No such file or directory: '/usr/lib/modules/5.14.0-427.72.1.el9_4.x86_64+rt/modules.builtin'
+Unable to find booted kernel config
+
+sos report (version 4.8.2)
+
+This command will collect diagnostic and configuration information from
+this Red Hat Enterprise Linux system and installed applications.
+
+An archive containing the collected information will be generated in
+/var/tmp/sos.dmgt0eev and may be provided to a Red Hat support
+representative.
+
+Any information provided to Red Hat will be treated in accordance with
+the published support policies at:
+
+        Distribution Website : https://www.redhat.com/
+        Commercial Support   : https://access.redhat.com/
+
+The generated archive may contain data considered sensitive and its
+content should be reviewed by the originating organization before being
+passed to any third party.
+
+No changes will be made to system configuration.
+
+Press ENTER to continue, or CTRL-C to quit.
+
+Optionally, please enter the case id that you are generating this report for []: ^C
+Exiting on user cancel
+sh-5.1# sosreport --all-logs
+WARNING: the 'sosreport' command has been deprecated in favor of the new 'sos' command, E.G. 'sos report', and will be removed in the upcoming sos-4.9 release.
+Redirecting to 'sos report --all-logs'
+Unable to read kernel builtins: [Errno 2] No such file or directory: '/usr/lib/modules/5.14.0-427.72.1.el9_4.x86_64+rt/modules.builtin'
+Unable to find booted kernel config
+
+sos report (version 4.8.2)
+
+This command will collect diagnostic and configuration information from
+this Red Hat Enterprise Linux system and installed applications.
+
+An archive containing the collected information will be generated in
+/var/tmp/sos.z7nk6o7i and may be provided to a Red Hat support
+representative.
+
+Any information provided to Red Hat will be treated in accordance with
+the published support policies at:
+
+        Distribution Website : https://www.redhat.com/
+        Commercial Support   : https://access.redhat.com/
+
+The generated archive may contain data considered sensitive and its
+content should be reviewed by the originating organization before being
+passed to any third party.
+
+No changes will be made to system configuration.
+
+Press ENTER to continue, or CTRL-C to quit.
+
+Optionally, please enter the case id that you are generating this report for []: 04372668
+
+ Setting up archive ...
+ Setting up plugins ...
+[plugin:auditd] Could not open conf file /etc/audit/auditd.conf: [Errno 2] No such file or directory: '/etc/audit/auditd.conf'
+[plugin:crio] skipped command 'crictl info': required packages missing: cri-tools.
+[plugin:crio] skipped command 'crictl images': required packages missing: cri-tools.
+[plugin:crio] skipped command 'crictl pods': required packages missing: cri-tools.
+[plugin:crio] skipped command 'crictl ps': required packages missing: cri-tools.
+[plugin:crio] skipped command 'crictl ps -a': required packages missing: cri-tools.
+[plugin:crio] skipped command 'crictl ps -v': required packages missing: cri-tools.
+[plugin:crio] skipped command 'crictl stats': required packages missing: cri-tools.
+[plugin:crio] skipped command 'crictl version': required packages missing: cri-tools.
+[plugin:devicemapper] skipped command 'dmsetup info -c': required kmods missing: dm_mod.
+[plugin:devicemapper] skipped command 'dmsetup table': required kmods missing: dm_mod.
+[plugin:devicemapper] skipped command 'dmsetup status': required kmods missing: dm_mod.
+[plugin:devicemapper] skipped command 'dmsetup ls --tree': required kmods missing: dm_mod.
+[plugin:devicemapper] skipped command 'dmsetup udevcookies': required kmods missing: dm_mod.
+[plugin:devicemapper] skipped command 'dmstats list': required kmods missing: dm_mod.
+[plugin:devicemapper] skipped command 'dmstats print --allregions': required kmods missing: dm_mod.
+[plugin:networking] skipped command 'ip -s macsec show': required kmods missing: macsec.   Use '--allow-system-changes' to enable collection.
+[plugin:networking] skipped command 'ss -peaonmi': required kmods missing: tcp_diag, inet_diag, netlink_diag, udp_diag, xsk_diag, unix_diag, af_packet_diag.   Use '--allow-system-changes' to enable collection.
+ Running plugins. Please wait ...
+
+  Finishing plugins              [Running: subscription_manager]                          ]ed]ger]
+  Finished running plugins
+Creating compressed archive...
+
+Your sos report has been generated and saved in:
+        /var/tmp/sosreport-master1-04372668-2026-02-12-fombqgv.tar.xz
+
+ Size   9.91MiB
+ Owner  root
+ sha256 25c587dac5d79812e6c734e900fa4974f7922eac75665e48052b4724333d0932
+
+Please send this file to your support representative.
+
+sh-5.1# cp -r /var/tmp/sosreport-master1-04372668-2026-02-12-fombqgv.tar.xz /var/ho^C
+sh-5.1#
+sh-5.1#
+sh-5.1#
+sh-5.1# cd /var/
+sh-5.1# ls
+adm  cache  db  empty  ftp  games  kerberos  lib  local  lock  log  mail  nis  opt  preserve  run  spool  tmp  yp
+sh-5.1# cd tmp/
+sh-5.1# ls
+sosreport-master1-04372668-2026-02-12-fombqgv.tar.xz  sosreport-master1-04372668-2026-02-12-fombqgv.tar.xz.sha256
+sh-5.1# cd local
+sh: cd: local: No such file or directory
+sh-5.1# cd ../local/
+sh-5.1# ls
+sh-5.1# cd ~
+sh-5.1# pwd
+/root
+timed out waiting for input: auto-logout
+
+Removing debug pod ...
+Temporary namespace openshift-debug-cbjjm was removed.
+[root@bastion ~]#
