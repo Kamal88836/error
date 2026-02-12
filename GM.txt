@@ -1,40 +1,21 @@
-[  230.767959] Warning: Unmaintained driver is detected: nft_compat
-[  676.920564] sysrq: Trigger a crash
-[  676.924828] Kernel panic - not syncing: sysrq triggered crash
-[  676.924830] CPU: 28 PID: 36701 Comm: tee Kdump: loaded Tainted: G        W         -------  ---  5.14.0-427.85.1.el9_4.x86_64+rt #1
-[  676.924833] Hardware name: HPE ProLiant DL380 Gen10 Plus/ProLiant DL380 Gen10 Plus, BIOS U46 07/05/2023
-[  676.924835] Call Trace:
-[  676.924836]  <TASK>
-[  676.924838]  dump_stack_lvl+0x34/0x48
-[  676.924846]  panic+0x107/0x2eb
-[  676.924850]  ? _raw_spin_lock+0x13/0x40
-[  676.924854]  sysrq_handle_crash+0x16/0x20
-[  676.924859]  __handle_sysrq.cold+0x40/0x11f
-[  676.924863]  write_sysrq_trigger+0x24/0x40
-[  676.924866]  proc_reg_write+0x53/0xa0
-[  676.924871]  ? preempt_count_add+0x4d/0xa0
-[  676.924875]  vfs_write+0xe4/0x480
-[  676.924878]  ? vtime_user_exit+0x109/0x170
-[  676.924881]  ksys_write+0x62/0xe0
-[  676.924883]  do_syscall_64+0x59/0x90
-[  676.924886]  ? syscall_exit_to_user_mode+0x2e/0x40
-[  676.924889]  ? do_syscall_64+0x69/0x90
-[  676.924890]  ? __ct_user_enter+0x89/0x130
-[  676.924892]  ? syscall_exit_to_user_mode+0x2e/0x40
-[  676.924894]  ? do_syscall_64+0x69/0x90
-[  676.924896]  ? ct_kernel_exit.constprop.0+0xbe/0xe0
-[  676.924898]  ? clear_bhb_loop+0x35/0x90
-[  676.924901]  ? clear_bhb_loop+0x35/0x90
-[  676.924903]  ? clear_bhb_loop+0x35/0x90
-[  676.924905]  ? clear_bhb_loop+0x35/0x90
-[  676.924907]  ? clear_bhb_loop+0x35/0x90
-[  676.924909]  entry_SYSCALL_64_after_hwframe+0x77/0xe1
-[  676.924911] RIP: 0033:0x7f9e657f3a77
-[  676.924951] Code: 0f 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
-[  676.924953] RSP: 002b:00007fff2b8d48f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-[  676.924956] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f9e657f3a77
-[  676.924958] RDX: 0000000000000002 RSI: 00007fff2b8d4a10 RDI: 0000000000000003
-[  676.924959] RBP: 00007fff2b8d4a10 R08: 0000000000000004 R09: 0000000000000001
-[  676.924960] R10: 00000000000001b6 R11: 0000000000000246 R12: 0000000000000002
-[  676.924962] R13: 000055bdff2cd310 R14: 0000000000000002 R15: 00007f9e658ec9e0
-[  676.924966]  </TASK>
+[core@master1 ~]$ sudo -i
+[systemd]
+Failed Units: 2
+  chronyd.service
+  NetworkManager-wait-online.service
+[root@master1 ~]# toolbox
+.toolboxrc file detected, overriding defaults...
+Checking if there is a newer version of nwharbor.sec.samsung.net/team-ocp/rhel9/support-tools available...
+WARN[0000] Using cgroups-v1 which is deprecated in favor of cgroups-v2 with Podman v5 and will be removed in a future version. Set environment variable `PODMAN_IGNORE_CGROUPSV1_WARNING` to hide this warning.
+WARN[0000] Using cgroups-v1 which is deprecated in favor of cgroups-v2 with Podman v5 and will be removed in a future version. Set environment variable `PODMAN_IGNORE_CGROUPSV1_WARNING` to hide this warning.
+Container 'toolbox-root' already exists. Trying to start...
+(To remove the container and start with a fresh toolbox, run: sudo podman rm 'toolbox-root')
+WARN[0000] Using cgroups-v1 which is deprecated in favor of cgroups-v2 with Podman v5 and will be removed in a future version. Set environment variable `PODMAN_IGNORE_CGROUPSV1_WARNING` to hide this warning.
+WARN[0000] Using cgroups-v1 which is deprecated in favor of cgroups-v2 with Podman v5 and will be removed in a future version. Set environment variable `PODMAN_IGNORE_CGROUPSV1_WARNING` to hide this warning.
+toolbox-root
+Container started successfully. To exit, type 'exit'.
+WARN[0000] Using cgroups-v1 which is deprecated in favor of cgroups-v2 with Podman v5 and will be removed in a future version. Set environment variable `PODMAN_IGNORE_CGROUPSV1_WARNING` to hide this warning.
+Error: attaching to container 3e7b223997330a1065bf51b25e8fe7f4e3afa6011702338359311524f7726d85: you can only attach to running containers
+[root@master1 ~]# sos report
+-bash: sos: command not found
+[root@master1 ~]#
