@@ -3,7 +3,11 @@ ethtool -i <iface>
 
 
 
-
+for i in $(ls /sys/class/net | grep -v lo); do 
+  echo "===== $i ====="
+  ethtool -i $i | grep driver
+  echo
+done
 
 
 sh-5.1# lspci -nn | grep -i ethernet
