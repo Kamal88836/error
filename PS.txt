@@ -1,34 +1,25 @@
-[root@bastion2025 ~]# chronyc tracking
-Reference ID    : 47505300 (GPS)
-Stratum         : 1
-Ref time (UTC)  : Thu Feb 26 09:49:59 2026
-System time     : 0.000291595 seconds slow of NTP time
-Last offset     : -0.000437237 seconds
-RMS offset      : 0.001092206 seconds
-Frequency       : 13.834 ppm slow
-Residual freq   : -0.242 ppm
-Skew            : 17.086 ppm
-Root delay      : 0.200000003 seconds
-Root dispersion : 0.101860173 seconds
-Update interval : 16.0 seconds
-Leap status     : Normal
-[root@bastion2025 ~]# chronyc sources -v
+[root@bastion2025 ~]# ip route
+default via 72.1.0.1 dev eno8603np3 proto static metric 100
+10.88.0.0/16 dev podman0 proto kernel scope link src 10.88.0.1
+72.1.0.0/22 dev eno8603np3 proto kernel scope link src 72.1.1.17 metric 100
+[root@bastion2025 ~]#
 
-  .-- Source mode  '^' = server, '=' = peer, '#' = local clock.
- / .- Source state '*' = current best, '+' = combined, '-' = not combined,
-| /             'x' = may be in error, '~' = too variable, '?' = unusable.
-||                                                 .- xxxx [ yyyy ] +/- zzzz
-||      Reachability register (octal) -.           |  xxxx = adjusted offset,
-||      Log2(Polling interval) --.      |          |  yyyy = measured offset,
-||                                \     |          |  zzzz = estimated error.
-||                                 |    |           \
-MS Name/IP address         Stratum Poll Reach LastRx Last sample
-===============================================================================
-#* GPS                           0   4   377    18  -3342us[-3727us] +/-  200ms
-#? PPS                           0   4     0     -     +0ns[   +0ns] +/-    0ns
-[root@bastion2025 ~]#
-[root@bastion2025 ~]#
-[root@bastion2025 ~]#
-[root@bastion2025 ~]# ss -ulpn | grep 123
-UNCONN 0      0                                    0.0.0.0:123        0.0.0.0:*    users:(("chronyd",pid=200043,fd=8))
-[root@bastion2025 ~]#
+root@ocp-haproxy-1:/etc/chrony# traceroute 72.1.1.17
+traceroute to 72.1.1.17 (72.1.1.17), 30 hops max, 60 byte packets
+ 1  _gateway (10.0.2.2)  0.264 ms  0.227 ms  0.214 ms
+ 2  10.10.4.5 (10.10.4.5)  0.788 ms  0.810 ms  0.983 ms
+ 3  72.1.1.17 (72.1.1.17)  0.226 ms  0.211 ms  0.235 ms
+root@ocp-haproxy-1:/etc/chrony#
+root@ocp-haproxy-1:/etc/chrony#
+root@ocp-haproxy-1:/etc/chrony#
+root@ocp-haproxy-1:/etc/chrony# ip route
+default via 10.0.2.2 dev enp0s3 proto dhcp src 10.0.2.15 metric 100
+default via 70.1.1.1 dev enp0s8 proto static metric 101
+10.0.2.0/24 dev enp0s3 proto kernel scope link src 10.0.2.15
+10.0.2.2 dev enp0s3 proto dhcp scope link src 10.0.2.15 metric 100
+40.1.0.0/23 via 70.1.1.1 dev enp0s8 proto static
+65.1.1.0/24 via 70.1.1.1 dev enp0s8 proto static
+70.1.0.0/23 dev enp0s8 proto kernel scope link src 70.1.1.125
+71.1.0.0/23 via 70.1.1.1 dev enp0s8 proto static
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+root@ocp-haproxy-1:/etc/chrony#
