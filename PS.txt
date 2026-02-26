@@ -1,25 +1,2 @@
-[root@bastion2025 ~]# ip route
-default via 72.1.0.1 dev eno8603np3 proto static metric 100
-10.88.0.0/16 dev podman0 proto kernel scope link src 10.88.0.1
-72.1.0.0/22 dev eno8603np3 proto kernel scope link src 72.1.1.17 metric 100
-[root@bastion2025 ~]#
-
-root@ocp-haproxy-1:/etc/chrony# traceroute 72.1.1.17
-traceroute to 72.1.1.17 (72.1.1.17), 30 hops max, 60 byte packets
- 1  _gateway (10.0.2.2)  0.264 ms  0.227 ms  0.214 ms
- 2  10.10.4.5 (10.10.4.5)  0.788 ms  0.810 ms  0.983 ms
- 3  72.1.1.17 (72.1.1.17)  0.226 ms  0.211 ms  0.235 ms
-root@ocp-haproxy-1:/etc/chrony#
-root@ocp-haproxy-1:/etc/chrony#
-root@ocp-haproxy-1:/etc/chrony#
-root@ocp-haproxy-1:/etc/chrony# ip route
-default via 10.0.2.2 dev enp0s3 proto dhcp src 10.0.2.15 metric 100
-default via 70.1.1.1 dev enp0s8 proto static metric 101
-10.0.2.0/24 dev enp0s3 proto kernel scope link src 10.0.2.15
-10.0.2.2 dev enp0s3 proto dhcp scope link src 10.0.2.15 metric 100
-40.1.0.0/23 via 70.1.1.1 dev enp0s8 proto static
-65.1.1.0/24 via 70.1.1.1 dev enp0s8 proto static
-70.1.0.0/23 dev enp0s8 proto kernel scope link src 70.1.1.125
-71.1.0.0/23 via 70.1.1.1 dev enp0s8 proto static
-172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
-root@ocp-haproxy-1:/etc/chrony#
+ip route add 72.1.0.0/22 via 70.1.1.1 dev enp0s8
+ip route add 72.1.1.17 via 70.1.1.1 dev enp0s8
