@@ -1,118 +1,29 @@
-[root@bastion2025 ~]# cat  /etc/chrony.conf
-# Use public servers from the pool.ntp.org project.
-# Please consider joining the pool (https://www.pool.ntp.org/join.html).
-#pool 2.rhel.pool.ntp.org iburst
+[root@bastion2025 ~]# chronyc tracking
+Reference ID    : 47505300 (GPS)
+Stratum         : 1
+Ref time (UTC)  : Thu Feb 26 09:49:59 2026
+System time     : 0.000291595 seconds slow of NTP time
+Last offset     : -0.000437237 seconds
+RMS offset      : 0.001092206 seconds
+Frequency       : 13.834 ppm slow
+Residual freq   : -0.242 ppm
+Skew            : 17.086 ppm
+Root delay      : 0.200000003 seconds
+Root dispersion : 0.101860173 seconds
+Update interval : 16.0 seconds
+Leap status     : Normal
+[root@bastion2025 ~]# chronyc sources -v
 
-# Add GPS NMEA reference clock
-refclock SHM 0 refid GPS precision 1e-1 offset 0.0 delay 0.2
-
-# Add PPS reference clock (high precision)
-refclock PPS /dev/pps0 refid PPS lock GPS
-
-# Use NTP servers from DHCP.
-#sourcedir /run/chrony-dhcp
-
-# Record the rate at which the system clock gains/losses time.
-#driftfile /var/lib/chrony/drift
-
-# Allow the system clock to be stepped in the first three updates
-# if its offset is larger than 1 second.
-makestep 1.0 3
-
-# Enable kernel synchronization of the real-time clock (RTC).
-rtcsync
-
-# Enable hardware timestamping on all interfaces that support it.
-#hwtimestamp *
-
-# Increase the minimum number of selectable sources required to adjust
-# the system clock.
-#minsources 2
-
-# Allow NTP client access from local network.
-#allow 192.168.0.0/16
-#allow 70.1.0.0/23
-
-allow 70.1.1.0/24
-allow 107.110.0.0/16
-#allow 71.1.1.110
-allow 127.0.0.1
-
-# Serve time even if not synchronized to a time source.
-local stratum 1
-
-# Require authentication (nts or key option) for all NTP sources.
-#authselectmode require
-
-# Specify file containing keys for NTP authentication.
-#keyfile /etc/chrony.keys
-
-# Save NTS keys and cookies.
-#ntsdumpdir /var/lib/chrony
-
-# Insert/delete leap seconds by slewing instead of stepping.
-#leapsecmode slew
-
-# Get TAI-UTC offset and leap seconds from the system tz database.
-#leapsectz right/UTC
-
-# Specify directory for log files.
-logdir /var/log/chrony
-
-# Select which information is logged.
-#log measurements statistics tracking
-
-# Security hardening (recommended)
-cmdallow 127.0.0.1
-cmdallow ::1
-bindcmdaddress 127.0.0.1
-bindcmdaddress ::1
-
+  .-- Source mode  '^' = server, '=' = peer, '#' = local clock.
+ / .- Source state '*' = current best, '+' = combined, '-' = not combined,
+| /             'x' = may be in error, '~' = too variable, '?' = unusable.
+||                                                 .- xxxx [ yyyy ] +/- zzzz
+||      Reachability register (octal) -.           |  xxxx = adjusted offset,
+||      Log2(Polling interval) --.      |          |  yyyy = measured offset,
+||                                \     |          |  zzzz = estimated error.
+||                                 |    |           \
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+#* GPS                           0   4   377    18  -3342us[-3727us] +/-  200ms
+#? PPS                           0   4     0     -     +0ns[   +0ns] +/-    0ns
 [root@bastion2025 ~]#
-
-
-root@ocp-haproxy-1:~# cat /etc/chrony/chrony.conf
-# Use public servers from the pool.ntp.org project.
-# Please consider joining the pool (http://www.pool.ntp.org/join.html).
-#pool 2.rhel.pool.ntp.org iburst
-#server 70.1.1.125 prefer iburst
-#server 0.in.pool.ntp.org
-#driftfile /var/lib/chrony/drift
-#makestep 1.0 3
-#rtcsync
-#allow 10.0.0.0/16
-#allow 71.1.0.0/23
-#allow 70.1.0.0/16
-#local stratum 3
-#logdir /var/log/chrony
-
-#server 72.1.1.17 iburst prefer minpoll 4 maxpoll 4
-#server 70.1.1.110 iburst
-#server 107.110.7.10 iburst
-#server saindc002.sa.corp.samsungelectronics.net iburst
-
-server 72.1.1.17 iburst prefer
-
-driftfile /var/lib/chrony/drift
-
-makestep 1.0 3
-
-rtcsync
-
-allow 72.1.1.17/22
-#allow 71.1.0.0/23
-#allow 10.0.0.0/16
-
-#local stratum 3
-
-logdir /var/log/chrony
-log tracking measurements statistics
-
-# Security hardening (recommended)
-cmdallow 127.0.0.1
-cmdallow ::1
-bindcmdaddress 127.0.0.1
-bindcmdaddress ::1
-
-root@ocp-haproxy-1:~#
-
