@@ -1,2 +1,176 @@
-ip route add 72.1.0.0/22 via 70.1.1.1 dev enp0s8
-ip route add 72.1.1.17 via 70.1.1.1 dev enp0s8
+[root@bastion2025 ~]# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eno8303np0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 90:8d:6e:fa:51:0e brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f0np0
+3: eno8403np1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 90:8d:6e:fa:51:0f brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f1np1
+4: eno8503np2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 90:8d:6e:fa:51:10 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2np2
+5: ens2f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:0a:c5:30 brd ff:ff:ff:ff:ff:ff
+    altname enp81s0f0
+6: eno8603np3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 90:8d:6e:fa:51:11 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3np3
+    inet 72.1.1.17/22 brd 72.1.3.255 scope global noprefixroute eno8603np3
+       valid_lft forever preferred_lft forever
+    inet6 2405:100:200:72::1:17/64 scope global noprefixroute
+       valid_lft forever preferred_lft forever
+    inet6 fe80::928d:6eff:fefa:5111/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+7: ens2f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:0a:c5:31 brd ff:ff:ff:ff:ff:ff
+    altname enp81s0f1
+8: ens2f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:0a:c5:32 brd ff:ff:ff:ff:ff:ff
+    altname enp81s0f2
+9: ens2f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:0a:c5:33 brd ff:ff:ff:ff:ff:ff
+    altname enp81s0f3
+10: ens3f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:0a:c6:80 brd ff:ff:ff:ff:ff:ff
+    altname enp138s0f0
+11: ens3f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:0a:c6:81 brd ff:ff:ff:ff:ff:ff
+    altname enp138s0f1
+12: ens3f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:0a:c6:82 brd ff:ff:ff:ff:ff:ff
+    altname enp138s0f2
+13: ens3f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:0a:c6:83 brd ff:ff:ff:ff:ff:ff
+    altname enp138s0f3
+14: vboxnet0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether 0a:00:27:00:00:00 brd ff:ff:ff:ff:ff:ff
+15: podman0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 3a:e1:49:6a:54:98 brd ff:ff:ff:ff:ff:ff
+    inet 10.88.0.1/16 brd 10.88.255.255 scope global podman0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::7077:a4ff:fe9d:88d4/64 scope link
+       valid_lft forever preferred_lft forever
+16: veth0@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master podman0 state UP group default qlen 1000
+    link/ether 3a:e1:49:6a:54:98 brd ff:ff:ff:ff:ff:ff link-netns netns-24befd51-d145-9f2d-2cf3-4ec5f13a14cd
+    inet6 fe80::38e1:49ff:fe6a:5498/64 scope link
+       valid_lft forever preferred_lft forever
+17: eno8503v0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether a2:e4:50:26:93:4b brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2v0
+18: eno8503v1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 52:ad:a9:c3:3d:69 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2v1
+19: eno8503v2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether ca:e4:52:d9:4f:25 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2v2
+20: eno8503v3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 1e:40:9e:7c:ea:9c brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2v3
+21: eno8503v4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 5a:f3:7d:19:f6:62 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2v4
+22: eno8503v5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 12:32:df:88:b0:db brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2v5
+23: eno8503v6: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 2a:52:a2:32:c5:7e brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2v6
+24: eno8503v7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 02:9d:d5:6b:01:0d brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2v7
+25: eno8603v0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 7e:5b:63:c0:f3:8f brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3v0
+    inet6 2405:100:200:72:7c5b:63ff:fec0:f38f/64 scope global dynamic noprefixroute
+       valid_lft 2591954sec preferred_lft 604754sec
+    inet6 fe80::7c5b:63ff:fec0:f38f/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+26: eno8603v1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 16:49:fc:5a:f8:28 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3v1
+    inet6 2405:100:200:72:1449:fcff:fe5a:f828/64 scope global dynamic noprefixroute
+       valid_lft 2591955sec preferred_lft 604755sec
+    inet6 fe80::1449:fcff:fe5a:f828/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+27: eno8603v2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether d6:9f:23:25:bc:6c brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3v2
+    inet6 2405:100:200:72:d49f:23ff:fe25:bc6c/64 scope global dynamic noprefixroute
+       valid_lft 2591955sec preferred_lft 604755sec
+    inet6 fe80::d49f:23ff:fe25:bc6c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+28: eno8603v3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether fe:5e:0e:c3:73:4b brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3v3
+    inet6 2405:100:200:72:fc5e:eff:fec3:734b/64 scope global dynamic noprefixroute
+       valid_lft 2591955sec preferred_lft 604755sec
+    inet6 fe80::fc5e:eff:fec3:734b/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+29: eno8603v4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 96:aa:c5:4a:73:8e brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3v4
+    inet6 2405:100:200:72:94aa:c5ff:fe4a:738e/64 scope global dynamic noprefixroute
+       valid_lft 2591955sec preferred_lft 604755sec
+    inet6 fe80::94aa:c5ff:fe4a:738e/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+30: eno8603v5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether ba:6f:fd:52:c0:3f brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3v5
+    inet6 2405:100:200:72:b86f:fdff:fe52:c03f/64 scope global dynamic noprefixroute
+       valid_lft 2591955sec preferred_lft 604755sec
+    inet6 fe80::b86f:fdff:fe52:c03f/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+31: eno8603v6: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 3a:10:6a:2d:b4:1b brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3v6
+    inet6 2405:100:200:72:3810:6aff:fe2d:b41b/64 scope global dynamic noprefixroute
+       valid_lft 2591955sec preferred_lft 604755sec
+    inet6 fe80::3810:6aff:fe2d:b41b/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+32: eno8603v7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether d2:c1:d9:31:13:66 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3v7
+    inet6 2405:100:200:72:d0c1:d9ff:fe31:1366/64 scope global dynamic noprefixroute
+       valid_lft 2591955sec preferred_lft 604755sec
+    inet6 fe80::d0c1:d9ff:fe31:1366/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@bastion2025 ~]#
+
+
+
+
+
+root@ocp-haproxy-1:/etc/chrony# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 08:00:27:4e:ed:35 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic enp0s3
+       valid_lft 65872sec preferred_lft 65872sec
+    inet6 fe80::a00:27ff:fe4e:ed35/64 scope link
+       valid_lft forever preferred_lft forever
+3: enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc fq_codel state UP group default qlen 1000
+    link/ether e2:80:e4:0b:d8:a9 brd ff:ff:ff:ff:ff:ff
+    inet 70.1.1.125/23 brd 70.1.1.255 scope global enp0s8
+       valid_lft forever preferred_lft forever
+    inet6 2405:100:200:70::1:1837/64 scope global
+       valid_lft forever preferred_lft forever
+    inet6 fe80::e080:e4ff:fe0b:d8a9/64 scope link
+       valid_lft forever preferred_lft forever
+4: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
+    link/ether 02:42:aa:75:06:d6 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:aaff:fe75:6d6/64 scope link
+       valid_lft forever preferred_lft forever
+root@ocp-haproxy-1:/etc/chrony#
+
