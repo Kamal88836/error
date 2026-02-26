@@ -69,3 +69,50 @@ bindcmdaddress 127.0.0.1
 bindcmdaddress ::1
 
 [root@bastion2025 ~]#
+
+
+root@ocp-haproxy-1:~# cat /etc/chrony/chrony.conf
+# Use public servers from the pool.ntp.org project.
+# Please consider joining the pool (http://www.pool.ntp.org/join.html).
+#pool 2.rhel.pool.ntp.org iburst
+#server 70.1.1.125 prefer iburst
+#server 0.in.pool.ntp.org
+#driftfile /var/lib/chrony/drift
+#makestep 1.0 3
+#rtcsync
+#allow 10.0.0.0/16
+#allow 71.1.0.0/23
+#allow 70.1.0.0/16
+#local stratum 3
+#logdir /var/log/chrony
+
+#server 72.1.1.17 iburst prefer minpoll 4 maxpoll 4
+#server 70.1.1.110 iburst
+#server 107.110.7.10 iburst
+#server saindc002.sa.corp.samsungelectronics.net iburst
+
+server 72.1.1.17 iburst prefer
+
+driftfile /var/lib/chrony/drift
+
+makestep 1.0 3
+
+rtcsync
+
+allow 72.1.1.17/22
+#allow 71.1.0.0/23
+#allow 10.0.0.0/16
+
+#local stratum 3
+
+logdir /var/log/chrony
+log tracking measurements statistics
+
+# Security hardening (recommended)
+cmdallow 127.0.0.1
+cmdallow ::1
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+
+root@ocp-haproxy-1:~#
+
