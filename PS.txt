@@ -1,13 +1,71 @@
-1. In ILO redfish should be enable.
--> api for it ---->>curl -k -u admin:admin123 https://192.168.250.55/redfish/v1/Systems/1 | jq
+[root@bastion2025 ~]# cat  /etc/chrony.conf
+# Use public servers from the pool.ntp.org project.
+# Please consider joining the pool (https://www.pool.ntp.org/join.html).
+#pool 2.rhel.pool.ntp.org iburst
 
-2.ILO ip should be accessible from haproxy or from wherever you are running automation
--> ping to the ilo ip's
+# Add GPS NMEA reference clock
+refclock SHM 0 refid GPS precision 1e-1 offset 0.0 delay 0.2
 
-3.Internet should be present from wherever you are running automation.
--> ping 8.8.8.8 should work
+# Add PPS reference clock (high precision)
+refclock PPS /dev/pps0 refid PPS lock GPS
 
-4. Ansible and webserver need to be present, nmstate binary should be present. 
--> ansible --version should give o/p. 
--> webserver http2 and apach2 should be present
--> nmstate - step 7 for nmstate
+# Use NTP servers from DHCP.
+#sourcedir /run/chrony-dhcp
+
+# Record the rate at which the system clock gains/losses time.
+#driftfile /var/lib/chrony/drift
+
+# Allow the system clock to be stepped in the first three updates
+# if its offset is larger than 1 second.
+makestep 1.0 3
+
+# Enable kernel synchronization of the real-time clock (RTC).
+rtcsync
+
+# Enable hardware timestamping on all interfaces that support it.
+#hwtimestamp *
+
+# Increase the minimum number of selectable sources required to adjust
+# the system clock.
+#minsources 2
+
+# Allow NTP client access from local network.
+#allow 192.168.0.0/16
+#allow 70.1.0.0/23
+
+allow 70.1.1.0/24
+allow 107.110.0.0/16
+#allow 71.1.1.110
+allow 127.0.0.1
+
+# Serve time even if not synchronized to a time source.
+local stratum 1
+
+# Require authentication (nts or key option) for all NTP sources.
+#authselectmode require
+
+# Specify file containing keys for NTP authentication.
+#keyfile /etc/chrony.keys
+
+# Save NTS keys and cookies.
+#ntsdumpdir /var/lib/chrony
+
+# Insert/delete leap seconds by slewing instead of stepping.
+#leapsecmode slew
+
+# Get TAI-UTC offset and leap seconds from the system tz database.
+#leapsectz right/UTC
+
+# Specify directory for log files.
+logdir /var/log/chrony
+
+# Select which information is logged.
+#log measurements statistics tracking
+
+# Security hardening (recommended)
+cmdallow 127.0.0.1
+cmdallow ::1
+bindcmdaddress 127.0.0.1
+bindcmdaddress ::1
+
+[root@bastion2025 ~]#
