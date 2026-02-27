@@ -1,0 +1,29 @@
+sh-5.1# ovs-appctl ofproto/trace br-int \
+"in_port=15,ip,nw_src=10.129.0.28,nw_dst=72.1.1.125"
+Flow: ip,in_port=15,vlan_tci=0x0000,dl_src=00:00:00:00:00:00,dl_dst=00:00:00:00:00:00,nw_src=10.129.0.28,nw_dst=72.1.1.125,nw_proto=0,n=0,nw_ecn=0,nw_ttl=0,nw_frag=no
+
+bridge("br-int")
+----------------
+ 0. in_port=15, priority 100, cookie 0x1119b58b
+    set_field:0x2a/0xffff->reg13
+    set_field:0xd->reg11
+    set_field:0xb->reg12
+    set_field:0x3->metadata
+    set_field:0x187->reg14
+    set_field:0/0xffff0000->reg13
+    resubmit(,8)
+ 8. metadata=0x3, priority 50, cookie 0xc3b22f39
+    set_field:0/0x1000->reg10
+    resubmit(,73)
+    73. reg14=0x187,metadata=0x3, priority 80, cookie 0x1119b58b
+            set_field:0x1000/0x1000->reg10
+    move:NXM_NX_REG10[12]->NXM_NX_XXREG0[111]
+     -> NXM_NX_XXREG0[111] is now 0x1
+    resubmit(,9)
+ 9. reg0=0x8000/0x8000,metadata=0x3, priority 50, cookie 0x8aed14cf
+    drop
+
+Final flow: ip,reg0=0x8000,reg10=0x1000,reg11=0xd,reg12=0xb,reg13=0x2a,reg14=0x187,metadata=0x3,in_port=15,vlan_tci=0x0000,dl_src=00:000:00:00,dl_dst=00:00:00:00:00:00,nw_src=10.129.0.28,nw_dst=72.1.1.125,nw_proto=0,nw_tos=0,nw_ecn=0,nw_ttl=0,nw_frag=no
+Megaflow: recirc_id=0,eth,ip,in_port=15,dl_src=00:00:00:00:00:00,nw_frag=no
+Datapath actions: drop
+sh-5.1#
