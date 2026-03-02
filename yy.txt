@@ -1,101 +1,28 @@
-lspci -nn | grep -i ethernet
-ethtool -i <iface>
+sh-5.1# ovs-appctl ofproto/trace br-int "in_port=5642,ip,nw_src=10.20.0.53,nw_dst=20.1.30.102"
+Flow: ip,in_port=5642,vlan_tci=0x0000,dl_src=00:00:00:00:00:00,dl_dst=00:00:00:00:00:00,nw_src=10.20.0.53,nw_dst=20.1.30.102,nw_proto=0,nw_tos=0,nw_ecn=0,nw_ttl=0,nw_frag=no
 
+bridge("br-int")
+----------------
+ 0. in_port=5642, priority 100, cookie 0x1afe256e
+    set_field:0x1f/0xffff->reg13
+    set_field:0x11->reg11
+    set_field:0x1->reg12
+    set_field:0x1->metadata
+    set_field:0x485f->reg14
+    set_field:0/0xffff0000->reg13
+    resubmit(,8)
+ 8. metadata=0x1, priority 50, cookie 0x7373df3f
+    set_field:0/0x1000->reg10
+    resubmit(,73)
+    73. reg14=0x485f,metadata=0x1, priority 80, cookie 0x1afe256e
+            set_field:0x1000/0x1000->reg10
+    move:NXM_NX_REG10[12]->NXM_NX_XXREG0[111]
+     -> NXM_NX_XXREG0[111] is now 0x1
+    resubmit(,9)
+ 9. reg0=0x8000/0x8000,metadata=0x1, priority 50, cookie 0xe3c0bc2d
+    drop
 
-
-for i in $(ls /sys/class/net | grep -v lo); do 
-  echo "===== $i ====="
-  ethtool -i $i | grep driver
-  echo
-done
-
-
-sh-5.1# lspci -nn | grep -i ethernet
-10:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-10:00.1 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-10:00.2 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-10:00.3 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-10:11.0 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:11.1 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:11.2 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:11.3 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:11.4 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:11.5 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:11.6 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:11.7 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:12.0 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:12.1 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:12.2 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:12.3 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:12.4 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:12.5 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:12.6 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-10:12.7 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-2b:00.1 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-2b:00.2 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-2b:00.3 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-2b:11.0 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:11.1 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:11.2 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:11.3 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:11.4 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:11.5 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:11.6 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:11.7 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:12.0 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:12.1 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:12.2 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:12.3 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:12.4 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:12.5 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:12.6 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-2b:12.7 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-48:00.0 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev 01)
-48:00.1 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev 01)
-48:00.2 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev 01)
-48:00.3 Ethernet controller [0200]: Intel Corporation I350 Gigabit Network Connection [8086:1521] (rev 01)
-85:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-85:00.1 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-85:00.2 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-85:00.3 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-85:11.0 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:11.1 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:11.2 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:11.3 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:11.4 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:11.5 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:11.6 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:11.7 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:12.0 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:12.1 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:12.2 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:12.3 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:12.4 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:12.5 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:12.6 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-85:12.7 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-a2:00.1 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-a2:00.2 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-a2:00.3 Ethernet controller [0200]: Intel Corporation Ethernet Controller E810-C for SFP [8086:1593] (rev 02)
-a2:11.0 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:11.1 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:11.2 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:11.3 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:11.4 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:11.5 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:11.6 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:11.7 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:12.0 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:12.1 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:12.2 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:12.3 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:12.4 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:12.5 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:12.6 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-a2:12.7 Ethernet controller [0200]: Intel Corporation Ethernet Adaptive Virtual Function [8086:1889] (rev 02)
-c0:00.0 Ethernet controller [0200]: Broadcom Inc. and subsidiaries BCM57416 NetXtreme-E Dual-Media 10G RDMA Ethernet Controller [14e4:16d8] (rev 01)
-c0:00.1 Ethernet controller [0200]: Broadcom Inc. and subsidiaries BCM57416 NetXtreme-E Dual-Media 10G RDMA Ethernet Controller [14e4:16d8] (rev 01)
-c1:00.0 Ethernet controller [0200]: Broadcom Inc. and subsidiaries BCM57416 NetXtreme-E Dual-Media 10G RDMA Ethernet Controller [14e4:16d8] (rev 01)
-c1:00.1 Ethernet controller [0200]: Broadcom Inc. and subsidiaries BCM57416 NetXtreme-E Dual-Media 10G RDMA Ethernet Controller [14e4:16d8] (rev 01)
+Final flow: ip,reg0=0x8000,reg10=0x1000,reg11=0x11,reg12=0x1,reg13=0x1f,reg14=0x485f,metadata=0x1,in_port=5642,vlan_tci=0x0000,dl_src=00:00:00:00:00:00,dl_dst=00:00:00:00:00:00,nw_src=10.20.0.53,nw_dst=20.1.30.102,nw_proto=0,nw_tos=0,nw_ecn=0,nw_ttl=0,nw_frag=no
+Megaflow: recirc_id=0,eth,ip,in_port=5642,dl_src=00:00:00:00:00:00,nw_frag=no
+Datapath actions: drop
+sh-5.1#
