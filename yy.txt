@@ -1,450 +1,270 @@
-sysadmin@controller-0:~$ kubectl get po
-NAME                             READY   STATUS    RESTARTS   AGE
-uadpf237-cmp0-79df8f9ffc-fkjp2   1/1     Running   0          138m
-uadpf237-dip0-5b99df7c5b-hw7nq   1/1     Running   0          138m
-uadpf237-dmp0-d4576475-2zsdm     1/1     Running   0          138m
-uadpf237-dpp0-797bdcd88c-v6f2r   1/2     Running   0          91s
-uadpf237-pmp0-697cc87b4f-gqbv5   1/1     Running   0          138m
-uadpf237-rmp0-c558ddcf7-fctp7    1/1     Running   0          138m
-sysadmin@controller-0:~$ kubectl describe po uadpf237-dpp0-797bdcd88c-v6f2r
-Name:         uadpf237-dpp0-797bdcd88c-v6f2r
-Namespace:    default
-Priority:     0
-Node:         controller-0/192.168.204.2
-Start Time:   Mon, 02 Mar 2026 08:03:38 +0000
-Labels:       app=uadpf237-dpp0
-              nename=uadpf237
-              pod-template-hash=797bdcd88c
-              release=adpf
-              restart-on-reboot=true
-              tech=gsm-lte-nr
-Annotations:  cni.projectcalico.org/containerID: 9000ad1467d1d045b5a4dcf4d8d2f1fa6d3044d14cdb56d22ad5dace8744a71b
-              cni.projectcalico.org/podIP: 172.16.192.76/32
-              cni.projectcalico.org/podIPs: 172.16.192.76/32
-              k8s.v1.cni.cncf.io/network-status:
-                [{
-                    "name": "chain",
-                    "ips": [
-                        "172.16.192.76"
-                    ],
-                    "default": true,
-                    "dns": {}
-                },{
-                    "name": "default/uadpf-ca-nad",
-                    "interface": "mh1",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:ca:19.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-f1u-nad",
-                    "interface": "mh0",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:9d:19.2"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh0-nad",
-                    "interface": "fh0",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:9d:01.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh1-nad",
-                    "interface": "fh1",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:9d:09.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh2-nad",
-                    "interface": "fh2",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:9d:11.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh3-nad",
-                    "interface": "fh3",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:ca:01.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh4-nad",
-                    "interface": "fh4",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:ca:09.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh5-nad",
-                    "interface": "fh5",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:ca:11.0"
-                        }
-                    }
-                }]
-              k8s.v1.cni.cncf.io/networks:
-                [ { "name": "uadpf-ca-nad", "interface": "mh1" }, { "name": "uadpf-f1u-nad", "interface": "mh0" }, { "name": "uadpf-fh0-nad", "interface":...
-              k8s.v1.cni.cncf.io/networks-status:
-                [{
-                    "name": "chain",
-                    "ips": [
-                        "172.16.192.76"
-                    ],
-                    "default": true,
-                    "dns": {}
-                },{
-                    "name": "default/uadpf-ca-nad",
-                    "interface": "mh1",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:ca:19.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-f1u-nad",
-                    "interface": "mh0",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:9d:19.2"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh0-nad",
-                    "interface": "fh0",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:9d:01.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh1-nad",
-                    "interface": "fh1",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:9d:09.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh2-nad",
-                    "interface": "fh2",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:9d:11.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh3-nad",
-                    "interface": "fh3",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:ca:01.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh4-nad",
-                    "interface": "fh4",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:ca:09.0"
-                        }
-                    }
-                },{
-                    "name": "default/uadpf-fh5-nad",
-                    "interface": "fh5",
-                    "dns": {},
-                    "device-info": {
-                        "type": "pci",
-                        "version": "1.0.0",
-                        "pci": {
-                            "pci-address": "0000:ca:11.0"
-                        }
-                    }
-                }]
-Status:       Running
-IP:           172.16.192.76
-IPs:
-  IP:           172.16.192.76
-Controlled By:  ReplicaSet/uadpf237-dpp0-797bdcd88c
-Init Containers:
-  install:
-    Container ID:  containerd://c9a758511d00d1dec6f4b7fac711dccb00160c2f8cf19fc5dcb14117fdb882c3
-    Image:         sribharbor.sec.samsung.net/rel-ran/vos-uadpf-init:SVR25AUDUVOSC54_RA00
-    Image ID:      sribharbor.sec.samsung.net/rel-ran/vos-uadpf-init@sha256:cbf0a5595c25a673ee88e104c212668ea4f78318d0863778b7898bbe5db34253
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log
-    State:          Terminated
-      Reason:       Completed
-      Exit Code:    0
-      Started:      Mon, 02 Mar 2026 08:03:41 +0000
-      Finished:     Mon, 02 Mar 2026 08:03:41 +0000
-    Ready:          True
-    Restart Count:  0
-    Limits:
-      hugepages-1Gi:                46Gi
-      intel.com/pci_sriov_net_ca:   1
-      intel.com/pci_sriov_net_f1u:  1
-      intel.com/pci_sriov_net_fh0:  1
-      intel.com/pci_sriov_net_fh1:  1
-      intel.com/pci_sriov_net_fh2:  1
-      intel.com/pci_sriov_net_fh3:  1
-      intel.com/pci_sriov_net_fh4:  1
-      intel.com/pci_sriov_net_fh5:  1
-      memory:                       22140Mi
-      windriver.com/isolcpus:       44
-    Requests:
-      hugepages-1Gi:                46Gi
-      intel.com/pci_sriov_net_ca:   1
-      intel.com/pci_sriov_net_f1u:  1
-      intel.com/pci_sriov_net_fh0:  1
-      intel.com/pci_sriov_net_fh1:  1
-      intel.com/pci_sriov_net_fh2:  1
-      intel.com/pci_sriov_net_fh3:  1
-      intel.com/pci_sriov_net_fh4:  1
-      intel.com/pci_sriov_net_fh5:  1
-      memory:                       22140Mi
-      windriver.com/isolcpus:       44
-    Environment:                    <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from uadpf237-dpp0-log (rw)
-      /mnt/storage/shared from uadpf237-dpp-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wvbgn (ro)
-Containers:
-  dpp:
-    Container ID:  containerd://ea2da346a34d90bd655671c933c2e808e953d8a47a363464e558695581056e89
-    Image:         sribharbor.sec.samsung.net/rel-ran/vos-uadpf-dpp:SVR25AUDUVOSC54_RA00
-    Image ID:      sribharbor.sec.samsung.net/rel-ran/vos-uadpf-dpp@sha256:e1052acde64bb5d4074c7e108bb35b1d1a522e779c0fc4e9ef06c49debb91dec
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    State:          Running
-      Started:      Mon, 02 Mar 2026 08:03:42 +0000
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      hugepages-1Gi:                46Gi
-      intel.com/pci_sriov_net_ca:   1
-      intel.com/pci_sriov_net_f1u:  1
-      intel.com/pci_sriov_net_fh0:  1
-      intel.com/pci_sriov_net_fh1:  1
-      intel.com/pci_sriov_net_fh2:  1
-      intel.com/pci_sriov_net_fh3:  1
-      intel.com/pci_sriov_net_fh4:  1
-      intel.com/pci_sriov_net_fh5:  1
-      memory:                       22140Mi
-      windriver.com/isolcpus:       44
-    Requests:
-      hugepages-1Gi:                46Gi
-      intel.com/pci_sriov_net_ca:   1
-      intel.com/pci_sriov_net_f1u:  1
-      intel.com/pci_sriov_net_fh0:  1
-      intel.com/pci_sriov_net_fh1:  1
-      intel.com/pci_sriov_net_fh2:  1
-      intel.com/pci_sriov_net_fh3:  1
-      intel.com/pci_sriov_net_fh4:  1
-      intel.com/pci_sriov_net_fh5:  1
-      memory:                       22140Mi
-      windriver.com/isolcpus:       44
-    Liveness:                       exec [cat /var/run/probe/dpp_live_probe] delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                      exec [cat /var/run/probe/swm_read_probe] delay=5s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:                    UTC
-      CSTATE_HOST_IP:         (v1:status.hostIP)
-      SRIOV_FEC_VFIO_TOKEN:  f8b53ba8-8577-4df0-b524-277050579e27
-      THIS_NODE_NAME:         (v1:spec.nodeName)
-      PTP_APP_API_PORT:      9191
-      PTP_SIDECAR_API_PORT:  8181
-    Mounts:
-      /dev/shm from cshm (rw)
-      /etc/config from env (rw)
-      /hugepages from hugepage (rw)
-      /mnt/storage/log from uadpf237-dpp0-log (rw)
-      /mnt/storage/shared from uadpf237-dpp-shared (rw)
-      /sys from sys (rw)
-      /var/host-run from ptp4l (ro)
-      /var/run/ptp from ptpdir (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wvbgn (ro)
-  dpp-ptp:
-    Container ID:  containerd://553d96faf9e772cc91d540a6f3c1ef85f9710da9d138274637cd368e42bcd54e
-    Image:         sribharbor.sec.samsung.net/cloud-platform/docker.io/starlingx/notificationclient-base:stx.9.0-v2.1.1
-    Image ID:      sribharbor.sec.samsung.net/cloud-platform/docker.io/starlingx/notificationclient-base@sha256:3b3a44cb4d821999e2700816007ced950ea1caf0a530298ee49aca39c0ce38ec
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      python3
-      /mnt/sidecar_start.py
-    State:          Running
-      Started:      Mon, 02 Mar 2026 08:03:42 +0000
-    Ready:          True
-    Restart Count:  0
-    Limits:
-      cpu:     300m
-      memory:  2Gi
-    Requests:
-      cpu:     300m
-      memory:  2Gi
-    Liveness:  http-get http://:8181/health delay=60s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      THIS_NODE_NAME:             (v1:spec.nodeName)
-      THIS_POD_IP:                (v1:status.podIP)
-      REGISTRATION_HOST:         registration.notification.svc.cluster.local
-      REGISTRATION_USER:         admin
-      REGISTRATION_PASS:         admin
-      REGISTRATION_PORT:         5672
-      NOTIFICATIONSERVICE_USER:  admin
-      NOTIFICATIONSERVICE_PASS:  admin
-      NOTIFICATIONSERVICE_PORT:  5672
-      SIDECAR_API_PORT:          8181
-      DATASTORE_PATH:            /opt/datastore
-      LOGGING_LEVEL:             ERROR
-    Mounts:
-      /mnt from ptp-scripts (rw)
-      /opt/datastore from ptp-db (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wvbgn (ro)
-Conditions:
-  Type              Status
-  Initialized       True
-  Ready             False
-  ContainersReady   False
-  PodScheduled      True
-Volumes:
-  ptp-scripts:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      uadpf237-dpp-ptp0
-    Optional:  false
-  ptp-db:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:
-    SizeLimit:  <unset>
-  cshm:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:     Memory
-    SizeLimit:  <unset>
-  hugepage:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:     HugePages
-    SizeLimit:  <unset>
-  sys:
-    Type:          HostPath (bare host directory volume)
-    Path:          /sys
-    HostPathType:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      uadpf237-dpp0
-    Optional:  false
-  uadpf237-dpp-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  uadpf237-shared-pvc
-    ReadOnly:   false
-  uadpf237-dpp0-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  uadpf237-log-pvc
-    ReadOnly:   false
-  ptpdir:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/run/ptp
-    HostPathType:  DirectoryOrCreate
-  ptp4l:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/run
-    HostPathType:  Directory
-  kube-api-access-wvbgn:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-QoS Class:                   Burstable
-Node-Selectors:              <none>
-Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 30s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 30s
-Events:
-  Type     Reason            Age                From               Message
-  ----     ------            ----               ----               -------
-  Warning  FailedScheduling  101s               default-scheduler  0/1 nodes are available: 1 Insufficient hugepages-1Gi, 1 Insufficient windriver.com/isolcpus. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
-  Normal   Scheduled         95s                default-scheduler  Successfully assigned default/uadpf237-dpp0-797bdcd88c-v6f2r to controller-0
-  Normal   AddedInterface    94s                multus             Add eth0 [172.16.192.76/32] from chain
-  Normal   AddedInterface    93s                multus             Add mh1 [] from default/uadpf-ca-nad
-  Normal   AddedInterface    93s                multus             Add mh0 [] from default/uadpf-f1u-nad
-  Normal   AddedInterface    93s                multus             Add fh0 [] from default/uadpf-fh0-nad
-  Normal   AddedInterface    93s                multus             Add fh1 [] from default/uadpf-fh1-nad
-  Normal   Started           92s                kubelet            Started container install
-  Normal   AddedInterface    92s                multus             Add fh3 [] from default/uadpf-fh3-nad
-  Normal   AddedInterface    92s                multus             Add fh4 [] from default/uadpf-fh4-nad
-  Normal   AddedInterface    92s                multus             Add fh2 [] from default/uadpf-fh2-nad
-  Normal   Pulled            92s                kubelet            Container image "sribharbor.sec.samsung.net/rel-ran/vos-uadpf-init:SVR25AUDUVOSC54_RA00" already present on machine
-  Normal   Created           92s                kubelet            Created container install
-  Normal   AddedInterface    92s                multus             Add fh5 [] from default/uadpf-fh5-nad
-  Normal   Pulled            91s                kubelet            Container image "sribharbor.sec.samsung.net/rel-ran/vos-uadpf-dpp:SVR25AUDUVOSC54_RA00" already present on machine
-  Normal   Created           91s                kubelet            Created container dpp
-  Normal   Started           91s                kubelet            Started container dpp
-  Normal   Pulled            91s                kubelet            Container image "sribharbor.sec.samsung.net/cloud-platform/docker.io/starlingx/notificationclient-base:stx.9.0-v2.1.1" already present on machine
-  Normal   Created           91s                kubelet            Created container dpp-ptp
-  Normal   Started           91s                kubelet            Started container dpp-ptp
-  Warning  Unhealthy         4s (x10 over 84s)  kubelet            Readiness probe failed: cat: /var/run/probe/swm_read_probe: No such file or directory
-sysadmin@controller-0:~$
+Your pod **`uadpf237-dpp0-797bdcd88c-v6f2r`** is:
+
+* ✅ Scheduled
+* ✅ Containers running
+* ❌ **Not Ready (1/2)**
+* ❌ Readiness probe failing
+
+---
+
+# 🔎 Root Cause
+
+From events:
+
+```
+Readiness probe failed:
+cat: /var/run/probe/swm_read_probe: No such file or directory
+```
+
+### 👉 Meaning
+
+The container **`dpp`** is expected to create this file:
+
+```
+/var/run/probe/swm_read_probe
+```
+
+But it does **NOT exist**, so Kubernetes marks container as **Not Ready**.
+
+---
+
+# 📌 What Is Happening Internally
+
+Your `dpp` container has:
+
+```yaml
+Readiness:
+  exec [cat /var/run/probe/swm_read_probe]
+```
+
+Kubernetes runs:
+
+```
+cat /var/run/probe/swm_read_probe
+```
+
+If:
+
+* File exists → success → Pod becomes Ready
+* File missing → failure → Pod stays NotReady
+
+Currently → file missing.
+
+---
+
+# ⚡ Why This Happens (Common Causes)
+
+In telco/SR-IOV + hugepage workloads like yours:
+
+### 1️⃣ Application inside container did not finish initialization
+
+Most common.
+
+### 2️⃣ HugePages allocation issue
+
+You are requesting:
+
+```
+hugepages-1Gi: 46Gi
+```
+
+If not fully available → app may fail internally.
+
+### 3️⃣ isolcpus (CPU pinning) not available
+
+```
+windriver.com/isolcpus: 44
+```
+
+If not satisfied correctly → app may hang.
+
+### 4️⃣ SR-IOV VF not bound correctly
+
+You are attaching **8 PCI devices**:
+
+```
+intel.com/pci_sriov_net_fh0
+...
+intel.com/pci_sriov_net_fh5
+```
+
+If VFIO binding failed → app startup fails silently.
+
+---
+
+# 🛠 Immediate Debug Steps
+
+## ✅ Step 1 — Check container logs
+
+```bash
+kubectl logs uadpf237-dpp0-797bdcd88c-v6f2r -c dpp
+```
+
+This is the MOST important step.
+
+---
+
+## ✅ Step 2 — Exec inside container
+
+```bash
+kubectl exec -it uadpf237-dpp0-797bdcd88c-v6f2r -c dpp -- bash
+```
+
+Then check:
+
+```bash
+ls -l /var/run/probe/
+```
+
+If directory missing → app not creating it.
+
+---
+
+## ✅ Step 3 — Check HugePages on node
+
+On node:
+
+```bash
+cat /proc/meminfo | grep Huge
+```
+
+You must see:
+
+```
+HugePages_Total: 46+
+HugePages_Free: 46+
+```
+
+If not → that's your problem.
+
+---
+
+## ✅ Step 4 — Check isolcpus availability
+
+```bash
+kubectl describe node controller-0 | grep -i isolcpus -A5
+```
+
+Verify allocatable:
+
+```
+windriver.com/isolcpus
+```
+
+---
+
+## ✅ Step 5 — Verify SR-IOV devices allocated
+
+```bash
+kubectl describe node controller-0 | grep -A5 Allocatable
+```
+
+Check:
+
+```
+intel.com/pci_sriov_net_fh*
+```
+
+---
+
+# 🧠 Important Observation
+
+Earlier event:
+
+```
+FailedScheduling: Insufficient hugepages-1Gi, Insufficient windriver.com/isolcpus
+```
+
+This means:
+
+👉 Node was resource constrained.
+
+Even though it later scheduled, the app may have started in partially available environment.
+
+---
+
+# 🎯 Most Likely Scenario (90%)
+
+Your **DPP application inside container failed initialization**, so:
+
+* It never created readiness file
+* Kubernetes keeps retrying readiness probe
+* Pod stays 1/2 Ready
+
+---
+
+# 🚀 What To Check In Logs
+
+Look for:
+
+* Hugepage allocation failure
+* VFIO binding error
+* PCI device not found
+* CPU pinning failure
+* Permission denied on /var/run
+
+---
+
+# 🔬 Quick Verification Command
+
+Inside container:
+
+```bash
+cat /proc/meminfo | grep Huge
+```
+
+```bash
+lspci | grep -i ethernet
+```
+
+```bash
+ps -ef
+```
+
+---
+
+# 💡 Temporary Test (Only for debugging)
+
+If you manually create file:
+
+```bash
+touch /var/run/probe/swm_read_probe
+```
+
+Pod will become Ready.
+
+⚠️ This is NOT a fix — just confirms readiness file issue.
+
+---
+
+# 📊 Summary
+
+| Component           | Status         |
+| ------------------- | -------------- |
+| Init container      | ✅ Completed    |
+| dpp container       | ✅ Running      |
+| dpp-ptp container   | ✅ Running      |
+| Readiness probe     | ❌ File missing |
+| HugePages requested | 46Gi           |
+| SR-IOV VFs          | 8              |
+| isolcpus            | 44             |
+
+---
+
+# 🎯 Next Step
+
+Please run:
+
+```bash
+kubectl logs uadpf237-dpp0-797bdcd88c-v6f2r -c dpp
+```
+
+Paste output — I’ll pinpoint exact failure.
+
+---
+
+Since you’re working on high-performance telco workloads, this is almost always:
+
+> Hugepage misconfiguration OR CPU isolation misalignment.
+
+Let’s confirm with logs.
