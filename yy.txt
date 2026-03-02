@@ -1,270 +1,49 @@
-Your pod **`uadpf237-dpp0-797bdcd88c-v6f2r`** is:
-
-* ✅ Scheduled
-* ✅ Containers running
-* ❌ **Not Ready (1/2)**
-* ❌ Readiness probe failing
-
----
-
-# 🔎 Root Cause
-
-From events:
-
-```
-Readiness probe failed:
-cat: /var/run/probe/swm_read_probe: No such file or directory
-```
-
-### 👉 Meaning
-
-The container **`dpp`** is expected to create this file:
-
-```
-/var/run/probe/swm_read_probe
-```
-
-But it does **NOT exist**, so Kubernetes marks container as **Not Ready**.
-
----
-
-# 📌 What Is Happening Internally
-
-Your `dpp` container has:
-
-```yaml
-Readiness:
-  exec [cat /var/run/probe/swm_read_probe]
-```
-
-Kubernetes runs:
-
-```
-cat /var/run/probe/swm_read_probe
-```
-
-If:
-
-* File exists → success → Pod becomes Ready
-* File missing → failure → Pod stays NotReady
-
-Currently → file missing.
-
----
-
-# ⚡ Why This Happens (Common Causes)
-
-In telco/SR-IOV + hugepage workloads like yours:
-
-### 1️⃣ Application inside container did not finish initialization
-
-Most common.
-
-### 2️⃣ HugePages allocation issue
-
-You are requesting:
-
-```
-hugepages-1Gi: 46Gi
-```
-
-If not fully available → app may fail internally.
-
-### 3️⃣ isolcpus (CPU pinning) not available
-
-```
-windriver.com/isolcpus: 44
-```
-
-If not satisfied correctly → app may hang.
-
-### 4️⃣ SR-IOV VF not bound correctly
-
-You are attaching **8 PCI devices**:
-
-```
-intel.com/pci_sriov_net_fh0
-...
-intel.com/pci_sriov_net_fh5
-```
-
-If VFIO binding failed → app startup fails silently.
-
----
-
-# 🛠 Immediate Debug Steps
-
-## ✅ Step 1 — Check container logs
-
-```bash
-kubectl logs uadpf237-dpp0-797bdcd88c-v6f2r -c dpp
-```
-
-This is the MOST important step.
-
----
-
-## ✅ Step 2 — Exec inside container
-
-```bash
-kubectl exec -it uadpf237-dpp0-797bdcd88c-v6f2r -c dpp -- bash
-```
-
-Then check:
-
-```bash
-ls -l /var/run/probe/
-```
-
-If directory missing → app not creating it.
-
----
-
-## ✅ Step 3 — Check HugePages on node
-
-On node:
-
-```bash
-cat /proc/meminfo | grep Huge
-```
-
-You must see:
-
-```
-HugePages_Total: 46+
-HugePages_Free: 46+
-```
-
-If not → that's your problem.
-
----
-
-## ✅ Step 4 — Check isolcpus availability
-
-```bash
-kubectl describe node controller-0 | grep -i isolcpus -A5
-```
-
-Verify allocatable:
-
-```
-windriver.com/isolcpus
-```
-
----
-
-## ✅ Step 5 — Verify SR-IOV devices allocated
-
-```bash
-kubectl describe node controller-0 | grep -A5 Allocatable
-```
-
-Check:
-
-```
-intel.com/pci_sriov_net_fh*
-```
-
----
-
-# 🧠 Important Observation
-
-Earlier event:
-
-```
-FailedScheduling: Insufficient hugepages-1Gi, Insufficient windriver.com/isolcpus
-```
-
-This means:
-
-👉 Node was resource constrained.
-
-Even though it later scheduled, the app may have started in partially available environment.
-
----
-
-# 🎯 Most Likely Scenario (90%)
-
-Your **DPP application inside container failed initialization**, so:
-
-* It never created readiness file
-* Kubernetes keeps retrying readiness probe
-* Pod stays 1/2 Ready
-
----
-
-# 🚀 What To Check In Logs
-
-Look for:
-
-* Hugepage allocation failure
-* VFIO binding error
-* PCI device not found
-* CPU pinning failure
-* Permission denied on /var/run
-
----
-
-# 🔬 Quick Verification Command
-
-Inside container:
-
-```bash
-cat /proc/meminfo | grep Huge
-```
-
-```bash
-lspci | grep -i ethernet
-```
-
-```bash
-ps -ef
-```
-
----
-
-# 💡 Temporary Test (Only for debugging)
-
-If you manually create file:
-
-```bash
-touch /var/run/probe/swm_read_probe
-```
-
-Pod will become Ready.
-
-⚠️ This is NOT a fix — just confirms readiness file issue.
-
----
-
-# 📊 Summary
-
-| Component           | Status         |
-| ------------------- | -------------- |
-| Init container      | ✅ Completed    |
-| dpp container       | ✅ Running      |
-| dpp-ptp container   | ✅ Running      |
-| Readiness probe     | ❌ File missing |
-| HugePages requested | 46Gi           |
-| SR-IOV VFs          | 8              |
-| isolcpus            | 44             |
-
----
-
-# 🎯 Next Step
-
-Please run:
-
-```bash
-kubectl logs uadpf237-dpp0-797bdcd88c-v6f2r -c dpp
-```
-
-Paste output — I’ll pinpoint exact failure.
-
----
-
-Since you’re working on high-performance telco workloads, this is almost always:
-
-> Hugepage misconfiguration OR CPU isolation misalignment.
-
-Let’s confirm with logs.
+sysadmin@controller-0:~$ kubectl exec -it uadpf237-dpp0-797bdcd88c-mq4bw  -c dpp -- bash
+pid 1's current affinity mask: 4
+pid 1's new affinity mask: 4
+[root@uadpf237-dpp0-797bdcd88c-mq4bw /]# ls -l /var/run/probe/
+total 0
+-rw-r--r-- 1 root root 0 Mar  2 08:13 dpp_live_probe
+-rw-r--r-- 1 root root 0 Mar  2 08:13 gttb_read_probe
+-rw-r--r-- 1 root root 0 Mar  2 08:13 vrlce_read_probe
+-rw-r--r-- 1 root root 0 Mar  2 08:13 vupe_read_probe
+[root@uadpf237-dpp0-797bdcd88c-mq4bw /]# command terminated with exit code 137
+sysadmin@controller-0:~$ kubectl exec -it uadpf237-dpp0-797bdcd88c-mq4bw  -c dpp -- bash
+Error from server (NotFound): pods "uadpf237-dpp0-797bdcd88c-mq4bw" not found
+sysadmin@controller-0:~$ kubectl get po
+NAME                             READY   STATUS    RESTARTS   AGE
+uadpf237-cmp0-79df8f9ffc-fkjp2   1/1     Running   0          149m
+uadpf237-dip0-5b99df7c5b-hw7nq   1/1     Running   0          149m
+uadpf237-dmp0-d4576475-2zsdm     1/1     Running   0          149m
+uadpf237-dpp0-797bdcd88c-5c98m   1/2     Running   0          20s
+uadpf237-pmp0-697cc87b4f-gqbv5   1/1     Running   0          149m
+uadpf237-rmp0-c558ddcf7-fctp7    1/1     Running   0          149m
+sysadmin@controller-0:~$ kubectl exec -it uadpf237-dpp0-797bdcd88c-5c98m  -c dpp -- bash
+pid 1's current affinity mask: 4
+pid 1's new affinity mask: 4
+[root@uadpf237-dpp0-797bdcd88c-5c98m /]# cat /proc/meminfo | grep Huge
+HugePages_Total:      70
+HugePages_Free:       24
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:    1048576 kB
+Hugetlb:        73400320 kB
+[root@uadpf237-dpp0-797bdcd88c-5c98m /]# exit
+sysadmin@controller-0:~$ kubectl describe node controller-0 | grep -i isolcpus -A5
+  windriver.com/isolcpus:        50
+Allocatable:
+  cpu:                           10
+  ephemeral-storage:             9417620260
+  hugepages-1Gi:                 70Gi
+  hugepages-2Mi:                 0
+--
+  windriver.com/isolcpus:        50
+System Info:
+  Machine ID:                  736da10d0b974f87b8ff1b1930e6ec7f
+  System UUID:                 4c4c4544-0052-5610-804c-cac04f483034
+  Boot ID:                     14dd3a51-599a-46ad-b487-c77ffcdc818c
+  Kernel Version:              5.10.0-6-rt-amd64
+--
+  windriver.com/isolcpus        44             44
+Events:                         <none>
+sysadmin@controller-0:~$
