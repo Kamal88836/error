@@ -26,3 +26,52 @@ for line in f.readlines()[2:]:
     if rx_drop > 0:
         print("{:<15} {:>12} {:>12} {:>10} {:>10}".format(
             iface, rx_packets, rx_errs, rx_drop, tx_drop))
+
+
+
+
+
+#!/usr/bin/env python3
+
+file_path = "proc/net/dev"
+
+print("\nNETDEV\n")
+
+header = "{:<15} {:>10} {:>12} {:>8} {:>10} {:>8} {:>10} {:>12}"
+print(header.format(
+"Interface","RxMB","RxPackets","RxErrs","RxDrop","RxFifo","RxFrame","RxMultCast"))
+
+print("="*95)
+
+with open(file_path) as f:
+    lines = f.readlines()[2:]
+
+for line in lines:
+
+    parts = line.split()
+
+    iface = parts[0].replace(":", "")
+
+    rx_bytes = int(parts[1])
+    rx_packets = int(parts[2])
+    rx_errs = int(parts[3])
+    rx_drop = int(parts[4])
+    rx_fifo = int(parts[5])
+    rx_frame = int(parts[7])
+    rx_multicast = int(parts[8])
+
+    rx_mb = rx_bytes / (1024*1024)
+
+    drop_pct = (rx_drop / rx_packets * 100) if rx_packets > 0 else 0
+
+    print("{:<15} {:>10.0f} {:>12} {:>8} {:>10} {:>8} {:>10} {:>10} ({:.0f}%)".format(
+        iface,
+        rx_mb,
+        rx_packets,
+        rx_errs,
+        rx_drop,
+        rx_fifo,
+        rx_frame,
+        rx_multicast,
+        drop_pct
+    ))
