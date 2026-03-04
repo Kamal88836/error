@@ -1,49 +1,28 @@
-sysadmin@controller-0:~$ kubectl exec -it uadpf237-dpp0-797bdcd88c-mq4bw  -c dpp -- bash
-pid 1's current affinity mask: 4
-pid 1's new affinity mask: 4
-[root@uadpf237-dpp0-797bdcd88c-mq4bw /]# ls -l /var/run/probe/
-total 0
--rw-r--r-- 1 root root 0 Mar  2 08:13 dpp_live_probe
--rw-r--r-- 1 root root 0 Mar  2 08:13 gttb_read_probe
--rw-r--r-- 1 root root 0 Mar  2 08:13 vrlce_read_probe
--rw-r--r-- 1 root root 0 Mar  2 08:13 vupe_read_probe
-[root@uadpf237-dpp0-797bdcd88c-mq4bw /]# command terminated with exit code 137
-sysadmin@controller-0:~$ kubectl exec -it uadpf237-dpp0-797bdcd88c-mq4bw  -c dpp -- bash
-Error from server (NotFound): pods "uadpf237-dpp0-797bdcd88c-mq4bw" not found
-sysadmin@controller-0:~$ kubectl get po
-NAME                             READY   STATUS    RESTARTS   AGE
-uadpf237-cmp0-79df8f9ffc-fkjp2   1/1     Running   0          149m
-uadpf237-dip0-5b99df7c5b-hw7nq   1/1     Running   0          149m
-uadpf237-dmp0-d4576475-2zsdm     1/1     Running   0          149m
-uadpf237-dpp0-797bdcd88c-5c98m   1/2     Running   0          20s
-uadpf237-pmp0-697cc87b4f-gqbv5   1/1     Running   0          149m
-uadpf237-rmp0-c558ddcf7-fctp7    1/1     Running   0          149m
-sysadmin@controller-0:~$ kubectl exec -it uadpf237-dpp0-797bdcd88c-5c98m  -c dpp -- bash
-pid 1's current affinity mask: 4
-pid 1's new affinity mask: 4
-[root@uadpf237-dpp0-797bdcd88c-5c98m /]# cat /proc/meminfo | grep Huge
-HugePages_Total:      70
-HugePages_Free:       24
-HugePages_Rsvd:        0
-HugePages_Surp:        0
-Hugepagesize:    1048576 kB
-Hugetlb:        73400320 kB
-[root@uadpf237-dpp0-797bdcd88c-5c98m /]# exit
-sysadmin@controller-0:~$ kubectl describe node controller-0 | grep -i isolcpus -A5
-  windriver.com/isolcpus:        50
-Allocatable:
-  cpu:                           10
-  ephemeral-storage:             9417620260
-  hugepages-1Gi:                 70Gi
-  hugepages-2Mi:                 0
---
-  windriver.com/isolcpus:        50
-System Info:
-  Machine ID:                  736da10d0b974f87b8ff1b1930e6ec7f
-  System UUID:                 4c4c4544-0052-5610-804c-cac04f483034
-  Boot ID:                     14dd3a51-599a-46ad-b487-c77ffcdc818c
-  Kernel Version:              5.10.0-6-rt-amd64
---
-  windriver.com/isolcpus        44             44
-Events:                         <none>
-sysadmin@controller-0:~$
+#!/usr/bin/env python3
+
+import sys
+
+file_path = "proc/net/dev"
+
+try:
+    f = open(file_path)
+except:
+    print("Error: proc/net/dev not found. Run script inside sosreport directory.")
+    sys.exit(1)
+
+print("{:<15} {:>12} {:>12} {:>10} {:>10}".format(
+    "Interface", "RxPackets", "RxErrors", "RxDrop", "TxDrop"))
+print("="*60)
+
+for line in f.readlines()[2:]:
+    parts = line.split()
+
+    iface = parts[0].replace(":", "")
+    rx_packets = int(parts[2])
+    rx_errs = int(parts[3])
+    rx_drop = int(parts[4])
+    tx_drop = int(parts[12])
+
+    if rx_drop > 0:
+        print("{:<15} {:>12} {:>12} {:>10} {:>10}".format(
+            iface, rx_packets, rx_errs, rx_drop, tx_drop))
