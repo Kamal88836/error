@@ -1,2 +1,152 @@
-ip route add 72.1.0.0/22 via 70.1.1.1 dev enp0s8
+[root@bastion SHN]# cat agent-config.yaml
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: airtelvvt
+rendezvousIP: 20.1.30.150
+hosts:
+  - hostname: master1.airtelvvt.samsungbsc.local
+    role: master
+    rootDeviceHints:
+      deviceName: "/dev/sda"
+    interfaces:
+      - name: ens1f0
+        macAddress: 50:7c:6f:57:2c:f8
+    networkConfig:
+      interfaces:
+        - name: bond0.230
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 230
+          ipv4:
+            enabled: true
+            address:
+              - ip: 20.1.30.150
+                prefix-length: 24
+            dhcp: false
+          ipv6:
+            enabled: false
+            dhcp: false
+        - name: bond0
+          type: bond
+          state: up
+          mac-address: 50:7c:6f:57:2c:f8
+          ipv4:
+            enabled: false
+          ipv6:
+            enabled: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              miimon: "100"
+            port:
+              - ens1f0
+              - ens4f0
+      dns-resolver:
+        config:
+          server:
+            - 20.1.30.151
+            - 20.1.30.152
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 20.1.30.2
+            next-hop-interface: bond0.230
+  - hostname: master3.airtelvvt.samsungbsc.local
+    role: master
+    rootDeviceHints:
+      deviceName: "/dev/sda"
+    interfaces:
+      - name: ens1f0
+        macAddress: b4:96:91:c3:21:f4
+    networkConfig:
+      interfaces:
+        - name: bond0.230
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 230
+          ipv4:
+            enabled: true
+            address:
+              - ip: 20.1.30.152
+                prefix-length: 24
+            dhcp: false
+          ipv6:
+            enabled: false
+            dhcp: false
+        - name: bond0
+          type: bond
+          mac-address: b4:96:91:c3:21:f4
+          state: up
+          ipv4:
+            enabled: false
+          ipv6:
+            enabled: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              miimon: "100"
+            port:
+              - ens1f0
+              - ens4f0
+      dns-resolver:
+        config:
+          server:
+            - 20.1.30.150
+            - 20.1.30.151
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 20.1.30.2
+            next-hop-interface: bond0.230
+  - hostname: master2.airtelvvt.samsungbsc.local
+    role: master
+    rootDeviceHints:
+      deviceName: "/dev/sda"
+    interfaces:
+     - name: ens1f0
+       macAddress: 50:7c:6f:57:2b:ac
+    networkConfig:
+      interfaces:
+        - name: bond0.230
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 230
+          ipv4:
+            enabled: true
+            address:
+              - ip: 20.1.30.151
+                prefix-length: 24
+            dhcp: false
+        - name: bond0
+          type: bond
+          mac-address: 50:7c:6f:57:2b:ac
+          state: up
+          ipv4:
+            enabled: false
+          ipv6:
+            enabled: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              miimon: "100"
+            port:
+             - ens1f0
+             - ens4f0
+      dns-resolver:
+        config:
+          server:
+            - 20.1.30.150
+            - 20.1.30.152
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 20.1.30.2
+            next-hop-interface: bond0.230
 
