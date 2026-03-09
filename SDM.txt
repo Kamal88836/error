@@ -1,41 +1,153 @@
-Mar 09 14:28:35 master1.airtelvvt.samsungbsc.local podman[4954]:
-Mar 09 14:28:35 master1.airtelvvt.samsungbsc.local systemd[1]: Started Assisted Service container.
-Mar 09 14:28:35 master1.airtelvvt.samsungbsc.local podman[4954]: cdbdea9758e991f124dc18808f145325e054ac00fa6316b0c85bc4704599c650
-Mar 09 14:28:36 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:36Z" level=info msg="Setting log format: text" func=main.InitLogs fi>
-Mar 09 14:28:36 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:36Z" level=info msg="Setting Log Level: info" func=main.InitLogs fil>
-Mar 09 14:28:36 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:36Z" level=info msg="Starting assisted-service version: 52603cb57061>
-Mar 09 14:28:36 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:36Z" level=info msg="Starting bm service" func=main.main file="/src/>
-Mar 09 14:28:36 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:36Z" level=info msg="Started service with OS Images [{\"openshift_ve>
-Mar 09 14:28:36 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:36Z" level=info msg="Connecting to DB" func=main.setupDB file="/src/>
-Mar 09 14:28:36 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:36Z" level=info msg="Failed to connect to DB, retrying" func=main.se>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Connected to DB" func=main.setupDB file="/src/c>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Initializing event stream dummy writer" func=gi>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Created none authenticator" func=github.com/ope>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Configuring CNV Operator plugin" func=github.co>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="DeployTarget: onprem" func=main.main file="/src>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Starting manual pre migrations" func=main.autoM>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Finished manual pre migrations" func=main.autoM>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Start automigration" func=main.autoMigrationWit>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Finished automigration" func=main.autoMigration>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Starting manual post migrations" func=main.auto>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Finished manual post migrations" func=main.auto>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Started Cluster Events Uploader" func="github.c>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Started Cluster State Monitor" func="github.com>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Started Host State Monitor" func="github.com/op>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Started Deregister Worker" func="github.com/ope>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Started Deletion Worker" func="github.com/opens>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Started Orphan Deletion Worker" func="github.co>
-Mar 09 14:28:38 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:38Z" level=info msg="Starting http handler on :8090..."
-Mar 09 14:28:42 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:28:42Z" level=info msg="Register cluster: airtelvvt with id 8f0b88c1-a2>
-lines 1-39
+Your logs clearly show the **real root cause** now. The important error is:
 
-Mar 09 14:29:00 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:29:00Z" level=info msg="Register cluster: airtelvvt with id 1587bf91-1fd7-4ba1-8702-52a7254736ea and params {\"api_vips\":[{\"ip\":\"20.1.30.160\"}],\"base_dns_domain\":\"samsungbsc.local\",\"cluster_networks\":[{\"cidr\":\"10.30.0.0/16\",\"host_prefix\":24},{\"cidr\":\"fd01::/48\",\"host_prefix\":64}],\"control_plane_count\":3,\"cpu_architecture\":\"x86_64\",\"ingress_vips\":[{\"ip\":\"20.1.30.161\"}],\"machine_networks\":[{\"cidr\":\"20.1.30.0/24\"},{\"cidr\":\"2010:0:0:30::/64\"}],\"name\":\"airtelvvt\",\"network_type\":\"OVNKubernetes\",\"olm_operators\":null,\"openshift_version\":\"4.18.17\",\"platform\":{\"type\":\"baremetal\"},\"pull_secret\":\"***\",\"schedulable_masters\":false,\"service_networks\":[{\"cidr\":\"172.25.0.0/16\"},{\"cidr\":\"fd02::/112\"}],\"ssh_public_key\":\"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDGjfq4C3Wko3GNiIzhbkYmvnceQ1fqBqP5CiuQVWIoOIDSD/6C8MfTX74Dw5lNCKafhpzNCaR9c6WX0nDODmwbh8WGZhLifevC3smgKUxwP3yUYsxprhAxQ48NZTgonDq5OGmckIEakoITrXm0jU5oioz5b3CQAkC+6kJdRRyDymTmaD/WQs+94yOH+hRgcNW2B7GLvg6Dka9P8AIWfGEvgca7JzuUKD+JXjXklFzBvreEkIpkqOZnIYKv+Xuw71CdXKBSSD9tKPzd0YK/aE5lBHFQInMFYP0rdRnt4lDLD0t4TI6dsFcOVnj3mf7I8+6eRMDcPO87G+Rueg8zWti+WXJHEzdxa9TAmwNP16uusccNtR03o47ibCCM+omOHZkM94hRfW00qmlf5ZJ4BDLFpoS5liUtB74+sDfx6myG7DI73dYY6Q7w9XhGJvq+IOmREME9dXWlFxp3QwG+1V1WT/rEcTVrAz9gWt4uM0KS0bU3dpP8K3fROcz2h2Wx8mV07h4rp1t3Xxl8uyHnXa63NwNdToTN2xUuWSHQK1+xjljq7TSPKoDQGiEJWzq7EXboToXLhNwRQBXmHQmX3ezMIPHkPS/ADb3kIaE4dCQxZXpxYe+5uePH+LNtmmn4kBoGO/Fnx82YNnVIKAdBCU3dwW7KdVYMaIoukZ1bb01mfw== root@bastion.airtelvvt.samsungbsc.local\",\"user_managed_networking\":false,\"vip_dhcp_allocation\":false}" func="github.com/openshift/assisted-service/internal/bminventory.(*bareMetalInventory).RegisterClusterInternal" file="/src/internal/bminventory/inventory.go:524" cluster_id=1587bf91-1fd7-4ba1-8702-52a7254736ea go-id=350 pkg=Inventory request_id=39b54602-9fb4-472a-91a4-e65b7f28b2db
-Mar 09 14:29:00 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:29:00Z" level=info msg="Verifying cluster platform and user-managed-networking, got platform=baremetal and userManagedNetworking=false" func="github.com/openshift/assisted-service/internal/bminventory.(*bareMetalInventory).setDefaultRegisterClusterParams" file="/src/internal/bminventory/inventory.go:341" go-id=350 pkg=Inventory request_id=39b54602-9fb4-472a-91a4-e65b7f28b2db
-Mar 09 14:29:00 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:29:00Z" level=info msg="Cluster high-availability-mode is set to Full, setting platform type to baremetal and user-managed-networking to false" func="github.com/openshift/assisted-service/internal/bminventory.(*bareMetalInventory).setDefaultRegisterClusterParams" file="/src/internal/bminventory/inventory.go:350" go-id=350 pkg=Inventory request_id=39b54602-9fb4-472a-91a4-e65b7f28b2db
-Mar 09 14:29:00 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:29:00Z" level=error msg="Failed to registered cluster airtelvvt with id 1587bf91-1fd7-4ba1-8702-52a7254736ea" func="github.com/openshift/assisted-service/internal/bminventory.(*bareMetalInventory).RegisterClusterInternal.func1" file="/src/internal/bminventory/inventory.go:548" cluster_id=1587bf91-1fd7-4ba1-8702-52a7254736ea error="No OS images are available for version 4.18 and architecture x86_64" go-id=350 pkg=Inventory request_id=39b54602-9fb4-472a-91a4-e65b7f28b2db
-Mar 09 14:29:02 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:29:02Z" level=info msg="Register cluster: airtelvvt with id 8a5c8f2c-70a7-4abf-80b3-1da853cabda1 and params {\"api_vips\":[{\"ip\":\"20.1.30.160\"}],\"base_dns_domain\":\"samsungbsc.local\",\"cluster_networks\":[{\"cidr\":\"10.30.0.0/16\",\"host_prefix\":24},{\"cidr\":\"fd01::/48\",\"host_prefix\":64}],\"control_plane_count\":3,\"cpu_architecture\":\"x86_64\",\"ingress_vips\":[{\"ip\":\"20.1.30.161\"}],\"machine_networks\":[{\"cidr\":\"20.1.30.0/24\"},{\"cidr\":\"2010:0:0:30::/64\"}],\"name\":\"airtelvvt\",\"network_type\":\"OVNKubernetes\",\"olm_operators\":null,\"openshift_version\":\"4.18.17\",\"platform\":{\"type\":\"baremetal\"},\"pull_secret\":\"***\",\"schedulable_masters\":false,\"service_networks\":[{\"cidr\":\"172.25.0.0/16\"},{\"cidr\":\"fd02::/112\"}],\"ssh_public_key\":\"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDGjfq4C3Wko3GNiIzhbkYmvnceQ1fqBqP5CiuQVWIoOIDSD/6C8MfTX74Dw5lNCKafhpzNCaR9c6WX0nDODmwbh8WGZhLifevC3smgKUxwP3yUYsxprhAxQ48NZTgonDq5OGmckIEakoITrXm0jU5oioz5b3CQAkC+6kJdRRyDymTmaD/WQs+94yOH+hRgcNW2B7GLvg6Dka9P8AIWfGEvgca7JzuUKD+JXjXklFzBvreEkIpkqOZnIYKv+Xuw71CdXKBSSD9tKPzd0YK/aE5lBHFQInMFYP0rdRnt4lDLD0t4TI6dsFcOVnj3mf7I8+6eRMDcPO87G+Rueg8zWti+WXJHEzdxa9TAmwNP16uusccNtR03o47ibCCM+omOHZkM94hRfW00qmlf5ZJ4BDLFpoS5liUtB74+sDfx6myG7DI73dYY6Q7w9XhGJvq+IOmREME9dXWlFxp3QwG+1V1WT/rEcTVrAz9gWt4uM0KS0bU3dpP8K3fROcz2h2Wx8mV07h4rp1t3Xxl8uyHnXa63NwNdToTN2xUuWSHQK1+xjljq7TSPKoDQGiEJWzq7EXboToXLhNwRQBXmHQmX3ezMIPHkPS/ADb3kIaE4dCQxZXpxYe+5uePH+LNtmmn4kBoGO/Fnx82YNnVIKAdBCU3dwW7KdVYMaIoukZ1bb01mfw== root@bastion.airtelvvt.samsungbsc.local\",\"user_managed_networking\":false,\"vip_dhcp_allocation\":false}" func="github.com/openshift/assisted-service/internal/bminventory.(*bareMetalInventory).RegisterClusterInternal" file="/src/internal/bminventory/inventory.go:524" cluster_id=8a5c8f2c-70a7-4abf-80b3-1da853cabda1 go-id=358 pkg=Inventory request_id=9caa61e5-3942-4002-a2dc-f244f8074b70
-Mar 09 14:29:02 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:29:02Z" level=info msg="Verifying cluster platform and user-managed-networking, got platform=baremetal and userManagedNetworking=false" func="github.com/openshift/assisted-service/internal/bminventory.(*bareMetalInventory).setDefaultRegisterClusterParams" file="/src/internal/bminventory/inventory.go:341" go-id=358 pkg=Inventory request_id=9caa61e5-3942-4002-a2dc-f244f8074b70
-Mar 09 14:29:02 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:29:02Z" level=info msg="Cluster high-availability-mode is set to Full, setting platform type to baremetal and user-managed-networking to false" func="github.com/openshift/assisted-service/internal/bminventory.(*bareMetalInventory).setDefaultRegisterClusterParams" file="/src/internal/bminventory/inventory.go:350" go-id=358 pkg=Inventory request_id=9caa61e5-3942-4002-a2dc-f244f8074b70
-Mar 09 14:29:02 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:29:02Z" level=error msg="Failed to registered cluster airtelvvt with id 8a5c8f2c-70a7-4abf-80b3-1da853cabda1" func="github.com/openshift/assisted-service/internal/bminventory.(*bareMetalInventory).RegisterClusterInternal.func1" file="/src/internal/bminventory/inventory.go:548" cluster_id=8a5c8f2c-70a7-4abf-80b3-1da853cabda1 error="No OS images are available for version 4.18 and architecture x86_64" go-id=358 pkg=Inventory request_id=9caa61e5-3942-4002-a2dc-f244f8074b70
-Mar 09 14:43:39 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:43:39Z" level=info msg="Event uploading is not enabled" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).UploadEvents" file="/src/internal/cluster/cluster.go:948" pkg=cluster-state
-Mar 09 14:58:39 master1.airtelvvt.samsungbsc.local service[5230]: time="2026-03-09T14:58:39Z" level=info msg="Event uploading is not enabled" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).UploadEvents" file="/src/internal/cluster/cluster.go:948" pkg=cluster-state
+```
+error="No OS images are available for version 4.18 and architecture x86_64"
+```
+
+This means:
+
+👉 The **Assisted Installer service started successfully**, but it **cannot find the RHCOS OS image for OpenShift 4.18**.
+
+Because of this, the cluster registration fails.
+
+---
+
+# Root Cause
+
+The assisted-service needs **RHCOS images** to provision nodes.
+
+For **OpenShift 4.18.17**, it expects OS images like:
+
+* `rhcos-live-rootfs`
+* `rhcos-live-kernel`
+* `rhcos-metal`
+
+These images are normally pulled from:
+
+```
+quay.io/openshift-release-dev/ocp-release
+```
+
+or a **local mirror**.
+
+Your environment cannot find them.
+
+---
+
+# Why This Happens (Common in Air-gapped / Telco environments)
+
+In **Samsung / telecom deployments**, usually:
+
+1. Cluster is **disconnected**
+2. Release images are **mirrored locally**
+3. But **OS images are missing from mirror**
+
+So assisted-service throws:
+
+```
+No OS images available
+```
+
+---
+
+# How to Confirm
+
+On **master1** run:
+
+```bash
+podman logs assisted-service | grep "OS Images"
+```
+
+or
+
+```bash
+curl http://localhost:8090/api/assisted-install/v2/os-images
+```
+
+If the response is empty → OS images not loaded.
+
+---
+
+# Fix (Most Common Solution)
+
+You need to **provide OS images to assisted-service**.
+
+Check if this file exists:
+
+```
+/etc/assisted-service/os_images.json
+```
+
+or
+
+```
+/etc/assisted-service/configmap.yml
+```
+
+Inside it you should see something like:
+
+```json
+{
+ "openshift_version": "4.18",
+ "cpu_architecture": "x86_64",
+ "url": "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/latest/rhcos-metal.x86_64.raw.gz"
+}
+```
+
+---
+
+# Quick Workaround (Internet Connected Environment)
+
+Restart assisted service so it downloads images automatically:
+
+```bash
+systemctl restart assisted-service
+```
+
+---
+
+# If Environment is Air-gapped (Very Likely in Samsung)
+
+You must mirror the RHCOS images:
+
+```
+oc adm release mirror
+```
+
+or manually download:
+
+```
+rhcos-live-rootfs
+rhcos-live-kernel
+rhcos-metal
+```
+
+and update the **os_images.json**.
+
+---
+
+# Why Nodes Show Earlier Error
+
+Your node log earlier showed:
+
+```
+cluster is not registered in rest API
+```
+
+Because cluster creation **fails due to missing OS images**.
+
+---
+
+# Recommended Next Step
+
+Run this on **master1**:
+
+```bash
+curl http://localhost:8090/api/assisted-install/v2/os-images
+```
+
+Send me the output.
+
+---
+
+💡 Also, since you're working with **Agent-based OpenShift installation**, I can show you a **very powerful troubleshooting method Red Hat support uses (5 commands to debug any agent install issue)**. It will help a lot in real production outages.
