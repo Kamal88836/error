@@ -1,65 +1,976 @@
-[core@master2 ~]$ curl http://20.1.30.150:8090/api/assisted-install/v2/infra-envs
-{"code":401,"message":"unauthenticated for invalid credentials"}[core@master2 ~]$
+[root@bastion ~]# ssh-keygen -t rsa -b 4096
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:vdqvFVLKMSRQWSmdl7TNSPOULjv1Dyk3nJjWJLn2HJI
+root@bastion.ss.samsung.local
+The key's randomart image is:
++---[RSA 4096]----+
+| .oo+o++... |
+| oo+.oO. |
+| .o.+o+ |
+| o =+ + |
+| S = .& + |
+| oE.X .|
+| .o.B +.|
+| o . o .|
+| . oo. |
++----[SHA256]-----+
+
+[root@bastion ~]# cat ~/.ssh/id_rsa.pub
+ssh-rsa AAAAB3N...YhWw== root@bastion
 
 
-[core@master1 ~]$ TOKEN=$(grep USER_AUTH_TOKEN /etc/assisted/rendezvous-host.env | cut -d= -f2)
+Openshift Image 준비
+Download Image
+Requisite files (v4.18) - OCP Image
 
-curl -H "Authorization: Bearer $TOKEN" \
-http://localhost:8090/api/assisted-install/v2/infra-envs
-{"code":401,"message":"Failed to parse token: tokenstring should not contain 'bearer '\n"}
-[core@master1 ~]$ journalctl -u assisted-service.service -f
-Mar 10 13:15:25 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:25Z" level=debug msg="HostMonitoring took : 2.225843ms" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation.func1 file="/src/pkg/commonutils/common_utils.go:15" pkg=host-state
-Mar 10 13:15:25 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:25Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.150:59986 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc002790f30 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:15:27 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:27Z" level=debug msg="Running ClusterMonitoring" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).ClusterMonitoring" file="/src/internal/cluster/cluster.go:580" pkg=cluster-state
-Mar 10 13:15:27 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:27Z" level=debug msg="ClusterMonitoring started at: 2026-03-10 13:15:27.210788966 +0000 UTC m=+1732.131617165" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation file="/src/pkg/commonutils/common_utils.go:12" pkg=cluster-state
-Mar 10 13:15:27 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:27Z" level=debug msg="Monitored 0 clusters" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).ClusterMonitoring" file="/src/internal/cluster/cluster.go:657" pkg=cluster-state
-Mar 10 13:15:27 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:27Z" level=debug msg="ClusterMonitoring took : 477.615µs" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation.func1 file="/src/pkg/commonutils/common_utils.go:15" pkg=cluster-state
-Mar 10 13:15:27 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:27Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.151:57648 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc000b3a4b0 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:15:29 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:29Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.152:33602 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc000e50d50 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:15:30 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:30Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.150:59996 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc000d0a510 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:15:32 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:32Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.151:56750 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc000b49f50 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:15:33 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:33Z" level=debug msg="HostMonitoring started at: 2026-03-10 13:15:33.21139909 +0000 UTC m=+1738.132227287" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation file="/src/pkg/commonutils/common_utils.go:12" pkg=host-state
-Mar 10 13:15:33 master1.airtelvvt.samsungbsc.local service[5107]: time="2026-03-10T13:15:33Z" level=debug msg="HostMonitoring took : 1.619621ms" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation.func1 file="/src/pkg/commonutils/common_utils.go:15" pkg=host-state
-^C
-[core@master1 ~]$ podman ps | grep assisted
-^C
-[core@master1 ~]$ podman ps | grep assisted
-^C
-[core@master1 ~]$ sudo systemctl restart assisted-service
-[core@master1 ~]$ sudo systemctl status assisted-service
-● assisted-service.service - Assisted Service container
-     Loaded: loaded (/etc/systemd/system/assisted-service.service; enabled; preset: enabled)
-     Active: active (running) since Tue 2026-03-10 13:19:29 UTC; 58s ago
-    Process: 27271 ExecStartPre=/bin/rm -f /run/assisted-service.service.ctr-id (code=exited, status=0/SUCCESS)
-   Main PID: 27311 (conmon)
-      Tasks: 1 (limit: 3355442)
-     Memory: 1.1M
-        CPU: 92ms
-     CGroup: /system.slice/assisted-service.service
-             └─27311 /usr/bin/conmon --api-version 1 -c 60b7b5ee32d00f1274b0f1c19c66c1a5fd4dd591ecb2a30d08f266fce2708fdd -u 60b7b5ee32d00f1274b0f1c19c66c1a5f>
+Push OCP Image
+Podman Login
 
-Mar 10 13:20:21 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:21Z" level=debug msg="Running ClusterMonitoring" func="github.com/o>
-Mar 10 13:20:21 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:21Z" level=debug msg="ClusterMonitoring started at: 2026-03-10 13:2>
-Mar 10 13:20:21 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:21Z" level=debug msg="Monitored 0 clusters" func="github.com/opensh>
-Mar 10 13:20:21 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:21Z" level=debug msg="ClusterMonitoring took : 582.035µs" func=gith>
-Mar 10 13:20:23 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:23Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra->
-Mar 10 13:20:25 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:25Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra->
-Mar 10 13:20:26 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:26Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra->
-Mar 10 13:20:27 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:27Z" level=debug msg="HostMonitoring started at: 2026-03-10 13:20:2>
-Mar 10 13:20:27 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:27Z" level=debug msg="HostMonitoring took : 1.846473ms" func=github>
-Mar 10 13:20:28 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:20:28Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra->
 
-[core@master1 ~]$ journalctl -u assisted-service.service -f
-Mar 10 13:23:11 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:11Z" level=debug msg="Running ClusterMonitoring" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).ClusterMonitoring" file="/src/internal/cluster/cluster.go:580" pkg=cluster-state
-Mar 10 13:23:11 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:11Z" level=debug msg="ClusterMonitoring started at: 2026-03-10 13:23:11.709565577 +0000 UTC m=+222.138516721" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation file="/src/pkg/commonutils/common_utils.go:12" pkg=cluster-state
-Mar 10 13:23:11 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:11Z" level=debug msg="Monitored 0 clusters" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).ClusterMonitoring" file="/src/internal/cluster/cluster.go:657" pkg=cluster-state
-Mar 10 13:23:11 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:11Z" level=debug msg="ClusterMonitoring took : 366.8µs" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation.func1 file="/src/pkg/commonutils/common_utils.go:15" pkg=cluster-state
-Mar 10 13:23:13 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:13Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.151:60320 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc0011eaba0 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:23:15 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:15Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.152:43254 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc00121a150 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:23:15 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:15Z" level=debug msg="HostMonitoring started at: 2026-03-10 13:23:15.709622203 +0000 UTC m=+226.138573394" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation file="/src/pkg/commonutils/common_utils.go:12" pkg=host-state
-Mar 10 13:23:15 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:15Z" level=debug msg="HostMonitoring took : 1.498227ms" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation.func1 file="/src/pkg/commonutils/common_utils.go:15" pkg=host-state
-Mar 10 13:23:16 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:16Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.150:38620 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc00119db00 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:23:18 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:18Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.151:60326 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc0011ebd10 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-Mar 10 13:23:20 master1.airtelvvt.samsungbsc.local service[27311]: time="2026-03-10T13:23:20Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.zxOu12HMnXvcAqSOhbT7ojJ3V6hwDoJc_hddRpEegBs6S8keA0C3LtityPkonmMst-hbIBrZBeETxei80rV3Kw] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 20.1.30.150:8090 map[] map[] <nil> map[] 20.1.30.152:40276 /api/assisted-install/v2/infra-envs <nil> <nil> <nil> 0xc00121b4a0 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
-^C
-[core@master1 ~]$
+
+[root@bastion ~]# docker login --authfile /root/.docker/config.json -u [[harbor-id]] -p [[harbor-password]] [[harbor-url]] --tls-verify=false
+OCP Image mirror
+
+[[harbor-result]]: You will use the resulting value, such as "oc-mirror-workspace/results-1676424642" below.
+oc-mirror-workspace to bastion
+
+
+[root@bastion ~]# oc mirror --from=./OCP_[[cluster-version]].tar docker://[[harbor-url]]/team-ocp/ocp --dest-skip-tls
+info: Mirroring completed in 20ms (0B/s)
+Wrote release signatures to oc-mirror-workspace/results-1676424642
+Rendering catalog image "[[harbor-url]]/openshift/redhat/certified-operator-index:v4.18" with file-based catalog 
+Rendering catalog image "[[harbor-url]]/openshift/redhat/redhat-operator-index:v4.18" with file-based catalog 
+Writing image mapping to oc-mirror-workspace/results-1676424642/mapping.txt
+Writing UpdateService manifests to oc-mirror-workspace/results-1676424642
+Writing CatalogSource manifests to oc-mirror-workspace/results-1676424642
+Writing ICSP manifests to oc-mirror-workspace/results-1676424642 
+
+
+### ... ( 약 20분 이상 소요 ) ...
+
+
+[root@bastion ~]# scp -r oc-mirror-workspace root@bastion:/root/
+Image Verification
+
+
+
+[root@bastion ~]# docker search [[harbor-url]]/team-ocp/ocp/openshift/release-images --list-tags --tls-verify=false
+NAME                                                                       TAG
+[[harbor-url]]/team-ocp/ocp/openshift/release-images  [[cluster-version]]-x86_64
+imageContentSource 확인
+
+
+
+[root@bastion ~]# cat [[harbor-result]]/imageContentSourcePolicy.yaml
+...
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: release-0
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/openshift/release
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/openshift/release-images
+    source: quay.io/openshift-release-dev/ocp-release
+Config File 생성
+Warning
+
+Due to MachineNetwork CIDR constraints, the following IP bands are not available:
+https://en.m.wikipedia.org/wiki/Reserved_IP_addresses
+
+MachineNetwork CIDR과 ClusterNetwork는 1개이상 설정할 수 없습니다.
+https://issues.redhat.com/browse/OCPBUGS-26955
+
+For IPv4, an additional 10.251 network must be set up for nwharbor access.
+With additional interface and route settings, 10.251.0.0/16 should pass to that GW.
+
+If a separate DNS server exists, it is advantageous to use it to operate and install Openshift, and
+the IP of the cluster must be registered with the DNS server you want to use. (Later Description)
+
+install-config.yaml
+install-config.yaml Collapse source
+
+
+apiVersion: v1
+#######################
+# Cluster information #
+#######################
+## 향후 Cluster접속시 <metadata.name>.<baseDomain> 으로 접속하게 됩니다.
+baseDomain: "" # ex) samsung.local
+## SNO의 경우 vDU 생성을 위해 아래 주석을 삭제하여 Workload partitioning을 설정해야 합니다.(Single-node OpenShift clusters that run DU workloads require workload partitioning. This limits the cores allowed to run platform services, maximizing the CPU core for application payloads. Workload partitioning can be enabled during cluster installation only. You cannot disable workload partitioning postinstallation. )
+#cpuPartitioningMode: AllNodes
+metadata:
+## It should be unique with the project name.
+  name: "" # Cluster Name ex) sno-xxx, mno-xxx
+
+## cat ~/.ssh/id_rsa.pub
+## 들여쓰기 2칸을 해주셔야 합니다. ssh-rsa 포함하여서 작성해주세요
+## 특수문자 ''(작은따옴표)나 ""(큰따옴표)를 포함하지 않으셔야 합니다
+## 아래는 예시입니다
+## sshKey: |
+##   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDlhsS31VOAyUISnxq+E/m+kKXAI11NZEKfOdKrI/A82WwF0CxFen5Y1LyOgicY9lSn8wmkzx36rN8vvX+ziPzgaZbxLBsjGr0vf7UxfuYf66zC1UVpfAymxwaoyGUjBiumRQ3eP+ge/JGu/nk9cs4SvRaOlnT+9WE1oLxxDrDu9uP/6MwXMopzfyziVl21W/09rt7IQID63H8B/r7mSyG9xSiD3uPwyvvbcuxq9IcIltdCWt0yDLt5+gt9qF+XdJJKmt5uK5Nbth8N7u9/M+90kykKGqS5SNJiBHA4IBvm91LT2OJ6r6ZvsOTvvEdMte/UZqbTmqf1SjXkBG90CF7lmWvxxSO1NybNAhgFosaeJOr2JkFJ+v0FLGz9Uwo9YHAmVKmWn6YlhK4wsLoQJOLPC43Pq+F+/MNjFPtt0CwJCQxPmcvz0zt+8+HYzHU8BlE8YguiFzwUvA3+0nuaJkaUzX4H26O/vUjhXfA4k0ebz350v0YlzJL/FB/e0UPHpK5sOVHnX8obaWwckW0nNa7k1xZaH/k4QPdVkYPWnl3zh06JYKxkcYUTbu0HD7dFYPUK8hTBs8sTXCo5euHEtO08slpQ/RacVjyz+z6+q6zyeUY2OMKzPtRg0/h0C7jMdpUftVl1DLSorUljJ8Y8sA4Cv0+T2EqmuXwIMxMvSCvaTw== root@C61U35
+## Cluster별로 별도 Linux계정을 사용할경우 모든 계정의 sshKey값을 넣어주세요
+## 아래는 예시입니다
+## sshKey: |
+##   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDlhsS31VOAyUISnxq+E/m+kKXAI11NZEKfOdKrI/A82WwF0CxFen5Y1LyOgicY9lSn8wmkzx36rN8vvX+ziPzgaZbxLBsjGr0vf7UxfuYf66zC1UVpfAymxwaoyGUjBiumRQ3eP+ge/JGu/nk9cs4SvRaOlnT+9WE1oLxxDrDu9uP/6MwXMopzfyziVl21W/09rt7IQID63H8B/r7mSyG9xSiD3uPwyvvbcuxq9IcIltdCWt0yDLt5+gt9qF+XdJJKmt5uK5Nbth8N7u9/M+90kykKGqS5SNJiBHA4IBvm91LT2OJ6r6ZvsOTvvEdMte/UZqbTmqf1SjXkBG90CF7lmWvxxSO1NybNAhgFosaeJOr2JkFJ+v0FLGz9Uwo9YHAmVKmWn6YlhK4wsLoQJOLPC43Pq+F+/MNjFPtt0CwJCQxPmcvz0zt+8+HYzHU8BlE8YguiFzwUvA3+0nuaJkaUzX4H26O/vUjhXfA4k0ebz350v0YlzJL/FB/e0UPHpK5sOVHnX8obaWwckW0nNa7k1xZaH/k4QPdVkYPWnl3zh06JYKxkcYUTbu0HD7dFYPUK8hTBs8sTXCo5euHEtO08slpQ/RacVjyz+z6+q6zyeUY2OMKzPtRg0/h0C7jMdpUftVl1DLSorUljJ8Y8sA4Cv0+T2EqmuXwIMxMvSCvaTw== root@C61U35
+##   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDGOlhTVpXme1WFuCTKhFCPeWImp2iNj8UvjsS0NPrjsPJ/AllsDl0BrgUO6y4BNtEZeFvVxBN+LaVQttQ+IxURqLLX9Qy5TEPODE5ljHlF4GxvYjyI6VSAPVbb1GUhUHO6t588/+PPKHQ4S2SDvrAJXgSBQrwnoo6JPIrVAKWNryychOAlfwjpKZnMvxlkHmhkzDEFqMOKr7khnp0RbYYDoRvB9h4fdGBIMqKLtSEhzXfT9+Y+5oigBMR9tutTYbDKU92A8ZHFdWEFjEvwqxPQW0Rtqm15zs2uO+4W/+NUUZEPJbay+qgqV88uazv70BTnC17eyxjuU5bw5aeny81B7rEHt/wu58W1Odqpwj04F/VSdAP+npfWH3hovVmd8zj6Ev+mDxeODbDPeDE4qW1Y4LjA7GLP4MYOR5/lq5SA/b5kxYgqaJZr6ixhapMNKNbPOhi38PqMmi8K8Mb1SXIvS61Alif5Rcz5ziBprPIc3W1P2I0newhMIL9Oz4PZ0iuZu71wEi4p3qrSr/koAvBwv9aWkOLFCvn1T//mM3l1iJ/3g0pye1IeJkKlh6EOaC2RudDxS808LeLhFJTXFnGINxY1ofCht+pFa2UJJh5gXiZxloPEm+ZNuAOKBC5CmZ3FE6r0KhHS1+dmB6I2lx7iQjb+D1XVpIFK2HPiSZYhWw== root@bastion.ss1.samsung.local
+sshKey: |
+  ssh-rsa AAAAA.....
+
+compute:
+- hyperthreading: Enabled 
+  name: worker
+## 초기 설치시 포함되는 worker의 개수를 적어주셔야 합니다
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled 
+  name: master
+## 설치시 포함되는 master의 개수를 적어주셔야 합니다
+  replicas: 3 # SNO=1, MNO=3
+platform:
+## SNO의 경우 platform의 값은 none입니다.
+#  none: {}
+## MNO의 경우 paltform에 api들이 포함되어야 합니다.
+  baremetal:
+    apiVIPs:
+## IPv4
+    - "" # ex) 172.20.221.35
+## IPv6
+#    - "" # ex) 2001:dc2:b00:2021:172:20:221:34
+    ingressVIPs:
+## IPv4
+    - "" # ex) 172.20.221.36
+## IPv6
+#    - "" # ex) 2001:dc2:b00:2021:172:20:221:35
+
+fips: false
+
+###############################
+# Cluster Network information #
+###############################
+networking:
+## Single-stack(IPv4): IPv4에 설정된 값을 변경해주세요
+## Single-stack(IPv6): IPv4의 값들을 주석처리하고 IPv6에 있는 값 주석을 풀어주세요
+## Dual-stack: IPv4, IPv6 모두 설정되어있어야 합니다
+## 아래값은 모두 defualt값으로 필요시에만 변경해주세요
+
+### Warning ###
+## MachineNetwork 는 필수로 적혀있어야 합니다
+## MachineNetwork CIDR 제약사항으로 아래 IP 대역을 사용 불가능합니다.
+### https://en.m.wikipedia.org/wiki/Reserved_IP_addresses
+
+## The IP address block for pods
+  clusterNetwork:
+## IPv4
+  - cidr: "10.128.0.0/14"
+    hostPrefix: "24"
+## IPv6
+#  - cidr: "fd02::/48"
+#    hostPrefix: "64"
+
+  networkType: OVNKubernetes
+
+## The IP address block for services
+  serviceNetwork:
+## IPv4
+  - "172.30.0.0/16"
+## IPv6
+#  - "fd03::/112"
+
+## The IP address block for nodes includes all masters and workers
+  machineNetwork:
+## IPv4
+  - cidr: "" # ex)172.20.221.0/24
+## IPv6
+#  - cidr: "" # ex)2001:dc2:b00:2021::/64
+
+######################
+# Harbor information #
+######################
+## Harbor에 접속하기 위한 정보를 기입하여 주셔야 합니다
+## [harbor_auth]는 아래 command로 얻을 수 있습니다 (사용하시는 harbor의 계정정보를 기입해주세요)
+## echo "root:samsung" | base64
+pullSecret: '{"au******** by AVAS-CRED-[2025-01-02]-[4041466] {"auth": "[harbor_auth]","email": "noemail@localhost"}}}'
+
+## Harbor에 등록된 certification 파일값을 넣어 주어야 합니다
+## 들여쓰기 2칸을 필수로 사용하여 주세요
+additionalTrustBundle: |
+  [[cluster-TrustBundle]]
+
+imageContentSources:
+- mirrors:
+  - [[harbor-url]]/team-ocp/ocp/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - [[harbor-url]]/team-ocp/ocp/openshift/release-images
+  source: quay.io/openshift-release-dev/ocp-release
+
+################################
+# Harbor information(nwharbor) #
+################################
+## nwharbor를 사용하실 경우 아래값을 그대로 사용해주세요
+#pullSecret: '{"auths": {"nwharbor.sec.samsung.net": { "auth": "cm9ib3QkdGVhbS1vY3Arb3BlbnNoaWZ0OjFIUWFFYjY5ek1DcFlqMkthYzlvcmtKSjhyVzRpbkRS", "email": "noemail@localhost"}, "nwharbor-repa.si.samsung.net":{"auth": "cm9ib3QkdGVhbS1vY3Arb3BlbnNoaWZ0OjFIUWFFYjY5ek1DcFlqMkthYzlvcmtKSjhyVzRpbkRS","email": "noemail@localhost"}}}'
+
+#additionalTrustBundle: |
+#  -----BEGIN CERTIFICATE-----
+#  MIIGGTCCBAGgAwIBAgIQE31TnKp8MamkM3AZaIR6jTANBgkqhkiG9w0BAQwFADCB
+#  iDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCk5ldyBKZXJzZXkxFDASBgNVBAcTC0pl
+#  cnNleSBDaXR5MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5ldHdvcmsxLjAsBgNV
+#  BAMTJVVTRVJUcnVzdCBSU0EgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTgx
+#  MTAyMDAwMDAwWhcNMzAxMjMxMjM1OTU5WjCBlTELMAkGA1UEBhMCR0IxGzAZBgNV
+#  BAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEYMBYGA1UE
+#  ChMPU2VjdGlnbyBMaW1pdGVkMT0wOwYDVQQDEzRTZWN0aWdvIFJTQSBPcmdhbml6
+#  YXRpb24gVmFsaWRhdGlvbiBTZWN1cmUgU2VydmVyIENBMIIBIjANBgkqhkiG9w0B
+#  AQEFAAOCAQ8AMIIBCgKCAQEAnJMCRkVKUkiS/FeN+S3qU76zLNXYqKXsW2kDwB0Q
+#  9lkz3v4HSKjojHpnSvH1jcM3ZtAykffEnQRgxLVK4oOLp64m1F06XvjRFnG7ir1x
+#  on3IzqJgJLBSoDpFUd54k2xiYPHkVpy3O/c8Vdjf1XoxfDV/ElFw4Sy+BKzL+k/h
+#  fGVqwECn2XylY4QZ4ffK76q06Fha2ZnjJt+OErK43DOyNtoUHZZYQkBuCyKFHFEi
+#  rsTIBkVtkuZntxkj5Ng2a4XQf8dS48+wdQHgibSov4o2TqPgbOuEQc6lL0giE5dQ
+#  YkUeCaXMn2xXcEAG2yDoG9bzk4unMp63RBUJ16/9fAEc2wIDAQABo4IBbjCCAWow
+#  HwYDVR0jBBgwFoAUU3m/WqorSs9UgOHYm8Cd8rIDZsswHQYDVR0OBBYEFBfZ1iUn
+#  Z/kxwklD2TA2RIxsqU/rMA4GA1UdDwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/
+#  AgEAMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAbBgNVHSAEFDASMAYG
+#  BFUdIAAwCAYGZ4EMAQICMFAGA1UdHwRJMEcwRaBDoEGGP2h0dHA6Ly9jcmwudXNl
+#  cnRydXN0LmNvbS9VU0VSVHJ1c3RSU0FDZXJ0aWZpY2F0aW9uQXV0aG9yaXR5LmNy
+#  bDB2BggrBgEFBQcBAQRqMGgwPwYIKwYBBQUHMAKGM2h0dHA6Ly9jcnQudXNlcnRy
+#  dXN0LmNvbS9VU0VSVHJ1c3RSU0FBZGRUcnVzdENBLmNydDAlBggrBgEFBQcwAYYZ
+#  aHR0cDovL29jc3AudXNlcnRydXN0LmNvbTANBgkqhkiG9w0BAQwFAAOCAgEAThNA
+#  lsnD5m5bwOO69Bfhrgkfyb/LDCUW8nNTs3Yat6tIBtbNAHwgRUNFbBZaGxNh10m6
+#  pAKkrOjOzi3JKnSj3N6uq9BoNviRrzwB93fVC8+Xq+uH5xWo+jBaYXEgscBDxLmP
+#  bYox6xU2JPti1Qucj+lmveZhUZeTth2HvbC1bP6mESkGYTQxMD0gJ3NR0N6Fg9N3
+#  OSBGltqnxloWJ4Wyz04PToxcvr44APhL+XJ71PJ616IphdAEutNCLFGIUi7RPSRn
+#  R+xVzBv0yjTqJsHe3cQhifa6ezIejpZehEU4z4CqN2mLYBd0FUiRnG3wTqN3yhsc
+#  SPr5z0noX0+FCuKPkBurcEya67emP7SsXaRfz+bYipaQ908mgWB2XQ8kd5GzKjGf
+#  FlqyXYwcKapInI5v03hAcNt37N3j0VcFcC3mSZiIBYRiBXBWdoY5TtMibx3+bfEO
+#  s2LEPMvAhblhHrrhFYBZlAyuBbuMf1a+HNJav5fyakywxnB2sJCNwQs2uRHY1ihc
+#  6k/+JLcYCpsM0MF8XPtpvcyiTcaQvKZN8rG61ppnW5YCUtCC+cQKXA0o4D/I+pWV
+#  idWkvklsQLI+qGu41SWyxP7x09fn1txDAXYw+zuLXfdKiXyaNb78yvBXAfCNP6CH
+#  MntHWpdLgtJmwsQt6j8k9Kf5qLnjatkYYaA7jBU=
+#  -----END CERTIFICATE-----
+#  -----BEGIN CERTIFICATE-----
+#  MIIFgTCCBGmgAwIBAgIQOXJEOvkit1HX02wQ3TE1lTANBgkqhkiG9w0BAQwFADB7
+#  MQswCQYDVQQGEwJHQjEbMBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYD
+#  VQQHDAdTYWxmb3JkMRowGAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UE
+#  AwwYQUFBIENlcnRpZmljYXRlIFNlcnZpY2VzMB4XDTE5MDMxMjAwMDAwMFoXDTI4
+#  MTIzMTIzNTk1OVowgYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcgSmVyc2V5
+#  MRQwEgYDVQQHEwtKZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBO
+#  ZXR3b3JrMS4wLAYDVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0
+#  aG9yaXR5MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAgBJlFzYOw9sI
+#  s9CsVw127c0n00ytUINh4qogTQktZAnczomfzD2p7PbPwdzx07HWezcoEStH2jnG
+#  vDoZtF+mvX2do2NCtnbyqTsrkfjib9DsFiCQCT7i6HTJGLSR1GJk23+jBvGIGGqQ
+#  Ijy8/hPwhxR79uQfjtTkUcYRZ0YIUcuGFFQ/vDP+fmyc/xadGL1RjjWmp2bIcmfb
+#  IWax1Jt4A8BQOujM8Ny8nkz+rwWWNR9XWrf/zvk9tyy29lTdyOcSOk2uTIq3XJq0
+#  tyA9yn8iNK5+O2hmAUTnAU5GU5szYPeUvlM3kHND8zLDU+/bqv50TmnHa4xgk97E
+#  xwzf4TKuzJM7UXiVZ4vuPVb+DNBpDxsP8yUmazNt925H+nND5X4OpWaxKXwyhGNV
+#  icQNwZNUMBkTrNN9N6frXTpsNVzbQdcS2qlJC9/YgIoJk2KOtWbPJYjNhLixP6Q5
+#  D9kCnusSTJV882sFqV4Wg8y4Z+LoE53MW4LTTLPtW//e5XOsIzstAL81VXQJSdhJ
+#  WBp/kjbmUZIO8yZ9HE0XvMnsQybQv0FfQKlERPSZ51eHnlAfV1SoPv10Yy+xUGUJ
+#  5lhCLkMaTLTwJUdZ+gQek9QmRkpQgbLevni3/GcV4clXhB4PY9bpYrrWX1Uu6lzG
+#  KAgEJTm4Diup8kyXHAc/DVL17e8vgg8CAwEAAaOB8jCB7zAfBgNVHSMEGDAWgBSg
+#  EQojPpbxB+zirynvgqV/0DCktDAdBgNVHQ4EFgQUU3m/WqorSs9UgOHYm8Cd8rID
+#  ZsswDgYDVR0PAQH/BAQDAgGGMA8GA1UdEwEB/wQFMAMBAf8wEQYDVR0gBAowCDAG
+#  BgRVHSAAMEMGA1UdHwQ8MDowOKA2oDSGMmh0dHA6Ly9jcmwuY29tb2RvY2EuY29t
+#  L0FBQUNlcnRpZmljYXRlU2VydmljZXMuY3JsMDQGCCsGAQUFBwEBBCgwJjAkBggr
+#  BgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMA0GCSqGSIb3DQEBDAUA
+#  A4IBAQAYh1HcdCE9nIrgJ7cz0C7M7PDmy14R3iJvm3WOnnL+5Nb+qh+cli3vA0p+
+#  rvSNb3I8QzvAP+u431yqqcau8vzY7qN7Q/aGNnwU4M309z/+3ri0ivCRlv79Q2R+
+#  /czSAaF9ffgZGclCKxO/WIu6pKJmBHaIkU4MiRTOok3JMrO66BQavHHxW/BBC5gA
+#  CiIDEOUMsfnNkjcZ7Tvx5Dq2+UUTJnWvu6rvP3t3O9LEApE9GQDTF1w52z97GA1F
+#  zZOFli9d31kWTz9RvdVFGD/tSo7oBmF0Ixa1DVBzJ0RHfxBdiSprhTEUxOipakyA
+#  vGp4z7h/jnZymQyd/teRCBaho1+V
+#  -----END CERTIFICATE-----
+#  -----BEGIN CERTIFICATE-----
+#  MIIEMjCCAxqgAwIBAgIBATANBgkqhkiG9w0BAQUFADB7MQswCQYDVQQGEwJHQjEb
+#  MBkGA1UECAwSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHDAdTYWxmb3JkMRow
+#  GAYDVQQKDBFDb21vZG8gQ0EgTGltaXRlZDEhMB8GA1UEAwwYQUFBIENlcnRpZmlj
+#  YXRlIFNlcnZpY2VzMB4XDTA0MDEwMTAwMDAwMFoXDTI4MTIzMTIzNTk1OVowezEL
+#  MAkGA1UEBhMCR0IxGzAZBgNVBAgMEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
+#  BwwHU2FsZm9yZDEaMBgGA1UECgwRQ29tb2RvIENBIExpbWl0ZWQxITAfBgNVBAMM
+#  GEFBQSBDZXJ0aWZpY2F0ZSBTZXJ2aWNlczCCASIwDQYJKoZIhvcNAQEBBQADggEP
+#  ADCCAQoCggEBAL5AnfRu4ep2hxxNRUSOvkbIgwadwSr+GB+O5AL686tdUIoWMQua
+#  BtDFcCLNSS1UY8y2bmhGC1Pqy0wkwLxyTurxFa70VJoSCsN6sjNg4tqJVfMiWPPe
+#  3M/vg4aijJRPn2jymJBGhCfHdr/jzDUsi14HZGWCwEiwqJH5YZ92IFCokcdmtet4
+#  YgNW8IoaE+oxox6gmf049vYnMlhvB/VruPsUK6+3qszWY19zjNoFmag4qMsXeDZR
+#  rOme9Hg6jc8P2ULimAyrL58OAd7vn5lJ8S3frHRNG5i1R8XlKdH5kBjHYpy+g8cm
+#  ez6KJcfA3Z3mNWgQIJ2P2N7Sw4ScDV7oL8kCAwEAAaOBwDCBvTAdBgNVHQ4EFgQU
+#  oBEKIz6W8Qfs4q8p74Klf9AwpLQwDgYDVR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQF
+#  MAMBAf8wewYDVR0fBHQwcjA4oDagNIYyaHR0cDovL2NybC5jb21vZG9jYS5jb20v
+#  QUFBQ2VydGlmaWNhdGVTZXJ2aWNlcy5jcmwwNqA0oDKGMGh0dHA6Ly9jcmwuY29t
+#  b2RvLm5ldC9BQUFDZXJ0aWZpY2F0ZVNlcnZpY2VzLmNybDANBgkqhkiG9w0BAQUF
+#  AAOCAQEACFb8AvCb6P+k+tZ7xkSAzk/ExfYAWMymtrwUSWgEdujm7l3sAg9g1o1Q
+#  GE8mTgHj5rCl7r+8dFRBv/38ErjHT1r0iWAFf2C3BUrz9vHCv8S5dIa2LX1rzNLz
+#  Rt0vxuBqw8M0Ayx9lt1awg6nCpnBBYurDC/zXDrPbDdVCYfeU0BsWO/8tqtlbgT2
+#  G9w84FoVxp7Z8VlIMCFlA2zs6SFz7JsDoeA3raAVGI/6ugLOpyypEBMs1OUIJqsi
+#  l2D4kF501KKaU73yqWjgom7C12yxow+ev+to51byrvLjKzg6CYG1a4XXvi3tPxq3
+#  smPi9WIsgtRqAEFQ8TmDn5XpNpaYbg==
+#  -----END CERTIFICATE-----
+#  -----BEGIN CERTIFICATE-----
+#  MIIGGDCCBACgAwIBAgIUEnL6uvUO8zMGN/ts8geSsKxqOzIwDQYJKoZIhvcNAQEN
+#  BQAweDELMAkGA1UEBhMCS1IxETAPBgNVBAgMCEd5ZW9uZ2dpMQ4wDAYDVQQHDAVT
+#  dXdvbjEMMAoGA1UECgwDU0VDMREwDwYDVQQLDAhOZXR3b3JrczElMCMGA1UEAwwc
+#  bndoYXJib3ItcmVwYS5zaS5zYW1zdW5nLm5ldDAeFw0yMTA5MDkxMDA3MTRaFw0z
+#  MTA5MDcxMDA3MTRaMHgxCzAJBgNVBAYTAktSMREwDwYDVQQIDAhHeWVvbmdnaTEO
+#  MAwGA1UEBwwFU3V3b24xDDAKBgNVBAoMA1NFQzERMA8GA1UECwwITmV0d29ya3Mx
+#  JTAjBgNVBAMMHG53aGFyYm9yLXJlcGEuc2kuc2Ftc3VuZy5uZXQwggIiMA0GCSqG
+#  SIb3DQEBAQUAA4ICDwAwggIKAoICAQCzWiJGvjlUqsgDCh+Uh5Q89C+SwFGPbNT8
+#  gCfaYtz7DRHWueOxU0kiCaoB9lvYLTRWyuYgy/Zk3BC0Q3k0xtDlSaqUE8n+Q4+t
+#  qr/9qBOW7hBzyoRSeOOkah8qBClqQjeOen87PkyspFige3fGRFFaK+uXBYOQDusS
+#  nwBMidEZwv0ueh4PwtilwTX7PrHYD2DgPBWs1zAtJxKa14zQ6gl30+HxxBNgw6Nk
+#  +rD0asvc69XLL4T4m79Zr5Bl5GEXBOSMDXCxgfObjehZHYbEJG9LpL3Qb1nYfxXO
+#  ZHdcM5H5jASNYuWQO1luOFZKG8AFu/4hlY/vCVPDm3gWIgazr86ELRQJa1QIWJ9Z
+#  jtQryCWEg1zyJtH+6/51xtAazo8A5lXVZ4/Xp31AXo+UO6uQzlOj7mqdxWFy8JMr
+#  O264nWTYoYoZ1dtX5d8TWR6vBkCfiJTPaOcOTWHSWKiahL7SwkO26YLimUFoN1b2
+#  bt5TADk8OlJ/opsr0+vxQ/nFASF6VaZ17YPx/iPzWsKlQ/9hqLb2CsBhGuBU0Ijj
+#  nFKddxgzmlVaILmF/JdR8ecKBdpSJsVTjA1ZpfcixtbEMRhz9bY/wIMSHMvc0g4f
+#  9bshYxeYO2pI4CchpYhVx0zMUJcDVU7mOVyn4JBJCrPT0HxYilARVh9lpI188v0i
+#  pFmwPb2JGQIDAQABo4GZMIGWMB8GA1UdIwQYMBaAFMWJfxXZajlE5VqFpAAwwLf4
+#  v0/vMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgTwMBMGA1UdJQQMMAoGCCsGAQUFBwMB
+#  MEYGA1UdEQQ/MD2CHG53aGFyYm9yLXJlcGEuc2kuc2Ftc3VuZy5uZXSCDnNpLnNh
+#  bXN1bmcubmV0gg1ud2hhcmJvci1yZXBhMA0GCSqGSIb3DQEBDQUAA4ICAQBKCmQF
+#  UEwJJ5pWxwVEyr4fjp5w88kHJ9Oe7UbbimCSQUq+l7SyvKF1shj9PDE/el+itaRp
+#  KnNLBaFX2I67aCnkhtHMTc8geJmVMR5MsB0KdorhGk1W0Fy/YcwcYliSxRHwEkeC
+#  h2NGQWi3YHh3rkYnAbHigAfit0AWAw81vSgwqNC/nO+Mz1TJ/00FEMcxtNgTi32C
+#  kP6Gf9vdh2shxsBDrUG2pAT4XGvcFG7eeKFvWrejK02NQbsTx/+Q+C/6Ye1oBI1O
+#  XNoKn2kY7cDfcoyKl0UF9hZq0NawBrAxEA0KwUbhH1qs7UTR6SBSgWa3qCRPc6P/
+#  i+RWo+yn914OBuLwIHnuTVUGjx4cfdts2/+OhcPHepTcH00iOusYzM1AFYBvwr/7
+#  saqy/K5zgv5xVcvlAhwveVuar7nt3ChOs3JG4IVdjoEgZwpeUJGJdXEv0FnU66bh
+#  Mi7vE5SQkFd4TJEDHIgeJVPi8xrKwHa5Suozozbu//9lHPsn6WsLAwloRXcGYb9Q
+#  REEC1X5B56+kqPCiHfroDsovxNmj9HQQ6nXJFE8Dl6tx2LxLYnenQfAZLecctNCO
+#  c8lsDlSN500o6vjkSrsAPAuAcEk3nPNH07ajCNeGbYjDEnB+tMMPZ/hR76y5ht7c
+#  0Y4ulo0y8fj9jtv3BzG+vT/bdLOQd9imyGtRqw==
+#  -----END CERTIFICATE-----
+
+## IPv4, Dual-stack
+#imageContentSources:
+#- mirrors:
+#  - nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release
+#  - nwharbor-repa.si.samsung.net/team-ocp/ocp/openshift/release
+#  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+#- mirrors:
+#  - nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images
+#  - nwharbor-repa.si.samsung.net/team-ocp/ocp/openshift/release-images
+#  source: quay.io/openshift-release-dev/ocp-release
+agent-config.yaml
+SNO Expand source
+MNO Collapse source
+
+
+apiVersion: v1alpha1
+kind: AgentConfig
+#######################
+# Cluster information #
+#######################
+## install-config.yaml의 metadata.name과 같은 이름을 적어주세요
+metadata:
+  name: "" # ex) mno-xxx
+additionalNTPSources:
+  - # ex) 172.20.221.29
+hosts:
+###############################
+# Controller Node information #
+###############################
+  - hostname: master1
+    role: master
+    interfaces:
+    - name: "" # ex) ens1f0
+      macAddress: "" # ex) b4:96:91:21:d9:70
+#############################
+# Node Networks information #
+#############################
+## Network setting Examples
+## https://nmstate.io/kubernetes-nmstate/examples.html
+## 위 Example에서 interface부분만 가져와서 추가해주시면 됩니다
+    networkConfig:
+      interfaces:
+      - name: "" # ex) ens1f0
+        type: ethernet
+        state: up
+        mac-address: "" # ex) b4:96:91:21:d9:70
+        # Single-stack: only one of ipv4 and ipv6 must be set.
+        # Dual-stack, both ipv4 and ipv6 must be set.
+        ipv4:
+          address:
+          - ip: "" # ex) 172.20.221.16
+            prefix-length: # ex) 24
+          enabled: true
+          dhcp: false
+#        ipv6:
+#          - ip: "" # ex) 2001:dc2:b00:2021:172:20:221:28
+#            prefix-length: # ex) 64
+#          enabled: true
+#          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          # DNS Server의 IP를 넣어주시면 됩니다.
+          # DNS Server가 없다면 자기자신을 제외한 master node의 ip를 써주시면 됩니다
+          - "" # ex) 172.20.221.17
+          - "" # ex) 172.20.221.18
+## Additional DNS
+#          - ""
+      routes:
+        config:
+        - destination: 0.0.0.0/0
+          next-hop-address: "" # ex) 172.20.221.1
+          next-hop-interface: "" # ex) ens1f0
+## Additional Route
+#        - destination: "" # ex) 10.251.152.0/24
+#          next-hop-address: "" # ex) 10.251.152.1
+#          next-hop-interface: "" # ex) eno1
+
+  - hostname: master2
+    role: master
+    interfaces:
+    - name: "" # ex) ens1f0
+      macAddress: "" # ex) b4:96:91:21:d9:70
+    networkConfig:
+      interfaces:
+      - name: "" # ex) ens1f0
+        type: ethernet
+        state: up
+        mac-address: "" # ex) b4:96:91:21:d9:70
+        # Single-stack: only one of ipv4 and ipv6 must be set.
+        # Dual-stack, both ipv4 and ipv6 must be set.
+        ipv4:
+          address:
+          - ip: "" # ex) 172.20.221.17
+            prefix-length: "" # ex) 24
+          enabled: true
+          dhcp: false
+#        ipv6:
+#          - ip: "" # ex) 2001:dc2:b00:2021:172:20:221:28
+#            prefix-length: "" # ex) 64
+#          enabled: true
+#          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          # DNS Server의 IP를 넣어주시면 됩니다.
+          # DNS Server가 없다면 자기자신을 제외한 master node의 ip를 써주시면 됩니다
+          - "" # ex) 172.20.221.16
+          - "" # ex) 172.20.221.18
+## Additional DNS
+#          - ""
+      routes:
+        config:
+        - destination: 0.0.0.0/0
+          next-hop-address: "" # ex) 172.20.221.1
+          next-hop-interface: "" # ex) ens1f0
+## Additional Route
+#        - destination: "" # ex) 10.251.152.0/24
+#          next-hop-address: "" # ex) 10.251.152.1
+#          next-hop-interface: "" # ex) eno1
+
+  - hostname: master3
+    role: master
+    interfaces:
+    - name: "" # ex) ens1f0
+      macAddress: "" # ex) b4:96:91:21:d9:70
+    networkConfig:
+      interfaces:
+      - name: "" # ex) ens1f0
+        type: ethernet
+        state: up
+        mac-address: "" # ex) b4:96:91:21:d9:70
+        # Single-stack: only one of ipv4 and ipv6 must be set.
+        # Dual-stack, both ipv4 and ipv6 must be set.
+        ipv4:
+          address:
+          - ip: "" # ex) 172.20.221.18
+            prefix-length: "" # ex) 24
+          enabled: true
+          dhcp: false
+#        ipv6:
+#          - ip: "" # ex) 2001:dc2:b00:2021:172:20:221:28
+#            prefix-length: "" # ex) 64
+#          enabled: true
+#          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          # DNS Server의 IP를 넣어주시면 됩니다.
+          # DNS Server가 없다면 자기자신을 제외한 master node의 ip를 써주시면 됩니다
+          - "" # ex) 172.20.221.16
+          - "" # ex) 172.20.221.17
+## Additional DNS
+#          - ""
+      routes:
+        config:
+        - destination: 0.0.0.0/0
+          next-hop-address: "" # ex) 172.20.221.1
+          next-hop-interface: "" # ex) ens1f0
+## Additional Route
+#        - destination: "" # ex) 10.251.152.0/24
+#          next-hop-address: "" # ex) 10.251.152.1
+#          next-hop-interface: "" # ex) eno1
+
+
+## Worker가 없는 Cluster경우 아래 worker영역을 다 지워주세요
+## Worker가 여러개인경우 아래 부분을 복사해서 hostname만 변경해서 추가해주시면 됩니다
+###########################
+# Worker Node information #
+###########################
+  - hostname: worker1
+    role: worker"
+    interfaces:
+    - name: "" # ex) ens1f0
+      macAddress: "" # ex) b4:96:91:21:d9:70
+    networkConfig:
+      interfaces:
+      - name: "" # ex) ens1f0
+        type: ethernet
+        state: up
+        mac-address: "" # ex) b4:96:91:21:d9:70
+        # Single-stack: only one of ipv4 and ipv6 must be set.
+        # Dual-stack, both ipv4 and ipv6 must be set.
+        ipv4:
+          address:
+          - ip: "" # ex) 172.20.221.19
+            prefix-length: "" # ex) 24
+          enabled: true
+          dhcp: false
+#        ipv6:
+#          - ip: "" # ex) 2001:dc2:b00:2021:172:20:221:28
+#            prefix-length: "" # ex) 64
+#          enabled: true
+#          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          # DNS Server의 IP를 넣어주시면 됩니다.
+          # DNS Server가 없다면 install-config.yaml의 api vip를 적어주시면 됩니다
+          - "" # ex) 172.20.221.35
+## Additional DNS
+#          - ""
+      routes:
+        config:
+        - destination: 0.0.0.0/0
+          next-hop-address: "" # ex) 172.20.221.1
+          next-hop-interface: "" # ex) ens1f0
+## Additional Route
+#        - destination: "" # ex) 10.251.152.0/24
+#          next-hop-address: "" # ex) 10.251.152.1
+#          next-hop-interface: "" # ex) eno1
+
+
+##########################################
+# Interface that needs to be set manualy #
+##########################################
+## networkConfig.interfaces 아래에 추가해 주셔야 합니다.
+
+## Additional interface
+#      - name: "" # ex) eno1
+#        type: ethernet
+#        state: up
+#        ipv4:
+#          address:
+#          - ip: "" # ex) 10.251.152.48
+#            prefix-length: "" # ex) 24
+#          enabled: true
+#          dhcp: false
+
+## Using DHCP
+#      - name: "" # ex) eno1
+#        type: ethernet
+#        state: up
+#        ipv4:
+#          enabled: true
+#          dhcp: true
+#          auto-dns: false
+#          auto-gateway: false
+#          auto-routes: false
+#        ipv6:
+#          enabled: false
+#          dhcp: false
+
+## Using Vlan
+#      - name: "" # ex) ens1f0.10
+#        type: vlan
+#        state: up
+#        ipv4:
+#          address:
+#          - ip: "" # ex) 10.251.152.48
+#            prefix-length: "" # ex) 24
+#          enabled: true
+#          dhcp: false
+#        vlan:
+#          base-iface: "" # ex) ens1f0
+#          id: "" # ex) 10
+
+## Using Bond
+#      - name: "" # ex) ens1f0.10
+#        type: bond
+#        state: up
+#        ipv4:
+#          address:
+#          - ip: "" # ex) 10.251.152.48
+#            prefix-length: "" # ex) 24
+#          enabled: true
+#          dhcp: false
+#        link-aggregation:
+#          # active-backup,balance-xor,802.3ad,balance-tlb,balance-alb
+#          mode: "" # ex) active-backup
+#          options:
+#            miimon: '' # ex) 100
+#          port:
+#          - "" # ex) ens1f0
+#          - "" # ex) ens2f0
+
+
+Install Openshift
+Create Manifests
+
+
+# config Directory 생성
+[root@host ~]# rm -rf clusterconfigs
+[root@host ~]# mkdir -p clusterconfigs/openshift
+[root@host ~]# cp agent-config.yaml install-config.yaml ./clusterconfigs/
+
+# Manifests생성
+[root@host ~]# export OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE="[[harbor-url]]/team-ocp/ocp/openshift/release-images:[[cluster-version]]-x86_64"
+[root@host ~]# openshift-install agent create cluster-manifests --log-level debug --dir clusterconfigs
+Copy the required settings file
+05-kdump-config.yaml
+06-kdump.yaml
+load-sctp-module.yaml
+disabled-operatorhub.yaml
+set-cgroupv1.yaml
+99-remove-failed-pod-master-v1.4.1.yaml
+99-remove-failed-pod-worker-v1.4.1.yaml
+99-crio-disable-wipe-master.yaml
+99-crio-disable-wipe-worker.yaml
+98-master-coredump-maxsize.yaml
+98-worker-coredump-maxsize.yaml
+99-master-set-core-user.yaml
+99-worker-set-core-user.yaml
+99-master-set-core-ssh.yaml ( 수원 사내 한 ) 
+99-worker-set-core-ssh.yaml ( 수원 사내 한 )
+
+VDU-only files
+
+01-container-mount-ns-and-kubelet-conf.yaml
+04-accelerated-container-startup-master.yaml
+08-set-rcu-normal.yaml
+enable-crun.yaml
+CatalogSource.yaml Collapse source
+
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: certified-operator-index
+  namespace: openshift-marketplace
+spec:
+  image: [[harbor-url]]/team-ocp/ocp/redhat/certified-operator-index:v4.18
+  sourceType: grpc
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: redhat-operator-index
+  namespace: openshift-marketplace
+spec:
+  image: [[harbor-url]]/team-ocp/ocp/redhat/redhat-operator-index:v4.18
+  sourceType: grpc
+CatalogSource.yaml for workload partitioning (cpuPartitioningMode: AllNodes 설정이 되어있는 경우) Collapse source
+
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: certified-operator-index
+  namespace: openshift-marketplace
+  annotations:
+    target.workload.openshift.io/management: |
+      {"effect": "PreferredDuringScheduling"}
+spec:
+  image: [[harbor-url]]/team-ocp/ocp/redhat/certified-operator-index:v4.18
+  sourceType: grpc
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: redhat-operator-index
+  namespace: openshift-marketplace
+  annotations:
+    target.workload.openshift.io/management: |
+      {"effect": "PreferredDuringScheduling"}
+spec:
+  image: [[harbor-url]]/team-ocp/ocp/redhat/redhat-operator-index:v4.18
+  sourceType: grpc
+ImageContentSourcePolicy.yaml Collapse source
+
+
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: generic-0
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/ubi8
+    source: registry.redhat.io/ubi8
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  labels:
+    operators.openshift.org/catalog: "true"
+  name: operator-0
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/redhat
+    source: registry.redhat.io/redhat
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/openshift4
+    source: registry.redhat.io/openshift4
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/lvms4
+    source: registry.redhat.io/lvms4
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/intel
+    source: registry.connect.redhat.com/intel
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/openshift-istio
+    source: registry.redhat.io/openshift-istio
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/rhceph
+    source: registry.redhat.io/rhceph
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/openshift-service-mesh
+    source: registry.redhat.io/openshift-service-mesh
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/openshift-logging
+    source: registry.redhat.io/openshift-logging
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/rhosdt
+    source: registry.redhat.io/rhosdt
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/odf4
+    source: registry.redhat.io/odf4
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/rhel8
+    source: registry.redhat.io/rhel8
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/rhel9
+    source: registry.redhat.io/rhel9 
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: release-0
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/openshift/release
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+  - mirrors:
+    - [[harbor-url]]/team-ocp/ocp/openshift/release-images
+    source: quay.io/openshift-release-dev/ocp-release
+
+
+[root@host ~]# cp *.yaml clusterconfigs/openshift/
+DNS server 에 cluster 내부 IP 등록 (with DNS Server)
+If a DNS server exists, it is advantageous to use it to operate and install Openshift,
+
+The DNS server you want to use must have the IP of the cluster registered as shown below. ( However, we do not provide technical support related to the DNS server itself.)
+
+(Replace the IP and name with the name you set above and the respective IP, enter in the format of bastion.<metadata.name>.<baseDomain>)  
+
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index#agent-install-dns-none-example_preparing-to-install-with-agent-based-installer
+
+DNS server zone file Collapse source
+
+
+# 예시 > zone 파일에 아래와 같이 등록 필요
+...
+$TTL 1D
+...
+(생략)
+...
+
+; Bastion or Jumphost
+ registry IN A 20.15.20.12 
+ bastion.mno.samsung.local IN A 20.15.20.11 
+
+; OCP Cluster
+master01.mno.samsung.local IN A 20.15.20.21
+master02.mno.samsung.local IN A 20.15.20.22
+master03.mno.samsung.local IN A 20.15.20.23
+
+worker01.mno.samsung.local IN A 20.15.20.31
+worker02.mno.samsung.local IN A 20.15.20.32
+
+api.mno.samsung.local IN A 20.15.20.17 ; external LB interface
+api-int.mno.samsung.local IN A 20.15.20.17 ; internal LB interface
+*.apps.mno.samsung.local IN A 20.15.20.17
+...
+
+
+Harbor용 host machineconfig 생성 (without DNS server)
+If you don't have a DNS server, you'll need to do the following to access Harbor:
+
+( <--- omitted when using DNS server ~ )
+
+Create a hosts.conf file
+
+Create a hosts.conf file Collapse source
+
+
+[root@host ~]# cat << EOF | base64 -w 0 > hosts.conf
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+[[harbor-ip]] [[harbor-url]]
+EOF
+Creating an MC with hosts.conf added
+
+Creating an MC with hosts.conf added (master) Collapse source
+
+
+[root@host ~]# cat << EOF > clusterconfigs/openshift/10-master-hosts.yaml
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: master
+  name: 10-master-hosts
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    storage:
+      files:
+      - contents:
+          source: data:text/plain;charset=utf-8;base64,$(cat hosts.conf)
+        mode: 420
+        overwrite: true
+        path: /etc/hosts
+EOF
+Creating an MC (worker) with hosts.conf added Collapse source
+
+
+[root@host ~]# cat << EOF > clusterconfigs/openshift/10-worker-hosts.yaml
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker
+  name: 10-worker-hosts
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    storage:
+      files:
+      - contents:
+          source: data:text/plain;charset=utf-8;base64,$(cat hosts.conf)
+        mode: 420
+        overwrite: true
+        path: /etc/hosts
+EOF
+( ~ Omitted when using DNS server ---> )
+
+Image Generation
+
+
+[root@host ~]# export OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE="[[harbor-url]]/team-ocp/ocp/openshift/release-images:[[cluster-version]]-x86_64"
+[root@host ~]# openshift-install agent create image --log-level debug --dir clusterconfigs
+[root@host ~]# ls -al clusterconfigs/agent.x86_64.iso
+clusterconfigs/agent.x86_64.iso
+Harbor용 host추가
+( <--- omitted when using DNS server ~ )
+
+Extract existing Ignition files
+
+Extract existing Ignition files Collapse source
+
+
+[root@host ~]# coreos-installer iso ignition show clusterconfigs/agent.x86_64.iso > org.ign
+Creating an ignition with hosts.conf added
+
+Creating an ignition with hosts.conf added Collapse source
+
+
+[root@host ~]# python3 -c "import json, sys;
+ignition = json.load(sys.stdin);
+storage = ignition.get('storage', {});
+files = storage.get('files', []);
+files.append({'path': '/etc/hosts', 'mode': 420, 'overwrite': True, 'contents': {'source': 'data:text/plain;charset=utf-8;base64,$(cat hosts.conf)'}});
+storage['files'] = files;
+ignition['storage'] = storage;
+json.dump(ignition, sys.stdout)" < org.ign > new.ign
+Add a new ignition to the image
+
+Add a new ignition to the image Collapse source
+
+
+[root@host ~]# coreos-installer iso ignition embed -f -i new.ign clusterconfigs/agent.x86_64.iso
+( ~ Omitted when using DNS server ---> )
+
+Insert the generated agent.x86_64.iso and boot
+Warning
+
+Before installation, please be sure to specify the boot order in the order of HDD → CD.
+After inserting the agent-.x86_64.iso file, run Virtual Disk Booting using One Time Boot.
+Otherwise, it will continue to boot into the virtual disk, causing the installation to repeat indefinitely.
+
+However, boot order varies from server to server and is not supported by system S/W.
+If you need to make changes, please contact your server administrator.
+
+Confirm installation
+
+
+[root@hosts ~]# oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.18.10   True        False         False      36h     
+baremetal                                  4.18.10   True        False         False      3d19h   
+cloud-controller-manager                   4.18.10   True        False         False      3d19h   
+cloud-credential                           4.18.10   True        False         False      3d19h   
+cluster-autoscaler                         4.18.10   True        False         False      3d19h   
+config-operator                            4.18.10   True        False         False      3d19h   
+console                                    4.18.10   True        False         False      3d18h   
+control-plane-machine-set                  4.18.10   True        False         False      3d19h   
+csi-snapshot-controller                    4.18.10   True        False         False      3d19h   
+dns                                        4.18.10   True        False         False      3d19h   
+etcd                                       4.18.10   True        False         False      3d18h   
+image-registry                             4.18.10   True        False         False      3d18h   
+ingress                                    4.18.10   True        False         False      3d18h   
+insights                                   4.18.10   True        False         False      3d18h   
+kube-apiserver                             4.18.10   True        False         False      3d18h   
+kube-controller-manager                    4.18.10   True        False         False      3d19h   
+kube-scheduler                             4.18.10   True        False         False      3d19h   
+kube-storage-version-migrator              4.18.10   True        False         False      2d19h   
+machine-api                                4.18.10   True        False         False      3d18h   
+machine-approver                           4.18.10   True        False         False      3d19h   
+machine-config                             4.18.10   True        False         False      3d19h   
+marketplace                                4.18.10   True        False         False      3d19h   
+monitoring                                 4.18.10   True        False         False      3d18h   
+network                                    4.18.10   True        False         False      3d19h   
+node-tuning                                4.18.10   True        False         False      3d19h   
+openshift-apiserver                        4.18.10   True        False         False      3d18h   
+openshift-controller-manager               4.18.10   True        False         False      3d19h   
+openshift-samples                          4.18.10   True        False         False      3d18h   
+operator-lifecycle-manager                 4.18.10   True        False         False      3d19h   
+operator-lifecycle-manager-catalog         4.18.10   True        False         False      3d19h   
+operator-lifecycle-manager-packageserver   4.18.10   True        False         False      3d17h   
+service-ca                                 4.18.10   True        False         False      3d19h   
+storage                                    4.18.10   True        False         False      3d19h
+
+[root@hosts ~]# oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-31cb7abf9539218a99888c7e4739764e   True      False      False      3              3                   3                     0                      3d19h
+worker   rendered-worker-3e9e20601a2f64c81b4b5cd46a6288ec   True      False      False      0              0                   0                     0                      3d19h
