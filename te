@@ -1,0 +1,271 @@
+[core@master1 ~]$ ls /etc/assisted/
+agent-installer.env  extra-manifests  hostconfig  hostnames  manifests  network  node0  rendezvous-host.env
+[core@master1 ~]$
+
+
+
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: airtelvvt
+rendezvousIP: 20.1.30.150
+hosts:
+  - hostname: master1.airtelvvt.samsungbsc.local
+    role: master
+    rootDeviceHints:
+      deviceName: "/dev/sda"
+    interfaces:
+      - name: ens1f0
+        macAddress: 50:7c:6f:4b:9b:9c
+    networkConfig:
+      interfaces:
+        - name: bond0.230
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 230
+          ipv4:
+            enabled: true
+            address:
+              - ip: 20.1.30.150
+                prefix-length: 24
+            dhcp: false
+          ipv6:
+            enabled: true
+            address:
+              - ip: 2010:0:0:30::10
+                prefix-length: 64
+            dhcp: false
+        - name: bond0
+          type: bond
+          state: up
+          mac-address: 50:7c:6f:4b:9b:9c
+          ipv4:
+            enabled: false
+          ipv6:
+            enabled: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              miimon: "100"
+            port:
+              - ens1f0
+              - ens4f0
+      dns-resolver:
+        config:
+          server:
+            - 20.1.30.151
+            - 20.1.30.152
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: 10.251.186.0/24
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: 10.251.238.0/24
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: ::/0
+            next-hop-address: 2010:0:0:30::1
+            next-hop-interface: bond0.230
+  - hostname: master3.airtelvvt.samsungbsc.local
+    role: master
+    rootDeviceHints:
+      deviceName: "/dev/sda"
+    interfaces:
+      - name: ens1f0
+        macAddress: 50:7c:6f:4b:9b:18
+    networkConfig:
+      interfaces:
+        - name: bond0.230
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 230
+          ipv4:
+            enabled: true
+            address:
+              - ip: 20.1.30.152
+                prefix-length: 24
+            dhcp: false
+          ipv6:
+            enabled: true
+            address:
+              - ip: 2010:0:0:30::12
+                prefix-length: 64
+            dhcp: false
+        - name: bond0
+          type: bond
+          mac-address: 50:7c:6f:4b:9b:18
+          state: up
+          ipv4:
+            enabled: false
+          ipv6:
+            enabled: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              miimon: "100"
+            port:
+              - ens1f0
+              - ens4f0
+      dns-resolver:
+        config:
+          server:
+            - 20.1.30.150
+            - 20.1.30.151
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: 10.251.186.0/24
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: 10.251.238.0/24
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: ::/0
+            next-hop-address: 2010:0:0:30::1
+            next-hop-interface: bond0.230
+  - hostname: master2.airtelvvt.samsungbsc.local
+    role: master
+    rootDeviceHints:
+      deviceName: "/dev/sda"
+    interfaces:
+     - name: ens1f0
+       macAddress: 50:7c:6f:57:2b:ac
+    networkConfig:
+      interfaces:
+        - name: bond0.230
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 230
+          ipv4:
+            enabled: true
+            address:
+              - ip: 20.1.30.151
+                prefix-length: 24
+            dhcp: false
+          ipv6:
+            enabled: true
+            address:
+              - ip: 2010:0:0:30::11
+                prefix-length: 64
+            dhcp: false
+        - name: bond0
+          type: bond
+          mac-address: 50:7c:6f:57:2b:ac
+          state: up
+          ipv4:
+            enabled: false
+          ipv6:
+            enabled: false
+          link-aggregation:
+            mode: active-backup
+            options:
+              miimon: "100"
+            port:
+             - ens1f0
+             - ens4f0
+      dns-resolver:
+        config:
+          server:
+            - 20.1.30.150
+            - 20.1.30.152
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: 10.251.186.0/24
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: 10.251.238.0/24
+            next-hop-address: 20.1.30.1
+            next-hop-interface: bond0.230
+          - destination: ::/0
+            next-hop-address: 2010:0:0:30::1
+            next-hop-interface: bond0.230
+
+
+
+
+apiVersion: v1
+baseDomain: samsungbsc.local
+cpuPartitioningMode: AllNodes
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: airtelvvt
+networking:
+  clusterNetwork:
+  - cidr: 10.30.0.0/16
+    hostPrefix: 24
+  - cidr: fd01::/48
+    hostPrefix: 64
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.25.0.0/16
+  - fd02::/112
+  machineNetwork:
+  - cidr: 20.1.30.0/24
+  - cidr: 2010:0:0:30::/64
+platform:
+  baremetal:
+    apiVIPs:
+    - 20.1.30.160
+    - 2010:0:0:30::15
+    ingressVIPs:
+    - 20.1.30.161
+    - 2010:0:0:30::16
+fips: false
+pullSecret: '{"auths":{"nwharbor.sec.samsung.net": {"auth": "cm9ib3QkdGVhbS1vY3Arb3BlbnNoaWZ0OjFIUWFFYjY5ek1DcFlqMkthYzlvcmtKSjhyVzRpbkRS","email": "noemail@localhost"}}}'
+sshKey: |
+  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDGjfq4C3Wko3GNiIzhbkYmvnceQ1fqBqP5CiuQVWIoOIDSD/6C8MfTX74Dw5lNCKafhpzNCaR9c6WX0nDODmwbh8WGZhLifevC3smgKUxwP3yUYsxprhAxQ48NZTgonDq5OGmckIEakoITrXm0jU5oioz5b3CQAkC+6kJdRRyDymTmaD/WQs+94yOH+hRgcNW2B7GLvg6Dka9P8AIWfGEvgca7JzuUKD+JXjXklFzBvreEkIpkqOZnIYKv+Xuw71CdXKBSSD9tKPzd0YK/aE5lBHFQInMFYP0rdRnt4lDLD0t4TI6dsFcOVnj3mf7I8+6eRMDcPO87G+Rueg8zWti+WXJHEzdxa9TAmwNP16uusccNtR03o47ibCCM+omOHZkM94hRfW00qmlf5ZJ4BDLFpoS5liUtB74+sDfx6myG7DI73dYY6Q7w9XhGJvq+IOmREME9dXWlFxp3QwG+1V1WT/rEcTVrAz9gWt4uM0KS0bU3dpP8K3fROcz2h2Wx8mV07h4rp1t3Xxl8uyHnXa63NwNdToTN2xUuWSHQK1+xjljq7TSPKoDQGiEJWzq7EXboToXLhNwRQBXmHQmX3ezMIPHkPS/ADb3kIaE4dCQxZXpxYe+5uePH+LNtmmn4kBoGO/Fnx82YNnVIKAdBCU3dwW7KdVYMaIoukZ1bb01mfw== root@bastion.airtelvvt.samsungbsc.local
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIEWTCCA0GgAwIBAgIJAJd1DBVLgtLqMA0GCSqGSIb3DQEBCwUAMIHBMQswCQYD
+  VQQGEwJLUjEUMBIGA1UECAwLR3llb25nZ2ktZG8xDjAMBgNVBAcMBVN1d29uMRww
+  GgYDVQQKDBNTQU1TVU5HIEVsZWN0cm9uaWNzMRwwGgYDVQQLDBNTQU1TVU5HIEVs
+  ZWN0cm9uaWNzMSswKQYDVQQDDCJEaWdpdGFsIENpdHkgKFNBTVNVTkcgRWxlY3Ry
+  b25pY3MpMSMwIQYJKoZIhvcNAQkBFhRwcm94eS5zdUBzYW1zdW5nLmNvbTAgFw0x
+  OTExMDEwOTAyNTJaGA8yMDk5MTIwMTA5MDI1MlowgcExCzAJBgNVBAYTAktSMRQw
+  EgYDVQQIDAtHeWVvbmdnaS1kbzEOMAwGA1UEBwwFU3V3b24xHDAaBgNVBAoME1NB
+  TVNVTkcgRWxlY3Ryb25pY3MxHDAaBgNVBAsME1NBTVNVTkcgRWxlY3Ryb25pY3Mx
+  KzApBgNVBAMMIkRpZ2l0YWwgQ2l0eSAoU0FNU1VORyBFbGVjdHJvbmljcykxIzAh
+  BgkqhkiG9w0BCQEWFHByb3h5LnN1QHNhbXN1bmcuY29tMIIBIjANBgkqhkiG9w0B
+  AQEFAAOCAQ8AMIIBCgKCAQEAuviIN2UUlFYPXG0NI4X8ZwaqgBIrIzu/y9U2MLpM
+  vfHLSKZuavR2H3TtrGESh4idS3B4haAeSTjEqo7/IadLsvTYieyuBjFe1WEd9qEU
+  dWB61i/lnGCNQOMTwMUxBTvKArPueuBfNR+jeb7IX51TwqkFeB5kbDTe4GOeFnso
+  4QCjJ0b1a/mKEBvXRDNR5N1+uamKjpbs4S+6m3muj4bO7hYlTwW0S/T67mHzs+eN
+  5sGVvkg+gItfVq1RxudRnL/wOKmhh78ojR6VbuuKUlEnlr+DxqlnVplw7eANybNm
+  Vur5zpUnT5CvUnmIHVYVoSKTWMvO76Qpn0B10EFXFL7NRwIDAQABo1AwTjAdBgNV
+  HQ4EFgQUP4WD8rxtIu5wi/Y24jLzgbogss4wHwYDVR0jBBgwFoAUP4WD8rxtIu5w
+  i/Y24jLzgbogss4wDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAbLEI
+  ENi0rNxCb58dgriuc4yHpGjMUxidhaZb8mFQA6PXNBAIez8Fl+072ASGtNvqO2ZR
+  /xE9I7cPW5J/usualPQkvHI7y//ILtPEiE3raeaDWi8JazHhLnJf1wz2OIim6uhY
+  CUr/W1F2UCsgmoBl4nyO5emQp6+HkYzA2P6lFHf9oFU38yzlQU65DApMHzGxQ1Qb
+  p2QOzXULuWrmizBmOjtfW6/Pmv42llM1tNkkQHM74PLLKNn93D5cboJoZv+OCITa
+  ZzfNR9cAW9ylOCJSUN2fS9DvpbH015zuyE/E01/Qw6sod6k8vD7hwibRvl6ATlR1
+  y7CT1xEKzWTf+tFgzw==
+  -----END CERTIFICATE-----
+imageContentSources:
+- mirrors:
+  - nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images
+  source: quay.io/openshift-release-dev/ocp-release
