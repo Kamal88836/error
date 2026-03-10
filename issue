@@ -1,155 +1,118 @@
-[root@bastion ~]# oc describe po bscf4000-bip0-7b86b86565-7tv2d
-Name:             bscf4000-bip0-7b86b86565-7tv2d
-Namespace:        cnf
-Priority:         0
-Service Account:  bscf-sa
-Node:             master.ss.samsung.local/128.68.1.145
-Start Time:       Tue, 10 Mar 2026 04:56:55 +0000
-Labels:           app=bscf4000-bip0
-                  component=bscf4000-bip
-                  nename=bscf4000
-                  pod-template-hash=7b86b86565
-                  release=bscf
-                  restart-on-reboot=true
-                  tech=gsm
-Annotations:      k8s.v1.cni.cncf.io/networks:
-                    [ { "name": "bscf-bh0c-nad", }, { "name": "bscf-bh0c-nad", "interface": "bh1" }, { "name": "bscf-bh0c-1-nad", }, { "name": "bscf-bh0c-1-na...
-                  openshift.io/scc: privileged
-Status:           Pending
-IP:
-IPs:              <none>
-Controlled By:    ReplicaSet/bscf4000-bip0-7b86b86565
-Init Containers:
-  sleepy:
-    Container ID:
-    Image:         srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDC68_R00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-      echo Sleepy has come && sleep 15
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:     500m
-      memory:  256Mi
-    Requests:
-      cpu:        500m
-      memory:     256Mi
-    Environment:  <none>
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-4h4bp (ro)
-  install:
-    Container ID:
-    Image:         srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDC68_R00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-    Args:
-      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:                                500m
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Requests:
-      cpu:                                500m
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Environment:                          <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf4000-bip-log (rw)
-      /mnt/storage/shared from bscf4000-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-4h4bp (ro)
-Containers:
-  bip:
-    Container ID:
-    Image:         srv-harbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR26ABSCUTDC68_R00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:                                22
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Requests:
-      cpu:                                22
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Liveness:                             http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:              Asia/Kolkata
-      THIS_NODE_NAME:   (v1:spec.nodeName)
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf4000-bip-log (rw)
-      /mnt/storage/shared from bscf4000-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-4h4bp (ro)
-Conditions:
-  Type              Status
-  Initialized       False
-  Ready             False
-  ContainersReady   False
-  PodScheduled      True
-Volumes:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf4000-bip0
-    Optional:  false
-  bscf4000-bip-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf4000-log-pvc
-    ReadOnly:   false
-  bscf4000-bip-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf4000-shared-pvc
-    ReadOnly:   false
-  kube-api-access-4h4bp:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-QoS Class:                   Guaranteed
-Node-Selectors:              <none>
-Tolerations:                 node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type     Reason                  Age                    From               Message
-  ----     ------                  ----                   ----               -------
-  Warning  FailedScheduling        6m44s                  default-scheduler  0/1 nodes are available: 1 Insufficient cpu. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod..
-  Normal   Scheduled               6m43s                  default-scheduler  Successfully assigned cnf/bscf4000-bip0-7b86b86565-7tv2d to master.ss.samsung.local
-  Warning  ErrorUpdatingResource   6m43s (x2 over 6m43s)  controlplane       addLogicalPort failed for cnf/bscf4000-bip0-7b86b86565-7tv2d: error while getting network attachment definition for [cnf/bscf4000-bip0-7b86b86565-7tv2d]: failed to get all NetworkSelectionElements for pod cnf/bscf4000-bip0-7b86b86565-7tv2d: parsePodNetworkAnnotation: failed to parse pod Network Attachment Selection Annotation JSON format: invalid character '}' looking for beginning of object key string
-  Warning  FailedCreatePodSandBox  6m42s                  kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf4000-bip0-7b86b86565-7tv2d_cnf_479f3205-703b-4a20-b83a-a9df07c298ce_0(7ac3a9c28e39c87b183ddf3fcba9a59251c900350aae2787905ba625f6dfc77c): error adding pod cnf_bscf4000-bip0-7b86b86565-7tv2d to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: '&{ContainerID:7ac3a9c28e39c87b183ddf3fcba9a59251c900350aae2787905ba625f6dfc77c Netns:/var/run/netns/451396d7-c24a-4a1d-b68b-f526ccdb4cc9 IfName:eth0 Args:IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf4000-bip0-7b86b86565-7tv2d;K8S_POD_INFRA_CONTAINER_ID=7ac3a9c28e39c87b183ddf3fcba9a59251c900350aae2787905ba625f6dfc77c;K8S_POD_UID=479f3205-703b-4a20-b83a-a9df07c298ce Path: StdinData:[123 34 98 105 110 68 105 114 34 58 34 47 118 97 114 47 108 105 98 47 99 110 105 47 98 105 110 34 44 34 99 104 114 111 111 116 68 105 114 34 58 34 47 104 111 115 116 114 111 111 116 34 44 34 99 108 117 115 116 101 114 78 101 116 119 111 114 107 34 58 34 47 104 111 115 116 47 114 117 110 47 109 117 108 116 117 115 47 99 110 105 47 110 101 116 46 100 47 49 48 45 111 118 110 45 107 117 98 101 114 110 101 116 101 115 46 99 111 110 102 34 44 34 99 110 105 67 111 110 102 105 103 68 105 114 34 58 34 47 104 111 115 116 47 101 116 99 47 99 110 105 47 110 101 116 46 100 34 44 34 99 110 105 86 101 114 115 105 111 110 34 58 34 48 46 51 46 49 34 44 34 100 97 101 109 111 110 83 111 99 107 101 116 68 105 114 34 58 34 47 114 117 110 47 109 117 108 116 117 115 47 115 111 99 107 101 116 34 44 34 103 108 111 98 97 108 78 97 109 101 115 112 97 99 101 115 34 58 34 100 101 102 97 117 108 116 44 111 112 101 110 115 104 105 102 116 45 109 117 108 116 117 115 44 111 112 101 110 115 104 105 102 116 45 115 114 105 111 118 45 110 101 116 119 111 114 107 45 111 112 101 114 97 116 111 114 34 44 34 108 111 103 76 101 118 101 108 34 58 34 118 101 114 98 111 115 101 34 44 34 108 111 103 84 111 83 116 100 101 114 114 34 58 116 114 117 101 44 34 109 117 108 116 117 115 65 117 116 111 99 111 110 102 105 103 68 105 114 34 58 34 47 104 111 115 116 47 114 117 110 47 109 117 108 116 117 115 47 99 110 105 47 110 101 116 46 100 34 44 34 109 117 108 116 117 115 67 111 110 102 105 103 70 105 108 101 34 58 34 97 117 116 111 34 44 34 110 97 109 101 34 58 34 109 117 108 116 117 115 45 99 110 105 45 110 101 116 119 111 114 107 34 44 34 110 97 109 101 115 112 97 99 101 73 115 111 108 97 116 105 111 110 34 58 116 114 117 101 44 34 112 101 114 78 111 100 101 67 101 114 116 105 102 105 99 97 116 101 34 58 123 34 98 111 111 116 115 116 114 97 112 75 117 98 101 99 111 110 102 105 103 34 58 34 47 118 97 114 47 108 105 98 47 107 117 98 101 108 101 116 47 107 117 98 101 99 111 110 102 105 103 34 44 34 99 101 114 116 68 105 114 34 58 34 47 101 116 99 47 99 110 105 47 109 117 108 116 117 115 47 99 101 114 116 115 34 44 34 99 101 114 116 68 117 114 97 116 105 111 110 34 58 34 50 52 104 34 44 34 101 110 97 98 108 101 100 34 58 116 114 117 101 125 44 34 115 111 99 107 101 116 68 105 114 34 58 34 47 104 111 115 116 47 114 117 110 47 109 117 108 116 117 115 47 115 111 99 107 101 116 34 44 34 116 121 112 101 34 58 34 109 117 108 116 117 115 45 115 104 105 109 34 125]} ContainerID:"7ac3a9c28e39c87b183ddf3fcba9a59251c900350aae2787905ba625f6dfc77c" Netns:"/var/run/netns/451396d7-c24a-4a1d-b68b-f526ccdb4cc9" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf4000-bip0-7b86b86565-7tv2d;K8S_POD_INFRA_CONTAINER_ID=7ac3a9c28e39c87b183ddf3fcba9a59251c900350aae2787905ba625f6dfc77c;K8S_POD_UID=479f3205-703b-4a20-b83a-a9df07c298ce" Path:"" ERRORED: error configuring pod [cnf/bscf4000-bip0-7b86b86565-7tv2d] networking: Multus: [cnf/bscf4000-bip0-7b86b86565-7tv2d/479f3205-703b-4a20-b83a-a9df07c298ce]: error loading k8s delegates k8s args: parsePodNetworkAnnotation: failed to parse pod Network Attachment Selection Annotation JSON format: invalid character '}' looking for beginning of object key string
-'
-  Warning  FailedCreatePodSandBox  6m27s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf4000-bip0-7b86b86565-7tv2d_cnf_479f3205-703b-4a20-b83a-a9df07c298ce_0(4a5946a202dd68161a1e4e8bf0064bc84d0f6fec2353c614fa853dacbbbeb4ab): error adding pod cnf_bscf4000-bip0-7b86b86565-7tv2d to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: '&{ContainerID:4a5946a202dd68161a1e4e8bf0064bc84d0f6fec2353c614fa853dacbbbeb4ab Netns:/var/run/netns/4390fb9e-7db6-45f4-8320-18d64c876181 IfName:eth0 Args:IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf4000-bip0-7b86b86565-7tv2d;K8S_POD_INFRA_CONTAINER_ID=4a5946a202dd68161a1e4e8bf0064bc84d0f6fec2353c614fa853dacbbbeb4ab;K8S_POD_UID=479f3205-703b-4a20-b83a-a9df07c298ce Path: StdinData:[123 34 98 105 110 68 105 114 34 58 34 47 118 97 114 47 108 105 98 47 99 110 105 47 98 105 110 34 44 34 99 104 114 111 111 116 68 105 114 34 58 34 47 104 111 115 116 114 111 111 116 34 44 34 99 108 117 115 116 101 114 78 101 116 119 111 114 107 34 58 34 47 104 111 115 116 47 114 117 110 47 109 117 108 116 117 115 47 99 110 105 47 110 101 116 46 100 47 49 48 45 111 118 110 45 107 117 98 101 114 110 101 116 101 115 46 99 111 110 102 34 44 34 99 110 105 67 111 110 102 105 103 68 105 114 34 58 34 47 104 111 115 116 47 101 116 99 47 99 110 105 47 110 101 116 46 100 34 44 34 99 110 105 86 101 114 115 105 111 110 34 58 34 48 46 51 46 49 34 44 34 100 97 101 109 111 110 83 111 99 107 101 116 68 105 114 34 58 34 47 114 117 110 47 109 117 108 116 117 115 47 115 111 99 107 101 116 34 44 34 103 108 111 98 97 108 78 97 109 101 115 112 97 99 101 115 34 58 34 100 101 102 97 117 108 116 44 111 112 101 110 115 104 105 102 116 45 109 117 108 116 117 115 44 111 112 101 110 115 104 105 102 116 45 115 114 105 111 118 45 110 101 116 119 111 114 107 45 111 112 101 114 97 116 111 114 34 44 34 108 111 103 76 101 118 101 108 34 58 34 118 101 114 98 111 115 101 34 44 34 108 111 103 84 111 83 116 100 101 114 114 34 58 116 114 117 101 44 34 109 117 108 116 117 115 65 117 116 111 99 111 110 102 105 103 68 105 114 34 58 34 47 104 111 115 116 47 114 117 110 47 109 117 108 116 117 115 47 99 110 105 47 110 101 116 46 100 34 44 34 109 117 108 116 117 115 67 111 110 102 105 103 70 105 108 101 34 58 34 97 117 116 111 34 44 34 110 97 109 101 34 58 34 109 117 108 116 117 115 45 99 110 105 45 110 101 116 119 111 114 107 34 44 34 110 97 109 101 115 112 97 99 101 73 115 111 108 97 116 105 111 110 34 58 116 114 117 101 44 34 112 101 114 78 111 100 101 67 101 114 116 105 102 105 99 97 116 101 34 58 123 34 98 111 111 116 115 116 114 97 112 75 117 98 101 99 111 110 102 105 103 34 58 34 47 118 97 114 47 108 105 98 47 107 117 98 101 108 101 116 47 107 117 98 101 99 111 110 102 105 103 34 44 34 99 101 114 116 68 105 114 34 58 34 47 101 116 99 47 99 110 105 47 109 117 108 116 117 115 47 99 101 114 116 115 34 44 34 99 101 114 116 68 117 114 97 116 105 111 110 34 58 34 50 52 104 34 44 34 101 110 97 98 108 101 100 34 58 116 114 117 101 125 44 34 115 111 99 107 101 116 68 105 114 34 58 34 47 104 111 115 116 47 114 117 110 47 109 117 108 116 117 115 47 115 111 99 107 101 116 34 44 34 116 121 112 101 34 58 34 109 117 108 116 117 115 45 115 104 105 109 34 125]} ContainerID:"4a5946a202dd68161a1e4e8bf0064bc84d0f6fec2353c614fa853dacbbbeb4ab" Netns:"/var/run/netns/4390fb9e-7db6-45f4-8320-18d64c876181" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf4000-bip0-7b86b86565-7tv2d;K8S_POD_INFRA_CONTAINER_ID=4a5946a202dd68161a1e4e8bf0064bc84d0f6fec2353c614fa853dacbbbeb4ab;K8S_POD_UID=479f3205-703b-4a20-b83a-a9df07c298ce" Path:"" ERRORED: error configuring pod [cnf/bscf4000-bip0-7b86b86565-7tv2d] networking: Multus: [cnf/bscf4000-bip0-7b86b86565-7tv2d/479f3205-703b-4a20-b83a-a9df07c298ce]: error loading k8s delegates k8s args: parsePodNetworkAnnotation: failed to parse pod Network Attachment Selection Annotation JSON format: invalid character '}' looking for beginning of object key string
-'
-[root@bastion ~]#
+Your pod is Pending because Multus cannot parse the network annotation JSON.
+The error is very clear in the events:
+
+parsePodNetworkAnnotation: failed to parse pod Network Attachment Selection Annotation JSON format:
+invalid character '}' looking for beginning of object key string
+
+This means the Network Attachment Definition (NAD) annotation is invalid JSON.
+
+
+---
+
+🔎 Problem Location
+
+From your pod description:
+
+Annotations:
+k8s.v1.cni.cncf.io/networks:
+[ { "name": "bscf-bh0c-nad", }, 
+  { "name": "bscf-bh0c-nad", "interface": "bh1" }, 
+  { "name": "bscf-bh0c-1-nad", }, 
+  { "name": "bscf-bh0c-1-na...
+
+The issue is here:
+
+{ "name": "bscf-bh0c-nad", },
+
+❌ Trailing comma after the field.
+
+JSON does NOT allow trailing commas.
+
+
+---
+
+⚠️ Incorrect JSON
+
+[
+ { "name": "bscf-bh0c-nad", },
+ { "name": "bscf-bh0c-nad", "interface": "bh1" },
+ { "name": "bscf-bh0c-1-nad", }
+]
+
+
+---
+
+✅ Correct JSON
+
+Remove trailing commas.
+
+[
+ { "name": "bscf-bh0c-nad" },
+ { "name": "bscf-bh0c-nad", "interface": "bh1" },
+ { "name": "bscf-bh0c-1-nad" }
+]
+
+
+---
+
+🔧 How to Fix
+
+Edit the Deployment / Statefulset / Helm template that created this pod.
+
+Check:
+
+oc get deploy -n cnf | grep bscf
+
+Then edit:
+
+oc edit deploy bscf4000-bip0 -n cnf
+
+Fix annotation section:
+
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/networks: |
+      [
+        { "name": "bscf-bh0c-nad" },
+        { "name": "bscf-bh0c-nad", "interface": "bh1" },
+        { "name": "bscf-bh0c-1-nad" }
+      ]
+
+
+---
+
+🔄 Then restart the pod
+
+oc delete pod bscf4000-bip0-7b86b86565-7tv2d -n cnf
+
+ReplicaSet will recreate it.
+
+
+---
+
+⚠️ Another Warning in Your Pod
+
+You also have:
+
+0/1 nodes are available: 1 Insufficient cpu
+
+Your pod requests:
+
+cpu: 22
+
+If the master node has less allocatable CPU, scheduling may also fail later.
+
+Check:
+
+oc describe node master.ss.samsung.local | grep -A5 Allocatable
+
+
+---
+
+✅ Main root cause:
+Invalid JSON in Multus network annotation (extra comma).
+
+
+---
+
+If you want, I can also show you a very quick production trick to detect Multus annotation issues in 10 seconds (useful for CNF/SR-IOV environments like Samsung RAN).
