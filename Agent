@@ -1,0 +1,140 @@
+Great 👍 I’ll show you the 2-minute OpenShift Agent Installer troubleshooting workflow that Red Hat engineers use. This works for OCP 4.12–4.18 agent-based installs, including baremetal / telco CNF setups like yours.
+Follow these in order. You will quickly identify the exact issue.
+🚀 Step 1 — Check Assisted Service Containers (Rendezvous Node)
+Run on master1 (20.1.30.150):
+Bash
+Copy code
+podman ps | grep assisted
+You should see 3 containers:
+Copy code
+
+assisted-service
+assisted-db
+assisted-image-service
+If assisted-db is missing, cluster objects cannot be created.
+🚀 Step 2 — Verify InfraEnv Exists
+Run on master1:
+Bash
+Copy code
+TOKEN=$(grep USER_AUTH_TOKEN /etc/assisted/rendezvous-host.env | cut -d= -f2)
+
+curl -H "Authorization: Bearer $TOKEN" \
+http://localhost:8090/api/assisted-install/v2/infra-envs | jq
+Expected output:
+Copy code
+
+airtelvvt
+If output is empty [], then infra-env was never created.
+🚀 Step 3 — Check Cluster Object
+Run:
+Bash
+Copy code
+curl -H "Authorization: Bearer $TOKEN" \
+http://localhost:8090/api/assisted-install/v2/clusters | jq
+Expected:
+Copy code
+
+name: airtelvvt
+status: ready
+If status is:
+Copy code
+
+insufficient
+hosts are not registered yet.
+🚀 Step 4 — Check Hosts Registration
+Run:
+Bash
+Copy code
+curl -H "Authorization: Bearer $TOKEN" \
+http://localhost:8090/api/assisted-install/v2/hosts | jq
+Expected output:
+Copy code
+
+master1
+master2
+master3
+If you only see master1, then master2 and master3 are not joining.
+🚀 Step 5 — Check Agent Logs (Worker Nodes)
+Run on master2 or master3:
+Bash
+Copy code
+journalctl -u agent.service -n 50
+Healthy output shows:
+Copy code
+
+Host registered
+Inventory sent
+Connected to assisted-service
+If you see loops like:
+Copy code
+
+Querying assisted-service for infra-env-id
+then the node cannot retrieve infra-env.
+🚀 Step 6 — Verify Assisted API Connectivity
+From master2:
+Bash
+Copy code
+curl http://20.1.30.150:8090/api/assisted-install/v2/infra-envs
+If you get:
+Copy code
+
+401 unauthenticated
+That is good (API reachable).
+If you get timeout, then networking issue.
+🚀 Step 7 — Verify Network Interfaces
+Agent install fails silently if NIC names mismatch.
+Run on each node:
+Bash
+Copy code
+ip link
+Your config expects:
+Copy code
+
+ens1f0
+ens4f0
+If the server shows something like:
+Copy code
+
+eno1
+ens2f0
+then bonding fails → agent cannot send inventory.
+🚀 Step 8 — Verify Time Sync
+Time mismatch can break token authentication.
+Run on all nodes:
+Bash
+Copy code
+timedatectl
+Ensure:
+Copy code
+
+System clock synchronized: yes
+🚀 Step 9 — Check Agent Inventory
+On master2 run:
+Bash
+Copy code
+ls /var/log/agent
+and:
+Bash
+Copy code
+cat /var/log/agent/agent.log
+Look for:
+Copy code
+
+failed to send inventory
+authentication error
+infraenv not found
+🚀 Step 10 — Watch Installation Start
+When everything works, master1 log shows:
+Bash
+Copy code
+journalctl -u assisted-service.service -f
+You will see:
+Copy code
+
+Host registered
+Host ready for install
+Starting cluster installation
+Then:
+Copy code
+
+Bootstrapping cluster
