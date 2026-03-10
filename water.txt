@@ -1,16 +1,29 @@
-jdbvksavlnsndkv
-dsfjkvsdnflv
-dsfjkvsdnflv
+Harbor용 host추가
+( <--- omitted when using DNS server ~ )
+
+Extract existing Ignition files
+
+Extract existing Ignition files Collapse source
 
 
+[root@host ~]# coreos-installer iso ignition show clusterconfigs/agent.x86_64.iso > org.ign
+Creating an ignition with hosts.conf added
+
+Creating an ignition with hosts.conf added Collapse source
 
 
+[root@host ~]# python3 -c "import json, sys;
+ignition = json.load(sys.stdin);
+storage = ignition.get('storage', {});
+files = storage.get('files', []);
+files.append({'path': '/etc/hosts', 'mode': 420, 'overwrite': True, 'contents': {'source': 'data:text/plain;charset=utf-8;base64,$(cat hosts.conf)'}});
+storage['files'] = files;
+ignition['storage'] = storage;
+json.dump(ignition, sys.stdout)" < org.ign > new.ign
+Add a new ignition to the image
+
+Add a new ignition to the image Collapse source
 
 
-
-
-[root@bastion mirror-reg]# ./oc
-./oc: /lib64/libc.so.6: version `GLIBC_2.33' not found (required by ./oc)
-./oc: /lib64/libc.so.6: version `GLIBC_2.34' not found (required by ./oc)
-./oc: /lib64/libc.so.6: version `GLIBC_2.32' not found (required by ./oc)
-[root@bastion mirror-reg]#
+[root@host ~]# coreos-installer iso ignition embed -f -i new.ign clusterconfigs/agent.x86_64.iso
+( ~ Omitted when using DNS server ---> )
