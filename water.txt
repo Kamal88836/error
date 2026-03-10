@@ -27,3 +27,14 @@ Add a new ignition to the image Collapse source
 
 [root@host ~]# coreos-installer iso ignition embed -f -i new.ign clusterconfigs/agent.x86_64.iso
 ( ~ Omitted when using DNS server ---> )
+
+
+
+
+Image Generation
+
+
+[root@host ~]# export OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE="[[harbor-url]]/team-ocp/ocp/openshift/release-images:[[cluster-version]]-x86_64"
+[root@host ~]# openshift-install agent create image --log-level debug --dir clusterconfigs
+[root@host ~]# ls -al clusterconfigs/agent.x86_64.iso
+clusterconfigs/agent.x86_64.iso
