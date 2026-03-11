@@ -1,0 +1,68 @@
+[root@bastion 1.ODF]# cat ImageContentSourcePolicy.yaml
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: generic-0
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/ubi8
+    source: registry.redhat.io/ubi8
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  labels:
+    operators.openshift.org/catalog: "true"
+  name: operator-0
+spec:
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/redhat
+    source: registry.redhat.io/redhat
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/openshift4
+    source: registry.redhat.io/openshift4
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/lvms4
+    source: registry.redhat.io/lvms4
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/intel
+    source: registry.connect.redhat.com/intel
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/openshift-istio
+    source: registry.redhat.io/openshift-istio
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/rhceph
+    source: registry.redhat.io/rhceph
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/openshift-service-mesh
+    source: registry.redhat.io/openshift-service-mesh
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/openshift-logging
+    source: registry.redhat.io/openshift-logging
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/rhosdt
+    source: registry.redhat.io/rhosdt
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/odf4
+    source: registry.redhat.io/odf4
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/rhel8
+    source: registry.redhat.io/rhel8
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: release-0
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+  - mirrors:
+    - nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images
+    source: quay.io/openshift-release-dev/ocp-release
+[root@bastion 1.ODF]#
