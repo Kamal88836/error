@@ -56,3 +56,84 @@ spec:
   name: kubernetes-nmstate-operator
   source: cs-redhat-operator-index                    #<--- Get value from above step
   sourceNamespace: openshift-marketplace              #<--- Get value from above step
+
+
+Apply NMState Operators
+
+
+srib@ocp-haproxy-4:~/ocp-config$ oc apply -f nmstate-operator.yaml
+namespace/openshift-nmstate created
+operatorgroup.operators.coreos.com/openshift-nmstate created
+subscription.operators.coreos.com/kubernetes-nmstate-operator created
+srib@ocp-haproxy-4:~/ocp-config$
+Verify NMState Operators Collapse source
+
+
+srib@ocp-haproxy-4:~$ oc get sub -n openshift-nmstate
+NAME                          PACKAGE                       SOURCE                           CHANNEL
+kubernetes-nmstate-operator   kubernetes-nmstate-operator   cs-redhat-operator-index-v4-18   stable
+srib@ocp-haproxy-4:~$
+
+
+srib@ocp-haproxy-4:~$ oc get csv -n openshift-nmstate
+NAME                                              DISPLAY                       VERSION               REPLACES   PHASE
+kubernetes-nmstate-operator.4.18.0-202509241752   Kubernetes NMState Operator   4.18.0-202509241752              Succeeded
+4.2. Create NMState Object
+
+
+nmstate.yaml Collapse source
+
+
+apiVersion: nmstate.io/v1
+kind: NMState
+metadata:
+  name: nmstate
+Apply NMState Object
+
+
+srib@ocp-haproxy-4:~/ocp-config$ oc apply -f nmstate.yaml
+nmstate.nmstate.io/nmstate created
+srib@ocp-haproxy-4:~/ocp-config$
+
+
+4.3. Check NMState Pods
+NMState Pods Collapse source
+
+
+srib@ocp-haproxy-4:~$ oc get pod -n openshift-nmstate -o wide
+NAME                                      READY   STATUS    RESTARTS   AGE   IP            NODE                            NOMINATED NODE   READINESS GATES
+nmstate-console-plugin-6b874cbd85-x77x8   1/1     Running   0          23d   10.129.0.50   master1.lab4.srib-lab-ocp.lan   <none>           <none>
+nmstate-handler-fpsl9                     1/1     Running   0          23d   71.1.1.5      master1.lab4.srib-lab-ocp.lan   <none>           <none>
+nmstate-handler-hnttc                     1/1     Running   0          23d   71.1.1.105    master2.lab4.srib-lab-ocp.lan   <none>           <none>
+nmstate-handler-hzsbh                     1/1     Running   0          23d   71.1.1.109    master3.lab4.srib-lab-ocp.lan   <none>           <none>
+nmstate-metrics-fdff9cb8d-cmlmw           2/2     Running   0          23d   10.129.0.48   master1.lab4.srib-lab-ocp.lan   <none>           <none>
+nmstate-operator-5b45b6cc6-r4jww          1/1     Running   0          23d   10.129.0.47   master1.lab4.srib-lab-ocp.lan   <none>           <none>
+nmstate-webhook-6cdbc54649-2hvvd          1/1     Running   0          23d   10.129.0.49   master1.lab4.srib-lab-ocp.lan   <none>           <none>
+srib@ocp-haproxy-4:~$
+4.4. Check NMState Node Configuration
+NMState Nodes Satte
+
+
+# might take to come up. Wait for sometime.
+
+srib@ocp-haproxy-4:~/ocp-config$ oc get nns
+NAME                            AGE
+master1.lab4.srib-lab-ocp.lan   31m
+master2.lab4.srib-lab-ocp.lan   31m
+master3.lab4.srib-lab-ocp.lan   31m
+srib@ocp-haproxy-4:~/ocp-config$
+
+
+4.5. Apply NMSTATE NNCP policies
+REF : Chapter 8. Network requirements | Planning your deployment | Red Hat OpenShift Data Foundation | 4.18 | Red Hat Documentation
+
+the logic of having the NNCP policies is to have a MACVLAN interface on which MULTUS is configured for ODF. Now, the MACVLAN can be on top of a single interface or a bonded interface. Additionally, in VVT (Suwon) setups, there is a requirement of having a VLAN interface on top of bond/single interface. So, PLEASE check the network plan and requirements and proceed accordingly. The NNCP YAMLs for all type of configurations are provided below (these are examples, please choose the interface names and IPs correctly).
+
+
+
+The different configurations are as below :
+
+ single interface → MACVLAN
+ single interface → VLAN → MACVLAN
+ two interfaces → bond interface → MACVLAN
+ two interfaces → bond interface → VLAN → MACVLAN
