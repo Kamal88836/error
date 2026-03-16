@@ -1315,3 +1315,14 @@ Apply OCS ODF Operator
 srib@ocp-haproxy-4:~/ocp-config$ oc apply -f storagecluster.yaml
 storagecluster.ocs.openshift.io/ocs-storagecluster created
 srib@ocp-haproxy-4:~/ocp-config$
+
+
+
+Important: If Internal cluster Network is IPV6, Execute:
+
+oc -n openshift-storage patch storagecluster ocs-storagecluster --type=merge -p '{"spec":{"network":{"ipFamily":"IPv6"}}}'
+
+Verification
+
+All the pods in the openshift-storage namespace must be in either Running or Completed state.
+Cluster creation might take around 5 - 10 mins to complete. Please keep monitoring until you see the expected state or you see an error or you find progress stuck even after waiting for a longer period.
