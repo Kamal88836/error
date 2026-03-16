@@ -1,0 +1,21 @@
+
+
+srib@ocp-haproxy-4:~$ array=("kubernetes-nmstate-operator" "local-storage-operator" "odf-operator" )
+for item in "${array[@]}"; do
+  echo "$item"
+  oc get packagemanifest -o json | jq '.items[] | select(.metadata.name=="'$item'") | .status | .channels[] | .name'
+  oc get packagemanifest -o json | jq '.items[] | select(.metadata.name=="'$item'") | .status | .catalogSource '
+  oc get packagemanifest -o json | jq '.items[] | select(.metadata.name=="'$item'") | .status |  .catalogSourceNamespace'
+done
+kubernetes-nmstate-operator
+"stable"
+"cs-redhat-operator-index-v4-18"
+"openshift-marketplace"
+local-storage-operator
+"stable"
+"cs-redhat-operator-index-v4-18"
+"openshift-marketplace"
+odf-operator
+"stable-4.18"
+"cs-redhat-operator-index-v4-18"
+"openshift-marketplace"
