@@ -1,0 +1,549 @@
+I’ll explain these OpenShift internals at a platform-engineer level, similar to kernel / infrastructure documentation. Since you already work with OCP clusters, this will focus on real components, daemons, and internal flows.
+
+We will cover:
+
+1️⃣ Control Plane Architecture
+2️⃣ OVN-Kubernetes Packet Flow
+3️⃣ Operator-based Upgrade Mechanism
+4️⃣ etcd Internal Data Storage
+5️⃣ kubelet ↔ CRI-O gRPC Communication
+
+
+---
+
+1. Complete OpenShift Control Plane Architecture
+
+OpenShift control plane runs on master nodes.
+
+Typical deployment:
+
+3 control plane nodes
+
+Core components come from
+Kubernetes and are extended by
+Red Hat OpenShift Container Platform.
+
+
+---
+
+Control Plane Components
+
+1. kube-apiserver
+
+Central entry point of the cluster.
+
+Responsibilities:
+
+REST API
+
+authentication
+
+authorization
+
+admission control
+
+communication with etcd
+
+
+Example request:
+
+kubectl get pods
+
+Flow:
+
+kubectl
+   ↓
+API Server
+   ↓
+etcd
+
+API server runs stateless and horizontally scalable.
+
+
+---
+
+2. etcd
+
+Distributed key-value database.
+
+Stores:
+
+cluster state
+pod specs
+node status
+configmaps
+secrets
+
+Example key:
+
+/registry/pods/default/nginx
+
+OpenShift typically runs 3 etcd members for quorum.
+
+
+---
+
+3. kube-scheduler
+
+Scheduler assigns pods to nodes.
+
+Algorithm considers:
+
+CPU
+memory
+affinity
+taints/tolerations
+topology
+
+Process:
+
+watch pod
+↓
+filter nodes
+↓
+score nodes
+↓
+bind pod to node
+
+
+---
+
+4. kube-controller-manager
+
+Runs multiple control loops.
+
+Controllers include:
+
+node controller
+replica controller
+deployment controller
+service controller
+endpoints controller
+
+Controller logic:
+
+desired state
+↓
+compare with actual state
+↓
+take action
+
+
+---
+
+5. OpenShift Platform Controllers
+
+OpenShift adds platform operators such as:
+
+cluster-version-operator
+machine-config-operator
+authentication-operator
+ingress-operator
+
+These manage platform lifecycle.
+
+
+---
+
+2. Detailed Packet Flow Inside OVN-Kubernetes
+
+OpenShift uses OVN-Kubernetes as the default CNI.
+
+Based on:
+
+Open vSwitch
+
+Open Virtual Network
+
+
+
+---
+
+OVN Core Components
+
+Node processes:
+
+ovn-controller
+ovs-vswitchd
+ovsdb-server
+
+Cluster components:
+
+ovn-northd
+ovn-nbdb
+ovn-sbdb
+
+Databases:
+
+NBDB (Northbound DB)
+SBDB (Southbound DB)
+
+
+---
+
+Pod Networking Creation
+
+When a pod starts:
+
+kubelet
+   ↓
+CNI request
+   ↓
+OVN plugin
+   ↓
+create logical port
+   ↓
+attach veth interface
+
+Pod gets IP from cluster CIDR.
+
+Example:
+
+10.128.2.5
+
+
+---
+
+Packet Flow (Pod → Pod different node)
+
+Pod A
+ │
+ ▼
+veth interface
+ │
+ ▼
+OVS bridge (br-int)
+ │
+ ▼
+Geneve tunnel encapsulation
+ │
+ ▼
+physical NIC
+ │
+ ▼
+remote node
+ │
+ ▼
+OVS bridge
+ │
+ ▼
+veth pair
+ │
+ ▼
+Pod B
+
+Encapsulation protocol:
+
+Geneve UDP 6081
+
+
+---
+
+Service Packet Flow
+
+If using ClusterIP:
+
+Pod
+ │
+ ▼
+iptables/OVN load balancing
+ │
+ ▼
+selected backend pod
+
+OVN implements load balancing using logical flows.
+
+
+---
+
+3. How OpenShift Operators Upgrade the Cluster
+
+The upgrade is controlled by the Cluster Version Operator.
+
+Operator architecture is part of
+Operator Framework.
+
+
+---
+
+Upgrade Trigger
+
+Admin runs:
+
+oc adm upgrade
+
+or via web console.
+
+
+---
+
+Upgrade Workflow
+
+ClusterVersionOperator
+        │
+        ▼
+download release image
+        │
+        ▼
+extract manifests
+        │
+        ▼
+upgrade platform operators
+        │
+        ▼
+upgrade control plane
+        │
+        ▼
+upgrade worker nodes
+
+Release image contains:
+
+all operators
+kubernetes manifests
+container images
+
+
+---
+
+Control Plane Upgrade
+
+Steps:
+
+1 API server updated
+2 controller manager updated
+3 scheduler updated
+4 etcd updated
+
+Each step ensures cluster health before next stage.
+
+
+---
+
+Worker Node Upgrade
+
+Handled by Machine Config Operator.
+
+Process:
+
+cordon node
+↓
+drain workloads
+↓
+update OS (RHCOS)
+↓
+reboot node
+↓
+uncordon node
+
+OS update uses OSTree atomic update.
+
+
+---
+
+4. How etcd Stores Kubernetes Objects Internally
+
+etcd is a distributed key-value store.
+
+Data model:
+
+key → value
+
+Keys represent Kubernetes objects.
+
+
+---
+
+Example Object
+
+Pod:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+
+Stored as:
+
+/registry/pods/default/nginx
+
+Value contains serialized object.
+
+Serialization format:
+
+protobuf
+
+
+---
+
+etcd Internal Structure
+
+Disk storage:
+
+/var/lib/etcd/member/
+
+Important files:
+
+snap/db
+wal/
+
+Components:
+
+WAL (write ahead log)
+snapshot
+b-tree index
+
+
+---
+
+Write Operation
+
+When API server writes data:
+
+client request
+ ↓
+API server validation
+ ↓
+etcd write request
+ ↓
+WAL append
+ ↓
+commit to raft quorum
+
+Cluster consensus uses:
+
+Raft algorithm
+
+Majority required:
+
+2 of 3 nodes
+
+
+---
+
+5. How kubelet Communicates with CRI-O
+
+CRI-O implements Kubernetes Container Runtime Interface (CRI).
+
+Communication uses:
+
+gRPC over Unix socket
+
+Socket path:
+
+/var/run/crio/crio.sock
+
+
+---
+
+Communication Architecture
+
+kubelet
+  │
+  │ gRPC (CRI API)
+  ▼
+CRI-O
+  │
+  ▼
+OCI runtime (runc)
+  │
+  ▼
+Linux kernel
+
+
+---
+
+Example CRI Calls
+
+When pod starts:
+
+RunPodSandbox
+CreateContainer
+StartContainer
+
+
+---
+
+Pod creation flow
+
+kubelet receives pod spec
+      │
+      ▼
+RunPodSandbox
+      │
+      ▼
+CreateContainer
+      │
+      ▼
+StartContainer
+
+CRI-O then:
+
+pull image
+create container rootfs
+invoke runc
+
+
+---
+
+Container Creation Internals
+
+Steps:
+
+1 pull image
+2 unpack rootfs
+3 create namespaces
+4 apply cgroups
+5 start process
+
+Kernel features used:
+
+namespaces
+cgroups
+seccomp
+SELinux
+
+
+---
+
+Complete OpenShift Internal Flow
+
+User (kubectl / oc)
+      │
+      ▼
+API Server
+      │
+      ▼
+etcd state change
+      │
+      ▼
+Controllers react
+      │
+      ▼
+Scheduler selects node
+      │
+      ▼
+kubelet receives pod spec
+      │
+      ▼
+CRI-O starts container
+      │
+      ▼
+Linux kernel runs process
+
+
+---
+
+💡 If you're working on deep OpenShift troubleshooting, the next extremely valuable topics are:
+
+etcd quorum failure debugging
+
+OVN flow table debugging
+
+OpenShift SDN vs OVN comparison
+
+How kube-proxy is replaced in OVN
+
+OpenShift API server operator internals
+
+
+If you want, I can also show you real commands used by Red Hat engineers to debug OpenShift internals (very useful in production clusters).
