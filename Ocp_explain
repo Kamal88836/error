@@ -1,3 +1,497 @@
+
+Since you’re working with OpenShift clusters already, I’ll explain OpenShift in a low-level (internal architecture) way — similar to how kernel/system engineers analyze platforms. This focuses on internal daemons, processes, control loops, and data flow, not just concepts.
+
+
+---
+
+1. OpenShift Low-Level Architecture
+
+OpenShift is essentially:
+
+Linux OS (RHCOS)
+        ↓
+Container Runtime (CRI-O)
+        ↓
+Kubernetes Control Plane
+        ↓
+OpenShift Platform Operators
+        ↓
+Applications (Pods)
+
+Main building blocks:
+
+1. Linux kernel
+
+
+2. Container runtime
+
+
+3. Kubernetes control plane
+
+
+4. Operators
+
+
+5. Platform services
+
+
+
+
+---
+
+2. Operating System Layer
+
+OpenShift nodes run
+Red Hat Enterprise Linux CoreOS (RHCOS)
+
+RHCOS characteristics
+
+Immutable OS
+
+OSTree based
+
+Managed by MachineConfigOperator
+
+Automatic OS updates
+
+
+Key components running on node:
+
+systemd
+kubelet
+cri-o
+NetworkManager
+ovs-vswitchd
+ovn-controller
+
+Example:
+
+ps -ef | grep kubelet
+ps -ef | grep crio
+
+
+---
+
+3. Container Runtime Layer
+
+OpenShift uses
+CRI-O
+
+instead of Docker.
+
+Runtime architecture
+
+Kubelet
+   │
+   │ CRI (gRPC)
+   ▼
+CRI-O
+   │
+   │ OCI runtime
+   ▼
+runc
+   │
+   ▼
+Linux Kernel (namespaces + cgroups)
+
+Container creation flow
+
+1️⃣ Kubelet receives pod spec
+
+2️⃣ kubelet → CRI request
+
+RunPodSandbox()
+CreateContainer()
+StartContainer()
+
+3️⃣ CRI-O pulls image
+
+/var/lib/containers/storage
+
+4️⃣ runc creates container
+
+Kernel features used:
+
+cgroups
+namespaces
+seccomp
+SELinux
+
+
+---
+
+4. Kubernetes Control Plane (Internal)
+
+OpenShift control plane runs:
+
+kube-apiserver
+kube-controller-manager
+kube-scheduler
+etcd
+
+All are static pods on master nodes.
+
+Example:
+
+/etc/kubernetes/manifests/
+
+Files:
+
+kube-apiserver-pod.yaml
+kube-controller-manager.yaml
+kube-scheduler.yaml
+
+Kubelet monitors these files.
+
+If container crashes → kubelet restarts automatically.
+
+
+---
+
+5. API Server Internal Flow
+
+Everything in Kubernetes goes through the
+Kubernetes API Server.
+
+Example command:
+
+kubectl get pods
+
+Flow:
+
+kubectl
+   │
+   ▼
+API Server
+   │
+   ├─ Authentication
+   ├─ Authorization
+   ├─ Admission Controllers
+   │
+   ▼
+etcd
+
+
+---
+
+Detailed API request flow
+
+Client
+  │
+  ▼
+API Server
+  │
+  ├── Authentication
+  │      OAuth / cert
+  │
+  ├── Authorization
+  │      RBAC
+  │
+  ├── Admission Control
+  │      Security policies
+  │
+  ▼
+etcd database
+
+etcd stores all cluster state.
+
+Example keys:
+
+/registry/pods/
+/registry/nodes/
+/registry/services/
+
+
+---
+
+6. Control Loop Architecture
+
+Kubernetes works using control loops.
+
+Controller logic:
+
+desired state
+      ↓
+compare
+      ↓
+current state
+      ↓
+take action
+
+Example:
+
+Deployment wants:
+
+replicas = 3
+
+Controller loop:
+
+check pods
+if pods < 3
+create pod
+
+This runs continuously.
+
+
+---
+
+7. OpenShift Operator Framework
+
+OpenShift platform components are managed by Operators.
+
+Example operators:
+
+cluster-version-operator
+machine-config-operator
+ingress-operator
+authentication-operator
+image-registry-operator
+
+Operator logic:
+
+Watch resource
+      ↓
+Detect change
+      ↓
+Run reconciliation
+      ↓
+Apply configuration
+
+Example:
+
+Cluster upgrade triggered.
+
+ClusterVersionOperator
+      ↓
+Upgrade Operators
+      ↓
+Upgrade control plane
+      ↓
+Upgrade nodes
+
+
+---
+
+8. Networking Low-Level Architecture
+
+OpenShift networking is based on
+
+OVN-Kubernetes
+
+Architecture:
+
+Pod
+ │
+ ▼
+veth pair
+ │
+ ▼
+OVS bridge (br-int)
+ │
+ ▼
+Geneve tunnel
+ │
+ ▼
+Remote Node
+ │
+ ▼
+Pod
+
+Key components:
+
+ovn-northd
+ovn-controller
+ovs-vswitchd
+ovn-nbdb
+ovn-sbdb
+
+Example process:
+
+ps -ef | grep ovs
+
+
+---
+
+Pod network creation
+
+When pod is created:
+
+kubelet
+   │
+   ▼
+CNI plugin
+   │
+   ▼
+OVN creates logical switch port
+
+Network objects created:
+
+veth interface
+iptables rules
+OVS flows
+
+
+---
+
+9. OpenShift Router Internals
+
+OpenShift router uses
+HAProxy
+
+Router pod watches routes.
+
+Flow:
+
+Route created
+   │
+   ▼
+Router Operator
+   │
+   ▼
+HAProxy config generated
+   │
+   ▼
+Reload HAProxy
+
+HAProxy file:
+
+/var/lib/haproxy/conf/haproxy.config
+
+
+---
+
+10. Storage Internals
+
+OpenShift storage often uses
+Ceph via CSI.
+
+Flow when PVC created:
+
+User creates PVC
+      │
+      ▼
+Kubernetes Controller
+      │
+      ▼
+CSI driver
+      │
+      ▼
+Ceph RBD volume created
+      │
+      ▼
+Mounted to pod
+
+Mount path example:
+
+/var/lib/kubelet/pods/<podid>/volumes/
+
+
+---
+
+11. OpenShift Upgrade Internals
+
+Upgrade triggered by:
+
+oc adm upgrade
+
+Handled by Cluster Version Operator.
+
+Upgrade flow:
+
+download release image
+      │
+      ▼
+apply manifests
+      │
+      ▼
+upgrade operators
+      │
+      ▼
+upgrade control plane
+      │
+      ▼
+upgrade worker nodes
+
+Worker node upgrade process:
+
+cordon node
+drain node
+update OS
+reboot
+uncordon node
+
+
+---
+
+12. Pod Scheduling Flow (Very Low Level)
+
+When pod created:
+
+User
+ │
+ ▼
+API Server
+ │
+ ▼
+etcd
+ │
+ ▼
+Scheduler watches pod
+ │
+ ▼
+Select node
+ │
+ ▼
+Bind pod to node
+ │
+ ▼
+kubelet creates container
+
+Container finally runs via:
+
+CRI-O → runc → Linux kernel
+
+
+---
+
+13. Complete OpenShift Internal Flow
+
+User request
+      │
+      ▼
+API Server
+      │
+      ▼
+etcd state update
+      │
+      ▼
+Controller detects change
+      │
+      ▼
+Scheduler assigns node
+      │
+      ▼
+kubelet creates pod
+      │
+      ▼
+CRI-O starts container
+      │
+      ▼
+Linux kernel executes process
+
+
+---
+
+💡 If you want, I can also explain very deep internal topics (usually known only by OpenShift platform engineers):
+
+1️⃣ Complete OpenShift control plane architecture diagram
+2️⃣ Detailed packet flow inside OVN-Kubernetes
+3️⃣ How OpenShift operators upgrade the cluster automatically
+4️⃣ How etcd stores Kubernetes objects internally
+5️⃣ How kubelet communicates with CRI-O (gRPC calls)
+
+These are extremely useful if you work in OpenShift platform engineering or troubleshooting.
+
 I’ll explain these OpenShift internals at a platform-engineer level, similar to kernel / infrastructure documentation. Since you already work with OCP clusters, this will focus on real components, daemons, and internal flows.
 
 We will cover:
