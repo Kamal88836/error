@@ -331,3 +331,311 @@ spec:
       config:
       - destination: 20.1.15.0/24
         next-hop-interface: bond1-mvlan
+
+
+
+4.5.3. create NNCP policies on a bonded interface (two interfaces → bond interface → VLAN → MACVLAN)
+create separate NNCP policies for master nodes
+
+
+[root@bastion NMSTATE]# cat nncp-odf-master1.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-bond1-vlan-macvlan-master1-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master1.viairtel.samsungbsc.local
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: bond1
+        description: "ODF bond parent interface"
+        type: bond
+        state: up
+        ipv4:
+          enabled: false
+        link-aggregation:
+          mode: active-backup
+          options:
+            miimon: "100"
+            primary: ens1f1
+          port:
+          - ens1f1
+          - ens4f1
+      - name: bond1.215
+        description: "ODF VLAN 215 on bond1"
+        type: vlan
+        state: up
+        vlan:
+          base-iface: bond1
+          id: 215
+        ipv4:
+          enabled: false
+      - name: bond1-mvlan
+        description: "ODF macvlan on bond1 VLAN 215"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: bond1.215
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 20.1.15.103
+            prefix-length: 24
+    routes:
+      config:
+      - destination: 20.1.15.0/24
+        next-hop-interface: bond1-mvlan
+[root@bastion NMSTATE]#
+
+
+[root@bastion NMSTATE]# cat nncp-odf-master2.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-bond1-vlan-macvlan-master2-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master2.viairtel.samsungbsc.local
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: bond1
+        description: "ODF bond parent interface"
+        type: bond
+        state: up
+        ipv4:
+          enabled: false
+        link-aggregation:
+          mode: active-backup
+          options:
+            miimon: "100"
+            primary: ens1f1
+          port:
+          - ens1f1
+          - ens4f1
+      - name: bond1.215
+        description: "ODF VLAN 215 on bond1"
+        type: vlan
+        state: up
+        vlan:
+          base-iface: bond1
+          id: 215
+        ipv4:
+          enabled: false
+      - name: bond1-mvlan
+        description: "ODF macvlan on bond1 VLAN 215"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: bond1.215
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 20.1.15.102
+            prefix-length: 24
+    routes:
+      config:
+      - destination: 20.1.15.0/24
+        next-hop-interface: bond1-mvlan
+[root@bastion NMSTATE]#
+
+
+[root@bastion NMSTATE]# cat nncp-odf-master3.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-bond1-vlan-macvlan-master3-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master3.viairtel.samsungbsc.local
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: bond1
+        description: "ODF bond parent interface"
+        type: bond
+        state: up
+        ipv4:
+          enabled: false
+        link-aggregation:
+          mode: active-backup
+          options:
+            miimon: "100"
+            primary: ens1f1
+          port:
+          - ens1f1
+          - ens4f1
+      - name: bond1.215
+        description: "ODF VLAN 215 on bond1"
+        type: vlan
+        state: up
+        vlan:
+          base-iface: bond1
+          id: 215
+        ipv4:
+          enabled: false
+      - name: bond1-mvlan
+        description: "ODF macvlan on bond1 VLAN 215"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: bond1.215
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 20.1.15.104
+            prefix-length: 24
+    routes:
+      config:
+      - destination: 20.1.15.0/24
+        next-hop-interface: bond1-mvlan
+4.5.4.  create NNCP policies on a bonded interface (two interfaces → bond interface → MACVLAN)
+create separate NNCP policies for master nodes
+
+
+[root@bastion NMSTATE]# cat nncp-odf-master1.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-bond1-macvlan-master1-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master1.viairtel.samsungbsc.local
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: bond1
+        description: "ODF bond parent interface"
+        type: bond
+        state: up
+        ipv4:
+          enabled: false
+        link-aggregation:
+          mode: active-backup
+          options:
+            miimon: "100"
+            primary: ens1f1
+          port:
+          - ens1f1
+          - ens4f1
+      - name: bond1-mvlan
+        description: "ODF macvlan on bond1"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: bond1
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 20.1.15.103
+            prefix-length: 24
+    routes:
+      config:
+      - destination: 20.1.15.0/24
+        next-hop-interface: bond1-mvlan
+[root@bastion NMSTATE]#
+
+
+[root@bastion NMSTATE]# cat nncp-odf-master2.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-bond1-macvlan-master2-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master2.viairtel.samsungbsc.local
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: bond1
+        description: "ODF bond parent interface"
+        type: bond
+        state: up
+        ipv4:
+          enabled: false
+        link-aggregation:
+          mode: active-backup
+          options:
+            miimon: "100"
+            primary: ens1f1
+          port:
+          - ens1f1
+          - ens4f1
+      - name: bond1-mvlan
+        description: "ODF macvlan on bond1"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: bond1
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 20.1.15.102
+            prefix-length: 24
+    routes:
+      config:
+      - destination: 20.1.15.0/24
+        next-hop-interface: bond1-mvlan
+[root@bastion NMSTATE]#
+
+
+[root@bastion NMSTATE]# cat nncp-odf-master3.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-bond1-macvlan-master3-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master3.viairtel.samsungbsc.local
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: bond1
+        description: "ODF bond parent interface"
+        type: bond
+        state: up
+        ipv4:
+          enabled: false
+        link-aggregation:
+          mode: active-backup
+          options:
+            miimon: "100"
+            primary: ens1f1
+          port:
+          - ens1f1
+          - ens4f1
+      - name: bond1-mvlan
+        description: "ODF macvlan on bond1"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: bond1
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 20.1.15.104
+            prefix-length: 24
+    routes:
+      config:
+      - destination: 20.1.15.0/24
+        next-hop-interface: bond1-mvlan
