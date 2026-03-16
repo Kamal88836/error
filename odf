@@ -1162,3 +1162,98 @@ odf-operator-controller-manager-858cd578d9-8zmmd   2/2     Running   0          
 rook-ceph-operator-fbf5c458-c5rcx                  1/1     Running   0          2m38s
 ux-backend-server-65b69b95d4-7mqdl                 2/2     Running   0          2m47s
 srib@ocp-haproxy-4:~/ocp-configMNO$
+
+4.5.8. Create Separate Public Cluster Network NAD for storage:
+logic is to create a NAD for MULTUS network on top of the interface (might be single IF, bond or VLAN) which was created for MACVLAN in the above NNCP policies.
+
+
+
+ocs-public-cluster-with-pub-shim.yaml
+
+
+# single interface
+
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: ocs-public-cluster
+  namespace: openshift-storage
+spec:
+  config: '{
+    "cniVersion": "0.3.1",
+    "type": "macvlan",
+    "master": "ens4f1",
+    "mode": "bridge",
+    "ipam": {
+      "type": "whereabouts",
+      "range": "10.200.63.0/24",
+      "exclude": [
+         "10.200.63.2/32",   # add all the static IPs of nodes, previously added in NNCP configurations
+         "10.200.63.3/32",
+         "10.200.63.4/32"
+      ],
+      "routes": [
+         {"dst": "10.200.63.0/24"}
+      ]
+    }
+  }'
+
+//////////////////////////////////////////////////////
+
+# bond interface 
+
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: ocs-public-cluster
+  namespace: openshift-storage
+spec:
+  config: '{
+    "cniVersion": "0.3.1",
+    "type": "macvlan",
+    "master": "bond1",
+    "mode": "bridge",
+    "ipam": {
+      "type": "whereabouts",
+      "range": "20.1.15.0/24",
+      "exclude": [
+         "20.1.15.102/32",
+         "20.1.15.103/32",
+         "20.1.15.104/32",
+         "20.1.15.105/32",
+         "20.1.15.106/32"
+      ],
+      "routes": [
+         {"dst": "20.1.15.0/24"}
+      ]
+    }
+  }'
+Apply storage cluster NAD
+
+
+srib@ocp-haproxy-4:~/ocp-config$ oc apply -f ocs-public-cluster.yaml
+networkattachmentdefinition.k8s.cni.cncf.io/ocs-public-cluster created
+srib@ocp-haproxy-4:~/ocp-config$
+srib@ocp-haproxy-4:~/ocp-config$
+srib@ocp-haproxy-4:~/ocp-config$ oc get net-attach-def -A
+NAMESPACE           NAME                 AGE
+openshift-storage   ocs-public-cluster   8s
+srib@ocp-haproxy-4:~/ocp-config$
+
+
+
+ssrib@ocp-haproxy-4:~/ocp-configMNO$ oc describe net-attach-def -n openshift-storage ocs-public-cluster
+Name:         ocs-public-cluster
+Namespace:    openshift-storage
+Labels:       <none>
+Annotations:  <none>
+API Version:  k8s.cni.cncf.io/v1
+Kind:         NetworkAttachmentDefinition
+Metadata:
+  Creation Timestamp:  2025-11-12T10:59:58Z
+  Generation:          1
+  Resource Version:    6091264
+  UID:                 d79bba32-9349-4b01-b04f-8fe6660d49cb
+Spec:
+  Config:  { "cniVersion": "0.3.1", "type": "macvlan", "master": "ens4f1", "mode": "bridge", "ipam": { "type": "whereabouts", "range": "10.200.63.0/24", "exclude": [ "10.200.63.2/32", "10.200.63.3/32", "10.200.63.4/32" ], "routes": [ {"dst": "10.200.63.0/24"} ] } }
+Events:    <none>
