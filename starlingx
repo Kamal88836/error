@@ -1,0 +1,560 @@
+Created by junu76.kim 김준우 # System S/W R&D Group on Mar 12, 2026  16 minute read
+StarlingX Study Seminar
+기준 버전: StarlingX R11.0 (2025.11, Kernel 6.12.40, Debian Bullseye 11.x) 기준일: 2026-03-05
+
+1. Overview of StarlingX
+1.1 What is StarlingX?
+StarlingX is a fully integrated edge cloud software stack that provides everything you need to deploy edge clouds from 1 to 100 servers.
+
+출처: https://docs.starlingx.io/introduction/index-intro-27197f27ad41.html
+
+Main features:
+
+Operating system, storage, networking components, and cloud infrastructure in a single package for easy installation
+Software optimized for edge application requirements
+Pre-defined configurations to meet different edge cloud deployment needs
+Tested and released as a complete stack to ensure compatibility between open source components
+Built-in fault management and service management capabilities to provide high availability (HA) of user applications
+Optimized for security, ultra-low latency, ultra-high service uptime, and streamlined operations
+1.2 StarlingX Definition
+출처: https://docs.starlingx.io/introduction/terms.html
+
+StarlingX is an open-source, fully cloud infrastructure software stack for the edge used by the most demanding applications in industrial IoT, telecommunications, and other use cases. Through Kubernetes-based container orchestration and platform management layers, it provides a robust and flexible environment for all types of workloads, including containerization and bare metal.
+
+1.3 StarlingX 설치 방법 (Consuming StarlingX)
+출처: https://docs.starlingx.io/introduction/consuming.html
+
+3 ways to consume StarlingX:
+
+Open Source Direct Distribution	Download and use ISO images from StarlingX mirrors provided by Wind River. However, the image is not signed and does not support UEFI Secure Boot. No live software update
+Build an internal version	Our team provides acceptance testing, customization, self-image signing, and software patches and upgrades based on open source
+Using Vendor Products	Use of StarlingX-based products from commercial vendors (e.g., Wind River). Signed images, software updates, upgrades, and technical support
+Note: The community does not provide software patches for released ISOs, nor does it test upgrades between releases.
+
+1.4 Subprojects
+출처: https://docs.starlingx.io/introduction/index-intro-27197f27ad41.html
+
+StarlingX includes a number of subprojects:
+
+Bare Metal	Bare Metal Node Management
+Config	Manage system settings
+Distributed Cloud	Distributed Cloud Management
+Fault Management	Fault Management
+High Availability	High availability management
+Horizon Plugin (GUI)	Web GUI Plugin
+NFV	Network Function Virtualization Orchestration
+Software Updates	Software Updates
+Integration	Integrated Packages
+1.5 StarlingX R11.0 포함 버전
+출처: https://docs.starlingx.io/releasenotes/index.html (R11 릴리즈 노트), StarlingX 미러 R11 ISO
+
+Kernel	Linux 6.12.40 (Yocto, PREEMPT-RT)	R11 Release Notes
+Base OS	Debian Bullseye (11.x)	R11 ISO
+Kubernetes	1.29.2 / 1.30.6 / 1.31.5 / 1.32.2 (Multi Version)	R11 Release Notes
+Rook-Ceph	1.16.6	R11 Release Notes
+cert-manager	1.17.2	R11 Release Notes
+Istio	1.26.2 (Kiali 2.11.0)	R11 Release Notes
+FluxCD	Helm-controller 1.2.0 / source-controller 1.5.0	R11 Release Notes
+Metrics Server	Helm chart 3.12.2 (Server 0.7.2)	R11 Release Notes
+KubeVirt	1.5.0	R11 Release Notes
+nginx-ingress	ingress-nginx 4.13.3	R11 Release Notes
+2. Architecture Overview
+2.1 Software Stack Layer Structure
+출처: https://docs.starlingx.io/introduction/functional_overview.html
+
+┌──────────────────────────────────────┐
+│       Container or VM                │  ← 사용자 워크로드
+├──────────────────────────────────────┤
+│       Kubernetes                     │
+├──────────────────────────────────────┤
+│  StarlingX Service                   │
+│  Config / HA / Fault / NFV / DC      │
+├──────────────────────────────────────┤
+│  OSS Support                         │
+│  Ceph, PostgreSQL, Etcd, Apache      │
+├──────────────────────────────────────┤
+│  Hardened Linux OS                   │
+│  Kernel 6.12.40 + PREEMPT-RT / Debian│
+└──────────────────────────────────────┘
+Each layer description:
+
+Hardened Linux:
+
+6.12.40-based kernel
+Debian Bullseye (11.x) 기반
+Robust and efficient versioning, packaging, and atomic upgrades with OSTree
+OSS Supported Software:
+
+Apache, Ceph, PostgreSQL, Etcd, IPMI 등
+StarlingX Management Layer:
+
+Manage the installation, maintenance, and fault monitoring of dedicated bare metal servers
+Manage Hardware and Software Service Settings on Host Server
+Cluster management of HA master/control node clusters and software monitoring and recovery of all nodes
+Monitoring and reporting of hardware and software services for defects and logs
+Manage software updates across the kernel, OS, open source packages, StarlingX, and Kubernetes layers
+Kubernetes:
+
+Kubernetes container orchestration engine
+Native Docker Runtime
+Calico Container Networking
+Accelerated container networking with Multus and SR-IOV CNI
+Ceph 기반 Persistent Volume Claims
+로컬 Docker Registry
+Helm Package Manager + FluxCD
+2.2 Node Type: Controller / Worker / Storage
+출처: https://docs.starlingx.io/introduction/terms.html, https://docs.starlingx.io/deploy/index-deploy-da06a98b83b1.html
+
+Controller	Run the cloud management software (control plane). Run the K8s API Server, Controller Manager, and Scheduler. Configurable 2-node HA cluster (active/active or active/standby)
+Worker	Run only for application workloads. Up to 99 nodes
+Storage	Dedicated file and object storage. CEPH distributed storage run. Replication factor 2/3, journal caching, and class tiering supported. HA persistent storage (images, volumes, objects)
+All-in-One	Combine Controller + Worker + Storage functionality into a single node
+2.3 Deployment Options
+출처: https://docs.starlingx.io/introduction/deploy_options.html, https://docs.starlingx.io/introduction/deploy_config_overview.html
+
+AIO-SX (Simplex)	Run all edge cloud functions (control, storage, workloads) on a single node. For small, isolated edge sites that don't require HA
+AIO-DX (Duplex)	1-node operation + 1-node Active/Standby HA. High availability of all platform and application services
+Standard with Controller Storage	Controller 1~2 nodes + Worker 1~99 nodes. Controller also provides storage. Ideal for small storage needs
+Standard with Dedicated Storage	Controller + Worker + Dedicated Storage Nodes. Ideal for high-capacity storage needs
+Distributed Cloud	A single controller manages multiple remote nodes (subclouds). Geo-distributed multicloud at the data center ~ edge
+2.4 Kubernetes와 k3s 비교
+Here's a comparison of the Kubernetes stack included in StarlingX (standard K8s + platform bundle) with the lightweight distribution k3s. k3s is designed for a single binary and minimal dependencies, and does not include many of the features provided by StarlingX out of the box.
+
+Feature Comparison Table
+Orchestration	표준 Kubernetes (1.29~1.32 멀티 버전)	Lightweight Kubernetes (single version, single binary)
+Container Runtime	Native Docker Runtime	Default containerd (Docker is optional)
+Primary CNI	Calico	Basic Flannel (Calico installed separately)
+Additional Networking	Multus + SR-IOV CNI (가속 네트워킹)	No built-in supply, configure your own when needed
+Storage (PVC)	Ceph-based (Rook-Ceph) required, StorageClass auto-generated	기본 local-path-provisioner, Ceph/Rook은 별도 설치
+Local registry	로컬 Docker Registry 포함	Registry configurable, not platform default bundle
+Package/Deployment	Helm + FluxCD (included on the platform)	Helm available, FluxCD is installed separately
+Service Messages	Istio (Kiali 포함) 번들	None, install separately if required
+Virtualization	KubeVirt Bundle	None, install separately if required
+Certificates	cert-manager 번들	None, install separately if required
+Ingress	nginx-ingress 번들	Traefik Basic or Separate Installation
+Metrics	Metrics Server (플랫폼 포함)	Can be installed separately
+Platform Integration	System Setup, Node Management, HA· FM, Integrated with Distributed Cloud	Standalone, no platform integrations like above
+Summary of features that are not (or other) in K3S
+Runtime: StarlingX specifies Docker as the default runtime. k3s is containerd default.
+Networking: Integration settings with Calico, Multus, SR-IOV CNI, and platforms are not in the k3s default.
+Storage: Rook-Ceph/Ceph-based PVC and platform-managed storage configurations are not present in the k3s base.
+Platform bundles: Istio, FluxCD, KubeVirt, cert-manager, nginx-ingress, and Metrics Server are included in the platform on StarlingX, and k3s are all for additional installation and operation.
+Platform integration: System settings (DNS/NTP/PTP, OAM, collectd, GNSS/SyncE, stalld, etc.), node management (CPU isolation, Hugepage, SR-IOV, Worker profiles, BMC, Power Manager), fault management (FM), high availability (HA), and integration with distributed clouds are not available on k3s alone.
+3. Functional configuration (subproject details)
+3.1 System Configuration
+출처: https://docs.starlingx.io/system_configuration/kubernetes/index-sysconf-kub-78f0e1e9ca5a.html
+
+StarlingX system settings can be performed at any time after installation, and you can change the configuration data specified during installation or specify additional configuration data.
+
+Kubernetes prerequisites
+DNS Servers	Specify up to 3 DNS servers
+NTP Server	Specify up to 3 NTP servers. All hosts lock/unlock required for change
+PTP Settings	NTP alternatives. Sub-microsecond precision with hardware support. PTP4L, PHC2SYS, TS2PHC Service Support
+OAM IP	외부 API 접근용 IP (Floating, Controller-0/1, Gateway). IPv4/IPv6 듀얼스택 지원
+Timezone	Set system time zone
+collectd	Collect platform performance statistics (CPU, memory, filesystem, interface, PTP clock skew)
+Kernel Parameters	Runtime Kernel Parameter (SYSCTL) Changes
+GNSS/SyncE	GNSS monitoring and SyncE support (5G time synchronization)
+IPv4/IPv6 Dual Stack	Dual-stack networking for all interfaces
+Kubernetes 커스텀 설정	K8s Component Details
+stalld settings	Prevent starvation for low-priority tasks with Stall Daemon
+Core dump settings	Core Dump Handler and Crash Dump Manager Customization
+Note: NTP/PTP is set on a host-by-host basis, and you can change the time synchronization method of the host to NTP or PTP.
+
+3.2 Node Management
+출처: https://docs.starlingx.io/node_management/kubernetes/index-node-mgmt-kub-5ff5993b9c60.html
+
+Kubernetes node management
+Manage resource pools that are configured with Worker hosts. Add/remove hosts, replace them, adjust resources, change the Standard/Low-Latency profile mix, and more.
+
+Management Areas:
+
+Host Lifecycle	Manage the entire lifecycle of hosts, including adding, locking/unlocking, swacting, and deleting
+Host inventory	Automatic collection and query of the host's hardware information (CPU, memory, disk, NIC, etc.)
+Set CPU Core Behavior	Platform/application-specific core allocation, isolation setup
+Memory provisioning	Hugepage size, quantity, and platform memory allocation by host
+Node Interface	Ethernet, Aggregated Ethernet(LAG), VLAN, PCI-SRIOV 인터페이스 생성·삭제·설정
+Node Labels	Control workload placement with Kubernetes node labeling
+Worker performance profile	Changing the Standard ↔ Low-Latency Profile (Kernel Selection)
+File System Resize	Resizing the host's filesystem
+LLDP	Understand your network topology with Link Layer Discovery Protocol
+Hardware Sensors	Monitor hardware sensors such as temperature and voltage
+HW Accelerator	Intel N3000 FPGA, ACC100/ACC200 vRAN 가속기, Marvell Octeon NIC 지원
+BMC Provisioning	Baseboard Management Controller 설정 (원격 전원, 콘솔)
+Power Manager	Intel Speed Select Technology, etc. Power management, power metric collection
+3.3 Fault Management
+출처: https://docs.starlingx.io/fault-mgmt/kubernetes/fault-management-overview.html
+
+Administrators can view StarlingX fault management alarms and logs to monitor and respond to fault status.
+
+Approach:
+
+CLI: (Active Alarm Lookup), (Event Log Lookup)fm alarm-listfm event-list
+GUI (Horizon): Admin > Fault Management 메뉴
+Global Alarm Banner: Displays the number of active alarms by alarm severity at the top of every screen
+Active Alarms: List of currently set alarms (requires user action)
+Events: set/clear history of past alarms and customer logs
+Events Suppression: Individual events can be put into a suppressed state
+REST API: A Programmatic Approach
+SNMP: External NMS Interlock
+3.4 성능 관리 (Performance Management)
+출처: https://docs.starlingx.io/introduction/fault-and-performance-management-940c6f6b3f6e.html
+
+StarlingX uses the following platform statistics to collect and generate threshold events:collectd
+
+CPU utilization of platform cores
+Platform memory usage
+Platform file system usage
+Platform Interface Usage
+PTP Clock Skew Monitor
+collectd The threshold event triggers the Set/Clear of the StarlingX Fault Management Alarm.
+
+3.5 Storage
+출처: https://docs.starlingx.io/storage/kubernetes/
+
+StarlingX flexibly manages storage resources for controllers, workers, and storage hosts. Internally, Ceph uses distributed storage to support Kubernetes Persistent Volume Claims (PVC), and Rook Ceph, a containerized Ceph solution, is mandatory for new deployments. External storage also supports NetApp Trident (NAS/SAN) and Dell CSI (PowerMax, PowerStore, etc.).
+
+Storage backend	Internal Ceph (Rook Ceph), 외부 NetApp Trident, Dell CSI 드라이버
+PVC Support	ReadWriteOnce (Ceph RBD) + ReadWriteMany (CephFS) — StorageClass 자동 생성
+Rook Ceph 배포 모델	Controller (Basic) / Dedicated / Open — Automatically determines OSD placement and replication factors based on deployment configuration
+Rook Ceph Service	block, ecblock, filesystem, object (RGW) — 추가만 가능, 제거 불가
+OSD (Object Storage Daemon)	Physical disk 1:1 mapping Ceph data storage daemon. Up to 16 per host, SSD journal support
+Replication and HA	Replication Factor by Deployment Configuration (SX: 1~3, DX: 2, Standard: 2~3), Host/OSD Fault Domain
+Storage Tiers	Grouping of OSDs by performance (HDD/SSD/NVMe separate tiers) → PVC can be connected to specific tiers
+Controller Filesystem	Platform, Database, Etcd, Docker-distribution 등 DRBD 동기화 파일시스템
+Host Filesystem	Docker, Kubelet, Scratch, Logs, Backup — Resizeable by Host
+Performance Tuning	OSD 메모리· Bluestore 파라미터 Helm override, AIO용 Low Resource 프로파일
+3.6 Distributed Cloud
+출처: https://docs.starlingx.io/dist_cloud/kubernetes/overview-of-distributed-cloud.html, https://docs.starlingx.io/dist_cloud/kubernetes/distributed-cloud-architecture.html
+
+The StarlingX Distributed Cloud configuration supports edge computing solutions by providing central management and orchestration of the geographically distributed StarlingX system network.
+
+Core Design Principles:
+
+Deploy Network Function Cloudification (NFC) Worker resources locally for maximum responsiveness — NFC refers to the transition of network functions to a cloud-native environment, including telecom workloads such as 5G vRAN (vDU, vCU), and UPF. The computing resources of the worker nodes running these NFC workloads are placed locally at the edge (subcloud) to minimize network latency.
+Efficient management by concentrating management and control functions on the Central Cloud
+Support for a scalable number of StarlingX edge systems synchronized in a central region over L3 networks
+Each edge system scales from a single Simple to a Full Standard configuration with storage nodes
+┌──────────────────────────────┐
+│     Central Cloud            │  ← 관리/제어/오케스트레이션
+│  ┌────────┐ ┌──────────────┐ │     (중앙 집중)
+│  │Region  │ │System        │ │
+│  │One     │ │Controller    │ │
+│  └────────┘ └──────────────┘ │
+└──────────────┬───────────────┘
+               │ L3 Network (OAM + Management/Admin)
+      ┌────────┼────────┐
+      │        │        │
+┌─────┴──┐ ┌──┴─────┐ ┌┴───────┐
+│Subcloud│ │Subcloud│ │Subcloud│  ← NFC Worker 리소스
+│  #1    │ │  #2    │ │  #3    │    (로컬 배치 → 최대 응답성)
+│ (vDU)  │ │ (vCU)  │ │ (UPF)  │
+└────────┘ └────────┘ └────────┘
+Architectural Components:
+
+Central Cloud — Consists of RegionOne (physical platform management region) and System Controller (central management of subcloud addition, synchronization, alarm monitoring, and updates)
+Subclouds — StarlingX instances that host containerized applications. Simplex, Duplex, Standard, and any deployment can be configured. Authenticate with a local Identity Provider (Keystone, K8s Service Accounts) for autonomy and performance
+Subcloud status: Managed (synchronize immediately after setting change, normal operation) / Unmanaged (queue for setting changes, use during local maintenance, alarms will continue to be sent)
+Network:
+
+The subcloud connects to the System Controller through OAM Network + Management Network (or Admin Network) L3
+All System Controller ↔ Subcloud messaging uses admin REST API endpoint (HTTPS), certificates are automatically managed internally
+Autonomy:
+
+Synchronized distributed control plane reduces latency
+Autonomous control plane: All subcloud local services are up and running even if Northbound connectivity to the central region is lost.
+Each subcloud handles its own authentication locally, so there is no service interruption in the event of a central connection failure
+3.7 Data Networks
+출처: https://docs.starlingx.io/datanet/kubernetes/data-network-management-data-networks.html, https://docs.starlingx.io/introduction/terms.html, https://docs.starlingx.io/node_management/kubernetes/node_interfaces/interface-settings.html
+
+StarlingX data network management models the L2 network connected to the node interface and is a key factor in optimizing the performance of data traffic in the edge cloud.
+
+Define key concepts
+Application Network	The higher-level network that the container or VM uses for actual service traffic (e.g., K8s pod network, 5G vDU Fronthaul traffic network)
+Data Network	An underlying L2 connection that lays the foundation for the application network to operate. Acting as a bridge between physical NICs and virtual networks
+Physical Networks	OSI refers to the entire physical hardware infrastructure, including L1 (cable) + L2 (physical switch/Ethernet)
+VLAN (Virtual LAN)	A method of isolating and operating multiple logical L2 networks by assigning a virtual identifier (802.1Q Tag) on top of a single physical L2 network band.
+Interface Classes
+There are three main classes that you assign to interfaces for handling data traffic:
+
+data: An interface that connects to a virtual switch (vSwitch). It communicates through a software bridge and is used for general cloud traffic processing.
+pci-passthrough: Assign physical NIC hardware directly to specific containers/VMs. Performance is maximized by not going through an intermediate software layer, but it cannot be shared because it uses hardware exclusively.
+pci-sriov: A method of splitting a physical NIC into multiple virtual functions (VFs). High-performance communication is possible while multiple applications share hardware directly (essential for high-performance workloads such as 5G vRAN).
+SR-IOV (RootI/O Virtualization) is a hardware virtualization technology that allows a single physical PCIe device (e.g., NIC) to be used as multiple logical devices.
+
+5G vDU deployment example
+Port 1 (pci-sriov): Set to pci-sriov class→ create 8 VFs → Multiple vDU containers each receive VFs to handle Fronthaul traffic (ultra-low latency)
+Port 2 (data): Set to data class → manage → via vSwitch· Handling OAM traffic (regular traffic)
+Data Network 유형
+flat: A simple data network that maps 1:1 to the physical network
+VLANs: Operate by isolating multiple logical networks on top of a single physical network using VLAN IDs
+CLI Implementation and Architecture (system command)
+system datanetwork-list The same command is based on the userspace daemon (Service), not the kernel:
+
+CLI (cgts-client): Interprets user-entered commands and converts them into REST API requestssystem
+API (sysinv-api): The API server operating on the Controller node receives the request
+Backend (sysinv-conductor): The key daemon that handles the actual business logic
+DB (PostgreSQL): Writes configuration information to persistent storage
+Result: The daemon dynamically injects and manages network settings on each host based on the DB information.sysinv
+Network Topology View (GUI)
+The Admin > Platform > Data Network Topology menu in the Horizon web interface provides a graphical view of the physical and logical connection status between the data network and the worker host.
+
+Key CLI Commands
+# Data Network 생성
+system datanetwork-add <name> <type>        # type: flat, vlan
+
+# Data Network 목록 조회
+system datanetwork-list
+
+# 인터페이스에 Data Network 할당
+system interface-datanetwork-assign <hostname> <ifname> <datanetwork-name>
+How to set up SR-IOV (CLI)
+If you want to specify the number of VFs with the interface in the pci-sriov class, use the -c pci-sriov and -N <numvfs> options. The typical order is as follows.system host-if-modify
+
+Host lock (when Worker/Standard configured; AIO-SX can be omitted)
+system host-lock <hostname>
+Set interface classes and VF counts
+system host-if-modify -n <ifname> -m <mtu> -c pci-sriov -N <numvfs> [--vf-driver=netdevice|vfio] <hostname> <ethname>
+-c pci-sriov: Set the interface class to pci-sriov
+-N <numvfs>: Number of VFs to create (e.g. 8)
+--vf-driver=netdevice: Exposed from a container to a common network device (suitable for defaults, vDU, etc.)
+--vf-driver=vfio: When using DPDK, etc.
+<ethname>: physical port name (e.g. enp1s0f0). Confirmed bysystem host-if-list -a <hostname>
+Data Network 연결 (선택)
+system interface-datanetwork-assign <hostname> <ifname> <datanetwork-name>
+Unlock the Host
+system host-unlock <hostname>
+Example (port enp1s0f0 set to pci-sriov, 8 VFs, data network datanet-fronthaul connection):
+
+system host-lock compute-0
+system host-if-modify -m 1500 -n sriov1 -c pci-sriov -N 8 --vf-driver=netdevice compute-0 enp1s0f0
+system interface-datanetwork-assign compute-0 sriov1 datanet-fronthaul
+system host-unlock compute-0
+4. How it works — code-level analysis
+4.1 Source Code Structure
+출처: https://docs.starlingx.io/developer_resources/navigate_source_code.html
+
+StarlingX code is stored in a number of Git directories. Use the Android Type Manifest and the Android Repo tool to keep your local copy up to date.repo
+
+Tools Required:
+
+Git
+Android Repo Tool (simple Python script to install manually)
+Download source code:
+
+# 워크스페이스 생성
+mkdir -p $HOME/starlingx/
+
+# manifest 저장소 클론
+cd $HOME/starlingx/
+repo init -u https://opendev.org/starlingx/manifest -m default.xml
+
+# 저장소 동기화
+repo sync -j$(nproc)
+4.2 Build environment and ISO creation
+출처: https://docs.starlingx.io/developer_resources/build_guide.html
+
+Hardware Requirements: x86_64 Processor, 32GB+ RAM, 500GB+ HDD Software Requirements: Ubuntu, Docker, Android Repo Tool
+
+Debian build system — 5 containers (Kubernetes environment):
+
+stx-builder	Main Developer Build Container
+stx-pkgbuilder	Debian Package Builder (using sbuild)
+stx-repomgr	Debian local repository archive (using aptly)
+stx-lat-tool	ISO Image Builder
+stx-docker	Docker in Docker (Build Docker Images)
+Build flow:
+
+1. Minikube + Helm 설치
+2. StarlingX K8s 개발 환경 빌드 또는 다운로드
+3. stx-builder Pod 진입
+4. 패키지 빌드 → ISO 생성
+Main Instructions:
+
+# 환경 초기화 및 Pod 시작
+./stx-init-env --dockerhub-login
+stx control status    # 5개 컨테이너 Running 확인
+
+# 빌더 진입
+stx shell
+
+# 소스 다운로드
+downloader -s -B std,rt    # 소스
+downloader -b -B std,rt    # 바이너리
+
+# 패키지 빌드
+build-pkgs                 # 전체 빌드
+build-pkgs -p <패키지명>    # 단일 패키지
+build-pkgs --parallel 20   # 병렬 빌드
+
+# ISO 생성
+build-image
+ls -al /localdisk/deploy/*.iso
+4.3 Deployment Configurations
+출처: https://docs.starlingx.io/deploy/index-deploy-da06a98b83b1.html
+
+All deployments consist of a combination of Controller, Worker, and Storage hosts:
+
+Controller 호스트: Kubernetes Control Plane 실행
+Worker Host: Run Kubernetes application workloads
+Storage Host: Configure a dedicated bare metal Ceph cluster that is not part of a Kubernetes cluster (for K8s PVC)
+All-in-One Controller: Integrates the above features and runs Kubernetes Control Plane + workloads simultaneously
+All hosts can be configured with a Standard or Low-Latency profile, depending on the kernel choice
+5. In-depth analysis of kernel and OS layer
+5.1 Hardened Linux 기반
+출처: https://docs.starlingx.io/introduction/functional_overview.html
+
+StarlingX is based on Hardened Linux based on the Yocto Project:
+
+Yocto Project 커널:
+
+Stable Kernel Updates Keep Track Very Closely to Keep the Stable Kernel up to Date
+Mainline Provides Optimizations for Merged PREEMPT_RT: Based on Real-Time (RT) functionality, which has been officially incorporated upstream since kernel 6.12. Since 6.12.x alone does not allow RT to be tuned to the level of native activation and edge networks, StarlingX provides communication/edge-specific residual tuning patches (bugs/performance regression fixes) and stable low-latency kernel build configurations on an ongoing basis.
+Predictable and Detectable CVE Handling
+Debian Bullseye (11.x):
+
+A well-established Linux distribution supported by a large and mature open source community
+OSTree:
+
+Provide versioning, packaging, and upgrades for robust and efficient Linux systems
+Automatic rollback on update failure with atomic update
+Installer: Updated for Debian and OSTree
+
+Software Patching and Upgrade: Updating to Debian and OSTree
+
+5.2 Host Profiles: Standard vs Low-Latency
+출처: https://docs.starlingx.io/node_management/index-node-mgmt-cd0f9d8eaee6.html, https://docs.starlingx.io/deploy/index-deploy-da06a98b83b1.html, https://docs.starlingx.io/node_management/kubernetes/changing-a-worker-host-performance-profile.html
+
+All hosts can be configured with the following profiles, depending on the kernel selection:
+
+Standard	Use the default kernel. Ideal for typical data throughput-driven workloads
+Low-Latency	preempt-rt Based on the use of a real-time kernel. Ideal for workloads such as 5G vRAN that require ultra-low latency
+1. Scope of the profile
+The stated profile is applied to the "StarlingX Host OS (Worker Host Kernel)" itself, which is the underlying (bottom) rather than the inside of the K8s Pod that rises on top of it.
+
+Only when the Host OS is powered by a real-time kernel can the K8s pods created on top of it be guaranteed true end-to-end ultra-low latency performance through 1:1 pinning and isolation of CPU cores.preempt-rt
+2. Internal behavior when changing profiles
+Rather than changing a single configuration file, the entire kernel layer is reversed through a change in the logical set of Sysinv DB.
+
+Boot image replacement: The standard kernel is replaced with a dedicated kernel (e.g., ) compiled boot image.CONFIG_PREEMPT_RTvmlinuz-*-rt-amd64
+Disable CPU watchdog: Disable the Per-CPU scheduler watchdog () to prevent kernel timer interrupts from interfering with real-time tasks. (This increases the kernel fault detection time)nmi_watchdog=0
+Enhanced Core Isolation: When assigning a specific CPU core to a function, boot parameters such as , and are automatically injected, completely blocking the Host kernel from occupying that core for thread/timer purposes.Isolatednohz_fullrcu_nocbskthread_cpus
+Increased power consumption: To optimize latency, certain cores are prevented from entering C-State (sleep mode), resulting in significant power consumption regardless of CPU occupancy.
+3. Procedure for applying the profile
+When adding a Worker Node (GUI/CLI): Change to a command in the Controller and then reboot the host (Unlock) to apply.system host-kernel-modify <worker-node> lowlatency
+Initial AIO Node Installation: The AIO environment, as a controller and worker, is set up in the Bootstrap stage, where the Ansible configuration begins immediately after the ISO is installed. The file is explicitly parametered to hold the framework, and immediately after the bootstrap script is executed, it reboots by replacing the kernel itself./home/sysadmin/localhost.ymlkernel: lowlatency
+6. 상용 OS/플랫폼 비교 — Debian · Ubuntu Server · WRCP
+Type	Open Source Edge Cloud Platform	Open Source Universal Linux	Open Source Server Linux (Canonical)	Commercial (based on StarlingX)
+Kernel	6.12.40 (Yocto+RT)	6.1 (Bookworm)	6.20 (26.04 LTS)	Based on StarlingX kernel
+Package-based	Debian + OSTree	APT (deb)	APT (deb) + Snap	Debian + OSTree (StarlingX 동일)
+Edge Customization	✅ Ultra-low latency, HA, distributed cloud	❌ General purpose	⚠️ MicroK8s/Ubuntu Core	✅ StarlingX+ Commercial Enhancement
+K8s Integration	✅ Built-in	❌ Separate installation	⚠️ MicroK8s 등 선택	✅ Built-in
+HAS	✅ 내장 (Pacemaker + SM)	❌ Separate configuration	❌ Separate configuration	✅ Built-in + 99.9999% SLA
+Fault Management	✅ Built-in (FM)	❌ None	❌ None	✅ Built-in + Commercial Support
+Distributed Cloud	✅ Up to 5,000 subclouds	❌ None	❌ None	✅ Same
+Real-time kernel	✅ PREEMPT-RT 내장	⚠️ Separate Build	✅ PREEMPT-RT 내장	✅ Built-in
+Licensing	Apache 2.0	DFSG (Free)	Free + Ubuntu Pro (유료)	Paid Subscriptions
+Technical Support	Community	Community	Canonical (Additional charge)	Wind River (유료, 24/7)
+7. Security Architecture
+출처: https://docs.starlingx.io/security/kubernetes/index-security-kub-81153c1254c3.html, https://docs.starlingx.io/security/index-security-84d0d8aa401b.html#kubernetes
+
+StarlingX's security architecture refers to a specialized security system that is enforced and integrated at the platform level to protect distributed edge cloud environments, in addition to the basic security features provided by typical Linux or Kubernetes (RBAC, Secure Boot, hardware vulnerability patching, etc.).
+
+7.1 Kernel and OS layer security: Transparent intranet encryption (IPsec)
+StarlingX provides built-in kernel-level encryption to protect multi-node communication that is geographically distributed or easily exposed at the infrastructure floor level.
+
+IPsec (Forced Encryption): The daemon controls the network stack (XFRM) of the Linux kernel. The entire traffic to and from the distributed system, such as the controller and the worker node, is encrypted by snatching the packet directly from the kernel end just before the packet leaves the LAN card (NIC).strongSwan
+Features: Even if the K8s app transmits the network in plaintext on top of it, there is no need for separate application security settings with "transparent encryption" encryption that is forcibly encrypted from the OS floor.
+7.2 Application and Platform Layer Security (System Apps Integrated Security Controls)
+To overcome the limitations of simple K8s basic functions (Secret, NetworkPolicy, etc.), StarlingX packages security components in the form of system apps, which are deployed and managed at the time of initial bootstrapping.
+
+Enforce Container Image Integrity (Portieris)
+
+It is an open-source signature verifier led by IBM, and the container runtime intervenes via K8s webhook communication before the image is launched.
+Unified management of platform-wide certificates (cert-manager-based automation)
+
+Centrally control the certificate issuance and renewal lifecycle of all touchpoints essential to the operation of cluster systems, including StarlingX REST API, web dashboard (GUI), and OAM network communication.
+cert-manager daemon (container) manages Certificate resources
+Auto-renew before expiration and inject into that service
+자동화된 시크릿 금고 통합 (HashiCorp Vault & Barbican)
+
+Integrated HashiCorp Vault (for K8s) and Barbican (API repository for platforms such as BMC passwords) to address vulnerabilities in plaintext storage
+In particular, StarlingX's Vault-manager container automatically handles the complex initialization and unlocking (unsealing) of the Vault server, simplifying the operational phase for edge environments.
+Pod-level AppArmor profile global automation
+
+While AppArmor itself is a regular Linux kernel feature, StarlingX integrates the Security Profiles Operator daemon to make it easier to handle in the K8s environment.
+Security Profiles Operator
+define AppArmor (and Seccomp) profiles as K8s resources (e.g. SecurityProfile),
+The Operator synchronizes the profile to each node and concatenates it with a nnotation of the pod, as if "this pod uses this profile".
+Starl ingX adds Horizon (web dashboard) to it, allowing you to apply and synchronize container defense profiles for each node, active/inactive, and edge-specific container defense profiles to many nodes with a single click.
+8. History of key feature additions by release
+출처: https://docs.starlingx.io/releasenotes/index.html
+
+R1.0	2018.10	Initial release, OVS-DPDK, PTP support, Ceph external backend
+R2.0	2019.09	Stability Enhancements, Bug Fixes
+R3.0	2019.12	Kubernetes integration is in full swing, supporting container-based workloads
+R4.0	2020.08	Introduced Distributed Cloud Architecture, L3-based Subcloud Management
+R5.0	2021.05	EdgeWorker nodes, Nvidia GPU support, FPGA update orchestration, Vault security, PTP notification
+R6.0	2021.12	Kernel 5.10 upgrade, start Debian transition, cert-manager, auditd, Duplex migration
+R7.0	2022.07	Debian 기반 TP 릴리스, Istio Service Mesh, Pod Security Admission, PTP GNSS/SyncE, 병렬 DC 오케스트레이션
+R8.0	2023.02	Debian 전환 완료 (Linux 5.10 Yocto), K8s 업그레이드, B&R 강화, O-RAN O2 IMS/DMS, RBAC 강화
+R9.0	2024.04	K8s 1.24-1.27, 이중 시스템 클록 PTP, LUKS 디스크 암호화, AppArmor, Intel E810 NIC, Power Manager
+R10.0	2025.02	Kernel 6.6, USM framework, IPv4/IPv6 dual-stack, 5,000 subclouds, Harbor registry
+R11.0	2025.11	Kernel 6.12.40, IPSec Enhancements, Debian Upgrades, stalld Resource Management, USM Rollback/B&R Enhancements, OIDC/MFA
+9. Main Network Types
+출처: https://docs.starlingx.io/introduction/terms.html
+
+Management Network	Internal StarlingX infrastructure management monitoring and control. Also used for Ceph storage cluster access. Typically 10GE, external private	All nodes required
+OAM Network	모든 외부 StarlingX 플랫폼 API 노출 (REST API, Horizon, SSH, SNMP). 일반적으로 1GE	Controller만 필수
+PXEBoot Network	IPv4 network where nodes boot from the Controller	All nodes
+Data Network(s)	pci-passthrough/sriov interface, used in hosted containers/VMs	Worker / All-in-One만
+IPMI Network	An optional network to which the IPMI interfaces of all nodes connect	Optional
+9.1 Management Network
+Roles
+Control, state synchronization, and monitoring traffic between Controller–Worker–Storage
+Ceph (Rook-Ceph) storage cluster communication
+K8s control plane (API Server, etc.), communication between services within the platform
+Features: Interior only, no external exposure, typically constructed with 10GE. IPsec (strongSwan + XFRM) can be applied to this section to transparently encrypt traffic between nodes.
+Connection: All nodes must be connected to this network.
+9.2 OAM Network (Operations, Administration and Maintenance)
+Roles
+Externally accessible platform APIs only
+REST APIs, web dashboards (Horizon), SSH, SNMP, etc. are served by the IP of this network
+Features: More like "the only managed network with external exposure", usually 1GE. Certificates are issued and renewed with cert-manager and protected by TLS (HTTPS).
+Connection: Controller only required. OAM IP can be set to Floating / Controller-0·1 / Gateway, etc. (IPv4/IPv6 dual-stack supported).
+9.3 PXEBoot Network (PXE 부팅 네트워크)
+Roles
+The section where the node boots into the network (PXE) to the image provided by the Controller without disk
+IPv4-only network used for installation and provisioning
+Features: Traditional PXE structure to receive IP/boot information via DHCP, bootloader/kernel/initrd via TFTP.
+Connection: All nodes must be connected to this network and able to boot PXE upon installation/reinstallation.
+9.4 Data Network(s) (Data Network)
+Roles
+Application traffic only (5G vDU Fronthaul, VM/container data plane, etc.)
+L2-based network decoupled from management traffic (Management/OAM)
+Features
+pci-passthrough: Assign a physical NIC directly to a specific container/VM
+pci-sriov: Splitting a NIC into multiple VFs to share multiple workloads with high performance
+data(vSwitch): Through the software bridge, normal traffic
+Connection: Worker / All-in-One only. Not used in Controller-only configurations.
+9.5 IPMI Network
+Roles
+Out-of-band management dedicated to server BMC (Baseboard Management Controller)
+Power on/off, console, hardware monitoring, etc.
+Feature: Optional. It is common to separate it into a separate L2.
+Connectivity: IPMI ports on all nodes can be tied to this network.
+10. Summary and Q&A
+10.1 핵심 요약 (Key Takeaways)
+Fully integrated stack: Provides a single package that integrates OS ~ K8s ~ management layers into a single package
+Flexible deployment: Scale to AIO-SX (1 server) ~ Distributed Cloud (thousands of subclouds)
+High availability: Built-in fault management (FM) + service management (SM)
+Hardened Linux: Yocto-based kernel + PREEMPT-RT + OSTree atomic update
+Accelerated Networking: Multus + SR-IOV + OVS-DPDK Native Support
+Distributed Cloud: Autonomous Subcloud + Central Orchestration
+다층 보안: TLS, RBAC, Vault, IPsec, Secure Boot, AppArmor
+10.2 References
+StarlingX Official Site
+StarlingX Official Documentation
+Source Code (OpenDev)
+StarlingX 미러 (ISO)
+10.3 Q&A / Discussion
