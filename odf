@@ -1022,3 +1022,143 @@ Status:
   Discovered Time Stamp:  2025-10-10T11:49:12Z
 Events:                   <none>
 srib@ocp-haproxy-4:~/ocp-configMNO$
+
+
+localvolumeset.yaml Collapse source
+
+
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeSet
+metadata:
+ name: local-block
+ namespace: openshift-local-storage
+spec:
+ nodeSelector:
+   nodeSelectorTerms:
+     - matchExpressions:
+         - key: cluster.ocs.openshift.io/openshift-storage
+           operator: In
+           values:
+             - ""
+ storageClassName: localblock
+ volumeMode: Block
+ fstype: ext4
+ maxDeviceCount: 1
+ deviceInclusionSpec:
+   deviceTypes:
+   - disk
+   deviceMechanicalProperties:
+   - NonRotational
+   minSize: "1Ti"
+Apply Local Volume Set
+
+
+srib@ocp-haproxy-4:~/ocp-config$ oc create -f localvolumeset.yaml
+localvolumeset.local.storage.openshift.io/local-block created
+srib@ocp-haproxy-4:~/ocp-config$
+Verify Collapse source
+
+
+# 3 locla volume PVs must come up 
+srib@ocp-haproxy-4:~/ocp-configMNO$ oc get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+local-pv-1d0efbc8   1788Gi     RWO            Delete           Available           localblock     <unset>                          68s
+local-pv-6d780700   1788Gi     RWO            Delete           Available           localblock     <unset>                          69s
+local-pv-ce3181ac   1788Gi     RWO            Delete           Available           localblock     <unset>                          69s
+srib@ocp-haproxy-4:~/ocp-configMNO$
+srib@ocp-haproxy-4:~/ocp-configMNO$
+srib@ocp-haproxy-4:~/ocp-configMNO$
+srib@ocp-haproxy-4:~/ocp-configMNO$ oc get pods -n openshift-local-storage -o wide | grep "diskmaker-manager"
+diskmaker-manager-2gbqj                   2/2     Running   0          2m18s   10.129.0.80    master3.lab4.srib-lab-ocp.lan   <none>           <none>
+diskmaker-manager-4m6fz                   2/2     Running   0          2m18s   10.128.0.111   master2.lab4.srib-lab-ocp.lan   <none>           <none>
+diskmaker-manager-xkvml                   2/2     Running   0          2m18s   10.130.0.73    master1.lab4.srib-lab-ocp.lan   <none>           <none>
+srib@ocp-haproxy-4:~/ocp-configMNO$
+
+4.5.7. Install ODF Operator
+
+
+ocs-odf-operator.yaml Collapse source
+
+
+apiVersion: v1
+kind: Namespace
+metadata:
+ labels:
+   openshift.io/cluster-monitoring: "true"
+ name: openshift-storage
+ annotations:
+   workload.openshift.io/allowed: management
+spec: {}
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+ name: openshift-storage-operatorgroup
+ namespace: openshift-storage
+spec:
+ targetNamespaces:
+ - openshift-storage
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+ name: odf-operator
+ namespace: openshift-storage
+spec:
+ channel: "stable-4.18"
+ installPlanApproval: Automatic
+ name: odf-operator
+ source: cs-redhat-operator-index-v4-18
+ sourceNamespace: openshift-marketplace
+Apply OCS ODF Operator
+
+
+srib@ocp-haproxy-4:~/ocp-config$ oc apply -f odf-operator.yaml
+namespace/openshift-storage created
+operatorgroup.operators.coreos.com/openshift-storage-operatorgroup created
+subscription.operators.coreos.com/odf-operator created
+srib@ocp-haproxy-4:~/ocp-config$
+Verify Collapse source
+
+
+#make sure to have all the dependent operators downloaded in your local image repo
+
+srib@ocp-haproxy-4:~/ocp-configMNO$ oc get sub -n openshift-storage
+NAME                                                                                       PACKAGE                   SOURCE                           CHANNEL
+cephcsi-operator-stable-4.18-cs-redhat-operator-index-v4-18-openshift-marketplace          cephcsi-operator          cs-redhat-operator-index-v4-18   stable-4.18
+mcg-operator-stable-4.18-cs-redhat-operator-index-v4-18-openshift-marketplace              mcg-operator              cs-redhat-operator-index-v4-18   stable-4.18
+ocs-client-operator-stable-4.18-cs-redhat-operator-index-v4-18-openshift-marketplace       ocs-client-operator       cs-redhat-operator-index-v4-18   stable-4.18
+ocs-operator-stable-4.18-cs-redhat-operator-index-v4-18-openshift-marketplace              ocs-operator              cs-redhat-operator-index-v4-18   stable-4.18
+odf-csi-addons-operator-stable-4.18-cs-redhat-operator-index-v4-18-openshift-marketplace   odf-csi-addons-operator   cs-redhat-operator-index-v4-18   stable-4.18
+odf-dependencies                                                                           odf-dependencies          cs-redhat-operator-index-v4-18   stable-4.18
+odf-operator                                                                               odf-operator              cs-redhat-operator-index-v4-18   stable-4.18
+odf-prometheus-operator-stable-4.18-cs-redhat-operator-index-v4-18-openshift-marketplace   odf-prometheus-operator   cs-redhat-operator-index-v4-18   stable-4.18
+recipe-stable-4.18-cs-redhat-operator-index-v4-18-openshift-marketplace                    recipe                    cs-redhat-operator-index-v4-18   stable-4.18
+rook-ceph-operator-stable-4.18-cs-redhat-operator-index-v4-18-openshift-marketplace        rook-ceph-operator        cs-redhat-operator-index-v4-18   stable-4.18
+srib@ocp-haproxy-4:~/ocp-configMNO$
+srib@ocp-haproxy-4:~/ocp-configMNO$ oc get csv -n openshift-storage
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.18.11-rhodf          CephCSI operator                   4.18.11-rhodf   cephcsi-operator.v4.18.10-rhodf          Succeeded
+mcg-operator.v4.18.11-rhodf              NooBaa Operator                    4.18.11-rhodf   mcg-operator.v4.18.10-rhodf              Succeeded
+ocs-client-operator.v4.18.11-rhodf       OpenShift Data Foundation Client   4.18.11-rhodf   ocs-client-operator.v4.18.10-rhodf       Succeeded
+ocs-operator.v4.18.11-rhodf              OpenShift Container Storage        4.18.11-rhodf   ocs-operator.v4.18.10-rhodf              Succeeded
+odf-csi-addons-operator.v4.18.11-rhodf   CSI Addons                         4.18.11-rhodf   odf-csi-addons-operator.v4.18.10-rhodf   Succeeded
+odf-dependencies.v4.18.11-rhodf          Data Foundation Dependencies       4.18.11-rhodf   odf-dependencies.v4.18.10-rhodf          Succeeded
+odf-operator.v4.18.11-rhodf              OpenShift Data Foundation          4.18.11-rhodf   odf-operator.v4.18.10-rhodf              Succeeded
+odf-prometheus-operator.v4.18.11-rhodf   Prometheus Operator                4.18.11-rhodf   odf-prometheus-operator.v4.18.10-rhodf   Succeeded
+recipe.v4.18.11-rhodf                    Recipe                             4.18.11-rhodf   recipe.v4.18.10-rhodf                    Succeeded
+rook-ceph-operator.v4.18.11-rhodf        Rook-Ceph                          4.18.11-rhodf   rook-ceph-operator.v4.18.10-rhodf        Succeeded
+srib@ocp-haproxy-4:~/ocp-configMNO$
+srib@ocp-haproxy-4:~/ocp-configMNO$
+srib@ocp-haproxy-4:~/ocp-configMNO$
+srib@ocp-haproxy-4:~/ocp-configMNO$ oc get pods -n openshift-storage
+NAME                                               READY   STATUS    RESTARTS   AGE
+ceph-csi-controller-manager-56987cb984-q59mb       2/2     Running   0          3m5s
+csi-addons-controller-manager-56f574f94b-gmvsc     2/2     Running   0          3m16s
+noobaa-operator-6fb787ddb7-snn22                   1/1     Running   0          2m41s
+ocs-operator-57b49f8fcf-5gnst                      1/1     Running   0          2m47s
+odf-console-55d645d48-wfx7z                        1/1     Running   0          3m49s
+odf-operator-controller-manager-858cd578d9-8zmmd   2/2     Running   0          3m49s
+rook-ceph-operator-fbf5c458-c5rcx                  1/1     Running   0          2m38s
+ux-backend-server-65b69b95d4-7mqdl                 2/2     Running   0          2m47s
+srib@ocp-haproxy-4:~/ocp-configMNO$
