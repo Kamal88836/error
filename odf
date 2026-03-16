@@ -1257,3 +1257,61 @@ Metadata:
 Spec:
   Config:  { "cniVersion": "0.3.1", "type": "macvlan", "master": "ens4f1", "mode": "bridge", "ipam": { "type": "whereabouts", "range": "10.200.63.0/24", "exclude": [ "10.200.63.2/32", "10.200.63.3/32", "10.200.63.4/32" ], "routes": [ {"dst": "10.200.63.0/24"} ] } }
 Events:    <none>
+
+
++++
+
+
+4.5.10. Install Storage Cluster:
+
+storagecluster.yaml Collapse source
+
+
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+ name: ocs-storagecluster
+ namespace: openshift-storage
+spec:
+ manageNodes: false
+ resources:
+   mds:
+     limits:
+       cpu: "2"
+       memory: "8Gi"
+     requests:
+       cpu: "2"
+       memory: "8Gi"
+ monDataDirHostPath: /var/lib/rook
+ storageDeviceSets:
+ - count: 1  # <-- Modify count to desired value. For each set of 3 disks increment the count by 1.
+   dataPVCTemplate:
+     spec:
+       accessModes:
+       - ReadWriteOnce
+       resources:
+         requests:
+           storage: "1000Gi"  # <-- This should be changed as per storage size. Minimum 100 GiB and Maximum 4 TiB
+       storageClassName: localblock
+       volumeMode: Block
+   name: ocs-deviceset
+   placement: {}
+   portable: false
+   replica: 3
+   resources:
+     limits:
+       cpu: "2"
+       memory: "5Gi"
+     requests:
+       cpu: "2"
+       memory: "5Gi"
+ network:
+   provider: multus
+   selectors:
+     public: ocs-public-cluster
+Apply OCS ODF Operator
+
+
+srib@ocp-haproxy-4:~/ocp-config$ oc apply -f storagecluster.yaml
+storagecluster.ocs.openshift.io/ocs-storagecluster created
+srib@ocp-haproxy-4:~/ocp-config$
