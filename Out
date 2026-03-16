@@ -1,0 +1,184 @@
+To verify if there are network packet drops on a Linux/OpenShift node, you should check at 4 different layers:
+
+1️⃣ NIC (hardware)
+2️⃣ Linux interface
+3️⃣ OVS bridge
+4️⃣ Kernel softnet queue
+
+I’ll show the exact commands used in production troubleshooting.
+
+
+---
+
+1️⃣ Check Linux Interface Drops
+
+First check /proc/net/dev.
+
+cat /proc/net/dev
+
+Example output:
+
+ens4f0:  packets errs drop fifo frame compressed multicast
+         27003102 0    5    0    0     0         0
+
+Focus on:
+
+Field	Meaning
+
+errs	Packet errors
+drop	Kernel dropped packets
+fifo	Queue overflow
+frame	Frame errors
+
+
+Quick check for drops:
+
+cat /proc/net/dev | egrep -v "0\s+0\s+0\s+0"
+
+Or per interface:
+
+ip -s link show ens4f0
+
+Example:
+
+RX: bytes  packets  errors  dropped  overrun  mcast
+
+If dropped > 0, packets are lost.
+
+
+---
+
+2️⃣ Check NIC Hardware Drops
+
+Linux may not show NIC hardware drops. Use:
+
+ethtool -S ens4f0
+
+Important counters:
+
+rx_missed_errors
+rx_no_buffer_count
+rx_fifo_errors
+rx_dropped
+tx_dropped
+
+If these increase → NIC queue congestion.
+
+You can monitor live:
+
+watch -n1 "ethtool -S ens4f0 | egrep 'drop|error'"
+
+
+---
+
+3️⃣ Check OVS Drops (Very Important for OpenShift)
+
+Since OpenShift uses OVS bridges (br-ex, br-int):
+
+ovs-ofctl dump-ports br-ex
+
+Example:
+
+port 1:
+rx pkts=100000 drop=0
+tx pkts=90000 drop=5
+
+If drop increases → OVS datapath issue.
+
+Also check datapath:
+
+ovs-appctl dpif/show
+
+
+---
+
+4️⃣ Check Kernel Softnet Drops (Most Common Problem)
+
+Linux kernel drops packets when CPU can't process them.
+
+Check:
+
+cat /proc/net/softnet_stat
+
+Second column indicates drops.
+
+Readable version:
+
+awk '{print $2}' /proc/net/softnet_stat
+
+If values increase → CPU networking bottleneck.
+
+Monitor:
+
+watch -n1 cat /proc/net/softnet_stat
+
+
+---
+
+5️⃣ Check OpenShift OVN Tunnel Drops
+
+Since OVN uses Geneve tunnels:
+
+ip -s link show genev_sys_6081
+
+Look for:
+
+RX errors
+RX dropped
+
+
+---
+
+6️⃣ Check System-Wide Network Statistics
+
+Best quick overview:
+
+sar -n DEV 1
+
+Look for:
+
+rxdrop/s
+txdrop/s
+rxerr/s
+txerr/s
+
+
+---
+
+7️⃣ Fast Production Method (Recommended)
+
+Run these 3 commands:
+
+ip -s link
+
+ethtool -S <nic>
+
+cat /proc/net/softnet_stat
+
+If all three show 0 drops, your network is healthy.
+
+
+---
+
+⚠️ Based on your earlier output
+
+Your node showed:
+
+RxErrs = 0
+RxFifo = 0
+RxFrame = 0
+
+So no NIC errors detected.
+
+But to confirm fully you should check:
+
+ethtool -S ens4f0
+
+and
+
+softnet_stat
+
+
+---
+
+✅ If you want, I can also show the 6 most common network drop causes in OpenShift clusters (real production cases) and how to detect each one quickly. It will help a lot in troubleshooting.
