@@ -137,3 +137,197 @@ The different configurations are as below :
  single interface → VLAN → MACVLAN
  two interfaces → bond interface → MACVLAN
  two interfaces → bond interface → VLAN → MACVLAN
+
+
+
+
+4.5.1.  create NNCP policies on a single interface (single interface → MACVLAN)
+create separate NNCP policies for master nodes
+
+
+# create separate NNCP policies for master nodes, on a single NW interface
+Redhat Guidelines:
+For static IP management, each node must have a different NodeNetworkConfigurationPolicy.
+Select separate nodes for each policy to configure static networks.
+A “shim” interface is used to connect hosts to the Multus public network using the same technology as the Network Attachment Definition will use.
+The host’s “shim” must be of the same type as planned for pods, macvlan here.
+The interface must match the Multus public network interface selected in planning, ens4f1 in this example.
+The ipv4 section configures node IP addresses on the Multus public network.
+IPs assigned to this node’s shim must match the plan. This example uses 110.200.63.0/22 for node IPs on the Multus public network.
+For static IP management, don’t forget to change the IP for each node.
+The routes section instructs nodes how to reach pods on the Multus public network.
+
+
+
+srib@ocp-haproxy-4:~/ocp-configMNO$ cat nncp-odf-master1.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-pub-shim-master1 
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master1.lab4.srib-lab-ocp.lan
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: odf-pub-shim         
+        description: "ODF public shim"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: ens4f1
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+            - ip: 10.200.63.2
+              prefix-length: 24
+    routes:
+      config:
+        - destination: 10.200.63.0/24
+          next-hop-interface: odf-pub-shim
+srib@ocp-haproxy-4:~/ocp-configMNO$
+srib@ocp-haproxy-4:~/ocp-configMNO$ cat nncp-odf-master2.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-pub-shim-master2
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master2.lab4.srib-lab-ocp.lan
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: odf-pub-shim
+        description: "ODF public shim"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: ens4f1
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+            - ip: 10.200.63.3
+              prefix-length: 24
+    routes:
+      config:
+        - destination: 10.200.63.0/24
+          next-hop-interface: odf-pub-shim
+srib@ocp-haproxy-4:~/ocp-configMNO$
+
+
+srib@ocp-haproxy-4:~/ocp-configMNO$ cat nncp-odf-master3.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-pub-shim-master3
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: master3.lab4.srib-lab-ocp.lan
+    node-role.kubernetes.io/master: ""
+  desiredState:
+    interfaces:
+      - name: odf-pub-shim
+        description: "ODF public shim"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: ens4f1
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+            - ip: 10.200.63.4
+              prefix-length: 24
+    routes:
+      config:
+        - destination: 10.200.63.0/24
+          next-hop-interface: odf-pub-shim
+srib@ocp-haproxy-4:~/ocp-configMNO$
+4.5.2.  create NNCP policies on a single interface with VLAN (single interface → VLAN → MACVLAN)
+create separate NNCP policies for master nodes
+
+
+[root@bastion NMSTATE]# cat nncp-odf-worker1.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-bond1-vlan-macvlan-worker1-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: worker1.viairtel.samsungbsc.local
+  desiredState:
+    interfaces:
+      - name: bond1.215
+        description: "ODF VLAN 215 on bond1"
+        type: vlan
+        state: up
+        vlan:
+          base-iface: ens1f1
+          id: 215
+        ipv4:
+          enabled: false
+      - name: bond1-mvlan
+        description: "ODF mvlan on single IF 215"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: bond1.215
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 20.1.15.105
+            prefix-length: 24
+    routes:
+      config:
+      - destination: 20.1.15.0/24
+        next-hop-interface: bond1-mvlan
+[root@bastion NMSTATE]#
+[root@bastion NMSTATE]#
+[root@bastion NMSTATE]# cat nncp-odf-worker2.yaml
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: odf-bond1-vlan-macvlan-worker2-policy
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: worker2.viairtel.samsungbsc.local
+  desiredState:
+    interfaces:
+      - name: bond1.215
+        description: "ODF VLAN 215 on bond1"
+        type: vlan
+        state: up
+        vlan:
+          base-iface: ens1f1
+          id: 215
+        ipv4:
+          enabled: false
+      - name: bond1-mvlan
+        description: "ODF mvlan on single IF 215"
+        type: mac-vlan
+        state: up
+        mac-vlan:
+          base-iface: bond1.215
+          mode: bridge
+          promiscuous: true
+        ipv4:
+          enabled: true
+          dhcp: false
+          address:
+          - ip: 20.1.15.106
+            prefix-length: 24
+    routes:
+      config:
+      - destination: 20.1.15.0/24
+        next-hop-interface: bond1-mvlan
