@@ -1,21 +1,162 @@
-243 / 243 (42s) [======================================================================================================================================] 100 %
- ✓   (0s) redhat-operator-index:v4.19 ➡️  bastion.srib-lab-ocp.lan:8443/redhat/
-2026/03/18 13:39:43  [INFO]   : === Results ===
-2026/03/18 13:39:43  [INFO]   :  ✓  190 / 190 release images mirrored successfully
-2026/03/18 13:39:43  [INFO]   :  ✓  51 / 51 operator images mirrored successfully
-2026/03/18 13:39:43  [INFO]   :  ✓  2 / 2 additional images mirrored successfully
-2026/03/18 13:39:43  [INFO]   : 📄 Generating IDMS file...
-2026/03/18 13:39:43  [INFO]   : /root/mirror_4_19_23/working-dir/cluster-resources/idms-oc-mirror.yaml file created
-2026/03/18 13:39:43  [INFO]   : 📄 Generating ITMS file...
-2026/03/18 13:39:43  [INFO]   : /root/mirror_4_19_23/working-dir/cluster-resources/itms-oc-mirror.yaml file created
-2026/03/18 13:39:43  [INFO]   : 📄 Generating CatalogSource file...
-2026/03/18 13:39:43  [INFO]   : /root/mirror_4_19_23/working-dir/cluster-resources/cs-redhat-operator-index-v4-19.yaml file created
-2026/03/18 13:39:43  [INFO]   : 📄 Generating ClusterCatalog file...
-2026/03/18 13:39:43  [INFO]   : /root/mirror_4_19_23/working-dir/cluster-resources/cc-redhat-operator-index-v4-19.yaml file created
-2026/03/18 13:39:43  [INFO]   : 📄 Generating Signature Configmap...
-2026/03/18 13:39:43  [INFO]   : /root/mirror_4_19_23/working-dir/cluster-resources/signature-configmap.json file created
-2026/03/18 13:39:43  [INFO]   : /root/mirror_4_19_23/working-dir/cluster-resources/signature-configmap.yaml file created
-2026/03/18 13:39:43  [INFO]   : mirror time     : 47.892173507s
-2026/03/18 13:39:43  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
-[root@bastion mirror_4_19_23]# oc adm  release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23                                                     error: image "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23" not found: manifest unknown: manifest unknown
-[root@bastion mirror_4_19_23]#
+Nice 👍 — your mirror push is **100% successful** (all images mirrored ✅).
+Now the error you hit is **very common** and important to understand.
+
+---
+
+# 🔷 ❗ Your Error
+
+```text
+image ".../ocp4/openshift4:4.19.23" not found
+```
+
+👉 This does **NOT mean mirror failed**
+
+👉 It means:
+❌ You are using **wrong image reference**
+
+---
+
+# 🔷 🔥 Key Concept (VERY IMPORTANT)
+
+OpenShift release images in mirror are:
+
+👉 **digest-based (sha256)**
+👉 NOT always tag-based (`:4.19.23`)
+
+---
+
+# 🔷 🔍 What oc-mirror actually created
+
+Your release image is stored like:
+
+```text
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:xxxx
+```
+
+NOT:
+
+```text
+...:4.19.23  ❌
+```
+
+---
+
+# 🔷 ✅ Correct Way to Find Release Image
+
+Go to:
+
+```bash
+cd /root/mirror_4_19_23/working-dir
+```
+
+Then check:
+
+```bash
+cat mapping.txt | grep ocp-release
+```
+
+OR:
+
+```bash
+cat mapping.txt | grep 4.19.23
+```
+
+---
+
+### 🔍 You’ll see something like:
+
+```text
+quay.io/openshift-release-dev/ocp-release@sha256:abcd1234 \
+→ bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:abcd1234
+```
+
+---
+
+# 🔷 ✅ Correct command (IMPORTANT)
+
+Use **digest**, not tag:
+
+```bash
+oc adm release info \
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:<digest>
+```
+
+---
+
+# 🔷 🔥 Why tag doesn’t work?
+
+Because:
+
+* oc-mirror pushes images **by digest**
+* It does NOT always create `:4.19.23` tag
+
+---
+
+# 🔷 ✅ Optional (If you WANT tag)
+
+You can tag manually:
+
+```bash
+podman pull bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:<digest>
+
+podman tag \
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:<digest> \
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
+
+podman push bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
+```
+
+---
+
+# 🔷 🔍 Verify registry content
+
+```bash
+curl -k https://bastion.srib-lab-ocp.lan:8443/v2/_catalog
+```
+
+---
+
+# 🔷 🔥 What you should do NEXT
+
+Apply generated configs:
+
+```bash
+cd /root/mirror_4_19_23/working-dir/cluster-resources
+
+oc apply -f idms-oc-mirror.yaml
+oc apply -f itms-oc-mirror.yaml
+oc apply -f cs-redhat-operator-index-v4-19.yaml
+```
+
+---
+
+# 🔷 🔥 Final Status
+
+✔ Mirror → SUCCESS
+✔ Operators → SUCCESS
+✔ ODF images → SUCCESS
+✔ Registry push → SUCCESS
+
+👉 Only issue = **wrong image reference (tag vs digest)**
+
+---
+
+# 🔷 ✅ Final Summary
+
+| Problem              | Fix           |
+| -------------------- | ------------- |
+| `:4.19.23` not found | Use `@sha256` |
+| Want tag             | Tag manually  |
+| Mirror status        | ✅ Perfect     |
+
+---
+
+# 🔷 🚀 Next Step (Important)
+
+👉 I can now help you:
+
+* Run **upgrade using mirrored image (safe method)**
+* Verify **cluster pulls only from your registry**
+* Fix your **harbor-ca issue before upgrade**
+
+Just tell 👍
