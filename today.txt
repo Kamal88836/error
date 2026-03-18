@@ -1,47 +1,49 @@
 kind: ImageSetConfiguration
 apiVersion: mirror.openshift.io/v1alpha2
+
 mirror:
   platform:
+    architectures:
+    - amd64
     channels:
-    - name: stable-4.14
+    - name: stable-4.19
       type: ocp
+      minVersion: 4.19.23
+      maxVersion: 4.19.23
+
   operators:
-  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.14  
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
     packages:
-    - name: sriov-network-operator
+
+    # 🔴 ODF (Full stack via top-level operators)
     - name: odf-operator
-    - name: odf-csi-addons-operator
+      channels:
+      - name: stable-4.19
     - name: ocs-operator
-    - name: serverless-operator
+      channels:
+      - name: stable-4.19
+    - name: odf-csi-addons-operator
+      channels:
+      - name: stable-4.19
+
+    # 🔵 Networking / Infra operators (from your cluster)
+    - name: sriov-network-operator
+      channels:
+      - name: stable-4.19
     - name: ptp-operator
-    - name: numaresources-operator
-    - name: lvms-operator
-    - name: local-storage-operator
+      channels:
+      - name: stable-4.19
     - name: kubernetes-nmstate-operator
-    - name: cluster-logging
+      channels:
+      - name: stable-4.19
+
+    # 🟡 Storage (local)
+    - name: local-storage-operator
+      channels:
+      - name: stable-4.19
+
   additionalImages:
+  - name: quay.io/openshift-release-dev/ocp-release:4.19.23-x86_64
   - name: registry.redhat.io/ubi8/ubi:latest
+
   helm: {}
-
-
-srib@ocp-haproxy-1:~$ oc get csv -A
-NAMESPACE                              NAME                                              DISPLAY                            VERSION               REPLACES                                 PHASE
-openshift-local-storage                local-storage-operator.v4.18.0-202512031242       Local Storage                      4.18.0-202512031242                                            Succeeded
-openshift-nmstate                      kubernetes-nmstate-operator.4.18.0-202512031242   Kubernetes NMState Operator        4.18.0-202512031242                                            Succeeded
-openshift-operator-lifecycle-manager   packageserver                                     Package Server                     0.0.1-snapshot                                                 Succeeded
-openshift-ptp                          ptp-operator.v4.18.0-202512031242                 PTP Operator                       4.18.0-202512031242                                            Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.18.0-202511261113       SR-IOV Network Operator            4.18.0-202511261113                                            Succeeded
-openshift-storage                      cephcsi-operator.v4.18.14-rhodf                   CephCSI operator                   4.18.14-rhodf         cephcsi-operator.v4.18.13-rhodf          Succeeded
-openshift-storage                      mcg-operator.v4.18.14-rhodf                       NooBaa Operator                    4.18.14-rhodf         mcg-operator.v4.18.13-rhodf              Succeeded
-openshift-storage                      ocs-client-operator.v4.18.14-rhodf                OpenShift Data Foundation Client   4.18.14-rhodf         ocs-client-operator.v4.18.13-rhodf       Succeeded
-openshift-storage                      ocs-operator.v4.18.14-rhodf                       OpenShift Container Storage        4.18.14-rhodf         ocs-operator.v4.18.13-rhodf              Succeeded
-openshift-storage                      odf-csi-addons-operator.v4.18.14-rhodf            CSI Addons                         4.18.14-rhodf         odf-csi-addons-operator.v4.18.13-rhodf   Succeeded
-openshift-storage                      odf-dependencies.v4.18.14-rhodf                   Data Foundation Dependencies       4.18.14-rhodf         odf-dependencies.v4.18.13-rhodf          Succeeded
-openshift-storage                      odf-operator.v4.18.14-rhodf                       OpenShift Data Foundation          4.18.14-rhodf         odf-operator.v4.18.13-rhodf              Succeeded
-openshift-storage                      odf-prometheus-operator.v4.18.14-rhodf            Prometheus Operator                4.18.14-rhodf         odf-prometheus-operator.v4.18.13-rhodf   Succeeded
-openshift-storage                      recipe.v4.18.14-rhodf                             Recipe                             4.18.14-rhodf         recipe.v4.18.13-rhodf                    Succeeded
-openshift-storage                      rook-ceph-operator.v4.18.14-rhodf                 Rook-Ceph                          4.18.14-rhodf         rook-ceph-operator.v4.18.13-rhodf        Succeeded
-srib@ocp-haproxy-1:~$
-
-
-
