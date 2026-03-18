@@ -47,3 +47,31 @@ mirror:
   - name: registry.redhat.io/ubi8/ubi:latest
 
   helm: {}
+
+
+
+
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v1alpha2
+mirror:
+  platform:
+    channels:
+    - name: stable-4.14
+      type: ocp
+  operators:
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.14  
+    packages:
+    - name: sriov-network-operator
+    - name: odf-operator
+    - name: odf-csi-addons-operator
+    - name: ocs-operator
+    - name: serverless-operator
+    - name: ptp-operator
+    - name: numaresources-operator
+    - name: lvms-operator
+    - name: local-storage-operator
+    - name: kubernetes-nmstate-operator
+    - name: cluster-logging
+  additionalImages:
+  - name: registry.redhat.io/ubi8/ubi:latest
+  helm: {}
