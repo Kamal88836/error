@@ -22,3 +22,177 @@ mirror:
   additionalImages:
   - name: registry.redhat.io/ubi8/ubi:latest
   helm: {}
+
+
+
+
+srib@ocp-haproxy-1:~$ oc describe catalogsource -n openshift-marketplace cs-redhat-operator-index-v4-18
+Name:         cs-redhat-operator-index-v4-18
+Namespace:    openshift-marketplace
+Labels:       <none>
+Annotations:  createdAt: Thursday, 09-Oct-25 21:18:16 UTC
+              createdBy: oc-mirror v2
+              oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
+API Version:  operators.coreos.com/v1alpha1
+Kind:         CatalogSource
+Metadata:
+  Creation Timestamp:  2026-02-28T06:33:26Z
+  Generation:          1
+  Resource Version:    10647274
+  UID:                 40d403f7-4196-443b-845d-d56ab9d68f1a
+Spec:
+  Image:        bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.18
+  Source Type:  grpc
+Status:
+  Connection State:
+    Address:              cs-redhat-operator-index-v4-18.openshift-marketplace.svc:50051
+    Last Connect:         2026-03-18T09:16:01Z
+    Last Observed State:  READY
+  Registry Service:
+    Created At:         2026-03-01T13:08:17Z
+    Port:               50051
+    Protocol:           grpc
+    Service Name:       cs-redhat-operator-index-v4-18
+    Service Namespace:  openshift-marketplace
+Events:                 <none>
+srib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.18.23   True        False         False      16d
+baremetal                                  4.18.23   True        False         False      18d
+cloud-controller-manager                   4.18.23   True        False         False      18d
+cloud-credential                           4.18.23   True        False         False      18d
+cluster-autoscaler                         4.18.23   True        False         False      18d
+config-operator                            4.18.23   True        False         False      18d
+console                                    4.18.23   True        False         False      18d
+control-plane-machine-set                  4.18.23   True        False         False      18d
+csi-snapshot-controller                    4.18.23   True        False         False      18d
+dns                                        4.18.23   True        False         False      18d
+etcd                                       4.18.23   True        False         False      18d
+image-registry                             4.18.23   True        False         False      18d
+ingress                                    4.18.23   True        False         False      16d
+insights                                   4.18.23   False       False         True       16d     Unable to report: unable to build request to connect to Insights server: Post "https://console.redhat.com/api/ingress/v1/upload": dial tcp 2.18.51.203:443: i/o timeout
+kube-apiserver                             4.18.23   True        False         False      18d
+kube-controller-manager                    4.18.23   True        False         False      18d
+kube-scheduler                             4.18.23   True        False         False      18d
+kube-storage-version-migrator              4.18.23   True        False         False      18d
+machine-api                                4.18.23   True        False         False      18d
+machine-approver                           4.18.23   True        False         False      18d
+machine-config                             4.18.23   True        False         True       18d     Failed to resync 4.18.23 because: ca-bundle.crt not found in openshift-config/harbor-ca
+marketplace                                4.18.23   True        False         False      18d
+monitoring                                 4.18.23   True        False         False      18d
+network                                    4.18.23   True        False         True       18d     The configuration is invalid for proxy 'cluster' (failed to validate trust bundle for proxy trustedCA 'harbor-ca': ConfigMap "harbor-ca" is missing "ca-bundle.crt"). Use 'oc edit proxy.config.openshift.io cluster' to fix.
+node-tuning                                4.18.23   True        False         False      18d
+olm                                        4.18.23   True        False         False      16d
+openshift-apiserver                        4.18.23   True        False         False      18d
+openshift-controller-manager               4.18.23   True        False         False      18d
+openshift-samples                          4.18.23   True        False         False      18d
+operator-lifecycle-manager                 4.18.23   True        False         False      18d
+operator-lifecycle-manager-catalog         4.18.23   True        False         False      18d
+operator-lifecycle-manager-packageserver   4.18.23   True        False         False      18d
+service-ca                                 4.18.23   True        False         False      18d
+storage                                    4.18.23   True        False         False      18d
+srib@ocp-haproxy-1:~$ oc get csv -A
+NAMESPACE                              NAME                                              DISPLAY                            VERSION               REPLACES                                 PHASE
+openshift-local-storage                local-storage-operator.v4.18.0-202512031242       Local Storage                      4.18.0-202512031242                                            Succeeded
+openshift-nmstate                      kubernetes-nmstate-operator.4.18.0-202512031242   Kubernetes NMState Operator        4.18.0-202512031242                                            Succeeded
+openshift-operator-lifecycle-manager   packageserver                                     Package Server                     0.0.1-snapshot                                                 Succeeded
+openshift-ptp                          ptp-operator.v4.18.0-202512031242                 PTP Operator                       4.18.0-202512031242                                            Succeeded
+openshift-sriov-network-operator       sriov-network-operator.v4.18.0-202511261113       SR-IOV Network Operator            4.18.0-202511261113                                            Succeeded
+openshift-storage                      cephcsi-operator.v4.18.14-rhodf                   CephCSI operator                   4.18.14-rhodf         cephcsi-operator.v4.18.13-rhodf          Succeeded
+openshift-storage                      mcg-operator.v4.18.14-rhodf                       NooBaa Operator                    4.18.14-rhodf         mcg-operator.v4.18.13-rhodf              Succeeded
+openshift-storage                      ocs-client-operator.v4.18.14-rhodf                OpenShift Data Foundation Client   4.18.14-rhodf         ocs-client-operator.v4.18.13-rhodf       Succeeded
+openshift-storage                      ocs-operator.v4.18.14-rhodf                       OpenShift Container Storage        4.18.14-rhodf         ocs-operator.v4.18.13-rhodf              Succeeded
+openshift-storage                      odf-csi-addons-operator.v4.18.14-rhodf            CSI Addons                         4.18.14-rhodf         odf-csi-addons-operator.v4.18.13-rhodf   Succeeded
+openshift-storage                      odf-dependencies.v4.18.14-rhodf                   Data Foundation Dependencies       4.18.14-rhodf         odf-dependencies.v4.18.13-rhodf          Succeeded
+openshift-storage                      odf-operator.v4.18.14-rhodf                       OpenShift Data Foundation          4.18.14-rhodf         odf-operator.v4.18.13-rhodf              Succeeded
+openshift-storage                      odf-prometheus-operator.v4.18.14-rhodf            Prometheus Operator                4.18.14-rhodf         odf-prometheus-operator.v4.18.13-rhodf   Succeeded
+openshift-storage                      recipe.v4.18.14-rhodf                             Recipe                             4.18.14-rhodf         recipe.v4.18.13-rhodf                    Succeeded
+openshift-storage                      rook-ceph-operator.v4.18.14-rhodf                 Rook-Ceph                          4.18.14-rhodf         rook-ceph-operator.v4.18.13-rhodf        Succeeded
+srib@ocp-haproxy-1:~$ oc get pod -A | grep -i operator
+openshift-apiserver-operator                       openshift-apiserver-operator-8b47496bb-wpbn8                      1/1     Running            0              16d
+openshift-authentication-operator                  authentication-operator-5db94dcd4c-jq59b                          1/1     Running            0              16d
+openshift-cloud-controller-manager-operator        cluster-cloud-controller-manager-operator-78b6fc648c-slbcz        3/3     Running            0              16d
+openshift-cloud-credential-operator                cloud-credential-operator-86994b5f5-6zh8x                         2/2     Running            0              16d
+openshift-cluster-node-tuning-operator             cluster-node-tuning-operator-6bf4447dc4-9mpbz                     1/1     Running            0              16d
+openshift-cluster-node-tuning-operator             tuned-8xmhh                                                       1/1     Running            3              18d
+openshift-cluster-node-tuning-operator             tuned-gql85                                                       1/1     Running            3              18d
+openshift-cluster-node-tuning-operator             tuned-vjgfl                                                       1/1     Running            3              18d
+openshift-cluster-olm-operator                     cluster-olm-operator-99fc9bb88-fl9h9                              1/1     Running            0              16d
+openshift-cluster-samples-operator                 cluster-samples-operator-5d58cd96bf-d4994                         2/2     Running            0              16d
+openshift-cluster-storage-operator                 cluster-storage-operator-558fb56f77-drc4w                         1/1     Running            0              16d
+openshift-cluster-storage-operator                 csi-snapshot-controller-8bcffc844-hddtf                           1/1     Running            0              16d
+openshift-cluster-storage-operator                 csi-snapshot-controller-8bcffc844-vl8k8                           1/1     Running            0              16d
+openshift-cluster-storage-operator                 csi-snapshot-controller-operator-7d98c7c976-tz48w                 1/1     Running            0              16d
+openshift-cluster-version                          cluster-version-operator-64df46d786-p7n8d                         1/1     Running            0              16d
+openshift-config-operator                          openshift-config-operator-685f69769f-dzpj5                        1/1     Running            0              16d
+openshift-console-operator                         console-operator-664c94c995-bcfv5                                 1/1     Running            0              16d
+openshift-controller-manager-operator              openshift-controller-manager-operator-d78dc649b-sdqj6             1/1     Running            0              16d
+openshift-dns-operator                             dns-operator-779468654f-gsvv7                                     2/2     Running            0              16d
+openshift-etcd-operator                            etcd-operator-65484c69b-6f5vx                                     1/1     Running            0              16d
+openshift-image-registry                           cluster-image-registry-operator-8647d5b7f4-kl9md                  1/1     Running            0              16d
+openshift-ingress-operator                         ingress-operator-68f48d6574-t6j5j                                 2/2     Running            0              16d
+openshift-insights                                 insights-operator-75bfdcdb99-jgs6h                                1/1     Running            0              16d
+openshift-kube-apiserver-operator                  kube-apiserver-operator-77fb645684-v9jhm                          1/1     Running            0              16d
+openshift-kube-controller-manager-operator         kube-controller-manager-operator-7c86bd65c-xtw2j                  1/1     Running            0              16d
+openshift-kube-scheduler-operator                  openshift-kube-scheduler-operator-7fd6964986-wkvfk                1/1     Running            0              16d
+openshift-kube-storage-version-migrator-operator   kube-storage-version-migrator-operator-85fd6679d4-hgrxh           1/1     Running            0              16d
+openshift-local-storage                            local-storage-operator-758dcb5b77-qgjvz                           1/1     Running            0              16d
+openshift-machine-api                              cluster-autoscaler-operator-bff565675-wfj5b                       2/2     Running            0              16d
+openshift-machine-api                              cluster-baremetal-operator-7959fc785f-rkfcs                       2/2     Running            0              16d
+openshift-machine-api                              control-plane-machine-set-operator-575b757c4-lbpzr                1/1     Running            0              16d
+openshift-machine-api                              machine-api-operator-8557c549fc-h7czw                             2/2     Running            0              16d
+openshift-machine-api                              metal3-baremetal-operator-7c88cbc8f9-vffb5                        1/1     Running            0              16d
+openshift-machine-config-operator                  kube-rbac-proxy-crio-ocp-cp-1.lab1.srib-lab-ocp.lan               1/1     Running            6              18d
+openshift-machine-config-operator                  kube-rbac-proxy-crio-ocp-cp-2.lab1.srib-lab-ocp.lan               1/1     Running            6              18d
+openshift-machine-config-operator                  kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan               1/1     Running            7              18d
+openshift-machine-config-operator                  machine-config-controller-784d59cf85-lsh65                        2/2     Running            0              16d
+openshift-machine-config-operator                  machine-config-daemon-2wkfw                                       2/2     Running            6              18d
+openshift-machine-config-operator                  machine-config-daemon-xwkqh                                       2/2     Running            6              18d
+openshift-machine-config-operator                  machine-config-daemon-zzrvt                                       2/2     Running            6              18d
+openshift-machine-config-operator                  machine-config-operator-659c6fb5db-zjzc5                          2/2     Running            0              16d
+openshift-machine-config-operator                  machine-config-server-8v7m6                                       1/1     Running            3              18d
+openshift-machine-config-operator                  machine-config-server-ds55m                                       1/1     Running            3              18d
+openshift-machine-config-operator                  machine-config-server-zcvj6                                       1/1     Running            3              18d
+openshift-marketplace                              cs-redhat-operator-index-v4-18-lv5tf                              1/1     Running            0              16d
+openshift-marketplace                              marketplace-operator-75976b75dd-lcpnl                             1/1     Running            0              16d
+openshift-monitoring                               cluster-monitoring-operator-86d48cf768-vxchk                      1/1     Running            0              16d
+openshift-monitoring                               prometheus-operator-5d9694b69d-4mv9d                              2/2     Running            0              16d
+openshift-monitoring                               prometheus-operator-admission-webhook-866c9dd468-5wb7g            1/1     Running            0              16d
+openshift-monitoring                               prometheus-operator-admission-webhook-866c9dd468-v57pg            1/1     Running            0              16d
+openshift-network-operator                         iptables-alerter-h4746                                            1/1     Running            3              18d
+openshift-network-operator                         iptables-alerter-q77gv                                            1/1     Running            3              18d
+openshift-network-operator                         iptables-alerter-xgpxr                                            1/1     Running            3              18d
+openshift-network-operator                         network-operator-595f7fb96d-5f7qt                                 1/1     Running            0              16d
+openshift-nmstate                                  nmstate-operator-57658fcb48-gv466                                 1/1     Running            0              16d
+openshift-operator-controller                      operator-controller-controller-manager-7959c57bb8-pclhz           2/2     Running            0              16d
+openshift-operator-lifecycle-manager               catalog-operator-54d4bc5bc8-9v827                                 1/1     Running            0              16d
+openshift-operator-lifecycle-manager               collect-profiles-29563725-jxp6f                                   0/1     Completed          0              38m
+openshift-operator-lifecycle-manager               collect-profiles-29563740-g7kv7                                   0/1     Completed          0              23m
+openshift-operator-lifecycle-manager               collect-profiles-29563755-q97vb                                   0/1     Completed          0              8m58s
+openshift-operator-lifecycle-manager               olm-operator-66c676c4f6-njw2p                                     1/1     Running            0              16d
+openshift-operator-lifecycle-manager               package-server-manager-67f88755c5-72654                           2/2     Running            0              16d
+openshift-operator-lifecycle-manager               packageserver-57878f77bf-qbzz8                                    1/1     Running            0              16d
+openshift-operator-lifecycle-manager               packageserver-57878f77bf-sz559                                    1/1     Running            0              16d
+openshift-ptp                                      ptp-operator-fb867b8bf-4ckxv                                      1/1     Running            0              16d
+openshift-service-ca-operator                      service-ca-operator-68785bc7d8-tj4mq                              1/1     Running            0              16d
+openshift-sriov-network-operator                   network-resources-injector-kbdsl                                  1/1     Running            0              18d
+openshift-sriov-network-operator                   network-resources-injector-mpg64                                  1/1     Running            0              18d
+openshift-sriov-network-operator                   network-resources-injector-zhqwq                                  1/1     Running            0              18d
+openshift-sriov-network-operator                   operator-webhook-jj6g5                                            1/1     Running            0              18d
+openshift-sriov-network-operator                   operator-webhook-nzxgm                                            1/1     Running            0              18d
+openshift-sriov-network-operator                   operator-webhook-zqxgp                                            1/1     Running            0              18d
+openshift-sriov-network-operator                   sriov-device-plugin-5vwz8                                         1/1     Running            0              18d
+openshift-sriov-network-operator                   sriov-device-plugin-cdj52                                         1/1     Running            0              18d
+openshift-sriov-network-operator                   sriov-device-plugin-x8pgh                                         1/1     Running            0              18d
+openshift-sriov-network-operator                   sriov-network-config-daemon-5x8wk                                 1/1     Running            0              18d
+openshift-sriov-network-operator                   sriov-network-config-daemon-gqh2n                                 1/1     Running            0              18d
+openshift-sriov-network-operator                   sriov-network-config-daemon-hsnfv                                 1/1     Running            0              18d
+openshift-sriov-network-operator                   sriov-network-operator-6ffc67b9b6-bthvx                           1/1     Running            0              16d
+openshift-storage                                  noobaa-operator-85665765df-zstvg                                  1/1     Running            0              16d
+openshift-storage                                  ocs-operator-6b4b5fccbd-hzdm4                                     1/1     Running            0              16d
+openshift-storage                                  odf-operator-controller-manager-67468fc56-xmbr8                   2/2     Running            0              16d
+openshift-storage                                  rook-ceph-operator-5875db5c46-n5n5w                               1/1     Running            0              16d
+srib@ocp-haproxy-1:~$
