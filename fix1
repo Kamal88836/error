@@ -61,3 +61,15 @@ Use "oc-mirror [command] --help" for more information about a command.
 
 2026/03/18 12:41:10  [ERROR]  : [Executor] use the --config flag it is mandatory
 [root@bastion mirror_4_19_23]#
+
+
+
+export OC_MIRROR_TIMEOUT=60m
+export GOMAXPROCS=2
+
+oc mirror \
+  -c imageset-config.yaml \
+  --from file:///root/mirror_4_19_23 \
+  docker://bastion.srib-lab-ocp.lan:8443 \
+  --dest-tls-verify=false \
+  --v2
