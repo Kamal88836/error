@@ -1,0 +1,25 @@
+243 / 243 (56m25s) [===================================================================================================================================] 100 %
+ ✓   (2m21s) redhat-operator-index:v4.19 ➡️  cache
+2026/03/18 11:50:17  [INFO]   : === Results ===
+2026/03/18 11:50:17  [INFO]   :  ✓  190 / 190 release images mirrored successfully
+2026/03/18 11:50:17  [INFO]   :  ✗  48 / 51 operator images mirrored: Some operator images failed to be mirrored - please check the logs
+2026/03/18 11:50:17  [INFO]   :  ✓  2 / 2 additional images mirrored successfully
+2026/03/18 11:50:17  [ERROR]  : [Worker] error mirroring image docker://registry.redhat.io/odf4/mcg-core-rhel9@sha256:f25d6da9e0fa9bfaddd2b3b873a2ca8e3be48172bf6eb6990546d23a82a89ade (Operator bundles: [ocs-operator.v4.19.12-rhodf] - Operators: [ocs-operator]) error: copying image 2/3 from manifest list: writing blob: Patch "http://localhost:55000/v2/odf4/mcg-core-rhel9/blobs/uploads/c14c4df2-e33f-4379-a9b2-08852d259ed9?_state=5aCAk-jfF7jDNJF54g29tSI7G8ze3qg7KI_ezGxvlrd7Ik5hbWUiOiJvZGY0L21jZy1jb3JlLXJoZWw5IiwiVVVJRCI6ImMxNGM0ZGYyLWUzM2YtNDM3OS1hOWIyLTA4ODUyZDI1OWVkOSIsIk9mZnNldCI6MCwiU3RhcnRlZEF0IjoiMjAyNi0wMy0xOFQxMTozMjo1NC4wMzE2NDUwMzVaIn0%!D(MISSING)": context deadline exceeded
+2026/03/18 11:50:17  [ERROR]  : [Worker] error mirroring image docker://registry.redhat.io/odf4/ocs-metrics-exporter-rhel9@sha256:d7d5b66cc675b1f33f639315ffa8784d56792cea97095b9371a3488684e47e8f (Operator bundles: [ocs-operator.v4.19.12-rhodf] - Operators: [ocs-operator]) error: copying image 4/4 from manifest list: writing blob: Patch "http://localhost:55000/v2/odf4/ocs-metrics-exporter-rhel9/blobs/uploads/322161f6-a1e4-49a8-9782-d83fa3ce498b?_state=JXJLSK58Gs0JyXp-Ia9iIQ2rFBUEWeHCB7YsA-QtHTB7Ik5hbWUiOiJvZGY0L29jcy1tZXRyaWNzLWV4cG9ydGVyLXJoZWw5IiwiVVVJRCI6IjMyMjE2MWY2LWExZTQtNDlhOC05NzgyLWQ4M2ZhM2NlNDk4YiIsIk9mZnNldCI6MCwiU3RhcnRlZEF0IjoiMjAyNi0wMy0xOFQxMTozNDo0Ni45NjI0MzgyMThaIn0%!D(MISSING)": readfrom tcp 127.0.0.1:56418->127.0.0.1:55000: happened during read: context deadline exceeded
+2026/03/18 11:50:17  [ERROR]  : [Worker] error mirroring image docker://registry.redhat.io/odf4/ocs-operator-bundle@sha256:a06b530e0098fc491ecdbee317e47f5f17b87708910e6d2d446aed36383e72a7 error: skipping operator bundle docker://registry.redhat.io/odf4/ocs-operator-bundle@sha256:a06b530e0098fc491ecdbee317e47f5f17b87708910e6d2d446aed36383e72a7 because one of its related images failed to mirror
+2026/03/18 11:50:17  [INFO]   : mirror time     : 56m30.060777144s
+2026/03/18 11:50:17  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+2026/03/18 11:50:17  [ERROR]  : [Executor] [Worker] some errors occurred during the mirroring.
+         Please review /root/mirror_4_19_23/working-dir/logs/mirroring_errors_20260318_115017.txt for a list of mirroring errors.
+         You may consider:
+         * removing images or operators that cause the error from the image set config, and retrying
+         * keeping the image set config (images are mandatory for you), and retrying
+         * mirroring the failing images manually, if retries also fail.
+[root@bastion mirror_4_19_23]# oc mirror -c imageset-config_4_18_23.yaml file:///root/mirror_4_19_23 --v2
+2026/03/18 11:50:51  [INFO]   : 👋 Hello, welcome to oc-mirror
+2026/03/18 11:50:51  [INFO]   : ⚙️  setting up the environment for you...
+2026/03/18 11:50:51  [INFO]   : 🔀 workflow mode: mirrorToDisk
+2026/03/18 11:50:51  [INFO]   : 🕵  going to discover the necessary images...
+2026/03/18 11:50:51  [INFO]   : 🔍 collecting release images...
+2026/03/18 11:50:53  [INFO]   : 🔍 collecting operator images...
+ ⠙   (1m50s) Collecting catalog registry.redhat.io/redhat/redhat-operator-index:v4.19
