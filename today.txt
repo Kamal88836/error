@@ -1,77 +1,67 @@
 kind: ImageSetConfiguration
-apiVersion: mirror.openshift.io/v1alpha2
-
+apiVersion: mirror.openshift.io/v2alpha1
 mirror:
   platform:
-    architectures:
-    - amd64
     channels:
-    - name: stable-4.19
+    - name: stable-4.18
       type: ocp
-      minVersion: 4.19.23
-      maxVersion: 4.19.23
-
+      minVersion: 4.18.23
+      maxVersion: 4.18.23
+      shortestPath: true
   operators:
-  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.18
     packages:
-
-    # 🔴 ODF (Full stack via top-level operators)
-    - name: odf-operator
+    - name: odf-dependencies
       channels:
-      - name: stable-4.19
-    - name: ocs-operator
+      - name: stable-4.18
+    - name: cephcsi-operator
       channels:
-      - name: stable-4.19
-    - name: odf-csi-addons-operator
+      - name: stable-4.18
+    - name: ocs-client-operator
       channels:
-      - name: stable-4.19
-
-    # 🔵 Networking / Infra operators (from your cluster)
+      - name: stable-4.18
+    - name: rook-ceph-operator
+      channels:
+      - name: stable-4.18
+    - name: odf-prometheus-operator
+      channels:
+      - name: stable-4.18
+    - name: odr-cluster-operator
+      channels:
+      - name: stable-4.18
+    - name: odr-hub-operator
+      channels:
+      - name: stable-4.18
+    - name: recipe
+      channels:
+      - name: stable-4.18
     - name: sriov-network-operator
       channels:
-      - name: stable-4.19
+      - name: stable
+    - name: odf-operator
+      channels:
+      - name: stable-4.18
+    - name: odf-csi-addons-operator
+      channels:
+      - name: stable-4.18
+    - name: ocs-operator
+      channels:
+      - name: stable-4.18
     - name: ptp-operator
       channels:
-      - name: stable-4.19
-    - name: kubernetes-nmstate-operator
-      channels:
-      - name: stable-4.19
-
-    # 🟡 Storage (local)
+      - name: stable
     - name: local-storage-operator
       channels:
-      - name: stable-4.19
-
-  additionalImages:
-  - name: quay.io/openshift-release-dev/ocp-release:4.19.23-x86_64
-  - name: registry.redhat.io/ubi8/ubi:latest
-
-  helm: {}
-
-
-
-
-kind: ImageSetConfiguration
-apiVersion: mirror.openshift.io/v1alpha2
-mirror:
-  platform:
-    channels:
-    - name: stable-4.14
-      type: ocp
-  operators:
-  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.14  
-    packages:
-    - name: sriov-network-operator
-    - name: odf-operator
-    - name: odf-csi-addons-operator
-    - name: ocs-operator
-    - name: serverless-operator
-    - name: ptp-operator
-    - name: numaresources-operator
+      - name: stable
+    - name: mcg-operator
+      channels:
+      - name: stable-4.18
     - name: lvms-operator
-    - name: local-storage-operator
+      channels:
+      - name: stable-4.18
     - name: kubernetes-nmstate-operator
+      channels:
+      - name: stable
     - name: cluster-logging
-  additionalImages:
-  - name: registry.redhat.io/ubi8/ubi:latest
-  helm: {}
+      channels:
+      - name: stable-6.4
