@@ -158,3 +158,185 @@ If you want, after you apply:
 oc adm release info ...
 
 paste output — I’ll confirm you are 100% safe to upgrade 💯
+
+
+No problem 👍 — I’ll make this very simple and exact, no confusion.
+
+
+---
+
+🎯 What you need to do
+
+👉 You need ONE file that contains:
+
+1. ✅ Your Harbor certificate
+
+
+2. ✅ Your Quay (bastion) certificate
+
+
+
+
+---
+
+🔴 Step-by-step (VERY CLEAR)
+
+
+---
+
+🟢 Step 1: Get your existing Harbor cert
+
+Run:
+
+oc get cm harbor-ca -n openshift-config -o yaml
+
+👉 You will see something like:
+
+data:
+  ca-bundle.crt: |
+    -----BEGIN CERTIFICATE-----
+    ABCDEF....
+    -----END CERTIFICATE-----
+
+
+---
+
+🟢 Step 2: Copy ONLY this part
+
+-----BEGIN CERTIFICATE-----
+ABCDEF....
+-----END CERTIFICATE-----
+
+👉 This is your Harbor CA
+
+
+---
+
+🟢 Step 3: Create new file
+
+vi combined-ca.crt
+
+
+---
+
+🟢 Step 4: Paste like this (IMPORTANT)
+
+First paste Harbor cert
+
+Then paste Quay cert below it
+
+
+---
+
+Final file should look like:
+
+-----BEGIN CERTIFICATE-----
+(Harbor certificate content)
+-----END CERTIFICATE-----
+
+-----BEGIN CERTIFICATE-----
+(Quay certificate you copied earlier)
+-----END CERTIFICATE-----
+
+
+---
+
+👉 Example structure:
+
+-----BEGIN CERTIFICATE-----
+MIIFzTCCA7Wg...
+-----END CERTIFICATE-----
+
+-----BEGIN CERTIFICATE-----
+MIIDzzCCAreg...
+-----END CERTIFICATE-----
+
+
+---
+
+⚠️ Important rules
+
+✔️ No extra text
+✔️ No commas
+✔️ No \r\n
+✔️ One empty line between certs (optional but safe)
+
+
+---
+
+🟢 Step 5: Apply to cluster
+
+oc create configmap harbor-ca \
+  -n openshift-config \
+  --from-file=ca-bundle.crt=combined-ca.crt \
+  --dry-run=client -o yaml | oc apply -f -
+
+
+---
+
+🟢 Step 6: Wait for rollout
+
+watch oc get mcp
+
+Wait until:
+
+UPDATED=True
+UPDATING=False
+DEGRADED=False
+
+
+---
+
+🟢 Step 7: Test (VERY IMPORTANT)
+
+oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
+
+
+---
+
+✅ If SUCCESS
+
+👉 You are ready for upgrade 🚀
+
+
+---
+
+❌ If still error
+
+👉 Then CA format issue — I will fix it for you
+
+
+---
+
+💡 Simple Explanation
+
+👉 Think like this:
+
+OpenShift trusts only what is inside ca-bundle.crt
+
+So we are telling:
+
+Trust Harbor + Trust Quay
+
+
+---
+
+👍 If still confused
+
+👉 Do this:
+
+Paste output of:
+
+oc get cm harbor-ca -n openshift-config -o yaml
+
+I will:
+
+Extract Harbor cert
+
+Combine with Quay cert
+
+Give you ready-to-use file
+
+
+No mistakes 💯
+
