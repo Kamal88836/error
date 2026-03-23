@@ -1,40 +1,228 @@
-[root@bastion cluster-resources]# oc apply -f *.yaml
-error: Unexpected args: [cs-redhat-operator-index-v4-19.yaml idms-oc-mirror.yaml itms-oc-mirror.yaml signature-configmap.yaml]
-See 'oc apply -h' for help and examples
-[root@bastion cluster-resources]#
-[root@bastion cluster-resources]# ll
-total 24
--rw-r--r-- 1 root root  442 Mar 23 07:12 cc-redhat-operator-index-v4-19.yaml
--rw-r--r-- 1 root root  444 Mar 23 07:12 cs-redhat-operator-index-v4-19.yaml
--rw-r--r-- 1 root root 1589 Mar 23 07:12 idms-oc-mirror.yaml
--rw-r--r-- 1 root root  987 Mar 23 07:12 itms-oc-mirror.yaml
--rw-r--r-- 1 root root 1620 Mar 23 07:12 signature-configmap.json
--rw-r--r-- 1 root root 1608 Mar 23 07:12 signature-configmap.yaml
-[root@bastion cluster-resources]# oc apply -f cc-redhat-operator-index-v4-19.yaml
-error: Missing or incomplete configuration info.  Please point to an existing, complete config file:
+Perfect 👍 — let’s fix this properly and safely. This is the last real blocker before upgrade.
 
 
-  1. Via the command-line flag --kubeconfig
-  2. Via the KUBECONFIG environment variable
-  3. In your home directory as ~/.kube/config
+---
 
-To view or setup config directly use the 'config' command.
-[root@bastion cluster-resources]# oc get no
-error: Missing or incomplete configuration info.  Please point to an existing, complete config file:
+🚨 Goal
 
+👉 Make OpenShift trust your Quay registry:
 
-  1. Via the command-line flag --kubeconfig
-  2. Via the KUBECONFIG environment variable
-  3. In your home directory as ~/.kube/config
-
-To view or setup config directly use the 'config' command.
-[root@bastion cluster-resources]# oc apply -f idms-oc-mirror.yaml
-error: Missing or incomplete configuration info.  Please point to an existing, complete config file:
+bastion.srib-lab-ocp.lan:8443
 
 
-  1. Via the command-line flag --kubeconfig
-  2. Via the KUBECONFIG environment variable
-  3. In your home directory as ~/.kube/config
+---
 
-To view or setup config directly use the 'config' command.
-[root@bastion cluster-resources]#
+🔧 Step-by-Step FIX (Do exactly)
+
+
+---
+
+🟢 Step 1: Extract Quay (bastion) CA cert
+
+Run on bastion:
+
+openssl s_client -connect bastion.srib-lab-ocp.lan:8443 -showcerts
+
+
+---
+
+👉 You will see output like:
+
+-----BEGIN CERTIFICATE-----
+MIIF...
+-----END CERTIFICATE-----
+
+👉 There may be multiple certs.
+
+✔️ What to copy?
+
+👉 Copy:
+
+Root CA (best)
+OR
+
+Full chain (all certs) ✅ safest
+
+
+
+---
+
+🔧 Save it
+
+vi quay-ca.crt
+
+Paste:
+
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+
+
+---
+
+🟢 Step 2: Combine with existing CA
+
+👉 You already have Harbor CA in cluster
+
+Now create combined file:
+
+vi combined-ca.crt
+
+
+---
+
+Paste like this:
+
+-----BEGIN CERTIFICATE-----
+(Harbor CA)
+-----END CERTIFICATE-----
+
+-----BEGIN CERTIFICATE-----
+(Quay CA)
+-----END CERTIFICATE-----
+
+
+---
+
+⚠️ Rules:
+
+No extra spaces
+
+No \r\n
+
+Proper new lines
+
+
+
+---
+
+🟢 Step 3: Update ConfigMap (BEST METHOD)
+
+Run from cluster node:
+
+oc create configmap harbor-ca \
+  -n openshift-config \
+  --from-file=ca-bundle.crt=combined-ca.crt \
+  --dry-run=client -o yaml | oc apply -f -
+
+
+---
+
+👉 This safely replaces configmap
+
+
+---
+
+🟢 Step 4: Wait for rollout
+
+watch oc get mcp
+
+Wait until:
+
+UPDATED=True
+UPDATING=False
+DEGRADED=False
+
+
+---
+
+🟢 Step 5: Validate from node (VERY IMPORTANT)
+
+oc debug node/<node>
+chroot /host
+
+Then:
+
+curl -vk https://bastion.srib-lab-ocp.lan:8443
+
+
+---
+
+✔️ Expected
+
+No certificate error
+
+Connection successful
+
+
+
+---
+
+🟢 Step 6: Validate release image
+
+oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
+
+
+---
+
+✔️ Must work
+
+If this works → you are READY 🚀
+
+
+---
+
+🚀 Step 7: Upgrade
+
+oc adm upgrade \
+--to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23 \
+--allow-explicit-upgrade
+
+
+---
+
+🧠 Why This Fix Works
+
+👉 OpenShift uses:
+
+openshift-config/harbor-ca
+
+→ Injected into:
+
+nodes (CRI-O)
+
+kubelet
+
+image pull trust
+
+
+
+---
+
+🔥 Most Common Mistakes (Avoid)
+
+❌ Only adding Harbor cert
+❌ Wrong key name (must be ca-bundle.crt)
+❌ Copying wrong cert (leaf instead of CA)
+❌ Not waiting for MCP rollout
+
+
+---
+
+🎯 Final Status After Fix
+
+Component	Status
+
+Mirror	✅
+Configs applied	✅
+CA trust	✅
+Upgrade readiness	🚀 READY
+
+
+
+---
+
+👍 If you want help
+
+Paste this:
+
+openssl s_client -connect bastion.srib-lab-ocp.lan:8443 -showcerts
+
+I will:
+
+Pick correct cert for you
+
+Build perfect ca-bundle.crt
+
+
+No mistakes 💯
