@@ -1,10 +1,186 @@
-srib@ocp-haproxy-1:~/kamal$ oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64
-error: unable to read image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64: Get "https://bastion.srib-lab-ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate signed by unknown authority (possibly because of "crypto/rsa: verification error" while trying to verify candidate authority certificate "bastion.srib-lab-ocp.lan")
-srib@ocp-haproxy-1:~/kamal$ oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64^C
-srib@ocp-haproxy-1:~/kamal$ oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64
-error: unable to read image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64: Get "https://bastion.srib-lab-ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate signed by unknown authority (possibly because of "crypto/rsa: verification error" while trying to verify candidate authority certificate "bastion.srib-lab-ocp.lan")
-srib@ocp-haproxy-1:~/kamal$ oc adm upgrade \
-> --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64 \
-> --allow-explicit-upgrade
-error: --to-image must be a by-digest pull spec, unless --force is also set, because release images that are not accessed via digest cannot be verified by the cluster.  Even when --force is set, using tags is not recommended, although we continue to allow it for backwards compatibility
-srib@ocp-haproxy-1:~/kamal$
+Good 👍 — now we are at the actual root problem (final stage).
+
+You fixed:
+
+✅ Image path
+
+✅ ConfigMap format
+
+❌ Still TLS failing
+
+
+
+---
+
+🚨 REAL ROOT CAUSE (FINAL)
+
+This error is key:
+
+crypto/rsa: verification error
+
+👉 This is NOT a trust issue anymore
+
+👉 It means:
+
+Your Quay certificate itself is INVALID / broken
+
+
+---
+
+🔍 What’s wrong with your Quay cert
+
+From your earlier openssl:
+
+issuer = bastion.srib-lab-ocp.lan
+subject = quay-enterprise
+verify error = certificate signature failure ❌
+
+👉 That means:
+
+CA signed cert ❌ incorrectly
+
+OR cert + key mismatch ❌
+
+OR corrupted chain ❌
+
+
+
+---
+
+💥 Important Truth
+
+👉 No matter how many times you add CA:
+
+If certificate itself is invalid → OpenShift will NEVER trust it
+
+
+---
+
+✅ Correct Fix (ONLY WORKING SOLUTION)
+
+You must fix Quay certificate on bastion
+
+
+---
+
+🟢 Option 1 (BEST): Regenerate proper cert
+
+On bastion:
+
+openssl req -new -newkey rsa:2048 -nodes \
+-keyout quay.key \
+-out quay.csr \
+-subj "/CN=bastion.srib-lab-ocp.lan"
+
+
+---
+
+Self-sign properly:
+
+openssl x509 -req -in quay.csr -signkey quay.key \
+-out quay.crt -days 365
+
+
+---
+
+🟢 Update Quay config
+
+👉 Replace cert in Quay:
+
+/etc/quay/ssl.cert
+
+/etc/quay/ssl.key
+
+
+Restart Quay:
+
+podman restart quay-app
+
+(or your container/service)
+
+
+---
+
+🟢 Option 2 (FAST TEST - TEMP)
+
+If you want to confirm issue quickly, run:
+
+oc adm release info \
+--insecure=true \
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64
+
+
+---
+
+👉 If this works:
+
+✔️ CONFIRMED → certificate is broken
+❌ NOT CA issue
+
+
+---
+
+🟢 Option 3 (Workaround - NOT recommended)
+
+oc adm upgrade \
+--to-image=... \
+--allow-explicit-upgrade \
+--force
+
+👉 ⚠️ Only for testing (not production safe)
+
+
+---
+
+🎯 What you should do (Recommended)
+
+👉 Fix Quay cert properly
+
+Then:
+
+1. Add CA again
+
+
+2. Wait MCP rollout
+
+
+3. Test
+
+
+
+
+---
+
+🧠 Key Learning
+
+Error	Meaning
+
+unknown authority	CA missing
+signature failure	CERT INVALID ❌
+
+
+
+---
+
+🚀 Final Flow
+
+Fix Quay cert → Add CA → MCP rollout → oc adm release info → upgrade
+
+
+---
+
+👍 You are VERY close
+
+👉 Just fix Quay cert — everything else is correct
+
+
+---
+
+🔥 If you want
+
+Tell me:
+
+How you deployed Quay (container / systemd / k8s)
+
+
+I’ll give exact commands to replace cert cleanly 💯
