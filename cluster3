@@ -1,190 +1,114 @@
-Alright 👍 — now we’ll fix this 100% correctly.
-From your last outputs, the problem is not formatting anymore — it is:
+Good 👍 — your screenshots actually reveal the real issue now (not just CA).
 
 
 ---
 
-🚨 Root Cause (FINAL)
+🔥 Important Observation from your screenshot
 
-x509: certificate signed by unknown authority
-crypto/rsa: verification error
+👉 Your Quay UI shows:
 
-👉 This means:
+Repository:
+ocp4/openshift4/openshift/release
 
-The CA you added is NOT valid for verifying the server cert
-
-
----
-
-🔍 Why this is happening
-
-From your earlier openssl output:
-
-You have:
-
-1️⃣ Server cert
-
-CN = quay-enterprise   ❌ (leaf)
-
-2️⃣ CA cert
-
-CN = bastion.srib-lab-ocp.lan
-
-👉 BUT:
-
-This CA is self-signed AND incorrectly used
-
-👉 Result:
-
-Signature cannot be verified
-
-OpenShift rejects it
-
-
-
----
-
-🔥 Correct Fix (NO GUESSWORK)
-
-👉 Instead of manually picking certs, extract FULL TRUST CHAIN properly
-
-
----
-
-🟢 Step 1: Extract FULL chain correctly
-
-Run this EXACT command:
-
-openssl s_client -connect bastion.srib-lab-ocp.lan:8443 -showcerts </dev/null \
-| awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/ { print $0 }' > quay-fullchain.crt
-
-
----
-
-👉 This creates:
-
-quay-fullchain.crt
-
-Containing:
-
-leaf cert
-
-intermediate (if any)
-
-root cert
-
-
-
----
-
-🟢 Step 2: Combine with Harbor
-
-cat harbor.crt quay-fullchain.crt > final-ca.crt
-
-👉 If you don’t have harbor.crt:
-
-oc get cm harbor-ca -n openshift-config -o jsonpath='{.data.ca-bundle\.crt}' > harbor.crt
-
-
----
-
-🟢 Step 3: Recreate ConfigMap (clean)
-
-oc delete cm harbor-ca -n openshift-config
-
-oc create configmap harbor-ca \
-  -n openshift-config \
-  --from-file=ca-bundle.crt=final-ca.crt
-
-
----
-
-🟢 Step 4: Verify proxy still pointing
-
-oc get proxy cluster -o yaml
-
-✔️ Already correct in your case
-
-
----
-
-🟢 Step 5: Wait for rollout
-
-watch oc get mcp
-
-
----
-
-🟢 Step 6: HARD VERIFY FROM NODE
-
-oc debug node/<node>
-chroot /host
-
-Then:
-
-curl https://bastion.srib-lab-ocp.lan:8443/v2/
-
-
----
-
-✅ Expected
-
-{}
-
-👉 If you see this → trust fixed
-
-
----
-
-🟢 Step 7: Retry
+BUT your command is:
 
 oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
 
 
 ---
 
-💥 Why this works
+🚨 Root Problem
 
-👉 Earlier you added only CA
-
-But:
-
-Your CA is self-signed → needs full chain
-
-👉 Now:
-
-CRI-O + oc will validate full chain → success
+👉 Your image path is WRONG
 
 
 ---
 
-🎯 Summary
+❌ What you are using
 
-Issue	Fix
-
-Wrong cert	Use full chain
-Signature failure	include leaf + CA
-TLS error	resolved
-
+bastion.../ocp4/openshift4:4.19.23
 
 
 ---
 
-🚀 After this
+✅ What it SHOULD be
 
-👉 Upgrade will work:
+From your Quay UI:
+
+ocp4/openshift4/openshift/release
+
+So correct image is:
+
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64
+
+
+---
+
+🔍 Why TLS error appeared
+
+👉 Misleading error:
+
+tls: certificate signed by unknown authority
+
+👉 But actually:
+
+Wrong repository → registry returns unexpected cert/response → oc interprets as TLS issue
+
+
+---
+
+✅ Now test with CORRECT image
+
+Run this:
+
+oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64
+
+
+---
+
+✅ Expected Output
+
+Name:      4.19.23
+Digest:    sha256:xxxx
+
+
+---
+
+🚀 If this works → Upgrade
 
 oc adm upgrade \
---to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23 \
+--to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64 \
 --allow-explicit-upgrade
 
 
 ---
 
-👍 If still fails (last debug)
+🎯 Summary (Your Case)
 
-Paste:
+Issue	Status
 
-cat final-ca.crt
+CA config	✅ fixed
+MCP rollout	✅
+Registry reachable	✅
+❌ Image path	❌ WRONG (main issue)
 
-I’ll verify your cert chain exactly 💯
+
+
+---
+
+🧠 Key Learning
+
+👉 In disconnected:
+
+Image path MUST match EXACTLY what is mirrored
+
+
+---
+
+👍 Next Step
+
+Run:
+
+oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release:4.19.23-x86_64
+
+👉 Paste output — I’ll confirm final green signal for upgrade 🚀
