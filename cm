@@ -1,60 +1,192 @@
-srib@ocp-haproxy-1:~$ oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.18.23   True        False         False      21d
-baremetal                                  4.18.23   True        False         False      23d
-cloud-controller-manager                   4.18.23   True        False         False      23d
-cloud-credential                           4.18.23   True        False         False      23d
-cluster-autoscaler                         4.18.23   True        False         False      23d
-config-operator                            4.18.23   True        False         False      23d
-console                                    4.18.23   True        False         False      23d
-control-plane-machine-set                  4.18.23   True        False         False      23d
-csi-snapshot-controller                    4.18.23   True        False         False      23d
-dns                                        4.18.23   True        False         False      23d
-etcd                                       4.18.23   True        False         False      23d
-image-registry                             4.18.23   True        False         False      23d
-ingress                                    4.18.23   True        False         False      4d15h
-insights                                   4.18.23   False       False         True       4d13h   Unable to report: unable to build request to connect to Insights server: Post "https://console.redhat.com/api/ingress/v1/upload": dial tcp 2.18.51.203:443: i/o timeout
-kube-apiserver                             4.18.23   True        False         False      23d
-kube-controller-manager                    4.18.23   True        False         False      23d
-kube-scheduler                             4.18.23   True        False         False      23d
-kube-storage-version-migrator              4.18.23   True        False         False      4d15h
-machine-api                                4.18.23   True        False         False      23d
-machine-approver                           4.18.23   True        False         False      23d
-machine-config                             4.18.23   True        False         True       23d     Failed to resync 4.18.23 because: ca-bundle.crt not found in openshift-config/harbor-ca
-marketplace                                4.18.23   True        False         False      23d
-monitoring                                 4.18.23   True        False         False      23d
-network                                    4.18.23   True        False         True       23d     The configuration is invalid for proxy 'cluster' (failed to validate trust bundle for proxy trustedCA 'harbor-ca': ConfigMap "harbor-ca" is missing "ca-bundle.crt"). Use 'oc edit proxy.config.openshift.io cluster' to fix.
-node-tuning                                4.18.23   True        False         False      23d
-olm                                        4.18.23   True        False         False      4d15h
-openshift-apiserver                        4.18.23   True        False         False      23d
-openshift-controller-manager               4.18.23   True        False         False      23d
-openshift-samples                          4.18.23   True        False         False      23d
-operator-lifecycle-manager                 4.18.23   True        False         False      23d
-operator-lifecycle-manager-catalog         4.18.23   True        False         False      23d
-operator-lifecycle-manager-packageserver   4.18.23   True        False         False      22d
-service-ca                                 4.18.23   True        False         False      23d
-storage                                    4.18.23   True        False         False      23d
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$ oc describe cm harbor-ca -o yaml
-error: unknown shorthand flag: 'o' in -o
-See 'oc describe --help' for usage.
-srib@ocp-haproxy-1:~$ oc get cm harbor-ca -o yaml
-apiVersion: v1
+You have 2 related issues in your cluster:
+
+
+---
+
+🔴 Problem Summary
+
+1. ❌ network operator degraded
+
+failed to validate trust bundle for proxy trustedCA 'harbor-ca':
+ConfigMap "harbor-ca" is missing "ca-bundle.crt"
+
+2. ❌ machine-config operator degraded
+
+ca-bundle.crt not found in openshift-config/harbor-ca
+
+👉 Both errors clearly say:
+
+> Your ConfigMap exists, but the key name is wrong
+
+
+
+
+---
+
+🔍 Root Cause
+
+Your current ConfigMap:
+
 data:
-  sribharbor.sec.samsung.net: "-----BEGIN CERTIFICATE-----\r\n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\r\nOg==\r\n-----END
-    CERTIFICATE-----\r\n"
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2026-03-01T12:54:47Z"
+  sribharbor.sec.samsung.net: "-----BEGIN CERTIFICATE----- ..."
+
+❌ This is WRONG for OpenShift proxy trusted CA
+
+👉 OpenShift expects EXACT key name:
+
+ca-bundle.crt
+
+
+---
+
+✅ Fix (VERY IMPORTANT)
+
+You must recreate or update the ConfigMap with correct key.
+
+
+---
+
+🔧 Option 1: Quick Fix (Recommended)
+
+Run this:
+
+oc create configmap harbor-ca \
+  -n openshift-config \
+  --from-file=ca-bundle.crt=/path/to/your/cert.crt \
+  --dry-run=client -o yaml | oc apply -f -
+
+👉 Replace /path/to/your/cert.crt with your actual cert file
+
+
+---
+
+🔧 Option 2: Manual Fix
+
+Edit ConfigMap:
+
+oc edit cm harbor-ca -n openshift-config
+
+Change this:
+
+data:
+  sribharbor.sec.samsung.net: "-----BEGIN CERTIFICATE-----"
+
+👉 TO:
+
+data:
+  ca-bundle.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIFzTCCA7WgAwIBAgIUJkMdghBJnGoJ39xviWGyz2e+RjYwDQYJKoZIhvcNAQEN
+    ...
+    -----END CERTIFICATE-----
+
+⚠️ Important:
+
+Remove \r\n
+
+Proper multiline format
+
+Key must be exactly ca-bundle.crt
+
+
+
+---
+
+🔄 After Fix
+
+Wait 2–5 minutes, then check:
+
+oc get co
+
+
+---
+
+🧠 Why This Happened (Deep Understanding)
+
+In OpenShift:
+
+Proxy config:
+
+oc edit proxy cluster
+
+refers to:
+
+trustedCA:
   name: harbor-ca
-  namespace: openshift-config
-  resourceVersion: "936896"
-  uid: 67d3c36c-a90e-4eae-a26c-4298ea3926e3
-srib@ocp-haproxy-1:~$
+
+OpenShift expects:
+
+ConfigMap → key: ca-bundle.crt
+
+
+This is used by:
+
+cluster network operator
+
+machine config operator
+
+nodes (via ignition / MCO)
+
+
+
+---
+
+🔎 Optional Verification
+
+Check proxy config:
+
+oc get proxy cluster -o yaml
+
+Look for:
+
+trustedCA:
+  name: harbor-ca
+
+
+---
+
+🚀 Expected Result
+
+After fix:
+
+Operator	Status
+
+network	✅ Healthy
+machine-config	✅ Healthy
+insights	⚠️ still failing (needs internet)
+
+
+
+---
+
+⚠️ Bonus Issue (Insights)
+
+dial tcp 2.18.51.203:443: i/o timeout
+
+👉 This means:
+
+No internet OR proxy issue
+
+
+Fix later if needed.
+
+
+---
+
+✅ Final Conclusion
+
+👉 Your issue is NOT certificate problem 👉 It is ConfigMap key naming issue
+
+
+---
+
+If you want, I can also help you:
+
+Validate proxy config
+
+Fix Insights (offline / proxy)
+
+Verify Harbor registry trust end-to-end
+
+
+Just tell 👍
