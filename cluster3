@@ -1,9 +1,26 @@
-[root@bastion mirror_4_19_23]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
-error: unable to retrieve release image info: unable to load --registry-config: stat ./pull_secret.json: no such file or directory
-[root@bastion mirror_4_19_23]# export LOCAL_SECRET_JSON=/root/pull-secret.yaml
-[root@bastion mirror_4_19_23]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
-error: unable to retrieve release image info: unable to load --registry-config: reading JSON file "/root/pull-secret.yaml": unmarshaling JSON at "/root/pull-secret.yaml": invalid character 'a' looking for beginning of value
-[root@bastion mirror_4_19_23]#
-
+apiVersion: v1
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: lab1-pull-secret
+stringData:
+  .dockerconfigjson: |-
+    {
+      "auths": {
+        "bastion.srib-lab-ocp.lan:8443": {
+          "auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="
+        },
+        "cloud.openshift.com": {
+          "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
+        },
+        "quay.io": {
+          "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
+        },
+        "registry.connect.redhat.com": {
+          "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
+        },
+        "registry.redhat.io": {
+          "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
+        }
+      }
+    }
