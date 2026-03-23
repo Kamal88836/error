@@ -1,10 +1,9 @@
-srib@ocp-haproxy-1:~/kamal$ oc adm upgrade --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23 --allow-explicit-upgrade --force  --allow-upgrade-with-warnings
-warning: Using by-tag pull specs is dangerous, and while we still allow it in combination with --force for backward compatibility, it would be much safer to pass a by-digest pull spec instead
-warning: The requested upgrade image is not one of the available updates. You have used --allow-explicit-upgrade for the update to proceed anyway
-warning: --force overrides cluster verification of your supplied release image and waives any update precondition failures.
-warning: --allow-upgrade-with-warnings is bypassing: the cluster is experiencing an error reconciling "4.18.23":
+[root@bastion mirror_4_19_23]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
+Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
+error: unable to retrieve release image info: unable to load --registry-config: stat ./pull_secret.json: no such file or directory
+[root@bastion mirror_4_19_23]# export LOCAL_SECRET_JSON=/root/pull-secret.yaml
+[root@bastion mirror_4_19_23]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
+Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
+error: unable to retrieve release image info: unable to load --registry-config: reading JSON file "/root/pull-secret.yaml": unmarshaling JSON at "/root/pull-secret.yaml": invalid character 'a' looking for beginning of value
+[root@bastion mirror_4_19_23]#
 
-  Reason: ClusterOperatorNotAvailable
-  Message: Cluster operator insights is not available
-Requested update to release image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
-srib@ocp-haproxy-1:~/kamal$
