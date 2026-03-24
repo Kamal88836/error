@@ -1,29 +1,54 @@
-root@ocp-haproxy-1:~# ping 8.8.8.8
-PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
-64 bytes from 8.8.8.8: icmp_seq=1 ttl=63 time=7.89 ms
-64 bytes from 8.8.8.8: icmp_seq=2 ttl=63 time=7.50 ms
-64 bytes from 8.8.8.8: icmp_seq=3 ttl=63 time=7.55 ms
-64 bytes from 8.8.8.8: icmp_seq=4 ttl=63 time=7.86 ms
-^C
---- 8.8.8.8 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3025ms
-rtt min/avg/max/mdev = 7.495/7.698/7.888/0.177 ms
-root@ocp-haproxy-1:~# chronys -d 'server 2.rhel.pool.ntp.org iburst'
-
-Command 'chronys' not found, did you mean:
-
-  command 'chronyc' from deb chrony (3.5-6ubuntu6.2)
-  command 'chronyd' from deb chrony (3.5-6ubuntu6.2)
-
-Try: apt install <deb name>
-
-root@ocp-haproxy-1:~# chronyc -d 'server 2.rhel.pool.ntp.org iburst'
-Unrecognized command
-root@ocp-haproxy-1:~# chronyc -d 'pool 2.rhel.pool.ntp.org iburst'
-Unrecognized command
-root@ocp-haproxy-1:~# systemctl restart chronyd
+root@ocp-haproxy-1:~# chronyc tracking
+Reference ID    : 00000000 ()
+Stratum         : 0
+Ref time (UTC)  : Thu Jan 01 00:00:00 1970
+System time     : 0.000000000 seconds fast of NTP time
+Last offset     : +0.000000000 seconds
+RMS offset      : 0.000000000 seconds
+Frequency       : 5.386 ppm fast
+Residual freq   : +0.000 ppm
+Skew            : 0.000 ppm
+Root delay      : 1.000000000 seconds
+Root dispersion : 1.000000000 seconds
+Update interval : 0.0 seconds
+Leap status     : Not synchronised
+root@ocp-haproxy-1:~# chronyc clients
+Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
+===============================================================================
+72.1.1.17                       1      0   -   -    22       0      0   -     -
+root@ocp-haproxy-1:~# timedatectl
+               Local time: Tue 2026-03-24 06:47:38 UTC
+           Universal time: Tue 2026-03-24 06:47:38 UTC
+                 RTC time: Tue 2026-03-24 06:47:54
+                Time zone: Etc/UTC (UTC, +0000)
+System clock synchronized: no
+              NTP service: active
+          RTC in local TZ: no
+root@ocp-haproxy-1:~# timedatectl set-timezone Asia/Kolkata
+root@ocp-haproxy-1:~# timedatectl
+               Local time: Tue 2026-03-24 12:18:30 IST
+           Universal time: Tue 2026-03-24 06:48:30 UTC
+                 RTC time: Tue 2026-03-24 06:48:47
+                Time zone: Asia/Kolkata (IST, +0530)
+System clock synchronized: no
+              NTP service: active
+          RTC in local TZ: no
+root@ocp-haproxy-1:~# chronyc tracking
+Reference ID    : 00000000 ()
+Stratum         : 0
+Ref time (UTC)  : Thu Jan 01 00:00:00 1970
+System time     : 0.000000001 seconds fast of NTP time
+Last offset     : +0.000000000 seconds
+RMS offset      : 0.000000000 seconds
+Frequency       : 5.386 ppm fast
+Residual freq   : +0.000 ppm
+Skew            : 0.000 ppm
+Root delay      : 1.000000000 seconds
+Root dispersion : 1.000000000 seconds
+Update interval : 0.0 seconds
+Leap status     : Not synchronised
 root@ocp-haproxy-1:~# chronyc sources -v
-210 Number of sources = 7
+210 Number of sources = 4
 
   .-- Source mode  '^' = server, '=' = peer, '#' = local clock.
  / .- Source state '*' = current synced, '+' = combined , '-' = not combined,
@@ -35,26 +60,12 @@ root@ocp-haproxy-1:~# chronyc sources -v
 ||                                 |    |           \
 MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ===============================================================================
-^? 139.59.55.93                  0   6     0     -     +0ns[   +0ns] +/-    0ns
-^? 162.159.200.1                 0   6     0     -     +0ns[   +0ns] +/-    0ns
-^? 122.166.23.175                0   6     0     -     +0ns[   +0ns] +/-    0ns
-^? 86.107.100.245                0   6     0     -     +0ns[   +0ns] +/-    0ns
-^? 15.207.248.194                0   6     0     -     +0ns[   +0ns] +/-    0ns
 ^? 95.216.144.226                0   6     0     -     +0ns[   +0ns] +/-    0ns
-^? 192.46.215.60                 0   6     0     -     +0ns[   +0ns] +/-    0ns
-root@ocp-haproxy-1:~# chronyc -a makestep
-200 OK
-root@ocp-haproxy-1:~#
-root@ocp-haproxy-1:~#
-root@ocp-haproxy-1:~#
-root@ocp-haproxy-1:~# systemctl status ufw
-● ufw.service - Uncomplicated firewall
-     Loaded: loaded (/lib/systemd/system/ufw.service; disabled; vendor preset: enabled)
-     Active: inactive (dead)
-       Docs: man:ufw(8)
-
-Feb 10 11:16:41 ocp-haproxy-1.lab1.srib-lab-ocp.lan systemd[1]: Stopping Uncomplicated firewall...
-Feb 10 11:16:41 ocp-haproxy-1.lab1.srib-lab-ocp.lan ufw-init[3231818]: Skip stopping firewall: ufw (not enabled)
-Feb 10 11:16:41 ocp-haproxy-1.lab1.srib-lab-ocp.lan systemd[1]: ufw.service: Succeeded.
-Feb 10 11:16:41 ocp-haproxy-1.lab1.srib-lab-ocp.lan systemd[1]: Stopped Uncomplicated firewall.
+^? 139.84.142.141                0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 162.159.200.123               0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 192.46.211.253                0   6     0     -     +0ns[   +0ns] +/-    0ns
+root@ocp-haproxy-1:~# chronyc clients
+Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
+===============================================================================
+72.1.1.17                       1      0   -   -   142       0      0   -     -
 root@ocp-haproxy-1:~#
