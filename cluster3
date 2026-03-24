@@ -1,13 +1,47 @@
-root@ocp-haproxy-1:~# route
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-default         _gateway        0.0.0.0         UG    100    0        0 enp0s3
-default         _gateway        0.0.0.0         UG    101    0        0 enp0s8
-10.0.2.0        0.0.0.0         255.255.255.0   U     100    0        0 enp0s3
-_gateway        0.0.0.0         255.255.255.255 UH    100    0        0 enp0s3
-40.1.0.0        _gateway        255.255.254.0   UG    0      0        0 enp0s8
-65.1.1.0        _gateway        255.255.255.0   UG    0      0        0 enp0s8
-70.1.0.0        0.0.0.0         255.255.254.0   U     0      0        0 enp0s8
-71.1.0.0        _gateway        255.255.254.0   UG    0      0        0 enp0s8
-172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+root@ocp-haproxy-1:~# timedatectl
+               Local time: Tue 2026-03-24 15:13:47 IST
+           Universal time: Tue 2026-03-24 09:43:47 UTC
+                 RTC time: Tue 2026-03-24 09:44:03
+                Time zone: Asia/Kolkata (IST, +0530)
+System clock synchronized: no
+              NTP service: active
+          RTC in local TZ: no
+root@ocp-haproxy-1:~# chronyc clients
+Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
+===============================================================================
+72.1.1.17                       4      0   6   -    50       0      0   -     -
+localhost                       0      0   -   -     -       5      0  -5   176
+root@ocp-haproxy-1:~# chronyc -a makestep
+200 OK
+root@ocp-haproxy-1:~# chronyc sources -v
+210 Number of sources = 4
+
+  .-- Source mode  '^' = server, '=' = peer, '#' = local clock.
+ / .- Source state '*' = current synced, '+' = combined , '-' = not combined,
+| /   '?' = unreachable, 'x' = time may be in error, '~' = time too variable.
+||                                                 .- xxxx [ yyyy ] +/- zzzz
+||      Reachability register (octal) -.           |  xxxx = adjusted offset,
+||      Log2(Polling interval) --.      |          |  yyyy = measured offset,
+||                                \     |          |  zzzz = estimated error.
+||                                 |    |           \
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^? 192.46.210.39                 0   7     0     -     +0ns[   +0ns] +/-    0ns
+^? 139.84.142.141                0   7     0     -     +0ns[   +0ns] +/-    0ns
+^? 143.110.241.116               0   7     0     -     +0ns[   +0ns] +/-    0ns
+^? 142.93.213.206                0   7     0     -     +0ns[   +0ns] +/-    0ns
+root@ocp-haproxy-1:~# chronyc tracking
+Reference ID    : 7F7F0101 ()
+Stratum         : 3
+Ref time (UTC)  : Tue Mar 24 09:45:41 2026
+System time     : 0.000000000 seconds fast of NTP time
+Last offset     : +0.000000000 seconds
+RMS offset      : 0.000000000 seconds
+Frequency       : 5.386 ppm fast
+Residual freq   : +0.000 ppm
+Skew            : 0.000 ppm
+Root delay      : 0.000000000 seconds
+Root dispersion : 0.000000000 seconds
+Update interval : 0.0 seconds
+Leap status     : Normal
 root@ocp-haproxy-1:~#
