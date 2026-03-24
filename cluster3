@@ -1,53 +1,3 @@
-root@ocp-haproxy-1:~# chronyc tracking
-Reference ID    : 00000000 ()
-Stratum         : 0
-Ref time (UTC)  : Thu Jan 01 00:00:00 1970
-System time     : 0.000000000 seconds fast of NTP time
-Last offset     : +0.000000000 seconds
-RMS offset      : 0.000000000 seconds
-Frequency       : 5.386 ppm fast
-Residual freq   : +0.000 ppm
-Skew            : 0.000 ppm
-Root delay      : 1.000000000 seconds
-Root dispersion : 1.000000000 seconds
-Update interval : 0.0 seconds
-Leap status     : Not synchronised
-root@ocp-haproxy-1:~# chronyc clients
-Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
-===============================================================================
-72.1.1.17                       1      0   -   -    22       0      0   -     -
-root@ocp-haproxy-1:~# timedatectl
-               Local time: Tue 2026-03-24 06:47:38 UTC
-           Universal time: Tue 2026-03-24 06:47:38 UTC
-                 RTC time: Tue 2026-03-24 06:47:54
-                Time zone: Etc/UTC (UTC, +0000)
-System clock synchronized: no
-              NTP service: active
-          RTC in local TZ: no
-root@ocp-haproxy-1:~# timedatectl set-timezone Asia/Kolkata
-root@ocp-haproxy-1:~# timedatectl
-               Local time: Tue 2026-03-24 12:18:30 IST
-           Universal time: Tue 2026-03-24 06:48:30 UTC
-                 RTC time: Tue 2026-03-24 06:48:47
-                Time zone: Asia/Kolkata (IST, +0530)
-System clock synchronized: no
-              NTP service: active
-          RTC in local TZ: no
-root@ocp-haproxy-1:~# chronyc tracking
-Reference ID    : 00000000 ()
-Stratum         : 0
-Ref time (UTC)  : Thu Jan 01 00:00:00 1970
-System time     : 0.000000001 seconds fast of NTP time
-Last offset     : +0.000000000 seconds
-RMS offset      : 0.000000000 seconds
-Frequency       : 5.386 ppm fast
-Residual freq   : +0.000 ppm
-Skew            : 0.000 ppm
-Root delay      : 1.000000000 seconds
-Root dispersion : 1.000000000 seconds
-Update interval : 0.0 seconds
-Leap status     : Not synchronised
-root@ocp-haproxy-1:~# chronyc sources -v
 210 Number of sources = 4
 
   .-- Source mode  '^' = server, '=' = peer, '#' = local clock.
@@ -68,4 +18,19 @@ root@ocp-haproxy-1:~# chronyc clients
 Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
 ===============================================================================
 72.1.1.17                       1      0   -   -   142       0      0   -     -
-root@ocp-haproxy-1:~#
+root@ocp-haproxy-1:~# tcpdump -i any port 123
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on any, link-type LINUX_SLL (Linux cooked v1), capture size 262144 bytes
+
+
+12:22:56.327289 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.56929 > 139.84.142.141.ntp: NTPv4, Client, length 48
+12:22:57.018986 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.37903 > 192.46.211.253.ntp: NTPv4, Client, length 48
+12:22:58.139671 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.57649 > 95.216.144.226.ntp: NTPv4, Client, length 48
+12:22:59.183184 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.59860 > 162.159.200.123.ntp: NTPv4, Client, length 48
+12:25:06.730493 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.51465 > 139.84.142.141.ntp: NTPv4, Client, length 48
+12:25:06.905551 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.42557 > 95.216.144.226.ntp: NTPv4, Client, length 48
+12:25:07.459584 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.44641 > 192.46.211.253.ntp: NTPv4, Client, length 48
+12:25:08.423991 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.46972 > 162.159.200.123.ntp: NTPv4, Client, length 48
+12:25:16.300781 IP 72.1.1.17.54002 > ocp-haproxy-1.lab1.srib-lab-ocp.lan.ntp: NTPv4, Client, length 48
+12:25:16.300893 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.ntp > 72.1.1.17.54002: NTPv4, Server, length 48
+
