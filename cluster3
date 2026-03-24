@@ -1,127 +1,60 @@
-srib@ocp-haproxy-1:~$ oc adm upgrade --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23 --allow-explicit-upgrade --force  --allow-upgrade-with-warnings
-warning: Using by-tag pull specs is dangerous, and while we still allow it in combination with --force for backward compatibility, it would be much safer to pass a by-digest pull spec instead
-warning: The requested upgrade image is not one of the available updates. You have used --allow-explicit-upgrade for the update to proceed anyway
-warning: --force overrides cluster verification of your supplied release image and waives any update precondition failures.
-Requested update to release image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
-srib@ocp-haproxy-1:~$ oc adm upgrade --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
-error: --to-image must be a by-digest pull spec, unless --force is also set, because release images that are not accessed via digest cannot be verified by the cluster.  Even when --force is set, using tags is not recommended, although we continue to allow it for backwards compatibility
-srib@ocp-haproxy-1:~$
+root@ocp-haproxy-1:~# ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=63 time=7.89 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=63 time=7.50 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=63 time=7.55 ms
+64 bytes from 8.8.8.8: icmp_seq=4 ttl=63 time=7.86 ms
+^C
+--- 8.8.8.8 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3025ms
+rtt min/avg/max/mdev = 7.495/7.698/7.888/0.177 ms
+root@ocp-haproxy-1:~# chronys -d 'server 2.rhel.pool.ntp.org iburst'
 
+Command 'chronys' not found, did you mean:
 
+  command 'chronyc' from deb chrony (3.5-6ubuntu6.2)
+  command 'chronyd' from deb chrony (3.5-6ubuntu6.2)
 
+Try: apt install <deb name>
 
-root@ocp-haproxy-1:~# date
-Tue 24 Mar 2026 06:13:52 AM UTC
-root@ocp-haproxy-1:~# timedatectl
-               Local time: Tue 2026-03-24 06:14:25 UTC
-           Universal time: Tue 2026-03-24 06:14:25 UTC
-                 RTC time: Tue 2026-03-24 06:14:42
-                Time zone: Etc/UTC (UTC, +0000)
-System clock synchronized: no
-              NTP service: active
-          RTC in local TZ: no
-root@ocp-haproxy-1:~# chronyc sources
-210 Number of sources = 8
+root@ocp-haproxy-1:~# chronyc -d 'server 2.rhel.pool.ntp.org iburst'
+Unrecognized command
+root@ocp-haproxy-1:~# chronyc -d 'pool 2.rhel.pool.ntp.org iburst'
+Unrecognized command
+root@ocp-haproxy-1:~# systemctl restart chronyd
+root@ocp-haproxy-1:~# chronyc sources -v
+210 Number of sources = 7
+
+  .-- Source mode  '^' = server, '=' = peer, '#' = local clock.
+ / .- Source state '*' = current synced, '+' = combined , '-' = not combined,
+| /   '?' = unreachable, 'x' = time may be in error, '~' = time too variable.
+||                                                 .- xxxx [ yyyy ] +/- zzzz
+||      Reachability register (octal) -.           |  xxxx = adjusted offset,
+||      Log2(Polling interval) --.      |          |  yyyy = measured offset,
+||                                \     |          |  zzzz = estimated error.
+||                                 |    |           \
 MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ===============================================================================
-^? 162.159.200.123               0   8     0     -     +0ns[   +0ns] +/-    0ns
-^? 103.136.36.100                0   8     0     -     +0ns[   +0ns] +/-    0ns
-^? 142.93.213.206                0   8     0     -     +0ns[   +0ns] +/-    0ns
-^? 192.46.210.39                 0   8     0     -     +0ns[   +0ns] +/-    0ns
-^? 15.207.248.194                0   8     0     -     +0ns[   +0ns] +/-    0ns
-^? 139.84.142.141                0   8     0     -     +0ns[   +0ns] +/-    0ns
-^? 143.110.241.116               0   8     0     -     +0ns[   +0ns] +/-    0ns
-^? 192.46.211.253                0   8     0     -     +0ns[   +0ns] +/-    0ns
-root@ocp-haproxy-1:~# chronyc tracking
-Reference ID    : 00000000 ()
-Stratum         : 0
-Ref time (UTC)  : Thu Jan 01 00:00:00 1970
-System time     : 0.000000009 seconds fast of NTP time
-Last offset     : +0.000000000 seconds
-RMS offset      : 0.000000000 seconds
-Frequency       : 5.386 ppm fast
-Residual freq   : +0.000 ppm
-Skew            : 0.000 ppm
-Root delay      : 1.000000000 seconds
-Root dispersion : 1.000000000 seconds
-Update interval : 0.0 seconds
-Leap status     : Not synchronised
-root@ocp-haproxy-1:~# chronyc clients
-Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
-===============================================================================
-72.1.1.17                      11      0   6   -    75       0      0   -     -
-root@ocp-haproxy-1:~#
-
-root@ocp-haproxy-1:~# chronyc clients
-Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
-===============================================================================
-72.1.1.17                      11      0   6   -    75       0      0   -     -
+^? 139.59.55.93                  0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 162.159.200.1                 0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 122.166.23.175                0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 86.107.100.245                0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 15.207.248.194                0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 95.216.144.226                0   6     0     -     +0ns[   +0ns] +/-    0ns
+^? 192.46.215.60                 0   6     0     -     +0ns[   +0ns] +/-    0ns
 root@ocp-haproxy-1:~# chronyc -a makestep
 200 OK
-root@ocp-haproxy-1:~# chronyc clients
-Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
-===============================================================================
-72.1.1.17                      13      0   7   -     1       0      0   -     -
-root@ocp-haproxy-1:~# chronyc tracking
-Reference ID    : 00000000 ()
-Stratum         : 0
-Ref time (UTC)  : Thu Jan 01 00:00:00 1970
-System time     : 0.000000000 seconds fast of NTP time
-Last offset     : +0.000000000 seconds
-RMS offset      : 0.000000000 seconds
-Frequency       : 5.386 ppm fast
-Residual freq   : +0.000 ppm
-Skew            : 0.000 ppm
-Root delay      : 1.000000000 seconds
-Root dispersion : 1.000000000 seconds
-Update interval : 0.0 seconds
-Leap status     : Not synchronised
-root@ocp-haproxy-1:~# vi  /etc/chrony/chrony.conf
-# Use public servers from the pool.ntp.org project.
-# Please consider joining the pool (http://www.pool.ntp.org/join.html).
-#pool 2.rhel.pool.ntp.org iburst
+root@ocp-haproxy-1:~#
+root@ocp-haproxy-1:~#
+root@ocp-haproxy-1:~#
+root@ocp-haproxy-1:~# systemctl status ufw
+● ufw.service - Uncomplicated firewall
+     Loaded: loaded (/lib/systemd/system/ufw.service; disabled; vendor preset: enabled)
+     Active: inactive (dead)
+       Docs: man:ufw(8)
 
-
-pool 2.rhel.pool.ntp.org iburst
-pool 3.rhel.pool.ntp.org iburst
-
-#server 70.1.1.125 prefer iburst
-#server 0.in.pool.ntp.org
-#driftfile /var/lib/chrony/drift
-#makestep 1.0 3
-#rtcsync
-#allow 10.0.0.0/16
-#allow 71.1.0.0/23
-#allow 70.1.0.0/16
-#local stratum 3
-#logdir /var/log/chrony
-
-#server 72.1.1.17 iburst prefer minpoll 4 maxpoll 4
-#server 70.1.1.110 iburst
-#server 107.110.7.10 iburst
-#server saindc002.sa.corp.samsungelectronics.net iburst
-
-
-#server 72.1.1.17 iburst prefer
-
-driftfile /var/lib/chrony/drift
-
-makestep 1.0 3
-
-rtcsync
-
-allow 72.1.1.17/22
-#allow 71.1.0.0/23
-#allow 10.0.0.0/16
-
-#local stratum 3
-
-logdir /var/log/chrony
-log tracking measurements statistics
-
-# Security hardening (recommended)
-cmdallow 127.0.0.1
-cmdallow ::1
-bindcmdaddress 127.0.0.1
-bindcmdaddress ::1
-
+Feb 10 11:16:41 ocp-haproxy-1.lab1.srib-lab-ocp.lan systemd[1]: Stopping Uncomplicated firewall...
+Feb 10 11:16:41 ocp-haproxy-1.lab1.srib-lab-ocp.lan ufw-init[3231818]: Skip stopping firewall: ufw (not enabled)
+Feb 10 11:16:41 ocp-haproxy-1.lab1.srib-lab-ocp.lan systemd[1]: ufw.service: Succeeded.
+Feb 10 11:16:41 ocp-haproxy-1.lab1.srib-lab-ocp.lan systemd[1]: Stopped Uncomplicated firewall.
+root@ocp-haproxy-1:~#
