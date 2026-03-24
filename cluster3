@@ -1,36 +1,13 @@
-210 Number of sources = 4
-
-  .-- Source mode  '^' = server, '=' = peer, '#' = local clock.
- / .- Source state '*' = current synced, '+' = combined , '-' = not combined,
-| /   '?' = unreachable, 'x' = time may be in error, '~' = time too variable.
-||                                                 .- xxxx [ yyyy ] +/- zzzz
-||      Reachability register (octal) -.           |  xxxx = adjusted offset,
-||      Log2(Polling interval) --.      |          |  yyyy = measured offset,
-||                                \     |          |  zzzz = estimated error.
-||                                 |    |           \
-MS Name/IP address         Stratum Poll Reach LastRx Last sample
-===============================================================================
-^? 95.216.144.226                0   6     0     -     +0ns[   +0ns] +/-    0ns
-^? 139.84.142.141                0   6     0     -     +0ns[   +0ns] +/-    0ns
-^? 162.159.200.123               0   6     0     -     +0ns[   +0ns] +/-    0ns
-^? 192.46.211.253                0   6     0     -     +0ns[   +0ns] +/-    0ns
-root@ocp-haproxy-1:~# chronyc clients
-Hostname                      NTP   Drop Int IntL Last     Cmd   Drop Int  Last
-===============================================================================
-72.1.1.17                       1      0   -   -   142       0      0   -     -
-root@ocp-haproxy-1:~# tcpdump -i any port 123
-tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-listening on any, link-type LINUX_SLL (Linux cooked v1), capture size 262144 bytes
-
-
-12:22:56.327289 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.56929 > 139.84.142.141.ntp: NTPv4, Client, length 48
-12:22:57.018986 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.37903 > 192.46.211.253.ntp: NTPv4, Client, length 48
-12:22:58.139671 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.57649 > 95.216.144.226.ntp: NTPv4, Client, length 48
-12:22:59.183184 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.59860 > 162.159.200.123.ntp: NTPv4, Client, length 48
-12:25:06.730493 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.51465 > 139.84.142.141.ntp: NTPv4, Client, length 48
-12:25:06.905551 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.42557 > 95.216.144.226.ntp: NTPv4, Client, length 48
-12:25:07.459584 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.44641 > 192.46.211.253.ntp: NTPv4, Client, length 48
-12:25:08.423991 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.46972 > 162.159.200.123.ntp: NTPv4, Client, length 48
-12:25:16.300781 IP 72.1.1.17.54002 > ocp-haproxy-1.lab1.srib-lab-ocp.lan.ntp: NTPv4, Client, length 48
-12:25:16.300893 IP ocp-haproxy-1.lab1.srib-lab-ocp.lan.ntp > 72.1.1.17.54002: NTPv4, Server, length 48
-
+root@ocp-haproxy-1:~# route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         _gateway        0.0.0.0         UG    100    0        0 enp0s3
+default         _gateway        0.0.0.0         UG    101    0        0 enp0s8
+10.0.2.0        0.0.0.0         255.255.255.0   U     100    0        0 enp0s3
+_gateway        0.0.0.0         255.255.255.255 UH    100    0        0 enp0s3
+40.1.0.0        _gateway        255.255.254.0   UG    0      0        0 enp0s8
+65.1.1.0        _gateway        255.255.255.0   UG    0      0        0 enp0s8
+70.1.0.0        0.0.0.0         255.255.254.0   U     0      0        0 enp0s8
+71.1.0.0        _gateway        255.255.254.0   UG    0      0        0 enp0s8
+172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+root@ocp-haproxy-1:~#
