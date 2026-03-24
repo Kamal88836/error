@@ -1,4 +1,148 @@
-srib@ocp-haproxy-1:~/kamal$ oc adm release info -o 'jsonpath={.digest}{"\n"}' bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23-x86_64
-error: unable to read image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23-x86_64: Get "https://bastion.srib-lab-ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate signed by unknown authority (possibly because of "crypto/rsa: verification error" while trying to verify candidate authority certificate "bastion.srib-lab-ocp.lan")
-srib@ocp-haproxy-1:~/kamal$ oc adm release info -o 'jsonpath={.digest}{"\n"}' bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23-x86_64
-error: unable to read image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23-x86_64: Get "https://bastion.srib-lab-ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate signed by unknown authority (possibly because of "crypto/rsa: verification error" while trying to verify candidate authority certificate "bastion.srib-lab-ocp.lan")
+srib@ocp-haproxy-1:~$ oc get po
+NAME                              READY   STATUS    RESTARTS   AGE
+router-default-58b67b7c47-rrnkh   1/1     Running   0          28h
+router-default-85554bcf86-647kj   0/1     Running   0          10m
+router-default-85554bcf86-8l6lh   0/1     Pending   0          27s
+srib@ocp-haproxy-1:~$ oc get po
+NAME                              READY   STATUS    RESTARTS   AGE
+router-default-58b67b7c47-rrnkh   1/1     Running   0          28h
+router-default-85554bcf86-647kj   0/1     Running   0          10m
+router-default-85554bcf86-8l6lh   0/1     Pending   0          41s
+srib@ocp-haproxy-1:~$ oc describe po router-default-85554bcf86-647kj
+Name:                 router-default-85554bcf86-647kj
+Namespace:            openshift-ingress
+Priority:             2000000000
+Priority Class Name:  system-cluster-critical
+Service Account:      router
+Node:                 ocp-cp-2.lab1.srib-lab-ocp.lan/71.1.1.227
+Start Time:           Tue, 24 Mar 2026 17:00:51 +0530
+Labels:               ingresscontroller.operator.openshift.io/deployment-ingresscontroller=default
+                      ingresscontroller.operator.openshift.io/hash=77fb98dd9c
+                      pod-template-hash=85554bcf86
+Annotations:          openshift.io/required-scc: hostnetwork
+                      openshift.io/scc: hostnetwork
+                      resources.workload.openshift.io/router: {"cpushares":102}
+                      target.workload.openshift.io/management: {"effect":"PreferredDuringScheduling"}
+Status:               Running
+IP:                   71.1.1.227
+IPs:
+  IP:           71.1.1.227
+  IP:           2405:100:200:71::1:565
+Controlled By:  ReplicaSet/router-default-85554bcf86
+Containers:
+  router:
+    Container ID:   cri-o://3ce96911672e116fb959d208c9e75a7f54486f98af916a6545b27051e34a7dba
+    Image:          quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2b8f395667d6b15756e6b4c8bc45f105e9da34dc84cf5985b8da9992d56e0ef9
+    Image ID:       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2b8f395667d6b15756e6b4c8bc45f105e9da34dc84cf5985b8da9992d56e0ef9
+    Ports:          80/TCP, 443/TCP, 1936/TCP
+    Host Ports:     80/TCP, 443/TCP, 1936/TCP
+    State:          Running
+      Started:      Tue, 24 Mar 2026 17:00:52 +0530
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      management.workload.openshift.io/cores:  100
+    Requests:
+      management.workload.openshift.io/cores:  100
+      memory:                                  256Mi
+    Liveness:                                  http-get http://localhost:1936/healthz delay=0s timeout=1s period=10s #success=1 #failure=3
+    Readiness:                                 http-get http://localhost:1936/healthz/ready delay=0s timeout=1s period=10s #success=1 #failure=3
+    Startup:                                   http-get http://localhost:1936/healthz/ready delay=0s timeout=1s period=1s #success=1 #failure=120
+    Environment:
+      DEFAULT_CERTIFICATE_DIR:                   /etc/pki/tls/private
+      DEFAULT_DESTINATION_CA_PATH:               /var/run/configmaps/service-ca/service-ca.crt
+      RELOAD_INTERVAL:                           5s
+      ROUTER_ALLOW_WILDCARD_ROUTES:              false
+      ROUTER_CANONICAL_HOSTNAME:                 router-default.apps.lab1.srib-lab-ocp.lan
+      ROUTER_CIPHERS:                            ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+      ROUTER_CIPHERSUITES:                       TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+      ROUTER_DISABLE_HTTP2:                      true
+      ROUTER_DISABLE_NAMESPACE_OWNERSHIP_CHECK:  false
+      ROUTER_DOMAIN:                             apps.lab1.srib-lab-ocp.lan
+      ROUTER_ENABLE_EXTERNAL_CERTIFICATE:        true
+      ROUTER_IDLE_CLOSE_ON_RESPONSE:             true
+      ROUTER_IP_V4_V6_MODE:                      v4v6
+      ROUTER_LOAD_BALANCE_ALGORITHM:             random
+      ROUTER_METRICS_TLS_CERT_FILE:              /etc/pki/tls/metrics-certs/tls.crt
+      ROUTER_METRICS_TLS_KEY_FILE:               /etc/pki/tls/metrics-certs/tls.key
+      ROUTER_METRICS_TYPE:                       haproxy
+      ROUTER_SERVICE_HTTPS_PORT:                 443
+      ROUTER_SERVICE_HTTP_PORT:                  80
+      ROUTER_SERVICE_NAME:                       default
+      ROUTER_SERVICE_NAMESPACE:                  openshift-ingress
+      ROUTER_SET_FORWARDED_HEADERS:              append
+      ROUTER_TCP_BALANCE_SCHEME:                 source
+      ROUTER_THREADS:                            4
+      SSL_MIN_VERSION:                           TLSv1.2
+      STATS_PASSWORD_FILE:                       /var/lib/haproxy/conf/metrics-auth/statsPassword
+      STATS_PORT:                                1936
+      STATS_USERNAME_FILE:                       /var/lib/haproxy/conf/metrics-auth/statsUsername
+    Mounts:
+      /etc/pki/tls/metrics-certs from metrics-certs (ro)
+      /etc/pki/tls/private from default-certificate (ro)
+      /var/lib/haproxy/conf/metrics-auth from stats-auth (ro)
+      /var/run/configmaps/service-ca from service-ca-bundle (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-tklcg (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       False
+  ContainersReady             False
+  PodScheduled                True
+Volumes:
+  default-certificate:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  router-certs-default
+    Optional:    false
+  service-ca-bundle:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      service-ca-bundle
+    Optional:  false
+  stats-auth:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  router-stats-default
+    Optional:    false
+  metrics-certs:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  router-metrics-certs-default
+    Optional:    false
+  kube-api-access-tklcg:
+    Type:                     Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:   3607
+    ConfigMapName:            kube-root-ca.crt
+    ConfigMapOptional:        <nil>
+    DownwardAPI:              true
+    ConfigMapName:            openshift-service-ca.crt
+    ConfigMapOptional:        <nil>
+QoS Class:                    Burstable
+Node-Selectors:               kubernetes.io/os=linux
+                              node-role.kubernetes.io/worker=
+Tolerations:                  kubernetes.io/e2e-evict-taint-key=evictTaintVal:NoExecute
+                              node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                              node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                              node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Topology Spread Constraints:  topology.kubernetes.io/zone:ScheduleAnyway when max skew 1 is exceeded for selector ingresscontroller.operator.openshift.io/hash in (77fb98dd9c)
+Events:
+  Type     Reason            Age                    From               Message
+  ----     ------            ----                   ----               -------
+  Warning  FailedScheduling  10m                    default-scheduler  0/3 nodes are available: 1 node(s) were unschedulable, 2 node(s) didn't have free ports for the requested pod ports. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 node(s) didn't have free ports for the requested pod ports.
+  Warning  FailedScheduling  4m15s (x2 over 9m42s)  default-scheduler  0/3 nodes are available: 1 node(s) were unschedulable, 2 node(s) didn't have free ports for the requested pod ports. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 node(s) didn't have free ports for the requested pod ports.
+  Normal   Scheduled         33s                    default-scheduler  Successfully assigned openshift-ingress/router-default-85554bcf86-647kj to ocp-cp-2.lab1.srib-lab-ocp.lan
+  Normal   Pulled            33s                    kubelet            Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2b8f395667d6b15756e6b4c8bc45f105e9da34dc84cf5985b8da9992d56e0ef9" already present on machine
+  Normal   Created           32s                    kubelet            Created container: router
+  Normal   Started           32s                    kubelet            Started container router
+  Warning  ProbeError        19s (x11 over 30s)     kubelet            Startup probe error: Get "http://localhost:1936/healthz/ready": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+body:
+  Warning  Unhealthy  19s (x11 over 30s)  kubelet  Startup probe failed: Get "http://localhost:1936/healthz/ready": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+srib@ocp-haproxy-1:~$ oc get po
+NAME                              READY   STATUS    RESTARTS     AGE
+router-default-58b67b7c47-rrnkh   1/1     Running   0            28h
+router-default-85554bcf86-647kj   0/1     Running   1 (4s ago)   10m
+router-default-85554bcf86-8l6lh   0/1     Pending   0            56s
+srib@ocp-haproxy-1:~$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   24d   v1.31.11
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   24d   v1.31.11
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   24d   v1.31.11
+srib@ocp-haproxy-1:~$
