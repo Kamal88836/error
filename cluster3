@@ -1,34 +1,8 @@
-srib@ocp-haproxy-1:~/kamal$ oc get csv -A
-NAMESPACE                              NAME                                              DISPLAY                            VERSION               REPLACES                                 PHASE
-openshift-local-storage                local-storage-operator.v4.18.0-202512031242       Local Storage                      4.18.0-202512031242                                            Succeeded
-openshift-nmstate                      kubernetes-nmstate-operator.4.18.0-202512031242   Kubernetes NMState Operator        4.18.0-202512031242                                            Succeeded
-openshift-operator-lifecycle-manager   packageserver                                     Package Server                     0.0.1-snapshot                                                 Succeeded
-openshift-ptp                          ptp-operator.v4.18.0-202512031242                 PTP Operator                       4.18.0-202512031242                                            Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.18.0-202511261113       SR-IOV Network Operator            4.18.0-202511261113                                            Succeeded
-openshift-storage                      cephcsi-operator.v4.18.14-rhodf                   CephCSI operator                   4.18.14-rhodf         cephcsi-operator.v4.18.13-rhodf          Succeeded
-openshift-storage                      mcg-operator.v4.18.14-rhodf                       NooBaa Operator                    4.18.14-rhodf         mcg-operator.v4.18.13-rhodf              Succeeded
-openshift-storage                      ocs-client-operator.v4.18.14-rhodf                OpenShift Data Foundation Client   4.18.14-rhodf         ocs-client-operator.v4.18.13-rhodf       Succeeded
-openshift-storage                      ocs-operator.v4.18.14-rhodf                       OpenShift Container Storage        4.18.14-rhodf         ocs-operator.v4.18.13-rhodf              Succeeded
-openshift-storage                      odf-csi-addons-operator.v4.18.14-rhodf            CSI Addons                         4.18.14-rhodf         odf-csi-addons-operator.v4.18.13-rhodf   Succeeded
-openshift-storage                      odf-dependencies.v4.18.14-rhodf                   Data Foundation Dependencies       4.18.14-rhodf         odf-dependencies.v4.18.13-rhodf          Succeeded
-openshift-storage                      odf-operator.v4.18.14-rhodf                       OpenShift Data Foundation          4.18.14-rhodf         odf-operator.v4.18.13-rhodf              Succeeded
-openshift-storage                      odf-prometheus-operator.v4.18.14-rhodf            Prometheus Operator                4.18.14-rhodf         odf-prometheus-operator.v4.18.13-rhodf   Succeeded
-openshift-storage                      recipe.v4.18.14-rhodf                             Recipe                             4.18.14-rhodf         recipe.v4.18.13-rhodf                    Succeeded
-openshift-storage                      rook-ceph-operator.v4.18.14-rhodf                 Rook-Ceph                          4.18.14-rhodf         rook-ceph-operator.v4.18.13-rhodf        Succeeded
-srib@ocp-haproxy-1:~/kamal$
-
-Local Storage
-Kubernetes NMState Operator
-Package Server 
-PTP Operator
-SR-IOV Network Operator 
-CephCSI operator  
-NooBaa Operator 
-OpenShift Data Foundation Client
-OpenShift Container Storage
-CSI Addons 
-Data Foundation Dependencies
-OpenShift Data Foundation
-Prometheus Operator  
-Recipe
-Rook-Ceph 
+srib@ocp-haproxy-1:~$ oc adm upgrade --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23 --allow-explicit-upgrade --force  --allow-upgrade-with-warnings
+warning: Using by-tag pull specs is dangerous, and while we still allow it in combination with --force for backward compatibility, it would be much safer to pass a by-digest pull spec instead
+warning: The requested upgrade image is not one of the available updates. You have used --allow-explicit-upgrade for the update to proceed anyway
+warning: --force overrides cluster verification of your supplied release image and waives any update precondition failures.
+Requested update to release image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
+srib@ocp-haproxy-1:~$ oc adm upgrade --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23
+error: --to-image must be a by-digest pull spec, unless --force is also set, because release images that are not accessed via digest cannot be verified by the cluster.  Even when --force is set, using tags is not recommended, although we continue to allow it for backwards compatibility
+srib@ocp-haproxy-1:~$
