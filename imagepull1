@@ -1,153 +1,86 @@
-sh-5.1# cat /etc/containers/registries.conf
-unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
-short-name-mode = ""
-additional-layer-store-auth-helper = ""
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/lvms4"
+mirror:
+  platform:
+    channels:
+    - name: stable-4.19
+      minVersion: 4.19.23
+      maxVersion: 4.19.23
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/lvms4"
-    pull-from-mirror = "digest-only"
+  operators:
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+    packages:
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/odf4"
+    # =========================
+    # ODF FULL STACK (REQUIRED)
+    # =========================
+    - name: odf-operator
+      channels:
+      - name: stable-4.19
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/odf4"
-    pull-from-mirror = "digest-only"
+    - name: ocs-operator
+      channels:
+      - name: stable-4.19
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/openshift-logging"
+    - name: ocs-client-operator
+      channels:
+      - name: stable-4.19
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/openshift-logging"
-    pull-from-mirror = "digest-only"
+    - name: mcg-operator
+      channels:
+      - name: stable-4.19
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/openshift4"
+    - name: rook-ceph-operator
+      channels:
+      - name: stable-4.19
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/openshift4"
-    pull-from-mirror = "digest-only"
+    - name: cephcsi-operator
+      channels:
+      - name: stable-4.19
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/rhceph"
+    - name: odf-csi-addons-operator
+      channels:
+      - name: stable-4.19
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/rhceph"
-    pull-from-mirror = "digest-only"
+    - name: odf-prometheus-operator
+      channels:
+      - name: stable-4.19
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/rhel9"
+    - name: odf-dependencies
+      channels:
+      - name: stable-4.19
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/rhel9"
-    pull-from-mirror = "digest-only"
+    - name: recipe
+      channels:
+      - name: stable-4.19
 
-[[registry]]
-  prefix = ""
-  location = "quay.io/openshift-release-dev"
+    # =========================
+    # INFRA OPERATORS (CRITICAL)
+    # =========================
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift-release-dev"
-    pull-from-mirror = "tag-only"
+    - name: local-storage-operator
+      channels:
+      - name: stable
 
-[[registry]]
-  prefix = ""
-  location = "quay.io/openshift-release-dev/ocp-release"
+    - name: kubernetes-nmstate-operator
+      channels:
+      - name: stable
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images"
-    pull-from-mirror = "tag-only"
+    - name: ptp-operator
+      channels:
+      - name: stable
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/ubi8"
+    - name: sriov-network-operator
+      channels:
+      - name: stable
 
-  [[registry.mirror]]
-    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ubi8"
-    pull-from-mirror = "tag-only"
+    - name: lvms-operator
+      channels:
+      - name: stable-4.19
 
-[[registry]]
-  prefix = ""
-  location = "sribharbor.sec.samsung.net"
-  insecure = true
-sh-5.1#
-sh-5.1#
-sh-5.1#
-sh-5.1#
-sh-5.1#
-exit
-sh-5.1#
-exit
+  additionalImages:
+  - name: quay.io/openshift-release-dev/ocp-release:4.19.23-x86_64
+  - name: registry.redhat.io/ubi8/ubi:latest
 
-Removing debug pod ...
-srib@ocp-haproxy-1:~/ocp_4_19$
-srib@ocp-haproxy-1:~/ocp_4_19$
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get imagedigestmirrorset -o yaml
-apiVersion: v1
-items:
-- apiVersion: config.openshift.io/v1
-  kind: ImageDigestMirrorSet
-  metadata:
-    annotations:
-      createdAt: Wednesday, 25-Mar-26 16:41:47 UTC
-      createdBy: oc-mirror v2
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"config.openshift.io/v1","kind":"ImageDigestMirrorSet","metadata":{"annotations":{"createdAt":"Wednesday, 25-Mar-26 16:41:47 UTC","createdBy":"oc-mirror v2","oc-mirror_version":"4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6"},"name":"idms-operator-0"},"spec":{"imageDigestMirrors":[{"mirrors":["bastion.srib-lab-ocp.lan:8443/openshift4"],"source":"registry.redhat.io/openshift4"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/odf4"],"source":"registry.redhat.io/odf4"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/rhel9"],"source":"registry.redhat.io/rhel9"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/rhceph"],"source":"registry.redhat.io/rhceph"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/lvms4"],"source":"registry.redhat.io/lvms4"}]},"status":{}}
-      oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-    creationTimestamp: "2026-03-25T16:59:23Z"
-    generation: 1
-    name: idms-operator-0
-    resourceVersion: "14317173"
-    uid: 60f02b4c-4758-41ba-8762-143981baa527
-  spec:
-    imageDigestMirrors:
-    - mirrors:
-      - bastion.srib-lab-ocp.lan:8443/openshift4
-      source: registry.redhat.io/openshift4
-    - mirrors:
-      - bastion.srib-lab-ocp.lan:8443/odf4
-      source: registry.redhat.io/odf4
-    - mirrors:
-      - bastion.srib-lab-ocp.lan:8443/rhel9
-      source: registry.redhat.io/rhel9
-    - mirrors:
-      - bastion.srib-lab-ocp.lan:8443/rhceph
-      source: registry.redhat.io/rhceph
-    - mirrors:
-      - bastion.srib-lab-ocp.lan:8443/lvms4
-      source: registry.redhat.io/lvms4
-- apiVersion: config.openshift.io/v1
-  kind: ImageDigestMirrorSet
-  metadata:
-    annotations:
-      createdAt: Wednesday, 25-Mar-26 16:41:47 UTC
-      createdBy: oc-mirror v2
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"config.openshift.io/v1","kind":"ImageDigestMirrorSet","metadata":{"annotations":{"createdAt":"Wednesday, 25-Mar-26 16:41:47 UTC","createdBy":"oc-mirror v2","oc-mirror_version":"4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6"},"name":"idms-release-0"},"spec":{"imageDigestMirrors":[{"mirrors":["bastion.srib-lab-ocp.lan:8443/openshift/release"],"source":"quay.io/openshift-release-dev/ocp-v4.0-art-dev"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/openshift/release-images"],"source":"quay.io/openshift-release-dev/ocp-release"}]},"status":{}}
-      oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-    creationTimestamp: "2026-03-25T16:59:23Z"
-    generation: 1
-    name: idms-release-0
-    resourceVersion: "14317172"
-    uid: b2a258c8-2fb6-4cb6-bb6b-59fcae593aae
-  spec:
-    imageDigestMirrors:
-    - mirrors:
-      - bastion.srib-lab-ocp.lan:8443/openshift/release
-      source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-    - mirrors:
-      - bastion.srib-lab-ocp.lan:8443/openshift/release-images
-      source: quay.io/openshift-release-dev/ocp-release
-kind: List
-metadata:
-  resourceVersion: ""
-srib@ocp-haproxy-1:~/ocp_4_19$
+  helm: {}
