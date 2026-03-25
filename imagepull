@@ -1,22 +1,194 @@
-srib@ocp-haproxy-1:~$ oc get no
-NAME                             STATUS                     ROLES                         AGE   VERSION
-ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
-ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
-ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   25d   v1.32.10
-srib@ocp-haproxy-1:~$ oc adm uncordon ocp-cp-3.lab1.srib-lab-ocp.lan
-node/ocp-cp-3.lab1.srib-lab-ocp.lan uncordoned
-srib@ocp-haproxy-1:~$ oc get no
-NAME                             STATUS   ROLES                         AGE   VERSION
-ocp-cp-1.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
-ocp-cp-2.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
-ocp-cp-3.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
 srib@ocp-haproxy-1:~$ oc get mcp
 NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
 master   rendered-master-54232a3f7ceb661f33be3e20cf35123e   False     True       True       3              0                   0                     1                      25d
 worker   rendered-worker-bc2946515b71a1f6ddc55175ebd446c1   True      False      False      0              0                   0                     0                      25d
-srib@ocp-haproxy-1:~$ oc get no
-NAME                             STATUS   ROLES                         AGE   VERSION
-ocp-cp-1.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
-ocp-cp-2.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
-ocp-cp-3.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
-srib@ocp-haproxy-1:~$ oc get no
+srib@ocp-haproxy-1:~$ oc describe mcp master
+Name:         master
+Namespace:
+Labels:       machineconfiguration.openshift.io/mco-built-in=
+              operator.machineconfiguration.openshift.io/required-for-upgrade=
+              pools.operator.machineconfiguration.openshift.io/master=
+Annotations:  <none>
+API Version:  machineconfiguration.openshift.io/v1
+Kind:         MachineConfigPool
+Metadata:
+  Creation Timestamp:  2026-02-27T18:13:36Z
+  Generation:          23
+  Resource Version:    14349777
+  UID:                 4c56963e-d318-4097-ba13-bcc86eb4b579
+Spec:
+  Configuration:
+    Name:  rendered-master-0e41a7401614ad6250578b1988cc5a7c
+    Source:
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         00-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-container-runtime
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-cpu-partitioning
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-masters-chrony-configuration
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-nto-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-performance-performance-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         97-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         98-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-assisted-installer-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-registries
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         disable-chronyd
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         load-sctp-module
+  Machine Config Selector:
+    Match Labels:
+      machineconfiguration.openshift.io/role:  master
+  Node Selector:
+    Match Labels:
+      node-role.kubernetes.io/master:
+  Paused:                              false
+Status:
+  Cert Expirys:
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-02-25T17:11:03Z
+    Subject:  CN=admin-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-03-30T13:02:27Z
+    Subject:  CN=kube-csr-signer_@1772283746
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-04-29T12:56:27Z
+    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1772283386
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-04-14T13:02:52Z
+    Subject:  CN=kube-csr-signer_@1773579772
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T17:43:50Z
+    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T17:43:50Z
+    Subject:  CN=kube-control-plane-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-02-25T17:43:48Z
+    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T18:13:08Z
+    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1772215988
+  Conditions:
+    Last Transition Time:  2026-02-27T18:14:09Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  RenderDegraded
+    Last Transition Time:  2026-03-24T11:50:53Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  PinnedImageSetsDegraded
+    Last Transition Time:  2026-03-25T09:33:03Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Updated
+    Last Transition Time:  2026-03-25T09:33:03Z
+    Message:               All nodes are updating to MachineConfig rendered-master-0e41a7401614ad6250578b1988cc5a7c
+    Reason:
+    Status:                True
+    Type:                  Updating
+    Last Transition Time:  2026-03-25T17:34:40Z
+    Message:               Node ocp-cp-3.lab1.srib-lab-ocp.lan is reporting: "unexpected on-disk state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e: content mismatch for file \"/etc/containers/registries.conf\""
+    Reason:                1 nodes are reporting degraded status on sync
+    Status:                True
+    Type:                  NodeDegraded
+    Last Transition Time:  2026-03-25T17:34:40Z
+    Message:               Node ocp-cp-3.lab1.srib-lab-ocp.lan is reporting: "unexpected on-disk state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e: content mismatch for file \"/etc/containers/registries.conf\""
+    Reason:
+    Status:                True
+    Type:                  Degraded
+  Configuration:
+    Name:  rendered-master-54232a3f7ceb661f33be3e20cf35123e
+    Source:
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                00-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-container-runtime
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-cpu-partitioning
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-masters-chrony-configuration
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-nto-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-performance-performance-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                97-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                98-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-assisted-installer-master-ssh
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-generated-registries
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-ssh
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                disable-chronyd
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                load-sctp-module
+  Degraded Machine Count:  1
+  Machine Count:           3
+  Observed Generation:     23
+  Pool Synchronizers Status:
+    Available Machine Count:    2
+    Machine Count:              3
+    Pool Synchronizer Type:     PinnedImageSets
+    Ready Machine Count:        0
+    Unavailable Machine Count:  1
+    Updated Machine Count:      3
+  Ready Machine Count:          0
+  Unavailable Machine Count:    1
+  Updated Machine Count:        0
+Events:                         <none>
+srib@ocp-haproxy-1:~$
