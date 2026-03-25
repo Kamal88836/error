@@ -1,164 +1,134 @@
-Good catch 👍 — yes, **`recipe` is required in disconnected setups for ODF**, and you correctly remembered that.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+srib@ocp-haproxy-1:~/ocp_4_19$ oc logs node ocp-cp-1.lab1.srib-lab-ocp.lan
+Error from server (NotFound): pods "node" not found
+srib@ocp-haproxy-1:~/ocp_4_19$ oc logs ocp-cp-1.lab1.srib-lab-ocp.lan
+Error from server (NotFound): pods "ocp-cp-1.lab1.srib-lab-ocp.lan" not found
+srib@ocp-haproxy-1:~/ocp_4_19$ oc debug node/ocp-cp-1.lab1.srib-lab-ocp.lan
+Starting pod/ocp-cp-1lab1srib-lab-ocplan-debug-dxlbg ...
+To use host binaries, run `chroot /host`
+Pod IP: 71.1.1.230
+If you don't see a command prompt, try pressing enter.
+sh-5.1# chroot /host
+sh-5.1# systemctl --failed
+  UNIT                               LOAD   ACTIVE SUB    DESCRIPTION
+● chronyd.service                    loaded failed failed NTP client/server
+● NetworkManager-wait-online.service loaded failed failed Network Manager Wait Online
 
-Let’s clarify this properly so you don’t miss anything again.
+LOAD   = Reflects whether the unit definition was properly loaded.
+ACTIVE = The high-level unit activation state, i.e. generalization of SUB.
+SUB    = The low-level unit activation state, values depend on unit type.
+2 loaded units listed.
+sh-5.1# journalctl -xe
+░░ Defined-By: systemd
+░░ Support: https://access.redhat.com/support
+░░
+░░ A start job for unit crio-conmon-0f84c3e1c2f897688ac3270f52e141f67ba01ebb25c1304c69332f2e30a460e1.scope has finished successfully.
+░░
+░░ The job identifier is 119668.
+Mar 25 21:01:00 ocp-cp-1.lab1.srib-lab-ocp.lan systemd[1]: Started libcrun container.
+░░ Subject: A start job for unit crio-0f84c3e1c2f897688ac3270f52e141f67ba01ebb25c1304c69332f2e30a460e1.scope has finished successfully
+░░ Defined-By: systemd
+░░ Support: https://access.redhat.com/support
+░░
+░░ A start job for unit crio-0f84c3e1c2f897688ac3270f52e141f67ba01ebb25c1304c69332f2e30a460e1.scope has finished successfully.
+░░
+░░ The job identifier is 119674.
+Mar 25 21:01:00 ocp-cp-1.lab1.srib-lab-ocp.lan crio[408851]: time="2026-03-25T21:01:00.911336685Z" level=info msg="Created container 0f84c3e1c2f897688ac3270f5>
+Mar 25 21:01:00 ocp-cp-1.lab1.srib-lab-ocp.lan crio[408851]: time="2026-03-25T21:01:00.911720935Z" level=info msg="Starting container: 0f84c3e1c2f897688ac3270>
+Mar 25 21:01:00 ocp-cp-1.lab1.srib-lab-ocp.lan crio[408851]: time="2026-03-25T21:01:00.916746808Z" level=info msg="Started container" PID=905677 containerID=0>
+Mar 25 21:01:00 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:00.937139  409074 kubelet.go:2515] "SyncLoop (PLEG): event for pod" pod="ope>
+Mar 25 21:01:00 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:00.937175  409074 kubelet.go:2515] "SyncLoop (PLEG): event for pod" pod="ope>
+Mar 25 21:01:00 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:00.949528  409074 pod_startup_latency_tracker.go:104] "Observed pod startup >
+Mar 25 21:01:02 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:02.058109  409074 file.go:236] "Static Pod is managed but errored" err="mana>
+Mar 25 21:01:02 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:02.058790  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:02 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:02.060554  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:02 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:02.061500  409074 file.go:236] "Static Pod is managed but errored" err="mana>
+Mar 25 21:01:02 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:02.062697  409074 file.go:236] "Static Pod is managed but errored" err="mana>
+Mar 25 21:01:02 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:02.063496  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:02 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:02.064363  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:02 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:02.064900  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:04 ocp-cp-1.lab1.srib-lab-ocp.lan systemd[1]: crio-0f84c3e1c2f897688ac3270f52e141f67ba01ebb25c1304c69332f2e30a460e1.scope: bpf-foreign: Foreign B>
+Mar 25 21:01:04 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:04.569428  409074 state_mem.go:80] "Updated desired CPUSet" podUID="93086fc7>
+Mar 25 21:01:11 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:11.136756  409074 pod_workers.go:1301] "Error syncing pod, skipping" err="[f>
+Mar 25 21:01:13 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:13.296919  409074 prober.go:240] "Unable to write all bytes from execInConta>
+Mar 25 21:01:22 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:22.058074  409074 file.go:236] "Static Pod is managed but errored" err="mana>
+Mar 25 21:01:22 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:22.058753  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:22 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:22.060708  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:22 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:22.061621  409074 file.go:236] "Static Pod is managed but errored" err="mana>
+Mar 25 21:01:22 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:22.067166  409074 file.go:236] "Static Pod is managed but errored" err="mana>
+Mar 25 21:01:22 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:22.069067  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:22 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:22.070769  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
+Mar 25 21:01:22 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:22.072095  409074 file.go:238] "Static Pod is managed. Using modified pod" n>
 
----
+sh-5.1# journalctl -f
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan NetworkManager[5116]: <info>  [1774472502.0223] dhcp4 (ens6f3): activation: beginning transaction (timeout in 45 seconds)
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan NetworkManager[5116]: <info>  [1774472502.0223] dhcp4 (ens6f3): state changed no lease
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:42.058648  409074 file.go:236] "Static Pod is managed but errored" err="managed container render-config-coredns does not have Resource.Requests" name="coredns-ocp-cp-1.lab1.srib-lab-ocp.lan" namespace="openshift-kni-infra"
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:42.059338  409074 file.go:238] "Static Pod is managed. Using modified pod" name="kube-rbac-proxy-crio-ocp-cp-1.lab1.srib-lab-ocp.lan" namespace="openshift-machine-config-operator" annotations={"kubernetes.io/config.hash":"b2129cd18ea96d28aaff48236fa83fea","openshift.io/required-scc":"privileged","resources.workload.openshift.io/kube-rbac-proxy-crio":"{\"cpushares\":20}","resources.workload.openshift.io/setup":"{\"cpushares\":5}","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:42.061135  409074 file.go:238] "Static Pod is managed. Using modified pod" name="etcd-ocp-cp-1.lab1.srib-lab-ocp.lan" namespace="openshift-etcd" annotations={"kubectl.kubernetes.io/default-container":"etcd","kubernetes.io/config.hash":"3a593862e92ae53213858e7fe7145335","resources.workload.openshift.io/etcd":"{\"cpushares\":307}","resources.workload.openshift.io/etcd-ensure-env-vars":"{\"cpushares\":10}","resources.workload.openshift.io/etcd-metrics":"{\"cpushares\":40}","resources.workload.openshift.io/etcd-readyz":"{\"cpushares\":10}","resources.workload.openshift.io/etcd-resources-copy":"{\"cpushares\":10}","resources.workload.openshift.io/etcd-rev":"{\"cpushares\":10}","resources.workload.openshift.io/etcdctl":"{\"cpushares\":10}","resources.workload.openshift.io/setup":"{\"cpushares\":5}","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:42.062041  409074 file.go:236] "Static Pod is managed but errored" err="managed container verify-api-int-resolvable does not have Resource.Requests" name="haproxy-ocp-cp-1.lab1.srib-lab-ocp.lan" namespace="openshift-kni-infra"
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:42.063263  409074 file.go:236] "Static Pod is managed but errored" err="managed container render-config-keepalived does not have Resource.Requests" name="keepalived-ocp-cp-1.lab1.srib-lab-ocp.lan" namespace="openshift-kni-infra"
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:42.064041  409074 file.go:238] "Static Pod is managed. Using modified pod" name="kube-apiserver-ocp-cp-1.lab1.srib-lab-ocp.lan" namespace="openshift-kube-apiserver" annotations={"kubectl.kubernetes.io/default-container":"kube-apiserver","kubernetes.io/config.hash":"dafe0b666c5a5583e1e133d357f7a452","resources.workload.openshift.io/kube-apiserver":"{\"cpushares\":271}","resources.workload.openshift.io/kube-apiserver-cert-regeneration-controller":"{\"cpushares\":5}","resources.workload.openshift.io/kube-apiserver-cert-syncer":"{\"cpushares\":5}","resources.workload.openshift.io/kube-apiserver-check-endpoints":"{\"cpushares\":10}","resources.workload.openshift.io/kube-apiserver-insecure-readyz":"{\"cpushares\":5}","resources.workload.openshift.io/setup":"{\"cpushares\":5}","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:42.064748  409074 file.go:238] "Static Pod is managed. Using modified pod" name="kube-controller-manager-ocp-cp-1.lab1.srib-lab-ocp.lan" namespace="openshift-kube-controller-manager" annotations={"kubectl.kubernetes.io/default-container":"kube-controller-manager","kubernetes.io/config.hash":"27f1a0c593f01e5eb909e3e7ecc51dcd","resources.workload.openshift.io/cluster-policy-controller":"{\"cpushares\":10}","resources.workload.openshift.io/kube-controller-manager":"{\"cpushares\":61}","resources.workload.openshift.io/kube-controller-manager-cert-syncer":"{\"cpushares\":5}","resources.workload.openshift.io/kube-controller-manager-recovery-controller":"{\"cpushares\":5}","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}
+Mar 25 21:01:42 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: I0325 21:01:42.065281  409074 file.go:238] "Static Pod is managed. Using modified pod" name="openshift-kube-scheduler-ocp-cp-1.lab1.srib-lab-ocp.lan" namespace="openshift-kube-scheduler" annotations={"kubectl.kubernetes.io/default-container":"kube-scheduler","kubernetes.io/config.hash":"079dbec8eec27bfc7093e35db3f1efff","resources.workload.openshift.io/kube-scheduler":"{\"cpushares\":15}","resources.workload.openshift.io/kube-scheduler-cert-syncer":"{\"cpushares\":5}","resources.workload.openshift.io/kube-scheduler-recovery-controller":"{\"cpushares\":5}","resources.workload.openshift.io/wait-for-host-port":"{\"cpushares\":15}","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}
+Mar 25 21:01:50 ocp-cp-1.lab1.srib-lab-ocp.lan kubenswrapper[409074]: E0325 21:01:50.137214  409074 pod_workers.go:1301] "Error syncing pod, skipping" err="[failed to \"StartContainer\" for \"exporter\" with ImagePullBackOff: \"Back-off pulling image \\\"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c3e8d1c18584792480ce9299f0cd96f93d4957bc98e8af8ca962493fb6313f7e\\\": ErrImagePull: rpc error: code = DeadlineExceeded desc = initializing source docker://quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c3e8d1c18584792480ce9299f0cd96f93d4957bc98e8af8ca962493fb6313f7e: pinging container registry quay.io: Get \\\"https://quay.io/v2/\\\": dial tcp 98.90.2.35:443: i/o timeout\", failed to \"StartContainer\" for \"extractor\" with ImagePullBackOff: \"Back-off pulling image \\\"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8dc0f68d456283d84a3e4f075dbd98c3e4a761f20717046c61b3a1ca62615a1e\\\": ErrImagePull: rpc error: code = DeadlineExceeded desc = initializing source docker://quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8dc0f68d456283d84a3e4f075dbd98c3e4a761f20717046c61b3a1ca62615a1e: pinging container registry quay.io: Get \\\"https://quay.io/v2/\\\": dial tcp 98.91.32.215:443: i/o timeout\"]" pod="openshift-insights/insights-runtime-extractor-8697x" podUID="6b2c6c8b-16db-4ddf-ac39-f9e64bc2eeff"
+^C
+sh-5.1# journalctl -u machine-config-daemon -f
+^C
+sh-5.1# journalctl -b -1
+Mar 25 12:45:42 localhost kernel: Linux version 5.14.0-570.82.1.el9_6.x86_64+rt (mockbuild@x86-64-01.build.eng.rdu2.redhat.com) (gcc (GCC) 11.5.0 20240719 (Re>
+Mar 25 12:45:42 localhost kernel: The list of certified hardware and cloud instances for Red Hat Enterprise Linux 9 can be viewed at the Red Hat Ecosystem Cat>
+Mar 25 12:45:42 localhost kernel: Command line: BOOT_IMAGE=(hd0,gpt3)/boot/ostree/rhcos-8c9ecb4e0851289608fb23bca686f82fc808eacb06e590042f9bc95ff65cc5a4/vmlin>
+Mar 25 12:45:42 localhost kernel: x86/tme: not enabled by BIOS
+Mar 25 12:45:42 localhost kernel: x86/split lock detection: #AC: crashing the kernel on kernel split_locks and warning on user-space split_locks
+Mar 25 12:45:42 localhost kernel: BIOS-provided physical RAM map:
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000000000000-0x000000000008ffff] usable
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000000090000-0x0000000000093fff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000000094000-0x000000000009efff] usable
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x000000000009f000-0x000000000009ffff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000000100000-0x000000003cf1cfff] usable
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x000000003cf1d000-0x000000003cf1efff] ACPI data
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x000000003cf1f000-0x000000003cffcfff] usable
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x000000003cffd000-0x000000003cffffff] ACPI data
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x000000003d000000-0x0000000053e6bfff] usable
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000053e6c000-0x0000000053e9bfff] ACPI data
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000053e9c000-0x0000000055aebfff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000055aec000-0x000000005866bfff] usable
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x000000005866c000-0x00000000586fdfff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x00000000586fe000-0x00000000597fdfff] ACPI NVS
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x00000000597fe000-0x0000000059a03fff] usable
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000059a04000-0x0000000059a84fff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000059a85000-0x000000006f7fffff] usable
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x000000006f800000-0x000000008fffffff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000098000000-0x0000000099c0ffff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x00000000fe000000-0x00000000fe00ffff] reserved
+Mar 25 12:45:42 localhost kernel: BIOS-e820: [mem 0x0000000100000000-0x000000807fffffff] usable
+Mar 25 12:45:42 localhost kernel: NX (Execute Disable) protection: active
+Mar 25 12:45:42 localhost kernel: APIC: Static calls initialized
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x507ed018-0x507f5057] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x507e1018-0x507ec257] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x507ac018-0x507e0857] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x50777018-0x507ab857] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x50742018-0x50776857] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x5070d018-0x50741857] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x506d8018-0x5070c857] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x506a3018-0x506d7857] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x5066e018-0x506a2857] usable ==> usable
+Mar 25 12:45:42 localhost kernel: e820: update [mem 0x3ce96018-0x3ceca857] usable ==> usable
 
-# 🎯 Why `recipe` is needed
+sh-5.1# oc get pod -A -o wide | grep ocp-cp-1.lab1.srib-lab-ocp.lan
+error: Missing or incomplete configuration info.  Please point to an existing, complete config file:
 
-In disconnected environments:
 
-👉 ODF uses **recipes (via OLM / dependencies)** for:
+  1. Via the command-line flag --kubeconfig
+  2. Via the KUBECONFIG environment variable
+  3. In your home directory as ~/.kube/config
 
-* Backup / restore workflows
-* Data services orchestration
-* Some internal dependency resolution
-
-👉 If `recipe` is missing:
-
-```text
-ODF pods / components → ImagePullBackOff ❌
-```
-
----
-
-# 🚨 Why it was missing earlier
-
-Because:
-
-* It is **not always pulled automatically**
-* Depends on operator dependency resolution
-* Safer to **explicitly include it**
-
----
-
-# ✅ What you should do
-
-👉 Add `recipe` explicitly to your config
-
----
-
-# 🔧 FINAL CORRECT ODF CONFIG (with recipe)
-
-Use this 👇 (this is COMPLETE for ODF in disconnected)
-
-```yaml
-apiVersion: mirror.openshift.io/v2alpha1
-kind: ImageSetConfiguration
-
-mirror:
-  platform:
-    channels:
-    - name: stable-4.19
-      minVersion: 4.19.23
-      maxVersion: 4.19.23
-
-  operators:
-  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
-    packages:
-
-    # ODF FULL STACK
-    - name: odf-operator
-      channels: [{name: stable-4.19}]
-    - name: ocs-operator
-      channels: [{name: stable-4.19}]
-    - name: ocs-client-operator
-      channels: [{name: stable-4.19}]
-    - name: mcg-operator
-      channels: [{name: stable-4.19}]
-    - name: rook-ceph-operator
-      channels: [{name: stable-4.19}]
-    - name: cephcsi-operator
-      channels: [{name: stable-4.19}]
-    - name: odf-csi-addons-operator
-      channels: [{name: stable-4.19}]
-    - name: odf-prometheus-operator
-      channels: [{name: stable-4.19}]
-    - name: odf-dependencies
-      channels: [{name: stable-4.19}]
-    - name: recipe
-      channels: [{name: stable-4.19}]
-
-    # INFRA (your current failing ones)
-    - name: local-storage-operator
-      channels: [{name: stable-4.19}]
-    - name: kubernetes-nmstate-operator
-      channels: [{name: stable-4.19}]
-    - name: ptp-operator
-      channels: [{name: stable-4.19}]
-    - name: sriov-network-operator
-      channels: [{name: stable-4.19}]
-    - name: lvms-operator
-      channels: [{name: stable-4.19}]
-```
-
----
-
-# 🚀 What to do now
-
-## 1️⃣ Re-run mirror
-
-```bash
-oc mirror --config imageset-config.yaml docker://bastion.srib-lab-ocp.lan:8443
-```
-
----
-
-## 2️⃣ Verify recipe image exists
-
-```bash
-podman search bastion.srib-lab-ocp.lan:8443 | grep recipe
-```
-
----
-
-## 3️⃣ Apply IDMS again
-
-```bash
-oc apply -f idms-*.yaml
-```
-
----
-
-## 4️⃣ Restart pods
-
-```bash
-oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
-  oc delete pod $pod -n $ns
-done
-```
-
----
-
-# 🎯 Expected result
-
-✔ ODF dependencies resolved
-✔ No missing operator images
-✔ No ImagePullBackOff
-✔ Cluster stabilizes
-
----
-
-# ⚠️ Final Important Note
-
-👉 In disconnected ODF:
-
-You MUST include:
-
-* Full ODF stack ✅
-* `recipe` ✅
-* Correct channel (`stable-4.19`) ✅
-
----
-
-# 👍 One-line summary
-
-👉 **Yes — `recipe` is required for ODF in disconnected, and you should include it explicitly**
-
----
-
-If you want, I can:
-✅ Check your mirror registry content before you rerun
-✅ Validate ALL required images for ODF
-
-Just tell me 👍
+To view or setup config directly use the 'config' command.
+sh-5.1# ^C
+sh-5.1#
