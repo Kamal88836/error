@@ -1,190 +1,52 @@
-Good — you did the **most important step correctly** (created the file + restarted MCD).
-Now we just need to finish the recovery properly.
-
----
-
-# 🔍 Current Situation
-
-* File now exists ✅
-* MCD restarted ✅
-* BUT MCP still:
-
-  ```
-  Degraded=True
-  Updating=True
-  ```
-
-👉 That means **MCO hasn’t reconciled yet OR file content mismatch still exists**
-
----
-
-# ⚠️ Important: You created EMPTY file
-
-```bash
-touch /etc/containers/registries.conf
-```
-
-👉 This is enough to pass *“file missing”* check
-❌ But NOT enough to pass *“content validation”*
-
----
-
-# ✅ FINAL FIX (last step)
-
-We must let MCO **re-write correct content**
-
----
-
-## 🔧 Step 1: Force re-render + reapply
-
-```bash
-oc delete pod -n openshift-machine-config-operator \
--l k8s-app=machine-config-daemon
-```
-
-👉 (you already did once — do it again)
-
----
-
-## 🔧 Step 2: Watch MCD logs (correct command)
-
-Your previous logs command failed because of syntax. Use this:
-
-```bash
-oc get pod -n openshift-machine-config-operator -o wide | grep ocp-cp-3
-```
-
-Copy pod name, then:
-
-```bash
-oc logs -f -n openshift-machine-config-operator <POD_NAME> -c machine-config-daemon
-```
-
----
-
-## 🔍 What you should see
-
-Look for:
-
-```text
-Writing file "/etc/containers/registries.conf"
-```
-
-OR
-
-```text
-Successfully applied machineconfig
-```
-
----
-
-# 🚨 If still stuck (very likely one more issue)
-
-Your earlier error showed:
-
-```text
-content mismatch for file "/etc/containers/registries.conf"
-```
-
-👉 That means:
-
-* MCO expects **specific content**
-* Your node still has **wrong/empty content**
-
----
-
-# 💥 HARD FIX (guaranteed solution)
-
-Instead of empty file → copy correct file from healthy node
-
----
-
-## 🔧 Step 3: Copy from working node
-
-From cp-1 or cp-2:
-
-```bash
-oc debug node/ocp-cp-1.lab1.srib-lab-ocp.lan
-chroot /host
-cat /etc/containers/registries.conf
-```
-
-👉 Copy full content
-
----
-
-## 🔧 Step 4: Apply to broken node
-
-```bash
-oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan
-chroot /host
-
-vi /etc/containers/registries.conf
-```
-
-👉 Paste exact same content
-
----
-
-## 🔧 Step 5: Restart MCD again
-
-```bash
-oc delete pod -n openshift-machine-config-operator \
--l k8s-app=machine-config-daemon \
---field-selector spec.nodeName=ocp-cp-3.lab1.srib-lab-ocp.lan
-```
-
----
-
-# ⏳ Final Expected Result
-
-```bash
-oc get mcp
-```
-
-```text
-master   UPDATED=True   UPDATING=False   DEGRADED=False ✅
-```
-
----
-
-# 🧠 Why this happened (important)
-
-You manually edited/deleted:
-
-```text
-/etc/containers/registries.conf
-```
-
-👉 This file is controlled by:
-
-* MachineConfig: `99-master-generated-registries`
-
-👉 MCO validation checks:
-
-1. File exists
-2. File content matches rendered config
-
-You broke both earlier.
-
----
-
-# 🟢 Summary
-
-✔ You fixed missing file
-⚠ Now fix content mismatch
-
-👉 Best fix:
-
-* Copy file from healthy node
-* Restart MCD
-
----
-
-If after this still stuck, send me:
-
-```bash
-oc logs -n openshift-machine-config-operator <mcd-pod> -c machine-config-daemon | tail -50
-```
-
-I’ll pinpoint exact failure 👍
+srib@ocp-haproxy-1:~$ oc logs -n openshift-machine-config-operator machine-config-daemon-vnk7d -c machine-config-daemon | tail -50
+E0325 19:27:29.256743   69135 writer.go:231] Marking Degraded due to: "unexpected on-disk state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e: content mismatch for file \"/etc/containers/registries.conf\""
+I0325 19:27:57.978115   69135 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 19:28:29.258392   69135 daemon.go:2041] Running: /run/machine-config-daemon-bin/nmstatectl persist-nic-names --root / --kargs-out /tmp/nmstate-kargs2645368192 --cleanup
+[2026-03-25T19:28:29Z INFO  nmstatectl] Nmstate version: 2.2.56
+[2026-03-25T19:28:29Z INFO  nmstatectl::persist_nic] /etc/systemd/network/.nmstate-persist.stamp does not exist, no need to clean up
+
+I0325 19:28:29.280104   69135 daemon.go:1629] Previous boot ostree-finalize-staged.service appears successful
+I0325 19:28:29.280121   69135 daemon.go:1770] Current config: rendered-master-54232a3f7ceb661f33be3e20cf35123e
+I0325 19:28:29.280139   69135 daemon.go:1771] Desired config: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 19:28:29.280147   69135 daemon.go:1779] state: Degraded
+I0325 19:28:29.280167   69135 update.go:2775] Running: rpm-ostree cleanup -r
+Deployments unchanged.
+I0325 19:28:29.322154   69135 daemon.go:2239] Validating against current config rendered-master-54232a3f7ceb661f33be3e20cf35123e
+I0325 19:28:29.322205   69135 daemon.go:2151] SSH key location ("/home/core/.ssh/authorized_keys.d/ignition") up-to-date!
+I0325 19:28:29.322219   69135 command_runner.go:24] Running captured: rpm-ostree kargs
+E0325 19:28:29.385569   69135 on_disk_validation.go:251] content mismatch for file "/etc/containers/registries.conf" (-want +got):
+  bytes.Join({
+        ... // 1634 identical bytes
+        " location = \"registry.redhat.io/openshift4\"\n\n  [[registry.mirror",
+        "]]\n    location = \"bastion.srib-lab-ocp.lan:8443/ocp4/openshift4",
+-       "/openshift4",
+        "\"\n    pull-from-mirror = \"digest-only\"\n\n[[registry]]\n  prefix = ",
+        "\"\"\n  location = \"registry.redhat.io/rhceph\"\n\n  [[registry.mirror",
+        ... // 802 identical bytes
+  }, "")
+E0325 19:28:29.385618   69135 writer.go:231] Marking Degraded due to: "unexpected on-disk state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e: content mismatch for file \"/etc/containers/registries.conf\""
+I0325 19:29:29.387851   69135 daemon.go:2041] Running: /run/machine-config-daemon-bin/nmstatectl persist-nic-names --root / --kargs-out /tmp/nmstate-kargs1511761356 --cleanup
+[2026-03-25T19:29:29Z INFO  nmstatectl] Nmstate version: 2.2.56
+[2026-03-25T19:29:29Z INFO  nmstatectl::persist_nic] /etc/systemd/network/.nmstate-persist.stamp does not exist, no need to clean up
+
+I0325 19:29:29.409511   69135 daemon.go:1629] Previous boot ostree-finalize-staged.service appears successful
+I0325 19:29:29.409533   69135 daemon.go:1770] Current config: rendered-master-54232a3f7ceb661f33be3e20cf35123e
+I0325 19:29:29.409544   69135 daemon.go:1771] Desired config: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 19:29:29.409553   69135 daemon.go:1779] state: Degraded
+I0325 19:29:29.409574   69135 update.go:2775] Running: rpm-ostree cleanup -r
+Deployments unchanged.
+I0325 19:29:29.454561   69135 daemon.go:2239] Validating against current config rendered-master-54232a3f7ceb661f33be3e20cf35123e
+I0325 19:29:29.454607   69135 daemon.go:2151] SSH key location ("/home/core/.ssh/authorized_keys.d/ignition") up-to-date!
+I0325 19:29:29.454616   69135 command_runner.go:24] Running captured: rpm-ostree kargs
+E0325 19:29:29.521343   69135 on_disk_validation.go:251] content mismatch for file "/etc/containers/registries.conf" (-want +got):
+  bytes.Join({
+        ... // 1634 identical bytes
+        " location = \"registry.redhat.io/openshift4\"\n\n  [[registry.mirror",
+        "]]\n    location = \"bastion.srib-lab-ocp.lan:8443/ocp4/openshift4",
+-       "/openshift4",
+        "\"\n    pull-from-mirror = \"digest-only\"\n\n[[registry]]\n  prefix = ",
+        "\"\"\n  location = \"registry.redhat.io/rhceph\"\n\n  [[registry.mirror",
+        ... // 802 identical bytes
+  }, "")
+E0325 19:29:29.521388   69135 writer.go:231] Marking Degraded due to: "unexpected on-disk state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e: content mismatch for file \"/etc/containers/registries.conf\""
+srib@ocp-haproxy-1:~$
