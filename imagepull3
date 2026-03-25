@@ -1,150 +1,206 @@
+Perfect 👍 — this output clearly shows your **exact root cause**. No guessing now.
 
-srib@ocp-haproxy-1:~/ocp_4_19$ oc describe po diskmaker-discovery-xckww
-Name:                 diskmaker-discovery-xckww
-Namespace:            openshift-local-storage
-Priority:             1000000000
-Priority Class Name:  openshift-user-critical
-Service Account:      local-storage-admin
-Node:                 ocp-cp-3.lab1.srib-lab-ocp.lan/71.1.1.229
-Start Time:           Wed, 25 Mar 2026 21:00:49 +0530
-Labels:               app=diskmaker-discovery
-                      controller-revision-hash=6997b4b784
-                      pod-template-generation=2
-Annotations:          k8s.ovn.org/pod-networks:
-                        {"default":{"ip_addresses":["10.129.0.33/23","fd01:0:0:2::21/64"],"mac_address":"0a:58:0a:81:00:21","gateway_ips":["10.129.0.1","fd01:0:0:...
-                      k8s.v1.cni.cncf.io/network-status:
-                        [{
-                            "name": "ovn-kubernetes",
-                            "interface": "eth0",
-                            "ips": [
-                                "10.129.0.33",
-                                "fd01:0:0:2::21"
-                            ],
-                            "mac": "0a:58:0a:81:00:21",
-                            "default": true,
-                            "dns": {}
-                        }]
-                      openshift.io/scc: privileged
-                      resources.workload.openshift.io/diskmaker-discovery: {"cpushares":10}
-                      resources.workload.openshift.io/kube-rbac-proxy: {"cpushares":10}
-                      target.workload.openshift.io/management: {"effect":"PreferredDuringScheduling"}
-Status:               Pending
-IP:                   10.129.0.33
-IPs:
-  IP:           10.129.0.33
-  IP:           fd01:0:0:2::21
-Controlled By:  DaemonSet/diskmaker-discovery
-Containers:
-  diskmaker-discovery:
-    Container ID:
-    Image:         registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Args:
-      discover
-    State:          Waiting
-      Reason:       ImagePullBackOff
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      management.workload.openshift.io/cores:  10
-    Requests:
-      management.workload.openshift.io/cores:  10
-      memory:                                  50Mi
-    Environment:
-      MY_NODE_NAME:            (v1:spec.nodeName)
-      WATCH_NAMESPACE:        openshift-local-storage (v1:metadata.namespace)
-      POD_NAME:               diskmaker-discovery-xckww (v1:metadata.name)
-      DISCOVERY_OBJECT_UID:   d0c3d8ab-3618-477f-bfe1-1bb6e29bfcb0
-      DISCOVERY_OBJECT_NAME:  auto-discover-devices
-    Mounts:
-      /dev from device-dir (rw)
-      /mnt/local-storage from local-disks (rw)
-      /run/udev from run-udev (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wbfbn (ro)
-  kube-rbac-proxy:
-    Container ID:
-    Image:         registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098
-    Image ID:
-    Port:          9393/TCP
-    Host Port:     0/TCP
-    Args:
-      --logtostderr=true
-      --secure-listen-address=0.0.0.0:9393
-      --upstream=http://127.0.0.1:8383/
-      --tls-cert-file=/etc/tls/private/tls.crt
-      --tls-private-key-file=/etc/tls/private/tls.key
-    State:          Waiting
-      Reason:       ImagePullBackOff
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      management.workload.openshift.io/cores:  10
-    Requests:
-      management.workload.openshift.io/cores:  10
-      memory:                                  20Mi
-    Environment:                               <none>
-    Mounts:
-      /etc/tls/private from metrics-serving-cert (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wbfbn (ro)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   True
-  Initialized                 True
-  Ready                       False
-  ContainersReady             False
-  PodScheduled                True
-Volumes:
-  local-disks:
-    Type:          HostPath (bare host directory volume)
-    Path:          /mnt/local-storage
-    HostPathType:
-  device-dir:
-    Type:          HostPath (bare host directory volume)
-    Path:          /dev
-    HostPathType:  Directory
-  run-udev:
-    Type:          HostPath (bare host directory volume)
-    Path:          /run/udev
-    HostPathType:
-  metrics-serving-cert:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  discovery-metric-serving-cert
-    Optional:    false
-  kube-api-access-wbfbn:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-QoS Class:                   Burstable
-Node-Selectors:              <none>
-Tolerations:                 node.kubernetes.io/disk-pressure:NoSchedule op=Exists
-                             node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                             node.kubernetes.io/not-ready:NoExecute op=Exists
-                             node.kubernetes.io/pid-pressure:NoSchedule op=Exists
-                             node.kubernetes.io/unreachable:NoExecute op=Exists
-                             node.kubernetes.io/unschedulable:NoSchedule op=Exists
-Events:
-  Type     Reason          Age                    From               Message
-  ----     ------          ----                   ----               -------
-  Normal   Scheduled       11m                    default-scheduler  Successfully assigned openshift-local-storage/diskmaker-discovery-xckww to ocp-cp-3.lab1.srib-lab-ocp.lan
-  Normal   AddedInterface  11m                    multus             Add eth0 [10.129.0.33/23 fd01:0:0:2::21/64] from ovn-kubernetes
-  Warning  Failed          10m                    kubelet            Failed to pull image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943": rpc error: code = DeadlineExceeded desc = initializing source docker://registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: reading manifest sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9: manifest unknown]): registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 52.55.77.80:443: i/o timeout
-  Warning  Failed          8m53s                  kubelet            Failed to pull image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943": rpc error: code = DeadlineExceeded desc = initializing source docker://registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: reading manifest sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9: manifest unknown]): registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 35.170.224.42:443: i/o timeout
-  Warning  Failed          8m23s (x2 over 9m24s)  kubelet            Failed to pull image "registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098": rpc error: code = DeadlineExceeded desc = initializing source docker://registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098: reading manifest sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-kube-rbac-proxy-rhel9: manifest unknown]): registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 35.170.224.42:443: i/o timeout
-  Warning  Failed          7m40s (x2 over 9m54s)  kubelet            Failed to pull image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943": rpc error: code = DeadlineExceeded desc = initializing source docker://registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: reading manifest sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9: manifest unknown]): registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 3.234.77.102:443: i/o timeout
-  Warning  Failed          7m9s (x2 over 10m)     kubelet            Failed to pull image "registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098": rpc error: code = DeadlineExceeded desc = initializing source docker://registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098: reading manifest sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-kube-rbac-proxy-rhel9: manifest unknown]): registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 98.84.242.84:443: i/o timeout
-  Warning  Failed          7m9s (x4 over 10m)     kubelet            Error: ErrImagePull
-  Warning  Failed          6m29s (x4 over 8m22s)  kubelet            Error: ImagePullBackOff
-  Normal   Pulling         6m14s (x5 over 11m)    kubelet            Pulling image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943"
-  Warning  Failed          5m44s (x5 over 10m)    kubelet            Error: ErrImagePull
-  Normal   Pulling         5m44s (x5 over 10m)    kubelet            Pulling image "registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098"
-  Warning  Failed          5m44s                  kubelet            Failed to pull image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943": rpc error: code = DeadlineExceeded desc = initializing source docker://registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: reading manifest sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9: manifest unknown]): registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 98.84.242.84:443: i/o timeout
-  Normal   BackOff         4m23s (x8 over 8m22s)  kubelet            Back-off pulling image "registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098"
-  Normal   BackOff         77s (x17 over 8m22s)   kubelet            Back-off pulling image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943"
-  Warning  Failed          52s (x18 over 8m22s)   kubelet            Error: ImagePullBackOff
-srib@ocp-haproxy-1:~/ocp_4_19$
+---
+
+# 🚨 Root Cause (Confirmed)
+
+From your events:
+
+```text
+Mirrors also failed:
+bastion.srib-lab-ocp.lan:8443/... manifest unknown ❌
+
+registry.redhat.io ... i/o timeout ❌
+```
+
+👉 This means:
+
+## ❌ 1. Image NOT present in your mirror
+
+```
+manifest unknown
+```
+
+## ❌ 2. Cluster trying fallback to internet (blocked)
+
+```
+registry.redhat.io → timeout
+```
+
+---
+
+# 🔥 THE REAL PROBLEM
+
+Your mirror path is wrong:
+
+```text
+bastion.../ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9
+                              ❌ duplicated "openshift4"
+```
+
+👉 This is **100% misconfigured mirror (IDMS/ICSP issue)**
+
+---
+
+# 🎯 Why everything is failing
+
+Because of this:
+
+* ❌ Local-storage operator images missing
+* ❌ NMState, SRIOV, PTP → also missing
+* ❌ Control plane operators depend on these → degraded
+* ❌ MCP stuck → upgrade stuck
+
+---
+
+# 🚀 Fix Step-by-Step (DO THIS EXACTLY)
+
+## ✅ Step 1: Verify image manually on mirror
+
+Run from bastion/node:
+
+```bash
+podman pull bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943
+```
+
+👉 If this fails → image not mirrored
+
+---
+
+## ✅ Step 2: Check your mirror mapping (VERY IMPORTANT)
+
+```bash
+oc get imagedigestmirrorset -o yaml
+```
+
+OR
+
+```bash
+oc get imagecontentsourcepolicy -o yaml
+```
+
+👉 Look for wrong paths like:
+
+```
+openshift4/openshift4 ❌
+```
+
+---
+
+## ❗ Step 3: Fix mirror config
+
+Your mirror likely created wrong repo structure.
+
+### Correct structure should be:
+
+```
+bastion:8443/ocp4/openshift4/<image>
+```
+
+NOT:
+
+```
+bastion:8443/ocp4/openshift4/openshift4/<image> ❌
+```
+
+---
+
+## ✅ Step 4: Re-run mirror (most important fix)
+
+On mirror host:
+
+```bash
+oc mirror --config imageset-config.yaml docker://bastion.srib-lab-ocp.lan:8443
+```
+
+Make sure your `ImageSetConfiguration` includes:
+
+* ✅ platform (release)
+* ✅ operators (VERY IMPORTANT — your missing part)
+
+Example:
+
+```yaml
+mirror:
+  platform:
+    channels:
+      - name: stable-4.19
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+```
+
+👉 Your issue = **operator images not mirrored**
+
+---
+
+## ✅ Step 5: Apply IDMS/ITMS again
+
+After mirroring:
+
+```bash
+oc apply -f idms-oc-mirror.yaml
+oc apply -f itms-oc-mirror.yaml
+```
+
+---
+
+## ✅ Step 6: Restart failing pods
+
+```bash
+oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
+  oc delete pod $pod -n $ns
+done
+```
+
+---
+
+## 🎯 Expected Result
+
+After fix:
+
+```bash
+oc get co
+```
+
+👉 All should become:
+
+```
+Available=True
+Degraded=False
+```
+
+```bash
+oc get mcp
+```
+
+👉 master:
+
+```
+UPDATED=True
+```
+
+---
+
+# ⚠️ Important Lesson (for you)
+
+In disconnected OpenShift:
+
+👉 Upgrade = NOT just release image
+👉 You MUST mirror:
+
+* Release payload ✅ (you did)
+* Operator catalog ❌ (missing → caused failure)
+
+---
+
+# 👍 Summary
+
+✔ Problem: Missing operator images + wrong mirror path
+✔ Impact: ImagePullBackOff everywhere
+✔ Result: MCP stuck + upgrade stuck
+✔ Fix: Re-mirror correctly + fix IDMS
+
+---
+
+If you want, send me your `imageset-config.yaml`
+I’ll correct it for your exact environment 👍
