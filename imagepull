@@ -1,177 +1,360 @@
-Good — now we see the **exact stuck state clearly**.
-
----
-
-# 🚨 Current Situation
-
-### ✔ What happened
-
-* You **deleted registries.conf** ✔
-* MCO **detected drift** ✔
-* You restarted MCD ✔
-
----
-
-### ❌ But now:
-
-```text
-/etc/containers/registries.conf → MISSING ❌
-MCP → DEGRADED ❌
-Node → SchedulingDisabled ❌
-```
-
-👉 This means:
-
-> MCO is **NOT re-applying the MachineConfig**
-
----
-
-# 🎯 Root Cause (final)
-
-From your MCP earlier:
-
-```text
-currentConfig: rendered-master-5423...
-desiredConfig: rendered-master-0e41...
-```
-
-👉 Node is stuck in **old config state**
-
-👉 MCO is waiting but not progressing
-
----
-
-# 🚀 FINAL FIX (force MCO to move)
-
-We need to **force node to switch to desiredConfig**
-
----
-
-## ✅ Step 1: Check which node is degraded
-
-Already known:
-👉 `ocp-cp-3`
-
----
-
-## ✅ Step 2: Force node to re-apply config
-
-Run:
-
-```bash
-oc annotate node ocp-cp-3.lab1.srib-lab-ocp.lan \
-machineconfiguration.openshift.io/desiredConfig=rendered-master-0e41a7401614ad6250578b1988cc5a7c --overwrite
-```
-
----
-
-## ✅ Step 3: Restart MCD again
-
-```bash
-oc delete pod -n openshift-machine-config-operator \
--l k8s-app=machine-config-daemon \
---field-selector spec.nodeName=ocp-cp-3.lab1.srib-lab-ocp.lan
-```
-
----
-
-## ⏳ Step 4: Watch carefully
-
-```bash
-oc get nodes -w
-```
-
-👉 Expect:
-
-```text
-Ready → NotReady → Ready
-```
-
----
-
-## ✅ Step 5: Verify file recreated
-
-```bash
-oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan
-chroot /host
-ls /etc/containers/registries.conf
-```
-
-👉 Must exist now ✔
-
----
-
-## ✅ Step 6: Verify MCP
-
-```bash
-oc get mcp
-```
-
-👉 Expected:
-
-```text
-master   UPDATED=True   UPDATING=False   DEGRADED=False ✅
-```
-
----
-
-# 🔥 Why this works
-
-👉 Right now node is stuck because:
-
-* desiredConfig ≠ currentConfig
-* MCO waiting for transition
-* but state machine stuck
-
-👉 This command forces:
-
-```text
-"Apply this exact config NOW"
-```
-
----
-
-# ⚠️ Important
-
-👉 DO NOT:
-
-* manually create file ❌
-* reboot randomly ❌
-
-👉 Let MCO recreate everything
-
----
-
-# 🎯 If STILL stuck (last fallback)
-
-Then run:
-
-```bash
-oc annotate node ocp-cp-3 \
-machineconfiguration.openshift.io/state=Done --overwrite
-```
-
-(only if above fails)
-
----
-
-# 👍 Final Answer
-
-👉 Your cluster is stuck in **MCO state transition**
-
-👉 Fix = force desiredConfig:
-
-```bash
-oc annotate node ocp-cp-3 \
-machineconfiguration.openshift.io/desiredConfig=rendered-master-0e41a7401614ad6250578b1988cc5a7c --overwrite
-```
-
----
-
-If after this MCP still degraded, send:
-
-```bash
-oc get mcp -o yaml
-```
-
-I’ll finish it in one step 👍
+srib@ocp-haproxy-1:~$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.32.10
+srib@ocp-haproxy-1:~$ oc annotate node ocp-cp-3.lab1.srib-lab-ocp.lan  machineconfiguration.openshift.io/state=Done --overwrite
+node/ocp-cp-3.lab1.srib-lab-ocp.lan annotate
+srib@ocp-haproxy-1:~$ oc annotate node ocp-cp-3.lab1.srib-lab-ocp.lan  machineconfiguration.openshift.io/desiredConfig=rendered-master-0e41a7401614ad6250578b1988cc5a7c --overwrite
+node/ocp-cp-3.lab1.srib-lab-ocp.lan annotate
+srib@ocp-haproxy-1:~$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-54232a3f7ceb661f33be3e20cf35123e   False     True       True       3              0                   0                     1                      26d
+worker   rendered-worker-bc2946515b71a1f6ddc55175ebd446c1   True      False      False      0              0                   0                     0                      26d
+srib@ocp-haproxy-1:~$ oc get mcp -o yaml
+apiVersion: v1
+items:
+- apiVersion: machineconfiguration.openshift.io/v1
+  kind: MachineConfigPool
+  metadata:
+    creationTimestamp: "2026-02-27T18:13:36Z"
+    generation: 23
+    labels:
+      machineconfiguration.openshift.io/mco-built-in: ""
+      operator.machineconfiguration.openshift.io/required-for-upgrade: ""
+      pools.operator.machineconfiguration.openshift.io/master: ""
+    name: master
+    resourceVersion: "14377428"
+    uid: 4c56963e-d318-4097-ba13-bcc86eb4b579
+  spec:
+    configuration:
+      name: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+      source:
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 00-master
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-master-container-runtime
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-master-cpu-partitioning
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-master-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 50-masters-chrony-configuration
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 50-nto-master
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 50-performance-performance-master
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 97-master-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 98-master-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-assisted-installer-master-ssh
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-master-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-master-generated-registries
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-master-ssh
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: disable-chronyd
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: load-sctp-module
+    machineConfigSelector:
+      matchLabels:
+        machineconfiguration.openshift.io/role: master
+    nodeSelector:
+      matchLabels:
+        node-role.kubernetes.io/master: ""
+    paused: false
+  status:
+    certExpirys:
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2036-02-25T17:11:03Z"
+      subject: CN=admin-kubeconfig-signer,OU=openshift
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2026-03-30T13:02:27Z"
+      subject: CN=kube-csr-signer_@1772283746
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2026-04-29T12:56:27Z"
+      subject: CN=openshift-kube-controller-manager-operator_csr-signer-signer@1772283386
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2026-04-14T13:02:52Z"
+      subject: CN=kube-csr-signer_@1773579772
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2027-02-27T17:43:50Z"
+      subject: CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2027-02-27T17:43:50Z"
+      subject: CN=kube-control-plane-signer,OU=openshift
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2036-02-25T17:43:48Z"
+      subject: CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2027-02-27T18:13:08Z"
+      subject: CN=openshift-kube-apiserver-operator_node-system-admin-signer@1772215988
+    conditions:
+    - lastTransitionTime: "2026-02-27T18:14:09Z"
+      message: ""
+      reason: ""
+      status: "False"
+      type: RenderDegraded
+    - lastTransitionTime: "2026-03-24T11:50:53Z"
+      message: ""
+      reason: ""
+      status: "False"
+      type: PinnedImageSetsDegraded
+    - lastTransitionTime: "2026-03-25T09:33:03Z"
+      message: ""
+      reason: ""
+      status: "False"
+      type: Updated
+    - lastTransitionTime: "2026-03-25T09:33:03Z"
+      message: All nodes are updating to MachineConfig rendered-master-0e41a7401614ad6250578b1988cc5a7c
+      reason: ""
+      status: "True"
+      type: Updating
+    - lastTransitionTime: "2026-03-25T19:14:23Z"
+      message: 'Node ocp-cp-3.lab1.srib-lab-ocp.lan is reporting: "unexpected on-disk
+        state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e:
+        could not stat file \"/etc/containers/registries.conf\": lstat /etc/containers/registries.conf:
+        no such file or directory"'
+      reason: 1 nodes are reporting degraded status on sync
+      status: "True"
+      type: NodeDegraded
+    - lastTransitionTime: "2026-03-25T19:14:23Z"
+      message: 'Node ocp-cp-3.lab1.srib-lab-ocp.lan is reporting: "unexpected on-disk
+        state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e:
+        could not stat file \"/etc/containers/registries.conf\": lstat /etc/containers/registries.conf:
+        no such file or directory"'
+      reason: ""
+      status: "True"
+      type: Degraded
+    configuration:
+      name: rendered-master-54232a3f7ceb661f33be3e20cf35123e
+      source:
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 00-master
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-master-container-runtime
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-master-cpu-partitioning
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-master-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 50-masters-chrony-configuration
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 50-nto-master
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 50-performance-performance-master
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 97-master-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 98-master-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-assisted-installer-master-ssh
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-master-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-master-generated-registries
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-master-ssh
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: disable-chronyd
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: load-sctp-module
+    degradedMachineCount: 1
+    machineCount: 3
+    observedGeneration: 23
+    poolSynchronizersStatus:
+    - availableMachineCount: 2
+      machineCount: 3
+      poolSynchronizerType: PinnedImageSets
+      readyMachineCount: 0
+      unavailableMachineCount: 1
+      updatedMachineCount: 3
+    readyMachineCount: 0
+    unavailableMachineCount: 1
+    updatedMachineCount: 0
+- apiVersion: machineconfiguration.openshift.io/v1
+  kind: MachineConfigPool
+  metadata:
+    creationTimestamp: "2026-02-27T18:13:36Z"
+    generation: 19
+    labels:
+      machineconfiguration.openshift.io/mco-built-in: ""
+      pools.operator.machineconfiguration.openshift.io/worker: ""
+    name: worker
+    resourceVersion: "14317426"
+    uid: c89bde03-65da-4bd2-955a-1794e43622ff
+  spec:
+    configuration:
+      name: rendered-worker-bc2946515b71a1f6ddc55175ebd446c1
+      source:
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 00-worker
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-worker-container-runtime
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-worker-cpu-partitioning
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-worker-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 50-workers-chrony-configuration
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 97-worker-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 98-worker-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-worker-generated-registries
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-worker-ssh
+    machineConfigSelector:
+      matchLabels:
+        machineconfiguration.openshift.io/role: worker
+    nodeSelector:
+      matchLabels:
+        node-role.kubernetes.io/worker: ""
+    paused: false
+  status:
+    certExpirys:
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2036-02-25T17:11:03Z"
+      subject: CN=admin-kubeconfig-signer,OU=openshift
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2026-03-30T13:02:27Z"
+      subject: CN=kube-csr-signer_@1772283746
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2026-04-29T12:56:27Z"
+      subject: CN=openshift-kube-controller-manager-operator_csr-signer-signer@1772283386
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2026-04-14T13:02:52Z"
+      subject: CN=kube-csr-signer_@1773579772
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2027-02-27T17:43:50Z"
+      subject: CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2027-02-27T17:43:50Z"
+      subject: CN=kube-control-plane-signer,OU=openshift
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2036-02-25T17:43:48Z"
+      subject: CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    - bundle: KubeAPIServerServingCAData
+      expiry: "2027-02-27T18:13:08Z"
+      subject: CN=openshift-kube-apiserver-operator_node-system-admin-signer@1772215988
+    conditions:
+    - lastTransitionTime: "2026-02-27T18:14:09Z"
+      message: ""
+      reason: ""
+      status: "False"
+      type: RenderDegraded
+    - lastTransitionTime: "2026-02-27T18:14:13Z"
+      message: ""
+      reason: ""
+      status: "False"
+      type: Updating
+    - lastTransitionTime: "2026-02-27T18:14:13Z"
+      message: ""
+      reason: ""
+      status: "False"
+      type: NodeDegraded
+    - lastTransitionTime: "2026-02-27T18:14:13Z"
+      message: ""
+      reason: ""
+      status: "False"
+      type: Degraded
+    - lastTransitionTime: "2026-03-24T11:50:53Z"
+      message: ""
+      reason: ""
+      status: "False"
+      type: PinnedImageSetsDegraded
+    - lastTransitionTime: "2026-02-27T18:14:13Z"
+      message: All nodes are updated with MachineConfig rendered-worker-bc2946515b71a1f6ddc55175ebd446c1
+      reason: ""
+      status: "True"
+      type: Updated
+    configuration:
+      name: rendered-worker-bc2946515b71a1f6ddc55175ebd446c1
+      source:
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 00-worker
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-worker-container-runtime
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-worker-cpu-partitioning
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 01-worker-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 50-workers-chrony-configuration
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 97-worker-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 98-worker-generated-kubelet
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-worker-generated-registries
+      - apiVersion: machineconfiguration.openshift.io/v1
+        kind: MachineConfig
+        name: 99-worker-ssh
+    degradedMachineCount: 0
+    machineCount: 0
+    observedGeneration: 19
+    poolSynchronizersStatus:
+    - availableMachineCount: 0
+      machineCount: 0
+      poolSynchronizerType: PinnedImageSets
+      readyMachineCount: 0
+      unavailableMachineCount: 0
+      updatedMachineCount: 0
+    readyMachineCount: 0
+    unavailableMachineCount: 0
+    updatedMachineCount: 0
+kind: List
+metadata:
+  resourceVersion: ""
