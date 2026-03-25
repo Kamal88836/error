@@ -1,0 +1,46 @@
+srib@ocp-haproxy-1:~/ocp_4_19$ cat cs-redhat-operator-index-v4-19.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    createdAt: Wednesday, 25-Mar-26 10:52:55 UTC
+    createdBy: oc-mirror v2
+    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
+  name: cs-redhat-operator-index-v4-19
+  namespace: openshift-marketplace
+spec:
+  image: bastion.srib-lab-ocp.lan:8443/redhat/redhat-operator-index:v4.19
+  sourceType: grpc
+status: {}
+srib@ocp-haproxy-1:~/ocp_4_19$ cat idms-oc-mirror.yaml
+---
+apiVersion: config.openshift.io/v1
+kind: ImageDigestMirrorSet
+metadata:
+  annotations:
+    createdAt: Wednesday, 25-Mar-26 10:52:55 UTC
+    createdBy: oc-mirror v2
+    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
+  name: idms-operator-0
+spec:
+  imageDigestMirrors:
+  - mirrors:
+    - bastion.srib-lab-ocp.lan:8443/rhceph
+    source: registry.redhat.io/rhceph
+  - mirrors:
+    - bastion.srib-lab-ocp.lan:8443/rhel9
+    source: registry.redhat.io/rhel9
+  - mirrors:
+    - bastion.srib-lab-ocp.lan:8443/lvms4
+    source: registry.redhat.io/lvms4
+  - mirrors:
+    - bastion.srib-lab-ocp.lan:8443/odf4
+    source: registry.redhat.io/odf4
+  - mirrors:
+    - bastion.srib-lab-ocp.lan:8443/openshift-logging
+    source: registry.redhat.io/openshift-logging
+  - mirrors:
+    - bastion.srib-lab-ocp.lan:8443/openshift4
+    source: registry.redhat.io/openshift4
+status: {}
+srib@ocp-haproxy-1:~/ocp_4_19$
