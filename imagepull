@@ -1,155 +1,31 @@
-Good — this output finally gives the **exact root cause**. No guessing now.
+srib@ocp-haproxy-1:~$ oc get pod -n openshift-machine-config-operator -o wide | grep ocp-cp-3
+kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan   1/1     Running   6             28h    71.1.1.229    ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-daemon-ljpcj                           2/2     Running   6 (19s ago)   34m    71.1.1.229    ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-server-8sk2t                           1/1     Running   8             31h    71.1.1.229    ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+srib@ocp-haproxy-1:~$ oc delete pod machine-config-daemon-ljpcj -n openshift-machine-config-operator
+pod "machine-config-daemon-ljpcj" deleted
+srib@ocp-haproxy-1:~$ oc get nodes -w
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+^[[200~oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan^[[201~
 
----
 
-# 🚨 Root Cause (100% confirmed)
 
-From your MCP:
-
-```text
-could not stat file "/etc/containers/registries.conf": no such file or directory
-```
-
-👉 This means:
-
-> ❗ You deleted the file (correct step)
-> ❗ BUT MCO has NOT recreated it yet ❌
-
----
-
-# 🎯 Why this is happening
-
-MCO flow:
-
-1. Detects drift → Degraded
-2. Needs to **re-apply MachineConfig**
-3. But node didn’t fully re-sync yet
-
-👉 So now:
-
-```text
-File missing ❌
-MCO waiting to recreate ❌
-MCP stuck ❌
-```
-
----
-
-# 🚀 FINAL FIX (this will solve it)
-
-We need to **force MCO to push config again**
-
----
-
-## ✅ Step 1: Delete MCD pod for cp-3 AGAIN
-
-Run:
-
-```bash
-oc get pod -n openshift-machine-config-operator -o wide | grep ocp-cp-3
-```
-
-Then delete that pod:
-
-```bash
-oc delete pod <machine-config-daemon-pod-name> -n openshift-machine-config-operator
-```
-
----
-
-## ✅ Step 2: Watch node immediately
-
-```bash
-oc get nodes -w
-```
-
-👉 It should:
-
-```
-Ready → NotReady → Ready
-```
-
----
-
-## ✅ Step 3: Verify file recreated
-
-After node is back:
-
-```bash
-oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan
-chroot /host
-ls -l /etc/containers/registries.conf
-```
-
-👉 It MUST exist now ✅
-
----
-
-## ✅ Step 4: Verify MCP
-
-```bash
-oc get mcp
-```
-
-👉 Expected:
-
-```text
-master   UPDATED=True   UPDATING=False   DEGRADED=False ✅
-```
-
----
-
-# 🔥 Why this works
-
-👉 You already did the hard part:
-
-✔ Removed drift (deleted file)
-❗ Now missing step = **trigger MCO to recreate**
-
-👉 Deleting MCD pod forces:
-
-* fresh sync
-* config re-apply
-* file recreation
-
----
-
-# ⚠️ Important
-
-👉 DO NOT:
-
-* manually create file ❌
-* edit file ❌
-
-👉 Let MCO recreate it
-
----
-
-# 🎯 Expected Final State
-
-✔ registries.conf recreated
-✔ cp-3 no longer degraded
-✔ MCP healthy
-✔ upgrade resumes
-
----
-
-# 👍 Final Answer
-
-👉 You are one step away
-
-Run:
-
-```bash
-oc delete pod -n openshift-machine-config-operator -l k8s-app=machine-config-daemon --field-selector spec.nodeName=ocp-cp-3.lab1.srib-lab-ocp.lan
-```
-
----
-
-If after that still stuck, paste:
-
-```bash
-oc logs -n openshift-machine-config-operator <mcd-pod> -c machine-config-daemon
-```
-
-I’ll give exact fix in one shot 👍
+^[[200~oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan^[[201~^Csrib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$
+srib@ocp-haproxy-1:~$ oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan
+Starting pod/ocp-cp-3lab1srib-lab-ocplan-debug-m22xn ...
+To use host binaries, run `chroot /host`
+Pod IP: 71.1.1.229
+If you don't see a command prompt, try pressing enter.
+sh-5.1# chroot /host
+sh-5.1# ls -l /etc/containers/registries.conf
+ls: cannot access '/etc/containers/registries.conf': No such file or directory
+sh-5.1#
