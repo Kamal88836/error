@@ -1,0 +1,85 @@
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+
+mirror:
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+      packages:
+
+        # =========================
+        # 🔴 ODF FULL STACK (MANDATORY - SAFE MODE)
+        # =========================
+        - name: odf-operator
+          channels:
+            - name: stable-4.19
+
+        - name: ocs-operator
+          channels:
+            - name: stable-4.19
+
+        - name: mcg-operator
+          channels:
+            - name: stable-4.19
+
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.19
+
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.19
+
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.19
+
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.19
+
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.19
+
+        - name: recipe
+          channels:
+            - name: stable-4.19
+
+        # =========================
+        # 🟢 STORAGE / INFRA
+        # =========================
+        - name: local-storage-operator
+          channels:
+            - name: stable
+
+        - name: lvms-operator
+          channels:
+            - name: stable-4.19
+
+        # =========================
+        # 🟢 NETWORKING
+        # =========================
+        - name: kubernetes-nmstate-operator
+          channels:
+            - name: stable
+
+        - name: sriov-network-operator
+          channels:
+            - name: stable
+
+        - name: ptp-operator
+          channels:
+            - name: stable
+
+        # =========================
+        # 🟡 OPTIONAL BUT SAFE
+        # =========================
+        - name: cluster-logging
+          channels:
+            - name: stable-6.4
+
+        - name: loki-operator
+          channels:
+            - name: stable
+
+  helm: {}
