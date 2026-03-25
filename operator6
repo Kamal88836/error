@@ -1,78 +1,183 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get packagemanifest -n openshift-marketplace | grep odf
-No resources found in openshift-marketplace namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get packagemanifest -n openshift-marketplace | grep odf
-odf-dependencies                        6d19h
-odf-operator                            6d19h
-odf-prometheus-operator                 6d19h
-odf-csi-addons-operator                 6d19h
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get packagemanifest -n openshift-marketplace | grep odf
-odf-operator                            6d19h
-odf-prometheus-operator                 6d19h
-odf-csi-addons-operator                 6d19h
-odf-dependencies                        6d19h
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get packagemanifest -n openshift-marketplace
-NAME                          CATALOG   AGE
-odf-csi-addons-operator                 6d19h
-recipe                                  6d19h
-ocs-operator                            6d19h
-local-storage-operator                  6d19h
-odf-prometheus-operator                 6d19h
-odf-dependencies                        6d19h
-ptp-operator                            6d19h
-odf-operator                            6d19h
-kubernetes-nmstate-operator             6d19h
-mcg-operator                            6d19h
-cephcsi-operator                        6d19h
-rook-ceph-operator                      6d19h
-lvms-operator                           6d19h
-sriov-network-operator                  6d19h
-cluster-logging                         6d19h
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-NAME               PACKAGE            SOURCE                           CHANNEL
-odf-dependencies   odf-dependencies   cs-redhat-operator-index-v4-19   stable-4.19
-odf-operator       odf-operator       cs-redhat-operator-index-v4-19   stable-4.19
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete  subscription -n openshift-storage --all
-subscription.operators.coreos.com "odf-dependencies" deleted
-subscription.operators.coreos.com "odf-operator" deleted
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete  po  -n openshift-storage -l app=odf-operator
-No resources found
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get po  -n  openshift-storage
-NAME                                                              READY   STATUS     RESTARTS   AGE
-noobaa-core-0                                                     2/2     Running    0          16h
-noobaa-db-pg-0                                                    1/1     Running    0          16h
-noobaa-endpoint-7dc7855867-vpd2k                                  1/1     Running    0          16h
-ocs-metrics-exporter-74c467b6c7-zx2pg                             2/3     Running    0          16h
-odf-console-69695b478d-h4ltd                                      1/1     Running    0          31s
-odf-operator-controller-manager-79cdcbd66f-5v6g8                  1/1     Running    0          31s
-rook-ceph-crashcollector-ocp-cp-3.lab1.srib-lab-ocp.lan-774s8fn   1/1     Running    0          18h
-rook-ceph-exporter-ocp-cp-3.lab1.srib-lab-ocp.lan-7dc8d48ch95wt   1/1     Running    0          18h
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-56d96bf9hd9pf   2/2     Running    0          18h
-rook-ceph-mgr-a-55958fc9f-blfpx                                   4/4     Running    0          18h
-rook-ceph-mon-b-75cf66c988-x6sxp                                  2/2     Running    0          16h
-rook-ceph-mon-d-5786d97596-7nsk8                                  2/2     Running    0          18h
-rook-ceph-mon-e-864b4dcddd-rg78j                                  0/2     Init:0/2   0          3m58s
-rook-ceph-osd-0-75d85658c7-t7zs4                                  0/2     Init:0/4   0          3m55s
-rook-ceph-osd-1-b944c5b94-24htw                                   2/2     Running    0          18h
-rook-ceph-osd-2-698df4db65-cx4mv                                  2/2     Running    0          16h
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-7f7b5b64z2n7   2/2     Running    0          16h
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete  po  -n openshift-storage -l app=odf-operator
-No resources found
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage -w
-^Csrib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$
+Perfect 👍 — now I can see your exact state clearly, and you’re actually very close. Just one misunderstanding left.
 
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get packagemanifest -n openshift-marketplace | grep odf
-odf-operator                            6d19h
-odf-prometheus-operator                 6d19h
-odf-csi-addons-operator                 6d19h
-odf-dependencies                        6d19h
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get csv -n openshift-storage
-NAME                          DISPLAY                     VERSION         REPLACES                      PHASE
-odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.18.14-rhodf   Succeeded
-srib@ocp-haproxy-1:~/ocp_4_19$
 
+---
+
+🔥 Current Situation (Very Important)
+
+✅ Good
+
+Catalog is correct (4.19) ✔
+
+All packages available ✔
+
+odf-operator = v4.19 running ✔
+
+
+❗ What you did
+
+oc delete subscription -n openshift-storage --all
+
+👉 This removed:
+
+odf-operator subscription ❌
+
+odf-dependencies subscription ❌
+
+
+
+---
+
+🚨 Key Point (Why nothing is happening)
+
+👉 Subscriptions = upgrade engine
+
+Without subscription:
+
+❌ OLM will NOT create new operators
+
+❌ Dependencies will NOT be installed
+
+❌ No auto reconciliation
+
+
+
+---
+
+🧠 Important Understanding
+
+Resource	Purpose
+
+CSV	Installed version
+Subscription	Controls upgrades & dependencies
+Catalog	Source of operators
+
+
+👉 You now have:
+
+CSV ✔
+
+Catalog ✔
+
+Subscription ❌ (missing)
+
+
+
+---
+
+✅ FIX (Final Step)
+
+🔥 Step 1: Recreate ONLY odf-operator subscription
+
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: odf-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.19
+  name: odf-operator
+  source: cs-redhat-operator-index-v4-19
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+EOF
+
+
+---
+
+🔄 Step 2: Watch Auto-Recovery
+
+oc get subscription -n openshift-storage -w
+
+👉 You should see:
+
+odf-operator
+
+odf-dependencies (auto-created)
+
+mcg
+
+cephcsi
+
+rook-ceph
+
+
+
+---
+
+🔍 Step 3: Watch CSV
+
+watch oc get csv -n openshift-storage
+
+
+---
+
+🚀 Expected Behavior
+
+👉 ODF operator will:
+
+Detect missing dependencies
+
+Recreate subscriptions
+
+Install all required operators
+
+
+
+---
+
+⚠️ Important
+
+DO NOT:
+
+❌ Delete CSV
+❌ Delete storage cluster
+❌ Reinstall ODF
+
+👉 Only subscription was missing
+
+
+---
+
+🧠 Why Pods Still Running
+
+Your storage pods:
+
+rook-ceph, noobaa, etc
+
+👉 Still running because:
+
+CSV exists
+
+Controllers already deployed
+
+
+👉 But future upgrades will fail without subscription
+
+
+---
+
+✅ Final Expected State
+
+oc get subscription -n openshift-storage
+
+👉 Should show multiple subscriptions
+
+oc get csv -n openshift-storage
+
+👉 All:
+
+v4.19.x → Succeeded
+
+
+---
+
+🚀 You’re 1 Step Away
+
+Run the subscription YAML and send:
+
+oc get subscription -n openshift-storage
+oc get csv -n openshift-storage
+
+👉 I’ll confirm everything is 100% correct 👍
