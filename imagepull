@@ -1,177 +1,103 @@
-Good, this gives the **exact root cause now** 👍
-
----
-
-# 🚨 Why it is STILL stuck
-
-This line is the problem:
-
-```bash
-machineconfiguration.openshift.io/state: Degraded
-machineconfiguration.openshift.io/desiredDrain: drain-rendered-master-0e41...
-```
-
-👉 MCO is trying to **drain the node**, but it is **not completing drain**
-
----
-
-# 🔍 Evidence from logs
-
-```text
-Drain calculated for node disruption: true
-Update prepared; requesting cordon and drain
-```
-
-👉 After this, **nothing progresses**
-
-So:
-
-❌ Not a file issue anymore
-❌ Not registries.conf issue
-❌ Not image issue
-
-👉 ✅ **Drain is stuck**
-
----
-
-# 💥 Why drain gets stuck
-
-Very common reasons:
-
-### 1. Pod cannot be evicted
-
-* PDB (PodDisruptionBudget)
-* Static pod
-* DaemonSet (normally ignored, but sometimes blocks)
-
-### 2. Control plane node
-
-You are draining a **master node**, so:
-
-* etcd / apiserver / controller pods exist
-* eviction is sensitive
-
----
-
-# 🔎 Check what is blocking drain
-
-Run:
-
-```bash
-oc adm drain ocp-cp-3.lab1.srib-lab-ocp.lan --ignore-daemonsets --delete-emptydir-data --force --dry-run=client
-```
-
-👉 This will show **which pod is blocking**
-
----
-
-# 🔥 Most likely culprit
-
-Run this:
-
-```bash
-oc get pod -A -o wide | grep ocp-cp-3
-```
-
-Look for:
-
-* `openshift-*` pods stuck
-* `Terminating` pods
-* pods with **PDB**
-
----
-
-# ⚡ Immediate fix (safe approach)
-
-If drain is stuck → manually drain:
-
-```bash
-oc adm drain ocp-cp-3.lab1.srib-lab-ocp.lan \
-  --ignore-daemonsets \
-  --delete-emptydir-data \
-  --force \
-  --grace-period=0
-```
-
----
-
-# ⚠️ Important
-
-Since this is **control-plane node**, do ONLY IF:
-
-```bash
-oc get nodes
-```
-
-👉 shows other masters **Ready** (you have cp-1, cp-2 OK ✅)
-
-So it's safe.
-
----
-
-# 🚀 After manual drain
-
-Then:
-
-```bash
-oc delete pod -n openshift-machine-config-operator \
--l k8s-app=machine-config-daemon \
---field-selector spec.nodeName=ocp-cp-3.lab1.srib-lab-ocp.lan
-```
-
-👉 This forces MCD to retry update
-
----
-
-# 🎯 Expected result
-
-Within few minutes:
-
-```bash
-oc get mcp
-```
-
-should become:
-
-```text
-UPDATED=True
-UPDATING=False
-DEGRADED=False
-```
-
----
-
-# ⚠️ Extra observation (not blocking but fix later)
-
-You still have:
-
-```text
-chronyd.service FAILED
-NetworkManager-wait-online FAILED
-```
-
-👉 Not blocking MCO now
-👉 But fix later (important for cluster stability)
-
----
-
-# 🧠 Summary
-
-👉 Current state:
-
-| Stage                 | Status   |
-| --------------------- | -------- |
-| registries.conf issue | ✅ fixed  |
-| validation            | ✅ passed |
-| update started        | ✅        |
-| drain                 | ❌ stuck  |
-
-👉 Next action:
-
-✔️ Identify blocking pod
-✔️ Force drain
-✔️ Restart MCD
-
----
-
-If you run the drain dry-run and share output, I’ll pinpoint **exact blocking pod** 🔍
+  0 b08c34b11a204c309836be04901aa5bb Wed 2026-03-25 18:57:05 UTC Wed 2026-03-25 20:25:01 UTC
+I0325 20:25:01.090621  182960 command_runner.go:24] Running captured: systemctl list-units --state=failed --no-legend
+I0325 20:25:01.098903  182960 daemon.go:1834] systemctl --failed:
+● chronyd.service                    loaded failed failed NTP client/server
+● NetworkManager-wait-online.service loaded failed failed Network Manager Wait Online
+I0325 20:25:01.098922  182960 daemon.go:1389] Starting MachineConfigDaemon
+I0325 20:25:01.098970  182960 daemon.go:1396] Enabling Kubelet Healthz Monitor
+I0325 20:25:01.338047  182960 daemon.go:2988] Found 9 requested local packages in the booted deployment
+I0325 20:25:01.338074  182960 daemon.go:2997] Unsupported package kernel-rt-core
+I0325 20:25:01.338080  182960 daemon.go:2997] Unsupported package kernel-rt-kvm
+I0325 20:25:01.338085  182960 daemon.go:2997] Unsupported package kernel-rt-modules
+I0325 20:25:01.338088  182960 daemon.go:2997] Unsupported package kernel-rt-modules-extra
+I0325 20:25:01.338091  182960 daemon.go:2997] Unsupported package kernel
+I0325 20:25:01.338093  182960 daemon.go:2997] Unsupported package kernel-core
+I0325 20:25:01.338096  182960 daemon.go:2997] Unsupported package kernel-modules
+I0325 20:25:01.338101  182960 daemon.go:2997] Unsupported package kernel-modules-core
+I0325 20:25:01.338105  182960 daemon.go:2997] Unsupported package kernel-modules-extra
+I0325 20:25:01.876304  182960 daemon.go:673] Node ocp-cp-3.lab1.srib-lab-ocp.lan is part of the control plane
+I0325 20:25:02.035071  182960 daemon.go:2041] Running: /run/machine-config-daemon-bin/nmstatectl persist-nic-names --root / --kargs-out /tmp/nmstate-kargs1378797797 --cleanup
+[2026-03-25T20:25:02Z INFO  nmstatectl] Nmstate version: 2.2.56
+[2026-03-25T20:25:02Z INFO  nmstatectl::persist_nic] /etc/systemd/network/.nmstate-persist.stamp does not exist, no need to clean up
+
+I0325 20:25:02.059358  182960 daemon.go:1629] Previous boot ostree-finalize-staged.service appears successful
+I0325 20:25:02.059377  182960 daemon.go:1764] Current+desired config: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 20:25:02.059384  182960 daemon.go:1779] state: Done
+I0325 20:25:02.059406  182960 update.go:2775] Running: rpm-ostree cleanup -r
+Deployments unchanged.
+I0325 20:25:02.109455  182960 daemon.go:2239] Validating against current config rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 20:25:02.109531  182960 daemon.go:2151] SSH key location ("/home/core/.ssh/authorized_keys.d/ignition") up-to-date!
+I0325 20:25:02.109543  182960 command_runner.go:24] Running captured: rpm-ostree kargs
+I0325 20:25:02.182447  182960 update.go:2820] "Validated on-disk state"
+I0325 20:25:02.200705  182960 daemon.go:2349] Completing update to target MachineConfig: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 20:25:12.204997  182960 update.go:2820] "Update completed for config rendered-master-0e41a7401614ad6250578b1988cc5a7c and node has been successfully uncordoned"
+I0325 20:25:12.207625  182960 daemon.go:2374] In desired state MachineConfig: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 20:25:12.240559  182960 config_drift_monitor.go:246] Config Drift Monitor started
+I0325 20:25:28.265538  182960 daemon.go:768] Transitioned from state:  -> Done
+I0325 20:26:01.338768  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 20:26:28.273552  182960 daemon.go:903] Starting health listener on 127.0.0.1:8798
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-54232a3f7ceb661f33be3e20cf35123e   False     True       False      3              2                   2                     0                      26d
+worker   rendered-worker-bc2946515b71a1f6ddc55175ebd446c1   True      False      False      0              0                   0                     0                      26d
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.19.23   True        False         False      30h
+baremetal                                  4.19.23   True        False         False      26d
+cloud-controller-manager                   4.19.23   True        False         False      26d
+cloud-credential                           4.19.23   True        False         False      26d
+cluster-autoscaler                         4.19.23   True        False         False      26d
+config-operator                            4.19.23   True        False         False      26d
+console                                    4.19.23   True        False         False      26d
+control-plane-machine-set                  4.19.23   True        False         False      26d
+csi-snapshot-controller                    4.19.23   True        False         False      26d
+dns                                        4.19.23   True        False         False      26d
+etcd                                       4.19.23   True        False         False      26d
+image-registry                             4.19.23   True        False         False      26d
+ingress                                    4.19.23   True        True          True       10m     The "default" ingress controller reports Degraded=True: DegradedConditions: One or more other status conditions indicate a degraded state: DeploymentReplicasAllAvailable=False (DeploymentReplicasNotAvailable: 2/3 of replicas are available).
+insights                                   4.19.23   True        False         False      10m
+kube-apiserver                             4.19.23   True        False         False      26d
+kube-controller-manager                    4.19.23   True        False         False      26d
+kube-scheduler                             4.19.23   True        False         False      26d
+kube-storage-version-migrator              4.19.23   True        False         False      10m
+machine-api                                4.19.23   True        False         False      26d
+machine-approver                           4.19.23   True        False         False      26d
+machine-config                             4.19.23   True        False         True       26d     Failed to resync 4.19.23 because: error during syncRequiredMachineConfigPools: [context deadline exceeded, error MachineConfigPool master is not ready, retrying. Status: (pool degraded: true total: 3, ready 0, updated: 0, unavailable: 1, reason: Node ocp-cp-3.lab1.srib-lab-ocp.lan is reporting: "unexpected on-disk state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e: content mismatch for file \"/etc/containers/registries.conf\"")]
+marketplace                                4.19.23   True        False         False      26d
+monitoring                                 4.19.23   True        False         False      26h
+network                                    4.19.23   True        False         False      26d
+node-tuning                                4.19.23   True        False         False      33h
+olm                                        4.19.23   True        False         False      3h20m
+openshift-apiserver                        4.19.23   True        False         False      26d
+openshift-controller-manager               4.19.23   True        False         False      26d
+openshift-samples                          4.19.23   True        False         False      26d
+operator-lifecycle-manager                 4.19.23   True        False         False      26d
+operator-lifecycle-manager-catalog         4.19.23   True        False         False      26d
+operator-lifecycle-manager-packageserver   4.19.23   True        False         False      9h
+service-ca                                 4.19.23   True        False         False      26d
+storage                                    4.19.23   True        False         False      26d
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get node ocp-cp-1.lab1.srib-lab-ocp.lan -o yaml | grep machineconfiguration.openshift.io
+    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+    machineconfiguration.openshift.io/currentConfig: rendered-master-ca27c25ee1c96608c6f437b56ac1b162
+    machineconfiguration.openshift.io/desiredConfig: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+    machineconfiguration.openshift.io/desiredDrain: drain-rendered-master-0e41a7401614ad6250578b1988cc5a7c
+    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-ca27c25ee1c96608c6f437b56ac1b162
+    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: "false"
+    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: "13581553"
+    machineconfiguration.openshift.io/post-config-action: ""
+    machineconfiguration.openshift.io/reason: ""
+    machineconfiguration.openshift.io/state: Working
+srib@ocp-haproxy-1:~/ocp_4_19$
