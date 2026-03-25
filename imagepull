@@ -1,194 +1,201 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-54232a3f7ceb661f33be3e20cf35123e   False     True       False      3              2                   2                     0                      26d
-worker   rendered-worker-bc2946515b71a1f6ddc55175ebd446c1   True      False      False      0              0                   0                     0                      26d
-srib@ocp-haproxy-1:~/ocp_4_19$ oc describe mcp master
-Name:         master
-Namespace:
-Labels:       machineconfiguration.openshift.io/mco-built-in=
-              operator.machineconfiguration.openshift.io/required-for-upgrade=
-              pools.operator.machineconfiguration.openshift.io/master=
-Annotations:  <none>
-API Version:  machineconfiguration.openshift.io/v1
-Kind:         MachineConfigPool
-Metadata:
-  Creation Timestamp:  2026-02-27T18:13:36Z
-  Generation:          23
-  Resource Version:    14407238
-  UID:                 4c56963e-d318-4097-ba13-bcc86eb4b579
-Spec:
-  Configuration:
-    Name:  rendered-master-0e41a7401614ad6250578b1988cc5a7c
-    Source:
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         00-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-container-runtime
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-cpu-partitioning
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-masters-chrony-configuration
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-nto-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-performance-performance-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         97-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-assisted-installer-master-ssh
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-registries
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-ssh
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         disable-chronyd
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         load-sctp-module
-  Machine Config Selector:
-    Match Labels:
-      machineconfiguration.openshift.io/role:  master
-  Node Selector:
-    Match Labels:
-      node-role.kubernetes.io/master:
-  Paused:                              false
-Status:
-  Cert Expirys:
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-02-25T17:11:03Z
-    Subject:  CN=admin-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-03-30T13:02:27Z
-    Subject:  CN=kube-csr-signer_@1772283746
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-04-29T12:56:27Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1772283386
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-04-14T13:02:52Z
-    Subject:  CN=kube-csr-signer_@1773579772
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-02-27T17:43:50Z
-    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-02-27T17:43:50Z
-    Subject:  CN=kube-control-plane-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-02-25T17:43:48Z
-    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-02-27T18:13:08Z
-    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1772215988
-  Conditions:
-    Last Transition Time:  2026-02-27T18:14:09Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  RenderDegraded
-    Last Transition Time:  2026-03-24T11:50:53Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  PinnedImageSetsDegraded
-    Last Transition Time:  2026-03-25T09:33:03Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Updated
-    Last Transition Time:  2026-03-25T09:33:03Z
-    Message:               All nodes are updating to MachineConfig rendered-master-0e41a7401614ad6250578b1988cc5a7c
-    Reason:
-    Status:                True
-    Type:                  Updating
-    Last Transition Time:  2026-03-25T20:18:12Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  NodeDegraded
-    Last Transition Time:  2026-03-25T20:18:12Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Degraded
-  Configuration:
-    Name:  rendered-master-54232a3f7ceb661f33be3e20cf35123e
-    Source:
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                00-master
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                01-master-container-runtime
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                01-master-cpu-partitioning
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                01-master-kubelet
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                50-masters-chrony-configuration
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                50-nto-master
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                50-performance-performance-master
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                97-master-generated-kubelet
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                98-master-generated-kubelet
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                99-assisted-installer-master-ssh
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                99-master-generated-kubelet
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                99-master-generated-registries
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                99-master-ssh
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                disable-chronyd
-      API Version:         machineconfiguration.openshift.io/v1
-      Kind:                MachineConfig
-      Name:                load-sctp-module
-  Degraded Machine Count:  0
-  Machine Count:           3
-  Observed Generation:     23
-  Pool Synchronizers Status:
-    Available Machine Count:    2
-    Machine Count:              3
-    Pool Synchronizer Type:     PinnedImageSets
-    Ready Machine Count:        2
-    Unavailable Machine Count:  1
-    Updated Machine Count:      3
-  Ready Machine Count:          2
-  Unavailable Machine Count:    1
-  Updated Machine Count:        2
-Events:                         <none>
-srib@ocp-haproxy-1:~/ocp_4_19$
+Good question 👍 — this is exactly what you should check during upgrade.
+
+Right now **cp-1 is upgrading**, so you need to see what’s happening **on that node**.
+
+---
+
+# ✅ Best ways to check what’s happening on node (cp-1)
+
+---
+
+# 🔹 1. Check Machine Config Daemon (MOST IMPORTANT)
+
+This is the **main component doing upgrade**
+
+### Step 1: Find pod
+
+```bash
+oc get pod -n openshift-machine-config-operator -o wide | grep ocp-cp-1
+```
+
+### Step 2: View logs
+
+```bash
+oc logs -n openshift-machine-config-operator <pod-name> -c machine-config-daemon
+```
+
+👉 This shows:
+
+* drain progress
+* file changes
+* reboot triggers
+* errors
+
+---
+
+# 🔥 Real-time logs (recommended)
+
+```bash
+oc logs -f -n openshift-machine-config-operator <pod-name> -c machine-config-daemon
+```
+
+---
+
+# 🔹 2. Check node update status (quick check)
+
+```bash
+oc get node ocp-cp-1.lab1.srib-lab-ocp.lan -o yaml | grep machineconfiguration.openshift.io
+```
+
+👉 Look at:
+
+| Field           | Meaning   |
+| --------------- | --------- |
+| state: Working  | updating  |
+| state: Done     | completed |
+| state: Degraded | problem   |
+
+---
+
+# 🔹 3. Debug inside node (VERY POWERFUL)
+
+```bash
+oc debug node/ocp-cp-1.lab1.srib-lab-ocp.lan
+chroot /host
+```
+
+Then check:
+
+---
+
+## 📌 A. Systemd failures
+
+```bash
+systemctl --failed
+```
+
+---
+
+## 📌 B. Journal logs (live node logs)
+
+```bash
+journalctl -xe
+```
+
+or real-time:
+
+```bash
+journalctl -f
+```
+
+---
+
+## 📌 C. MCD service logs on node
+
+```bash
+journalctl -u machine-config-daemon -f
+```
+
+---
+
+## 📌 D. Reboot / update logs
+
+```bash
+journalctl -b -1
+```
+
+👉 shows previous boot (important during upgrades)
+
+---
+
+# 🔹 4. Check if node is draining
+
+```bash
+oc get pod -A -o wide | grep ocp-cp-1
+```
+
+👉 Look for:
+
+* pods stuck in `Terminating`
+* pods not evicted
+
+---
+
+# 🔹 5. Check events (very useful)
+
+```bash
+oc get events --sort-by=.lastTimestamp | grep ocp-cp-1
+```
+
+---
+
+# 🧠 What you should expect now
+
+Since your MCP is:
+
+```text
+UPDATING=True
+DEGRADED=False
+```
+
+👉 Logs should show something like:
+
+```text
+Draining node
+Applying config
+Rebooting node
+Update completed
+```
+
+---
+
+# 🚨 If it's stuck
+
+Look for:
+
+### ❌ Drain stuck
+
+```text
+cannot evict pod
+```
+
+### ❌ File mismatch
+
+```text
+content mismatch
+```
+
+### ❌ Reboot loop
+
+```text
+failed units / systemctl failed
+```
+
+---
+
+# 🚀 Quick command (copy-paste ready)
+
+```bash
+oc logs -f -n openshift-machine-config-operator \
+$(oc get pod -n openshift-machine-config-operator -o name | grep ocp-cp-1) \
+-c machine-config-daemon
+```
+
+---
+
+# 🎯 Summary
+
+| Method        | Purpose              |
+| ------------- | -------------------- |
+| MCD logs      | ⭐ primary source     |
+| oc debug node | deep troubleshooting |
+| journalctl    | OS-level issues      |
+| oc get events | quick hints          |
+
+---
+
+👉 Paste cp-1 logs here — I’ll tell you instantly if it’s:
+
+* normal ⏳
+* stuck ⚠️
+* or broken ❌
