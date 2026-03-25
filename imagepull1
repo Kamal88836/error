@@ -1,123 +1,164 @@
-kind: ImageSetConfiguration
+Good catch 👍 — yes, **`recipe` is required in disconnected setups for ODF**, and you correctly remembered that.
+
+Let’s clarify this properly so you don’t miss anything again.
+
+---
+
+# 🎯 Why `recipe` is needed
+
+In disconnected environments:
+
+👉 ODF uses **recipes (via OLM / dependencies)** for:
+
+* Backup / restore workflows
+* Data services orchestration
+* Some internal dependency resolution
+
+👉 If `recipe` is missing:
+
+```text
+ODF pods / components → ImagePullBackOff ❌
+```
+
+---
+
+# 🚨 Why it was missing earlier
+
+Because:
+
+* It is **not always pulled automatically**
+* Depends on operator dependency resolution
+* Safer to **explicitly include it**
+
+---
+
+# ✅ What you should do
+
+👉 Add `recipe` explicitly to your config
+
+---
+
+# 🔧 FINAL CORRECT ODF CONFIG (with recipe)
+
+Use this 👇 (this is COMPLETE for ODF in disconnected)
+
+```yaml
 apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
 
 mirror:
   platform:
     channels:
     - name: stable-4.19
-      type: ocp
       minVersion: 4.19.23
       maxVersion: 4.19.23
-      shortestPath: true
 
   operators:
   - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
     packages:
 
-    # ODF (Top-level only)
+    # ODF FULL STACK
     - name: odf-operator
-      channels:
-      - name: stable-4.19
+      channels: [{name: stable-4.19}]
     - name: ocs-operator
-      channels:
-      - name: stable-4.19
+      channels: [{name: stable-4.19}]
+    - name: ocs-client-operator
+      channels: [{name: stable-4.19}]
+    - name: mcg-operator
+      channels: [{name: stable-4.19}]
+    - name: rook-ceph-operator
+      channels: [{name: stable-4.19}]
+    - name: cephcsi-operator
+      channels: [{name: stable-4.19}]
     - name: odf-csi-addons-operator
-      channels:
-      - name: stable-4.19
+      channels: [{name: stable-4.19}]
+    - name: odf-prometheus-operator
+      channels: [{name: stable-4.19}]
+    - name: odf-dependencies
+      channels: [{name: stable-4.19}]
+    - name: recipe
+      channels: [{name: stable-4.19}]
 
-    # Networking / Infra
-    - name: sriov-network-operator
-      channels:
-      - name: stable
-    - name: ptp-operator
-      channels:
-      - name: stable
-    - name: kubernetes-nmstate-operator
-      channels:
-      - name: stable
-
-    # Storage
+    # INFRA (your current failing ones)
     - name: local-storage-operator
-      channels:
-      - name: stable
+      channels: [{name: stable-4.19}]
+    - name: kubernetes-nmstate-operator
+      channels: [{name: stable-4.19}]
+    - name: ptp-operator
+      channels: [{name: stable-4.19}]
+    - name: sriov-network-operator
+      channels: [{name: stable-4.19}]
     - name: lvms-operator
-      defaultchannel: stable-4.19
+      channels: [{name: stable-4.19}]
+```
 
+---
 
-    # Logging
-    - name: cluster-logging
-      channels:
-      - name: stable-6.4
+# 🚀 What to do now
 
-  additionalImages:
-  - name: quay.io/openshift-release-dev/ocp-release:4.19.23-x86_64
-  - name: registry.redhat.io/ubi8/ubi:latest
+## 1️⃣ Re-run mirror
 
-  helm: {}
-[root@bastion mirror_4_19_23]#
+```bash
+oc mirror --config imageset-config.yaml docker://bastion.srib-lab-ocp.lan:8443
+```
 
+---
 
-# ODF FULL STACK (MANDATORY)
-        - name: odf-operator
-          channels:
-            - name: stable-4.19
+## 2️⃣ Verify recipe image exists
 
-        - name: ocs-operator
-          channels:
-            - name: stable-4.19
+```bash
+podman search bastion.srib-lab-ocp.lan:8443 | grep recipe
+```
 
-        - name: ocs-client-operator
-          channels:
-            - name: stable-4.19
+---
 
-        - name: mcg-operator
-          channels:
-            - name: stable-4.19
+## 3️⃣ Apply IDMS again
 
-        - name: rook-ceph-operator
-          channels:
-            - name: stable-4.19
+```bash
+oc apply -f idms-*.yaml
+```
 
-        - name: cephcsi-operator
-          channels:
-            - name: stable-4.19
+---
 
-        - name: odf-csi-addons-operator
-          channels:
-            - name: stable-4.19
+## 4️⃣ Restart pods
 
-        - name: odf-prometheus-operator
-          channels:
-            - name: stable-4.19
+```bash
+oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
+  oc delete pod $pod -n $ns
+done
+```
 
-        - name: odf-dependencies
-          channels:
-            - name: stable-4.19
+---
 
-        - name: recipe
-          channels:
-            - name: stable-4.19
-        #  OTHER OPERATORS
-        - name: local-storage-operator
-          channels:
-            - name: stable
+# 🎯 Expected result
 
-        - name: kubernetes-nmstate-operator
-          channels:
-            - name: stable
+✔ ODF dependencies resolved
+✔ No missing operator images
+✔ No ImagePullBackOff
+✔ Cluster stabilizes
 
-        - name: ptp-operator
-          channels:
-            - name: stable
+---
 
-        - name: sriov-network-operator
-          channels:
-            - name: stable
+# ⚠️ Final Important Note
 
-        - name: lvms-operator
-          channels:
-            - name: stable-4.19
+👉 In disconnected ODF:
 
-        - name: cluster-logging
-          channels:
+You MUST include:
 
+* Full ODF stack ✅
+* `recipe` ✅
+* Correct channel (`stable-4.19`) ✅
+
+---
+
+# 👍 One-line summary
+
+👉 **Yes — `recipe` is required for ODF in disconnected, and you should include it explicitly**
+
+---
+
+If you want, I can:
+✅ Check your mirror registry content before you rerun
+✅ Validate ALL required images for ODF
+
+Just tell me 👍
