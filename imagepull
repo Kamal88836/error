@@ -1,10 +1,161 @@
-Events:
-  Type     Reason          Age   From               Message
-  ----     ------          ----  ----               -------
-  Normal   Scheduled       43s   default-scheduler  Successfully assigned openshift-local-storage/diskmaker-manager-qrstg to ocp-cp-3.lab1.srib-lab-ocp.lan
-  Normal   AddedInterface  42s   multus             Add eth0 [10.129.0.73/23 fd01:0:0:2::49/64] from ovn-kubernetes
-  Normal   Pulling         42s   kubelet            Pulling image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943"
-  Warning  Failed          11s   kubelet            Failed to pull image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943": rpc error: code = DeadlineExceeded desc = initializing source docker://registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: reading manifest sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9: manifest unknown]): registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 3.234.77.102:443: i/o timeout
-  Warning  Failed          11s   kubelet            Error: ErrImagePull
-  Normal   Pulling         11s   kubelet            Pulling image "registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098"
-srib@ocp-haproxy-1:~/ocp_4_19$
+Good — this output tells us something very important 👇
+
+---
+
+# 🚨 Your problem is STILL NOT FIXED
+
+Look carefully at this line:
+
+```text
+bastion.../ocp4/openshift4/openshift4/ose-local-storage...
+                           ❌ duplicated openshift4
+```
+
+👉 This means:
+
+❌ **Old IDMS is STILL active somewhere**
+❌ Cluster is still using **wrong mirror path**
+
+---
+
+# 🎯 What should be happening
+
+From your new mirror config, it should be:
+
+```text
+bastion.../openshift4/ose-local-storage...
+```
+
+NOT:
+
+```text
+.../ocp4/openshift4/openshift4/... ❌
+```
+
+---
+
+# 🔍 Root Cause
+
+👉 Even after your changes:
+
+* Old IDMS still exists **OR**
+* Nodes have not picked new config yet
+
+---
+
+# 🚀 Fix it properly (do EXACT steps)
+
+## ✅ Step 1: Check current IDMS
+
+```bash
+oc get imagedigestmirrorset -o yaml
+```
+
+👉 Look for ANY entry containing:
+
+```
+ocp4/openshift4/openshift4 ❌
+```
+
+---
+
+## ✅ Step 2: Clean EVERYTHING (important)
+
+```bash
+oc delete imagedigestmirrorset --all
+oc delete imagetagmirrorset --all
+```
+
+---
+
+## ✅ Step 3: Re-apply ONLY new mirror configs
+
+```bash
+oc apply -f idms-oc-mirror.yaml
+oc apply -f itms-oc-mirror.yaml
+```
+
+---
+
+## ✅ Step 4: Verify (VERY IMPORTANT)
+
+```bash
+oc get imagedigestmirrorset -o yaml
+```
+
+👉 It should show ONLY:
+
+```text
+bastion.srib-lab-ocp.lan:8443/openshift4
+```
+
+👉 NOT:
+
+```text
+ocp4/openshift4/openshift4 ❌
+```
+
+---
+
+## ✅ Step 5: Force node to refresh image config
+
+Pick one master:
+
+```bash
+oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan
+chroot /host
+systemctl restart crio
+exit
+```
+
+👉 Do for all masters (important)
+
+---
+
+## ✅ Step 6: Delete failed pods again
+
+```bash
+oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
+  oc delete pod $pod -n $ns
+done
+```
+
+---
+
+# 🔥 Why restart CRI-O?
+
+👉 Nodes cache image pull config
+👉 Without restart, they may still use old mirror paths
+
+---
+
+# 🎯 Expected result after fix
+
+✔ No more `openshift4/openshift4`
+✔ Image pulls from correct path
+✔ Pods start running
+✔ MCP progresses
+
+---
+
+# ⚠️ Important Insight
+
+👉 Your mirror is now correct
+👉 But cluster is still using **old config (cached / leftover IDMS)**
+
+---
+
+# 👍 Final Answer
+
+👉 Problem is NOT mirror now
+👉 Problem is **old mirror config still active**
+
+---
+
+If you want, paste:
+
+```bash
+oc get imagedigestmirrorset -o yaml
+```
+
+I’ll confirm 100% clean state 👍
