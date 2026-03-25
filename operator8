@@ -1,166 +1,209 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get pods -n openshift-marketplace
-NAME                                    READY   STATUS    RESTARTS   AGE
-cs-redhat-operator-index-v4-19-kmpnf    1/1     Running   0          19s
-marketplace-operator-68585b676c-8bvq8   1/1     Running   0          22s
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get packagemanifest odf-operator -n openshift-marketplace -o yaml | grep -A5 channels
-  channels:
-  - currentCSV: odf-operator.v4.19.12-rhodf
-    currentCSVDesc:
-      annotations:
-        alm-examples: '[]'
-        capabilities: Deep Insights
-srib@ocp-haproxy-1:~/ocp_4_19$ vi sub.yaml
-srib@ocp-haproxy-1:~/ocp_4_19$
-srib@ocp-haproxy-1:~/ocp_4_19$
-srib@ocp-haproxy-1:~/ocp_4_19$
-srib@ocp-haproxy-1:~/ocp_4_19$ cat installplan.yaml
+Perfect 👍 — now we finally see the REAL exact blocker (and this time it’s crystal clear).
+
+
+---
+
+🚨 ROOT CAUSE (from your output)
+
+This line is the key:
+
+constraints not satisfiable:
+bundle odf-dependencies.v4.19.12-rhodf requires:
+👉 ocs-client-operator (version 4.19.12-rhodf)
+
+
+---
+
+💥 What it means
+
+👉 Your catalog has ODF operator 👉 But it is missing one dependency operator
+
+❌ Missing:
+
+ocs-client-operator
+
+
+
+---
+
+🔥 Why this happened
+
+Even though you mirrored many operators, your ImageSetConfiguration missed one critical dependency:
+
+👉 ocs-client-operator
+
+
+---
+
+✅ GOOD NEWS
+
+👉 Everything else is working:
+
+✅ CatalogSource READY
+
+✅ InstallPlan created
+
+✅ ODF operator installed
+
+❌ Only dependency resolution failing
+
+
+
+---
+
+🚀 FINAL FIX (VERY SIMPLE)
+
+✅ STEP 1: Add missing operator
+
+Create subscription manually:
+
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: odf-operator
+  name: ocs-client-operator
   namespace: openshift-storage
 spec:
   channel: stable-4.19
-  name: odf-operator
+  name: ocs-client-operator
   source: cs-redhat-operator-index-v4-19
   sourceNamespace: openshift-marketplace
   installPlanApproval: Automatic
-srib@ocp-haproxy-1:~/ocp_4_19$ cat sub.yaml
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: odf-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.19
-  name: odf-operator
-  source: cs-redhat-operator-index-v4-19
-  sourceNamespace: openshift-marketplace
-  installPlanApproval: Automatic
-srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f installplan.yaml
-subscription.operators.coreos.com/odf-operator created
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-NAME            CSV                           APPROVAL    APPROVED
-install-2d2sr   odf-operator.v4.19.12-rhodf   Automatic   true
-srib@ocp-haproxy-1:~/ocp_4_19$ oc describe catalogsource cs-redhat-operator-index-v4-19 -n openshift-marketplace
-Name:         cs-redhat-operator-index-v4-19
-Namespace:    openshift-marketplace
-Labels:       <none>
-Annotations:  createdAt: Wednesday, 25-Mar-26 10:18:46 UTC
-              createdBy: oc-mirror v2
-              oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-API Version:  operators.coreos.com/v1alpha1
-Kind:         CatalogSource
-Metadata:
-  Creation Timestamp:  2026-03-18T14:25:45Z
-  Generation:          3
-  Resource Version:    14141311
-  UID:                 430c9193-100e-470a-98e0-e627f3ccc054
-Spec:
-  Image:        bastion.srib-lab-ocp.lan:8443/redhat/redhat-operator-index:v4.19
-  Source Type:  grpc
-Status:
-  Connection State:
-    Address:              cs-redhat-operator-index-v4-19.openshift-marketplace.svc:50051
-    Last Connect:         2026-03-25T10:34:36Z
-    Last Observed State:  READY
-  Registry Service:
-    Created At:         2026-03-25T10:34:23Z
-    Port:               50051
-    Protocol:           grpc
-    Service Name:       cs-redhat-operator-index-v4-19
-    Service Namespace:  openshift-marketplace
-Events:                 <none>
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get csv -n openshift-storage
-NAME                          DISPLAY                     VERSION         REPLACES                      PHASE
-odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.19.11-rhodf   Succeeded
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get catalogsource -n openshift-marketplace
-NAME                             DISPLAY   TYPE   PUBLISHER   AGE
-cs-redhat-operator-index-v4-19             grpc               6d20h
-srib@ocp-haproxy-1:~/ocp_4_19$ oc describe catalogsource cs-redhat-operator-index-v4-19 -n openshift-marketplace
-Name:         cs-redhat-operator-index-v4-19
-Namespace:    openshift-marketplace
-Labels:       <none>
-Annotations:  createdAt: Wednesday, 25-Mar-26 10:18:46 UTC
-              createdBy: oc-mirror v2
-              oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-API Version:  operators.coreos.com/v1alpha1
-Kind:         CatalogSource
-Metadata:
-  Creation Timestamp:  2026-03-18T14:25:45Z
-  Generation:          3
-  Resource Version:    14141311
-  UID:                 430c9193-100e-470a-98e0-e627f3ccc054
-Spec:
-  Image:        bastion.srib-lab-ocp.lan:8443/redhat/redhat-operator-index:v4.19
-  Source Type:  grpc
-Status:
-  Connection State:
-    Address:              cs-redhat-operator-index-v4-19.openshift-marketplace.svc:50051
-    Last Connect:         2026-03-25T10:34:36Z
-    Last Observed State:  READY
-  Registry Service:
-    Created At:         2026-03-25T10:34:23Z
-    Port:               50051
-    Protocol:           grpc
-    Service Name:       cs-redhat-operator-index-v4-19
-    Service Namespace:  openshift-marketplace
-Events:                 <none>
-srib@ocp-haproxy-1:~/ocp_4_19$ oc describe subscription odf-operator -n openshift-storage
-Name:         odf-operator
-Namespace:    openshift-storage
-Labels:       operators.coreos.com/odf-operator.openshift-storage=
-Annotations:  <none>
-API Version:  operators.coreos.com/v1alpha1
-Kind:         Subscription
-Metadata:
-  Creation Timestamp:  2026-03-25T10:36:58Z
-  Generation:          1
-  Resource Version:    14142210
-  UID:                 7d198a55-b17f-4605-a081-30ead0743217
-Spec:
-  Channel:                stable-4.19
-  Install Plan Approval:  Automatic
-  Name:                   odf-operator
-  Source:                 cs-redhat-operator-index-v4-19
-  Source Namespace:       openshift-marketplace
-Status:
-  Catalog Health:
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              cs-redhat-operator-index-v4-19
-      Namespace:         openshift-marketplace
-      Resource Version:  14141311
-      UID:               430c9193-100e-470a-98e0-e627f3ccc054
-    Healthy:             true
-    Last Updated:        2026-03-25T10:36:59Z
-  Conditions:
-    Last Transition Time:   2026-03-25T10:36:59Z
-    Message:                all available catalogsources are healthy
-    Reason:                 AllCatalogSourcesHealthy
-    Status:                 False
-    Type:                   CatalogSourcesUnhealthy
-    Message:                constraints not satisfiable: bundle odf-dependencies.v4.19.12-rhodf requires an operator with package: ocs-client-operator and with version in range: 4.19.12-rhodf, subscription odf-dependencies exists, subscription odf-dependencies requires cs-redhat-operator-index-v4-19/openshift-marketplace/stable-4.19/odf-dependencies.v4.19.12-rhodf
-    Reason:                 ConstraintsNotSatisfiable
-    Status:                 True
-    Type:                   ResolutionFailed
-  Current CSV:              odf-operator.v4.19.12-rhodf
-  Install Plan Generation:  1
-  Install Plan Ref:
-    API Version:       operators.coreos.com/v1alpha1
-    Kind:              InstallPlan
-    Name:              install-2d2sr
-    Namespace:         openshift-storage
-    Resource Version:  14141882
-    UID:               3854438e-2800-4bbb-8f7e-4363b2653c36
-  Installed CSV:       odf-operator.v4.19.12-rhodf
-  Installplan:
-    API Version:  operators.coreos.com/v1alpha1
-    Kind:         InstallPlan
-    Name:         install-2d2sr
-    Uuid:         3854438e-2800-4bbb-8f7e-4363b2653c36
-  Last Updated:   2026-03-25T10:37:26Z
-  State:          AtLatestKnown
-Events:           <none>
-srib@ocp-haproxy-1:~/ocp_4_19$
+
+Apply:
+
+oc apply -f ocs-client.yaml
+
+
+---
+
+✅ STEP 2: Watch install
+
+oc get installplan -n openshift-storage
+oc get csv -n openshift-storage -w
+
+
+---
+
+👉 Expected:
+
+ocs-client-operator → Installing → Succeeded
+
+
+---
+
+✅ STEP 3: ODF dependencies will auto-fix
+
+Once above is installed:
+
+👉 odf-dependencies will resolve automatically
+👉 Then:
+
+rook-ceph-operator
+mcg-operator
+cephcsi-operator
+
+👉 will start installing
+
+
+---
+
+🔥 IMPORTANT (Disconnected env lesson)
+
+In disconnected:
+
+👉 OLM DOES NOT auto-fetch missing operators 👉 You MUST mirror ALL dependencies
+
+
+---
+
+📦 FINAL REQUIRED LIST (ODF 4.19)
+
+You should always include:
+
+odf-operator
+odf-dependencies
+ocs-operator
+ocs-client-operator   ✅ (YOU MISSED THIS)
+rook-ceph-operator
+cephcsi-operator
+mcg-operator
+odf-csi-addons-operator
+odf-prometheus-operator
+
+
+---
+
+⚠️ Why InstallPlan was weird earlier
+
+OLM partially resolved
+
+Then got stuck due to missing dependency
+
+That’s why:
+
+CSV installed
+
+But no full dependency chain
+
+
+
+
+---
+
+🚀 After fix
+
+Run:
+
+oc get subscription -n openshift-storage
+oc get csv -n openshift-storage
+
+You should see:
+
+rook-ceph-operator   ✅
+cephcsi-operator     ✅
+mcg-operator         ✅
+ocs-operator         ✅
+ocs-client-operator  ✅
+
+
+---
+
+🎯 Your current state
+
+Component	Status
+
+Mirror	✅ Perfect
+Catalog	✅ Healthy
+ODF operator	✅ Installed
+Dependency chain	❌ Missing ocs-client
+
+
+
+---
+
+🧠 Pro Tip (VERY IMPORTANT)
+
+Next time:
+
+👉 Always run:
+
+oc adm catalog mirror --manifests-only
+
+OR
+
+oc mirror --config ... (full dependency mode)
+
+👉 So you NEVER miss hidden deps like this
+
+
+---
+
+🚀 If you want next
+
+I can help you:
+
+✔ Build perfect disconnected ImageSetConfig (zero issues)
+✔ Fix rook-ceph-mon scheduling issue
+✔ Validate ODF cluster health end-to-end
+
+Just say 👍
