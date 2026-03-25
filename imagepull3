@@ -1,87 +1,49 @@
-Short answer: **Yes, you can apply these safely** 👍 — and this set actually looks **correct and consistent**.
-
-But before you run it blindly, let me validate what you pasted 👇
+Good — this order **matters a lot** 👍
 
 ---
 
-# ✅ What is GOOD in your generated files
+# 🎯 Correct Order
 
-## ✔ IDMS (very important)
+👉 **ALWAYS: Delete first → then apply**
 
-```yaml
-source: registry.redhat.io/openshift4
-mirror: bastion.../openshift4
+---
+
+# 🚨 Why NOT apply first?
+
+If you do:
+
+```text
+apply → delete ❌
 ```
 
-👉 This is now **CORRECT**
-(no more `openshift4/openshift4` issue 🎉)
+👉 Temporary situation:
 
----
+* Old IDMS + New IDMS coexist
+* Cluster merges both
+* Nodes may cache wrong mirror paths
 
-## ✔ ODF mappings present
+👉 Result:
 
-```yaml
-- source: registry.redhat.io/odf4
-- source: registry.redhat.io/rhceph
+```text
+Random ImagePullBackOff 😵
 ```
 
-👉 This confirms:
-
-* ODF images ✔
-* Ceph images ✔
-
 ---
 
-## ✔ Release mapping
+# ✅ Correct Safe Sequence
 
-```yaml
-openshift/release
-openshift/release-images
-```
-
-👉 Upgrade payload will work ✔
-
----
-
-## ✔ CatalogSource
-
-```yaml
-image: bastion.../redhat/redhat-operator-index:v4.19
-```
-
-👉 Operators will install from your mirror ✔
-
----
-
-## ✔ ITMS (tag mirror)
-
-👉 Helps for:
-
-* non-digest images
-* additional images
-
-✔ Good to have
-
----
-
-# ⚠️ One VERY IMPORTANT check (don’t skip)
-
-Before applying, verify images exist:
-
-## 🔥 Check your previously failing image
+## 1️⃣ Delete old configs
 
 ```bash
-podman pull bastion.srib-lab-ocp.lan:8443/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306...
+oc delete imagedigestmirrorset --all
+oc delete imagetagmirrorset --all
 ```
 
-👉 If this works → you are SAFE
-👉 If this fails → DO NOT apply yet
+(Optional but recommended for you)
 
 ---
 
-# 🚀 Apply steps (safe order)
-
-## 1️⃣ Apply mirror configs
+## 2️⃣ Apply new configs
 
 ```bash
 oc apply -f idms-oc-mirror.yaml
@@ -92,13 +54,13 @@ oc apply -f cc-redhat-operator-index-v4-19.yaml
 
 ---
 
-## 2️⃣ Wait 1–2 minutes
+## 3️⃣ Wait ~1–2 minutes
 
-👉 Let nodes pick new mirror config
+👉 Let nodes pick new mirror configuration
 
 ---
 
-## 3️⃣ Restart failed pods (IMPORTANT)
+## 4️⃣ Restart failed pods
 
 ```bash
 oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
@@ -108,75 +70,43 @@ done
 
 ---
 
-## 4️⃣ Monitor recovery
+# 🧠 Important behavior
+
+👉 When you delete IDMS:
+
+* Running pods are NOT killed
+* Only **new image pulls** are affected
+
+👉 So it's safe ✔
+
+---
+
+# ⚠️ One more safety check (recommended)
+
+After apply:
 
 ```bash
-watch oc get co
-watch oc get mcp
+oc get imagedigestmirrorset
 ```
 
----
-
-# 🎯 What should happen next
-
-✔ ImagePullBackOff → disappears
-✔ Operators (nmstate, sriov, local-storage) → healthy
-✔ ODF → starts pulling images
-✔ MCP:
-
-```
-UPDATED=True
-```
-
-✔ Upgrade completes
-
----
-
-# ⚠️ When it could still fail
-
-Only if:
-
-### ❌ Mirror incomplete
-
-👉 Some images still missing
-
-### ❌ Registry path mismatch
-
-👉 (doesn’t look like your case now)
-
-### ❌ Pods not restarted
-
-👉 Old failures cached
-
----
-
-# 🧠 Final Reality Check
-
-👉 Your setup now looks:
-
-* Clean ✔
-* Consistent ✔
-* Correct mapping ✔
-
-👉 This is the **state you should have from beginning**
+👉 Should show ONLY new ones
 
 ---
 
 # 👍 Final Answer
 
-👉 Yes — you can apply these safely
-👉 No — it should NOT create problems
-👉 It should actually **fix your cluster**
+👉 **Delete first → then apply**
+👉 This avoids conflicts and ensures clean mirror usage
 
 ---
 
-If after applying you still see issues, send:
+If you want, after applying run:
 
 ```bash
 oc get pods -A | grep -i pull
 ```
 
-I’ll debug instantly 👍
+I’ll confirm everything is fixed 👍
 
 
 
