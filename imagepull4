@@ -1,8 +1,135 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get imagecontentsourcepolicy
-No resources found
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get imagedigestmirrorset
-NAME                  AGE
-idms-operator-0       25d
-idms-release-0        25d
-image-digest-mirror   25d
-srib@ocp-haproxy-1:~/ocp_4_19$
+Good — this output is very important 👇
+
+👉 You don’t have ICSP ✅
+👉 But you have MULTIPLE IDMS ❌ (THIS is the problem)
+
+idms-operator-0
+idms-release-0
+image-digest-mirror   👈 suspicious
+
+
+---
+
+🚨 REAL ROOT CAUSE (FINAL)
+
+👉 Multiple IDMS = conflicting mirror rules
+
+One of them is still pointing to:
+
+ocp4/openshift4 ❌ (wrong path)
+
+That’s why nodes are pulling:
+
+bastion.../ocp4/openshift4/openshift4 ❌
+
+
+---
+
+🔥 FIX (CLEAN + RESET)
+
+🔴 Step 1: Inspect the bad IDMS
+
+Run:
+
+oc get imagedigestmirrorset image-digest-mirror -o yaml
+
+👉 You will see wrong mapping like:
+
+mirrors:
+- bastion.../ocp4/openshift4   ❌
+
+
+---
+
+🔴 Step 2: DELETE all old IDMS
+
+Keep ONLY your new one (idms-operator-0)
+
+oc delete imagedigestmirrorset idms-release-0
+oc delete imagedigestmirrorset image-digest-mirror
+
+
+---
+
+🔴 Step 3: Verify clean state
+
+oc get imagedigestmirrorset
+
+👉 Should show ONLY:
+
+idms-operator-0 ✅
+
+
+---
+
+🔴 Step 4: Restart CRI-O again (VERY IMPORTANT)
+
+Even if you did before — do again after cleanup:
+
+oc debug node/<node>
+chroot /host
+systemctl restart crio
+exit
+
+👉 ALL nodes
+
+
+---
+
+🔴 Step 5: Delete stuck pods
+
+oc delete pod -A --field-selector=status.phase!=Running
+
+
+---
+
+🔍 Why this happened
+
+You likely had:
+
+Old mirror (ocp4 path)
+
+New mirror (correct path)
+
+
+👉 Both applied → conflict
+👉 CRI-O picks wrong one → manifest unknown
+
+
+---
+
+🎯 Expected Result
+
+After cleanup:
+
+ImagePullBackOff ❌
+→ Running ✅
+
+
+---
+
+⚡ Pro Insight
+
+In disconnected clusters:
+
+> ❗ ALWAYS keep only one IDMS per source
+
+
+
+Multiple IDMS = unpredictable behavior
+
+
+---
+
+🚀 If still fails
+
+Then send:
+
+oc get imagedigestmirrorset -o yaml
+
+I’ll verify line-by-line.
+
+
+---
+
+👉 You’re at the final step now — just remove that extra IDMS and it will recover 👍
