@@ -1,142 +1,243 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-54232a3f7ceb661f33be3e20cf35123e   False     True       False      3              0                   0                     0                      25d
-worker   rendered-worker-f4b5b747d1730b8df9ff3a41e4244b5e   True      False      False      0              0                   0                     0                      25d
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.19.23   True        True          90m     Unable to apply 4.19.23: an unknown error has occurred: MultipleErrors
-srib@ocp-haproxy-1:~/ocp_4_19$ oc describe clusterversion
-Name:         version
-Namespace:
-Labels:       <none>
-Annotations:  <none>
-API Version:  config.openshift.io/v1
-Kind:         ClusterVersion
-Metadata:
-  Creation Timestamp:  2026-02-27T17:50:06Z
-  Generation:          7
-  Resource Version:    14277629
-  UID:                 ed02d0f1-f2bf-44d8-ba4d-1d48cd16647a
-Spec:
-  Capabilities:
-    Additional Enabled Capabilities:
-    Baseline Capability Set:  None
-  Channel:                    stable-4.19
-  Cluster ID:                 63837200-ea8f-437a-834a-49f8d7d36dac
-  Desired Update:
-    Architecture:
-    Force:         true
-    Image:         bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    Version:
-Status:
-  Available Updates:  <nil>
-  Capabilities:
-    Enabled Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-    Known Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-  Conditions:
-    Last Transition Time:  2026-02-27T17:50:26Z
-    Message:               Cluster should not be upgraded between minor versions for multiple reasons: AdminAckRequired,UpdateInProgress
-* The admissionregistration.k8s.io/v1beta1 group version is deprecated in 4.19 and will be removed in 4.20. Any clients using the v1beta1 version of these resources must be updated to use the corresponding v1 version instead. See https://access.redhat.com/articles/7130599 for more information.
-* An update is already in progress and the details are in the Progressing condition
-    Reason:                MultipleReasons
-    Status:                False
-    Type:                  Upgradeable
-    Last Transition Time:  2026-03-25T05:33:20Z
-    Message:               The following capabilities could not be disabled: Build, CSISnapshot, CloudControllerManager, CloudCredential, Console, DeploymentConfig, ImageRegistry, Ingress, Insights, MachineAPI, NodeTuning, OperatorLifecycleManager, OperatorLifecycleManagerV1, Storage, baremetal, marketplace, openshift-samples
-    Reason:                CapabilitiesImplicitlyEnabled
-    Status:                True
-    Type:                  ImplicitlyEnabledCapabilities
-    Last Transition Time:  2026-03-24T10:37:10Z
-    Message:               Payload loaded version="4.19.23" image="bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206" architecture="amd64"
-    Reason:                PayloadLoaded
-    Status:                True
-    Type:                  ReleaseAccepted
-    Last Transition Time:  2026-02-27T18:38:28Z
-    Message:               Done applying 4.19.23
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-03-25T14:39:13Z
-    Message:               Multiple errors are preventing progress:
-* Cluster operator insights is not available
-* Cluster operators authentication, ingress, openshift-apiserver are degraded
-    Reason:                MultipleErrors
-    Status:                True
-    Type:                  Failing
-    Last Transition Time:  2026-03-25T14:03:35Z
-    Message:               Unable to apply 4.19.23: an unknown error has occurred: MultipleErrors
-    Reason:                MultipleErrors
-    Status:                True
-    Type:                  Progressing
-    Last Transition Time:  2026-02-27T17:50:26Z
-    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.19&id=63837200-ea8f-437a-834a-49f8d7d36dac&version=4.19.23": dial tcp 52.204.11.184:443: connect: connection timed out
-    Reason:                RemoteFailed
-    Status:                False
-    Type:                  RetrievedUpdates
-    Last Transition Time:  2026-03-25T14:04:43Z
-    Message:               The admissionregistration.k8s.io/v1beta1 group version is deprecated in 4.19 and will be removed in 4.20. Any clients using the v1beta1 version of these resources must be updated to use the corresponding v1 version instead. See https://access.redhat.com/articles/7130599 for more information.
-    Reason:                AdminAckRequired
-    Status:                False
-    Type:                  UpgradeableAdminAckRequired
-    Last Transition Time:  2026-03-25T14:04:43Z
-    Message:               An update is already in progress and the details are in the Progressing condition
-    Reason:                UpdateInProgress
-    Status:                True
-    Type:                  UpgradeableUpgradeInProgress
-  Desired:
-    Image:    bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    URL:      https://access.redhat.com/errata/RHSA-2026:1552
-    Version:  4.19.23
-  History:
-    Accepted Risks:  Forced through blocking failures: Multiple precondition checks failed:
-* Precondition "ClusterVersionUpgradeable" failed because of "Degraded": Cluster operator insights should not be upgraded between minor versions: Unable to report: unable to build request to connect to Insights server: Post "https://console.redhat.com/api/ingress/v1/upload": dial tcp 2.18.51.203:443: i/o timeout
-* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.18.23 to 4.19.23 is unknown.
-    Completion Time:    2026-03-24T17:53:56Z
-    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    Started Time:       2026-03-24T10:37:10Z
-    State:              Completed
-    Verified:           true
-    Version:            4.19.23
-    Completion Time:    2026-02-27T18:38:28Z
-    Image:              quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
-    Started Time:       2026-02-27T17:50:26Z
-    State:              Completed
-    Verified:           false
-    Version:            4.18.23
-  Observed Generation:  7
-  Version Hash:         AJkHbViX_GU=
-Events:                 <none>
-srib@ocp-haproxy-1:~/ocp_4_19$
+You’re not facing a simple **ImagePullBackOff restart issue** — this is a **stuck upgrade + MCP not progressing** problem.
+
+Let’s break it clearly 👇
+
+---
+
+# 🚨 What’s wrong in your cluster
+
+### 1️⃣ Master MCP is stuck
+
+```bash
+master UPDATED=False UPDATING=True
+READYMACHINECOUNT=0 ❌
+```
+
+👉 This is **critical**
+Your control plane nodes are **not ready after upgrade**
+
+---
+
+### 2️⃣ ClusterVersion shows failure
+
+```text
+Failing=True
+Reason: MultipleErrors
+```
+
+Main issues:
+
+* ❌ `insights` not available (expected in disconnected, OK)
+* ❌ `authentication` degraded
+* ❌ `ingress` degraded
+* ❌ `openshift-apiserver` degraded
+
+👉 These are **blocking upgrade completion**
+
+---
+
+### 3️⃣ Upgrade already applied but not stabilized
+
+```text
+Done applying 4.19.23
+BUT → still Progressing=True
+```
+
+👉 Means:
+
+* Payload applied ✅
+* Cluster NOT healthy ❌
+
+---
+
+# 🎯 Root Cause (based on your environment)
+
+Since you are running:
+
+* **Disconnected (mirror registry)**
+* **Forced upgrade (`force: true`)**
+
+👉 Most likely causes:
+
+### 🔴 Missing images in mirror
+
+Operators failing → pods in ImagePullBackOff
+
+### 🔴 ICSP / IDMS issue
+
+Cluster trying to pull from internet (blocked)
+
+### 🔴 Control plane nodes not updating properly
+
+MCP stuck → kubelet / CRI-O / image pull issues
+
+---
+
+# 🔍 Step-by-step debugging (DO THIS EXACTLY)
+
+## ✅ Step 1: Check failing operators
+
+```bash
+oc get co
+```
+
+Focus on:
+
+* authentication
+* ingress
+* openshift-apiserver
+* insights
+
+---
+
+## ✅ Step 2: Check pods with image pull issues
+
+```bash
+oc get pods -A | egrep -i "ImagePullBackOff|ErrImagePull|CrashLoopBackOff"
+```
+
+👉 If yes → THIS is your main problem
+
+---
+
+## ✅ Step 3: Restart all failed pods (safe)
+
+```bash
+oc get pods -A | egrep -i "ImagePullBackOff|ErrImagePull" | awk '{print $1, $2}' | while read ns pod; do
+  oc delete pod $pod -n $ns
+done
+```
+
+---
+
+## ✅ Step 4: Check master node status
+
+```bash
+oc get nodes
+```
+
+If masters are:
+
+* NotReady ❌
+* SchedulingDisabled ❌
+
+👉 Then MCP stuck because nodes unhealthy
+
+---
+
+## ✅ Step 5: Check MCP details (VERY IMPORTANT)
+
+```bash
+oc describe mcp master
+```
+
+Look for:
+
+* Degraded reasons
+* MachineConfig errors
+* Kubelet failures
+
+---
+
+## ✅ Step 6: Check machine-config-daemon logs
+
+Pick one master:
+
+```bash
+oc debug node/<master-node>
+chroot /host
+journalctl -u machine-config-daemon -f
+```
+
+---
+
+## 🔥 MOST IMPORTANT CHECK (for your case)
+
+### Verify image exists in mirror
+
+From any node:
+
+```bash
+podman pull bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
+```
+
+If this fails ❌
+👉 Your mirror is incomplete → upgrade will NEVER finish
+
+---
+
+# 💥 Why MCP is stuck
+
+MCP waits for:
+
+* Node reboot
+* New OS config
+* All required images pulled
+
+If image pull fails → node never becomes Ready → MCP stuck
+
+---
+
+# 🚀 Quick Recovery Plan (based on your situation)
+
+### ✔️ 1. Fix mirror images
+
+Re-run mirror with:
+
+```bash
+oc mirror --config imageset-config.yaml
+```
+
+Make sure:
+
+* Release image ✅
+* All operator images ✅
+
+---
+
+### ✔️ 2. Verify IDMS / ICSP
+
+```bash
+oc get imagedigestmirrorset -A
+oc get imagecontentsourcepolicy
+```
+
+---
+
+### ✔️ 3. Restart operators
+
+```bash
+oc delete pod -n openshift-authentication --all
+oc delete pod -n openshift-ingress --all
+oc delete pod -n openshift-apiserver --all
+```
+
+---
+
+### ✔️ 4. Wait and monitor
+
+```bash
+watch oc get co
+watch oc get mcp
+```
+
+---
+
+# ⚠️ Important Reality
+
+Restarting pods alone ❌ will NOT fix this
+👉 If images are missing → cluster will stay broken
+
+---
+
+# 👍 If you want faster help
+
+Send me these outputs:
+
+```bash
+oc get co
+oc get pods -A | grep -i pull
+oc describe mcp master
+```
+
+I’ll pinpoint EXACT issue in your cluster (no guessing).
