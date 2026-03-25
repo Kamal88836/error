@@ -1,102 +1,190 @@
-srib@ocp-haproxy-1:~$ oc logs -n openshift-machine-config-operator machine-config-daemon-qjvbj -c machine-config-daemon | tail -100
-I0325 19:45:58.983211  102265 metrics.go:99] Starting metrics listener on 127.0.0.1:8797
-I0325 19:45:58.995736  102265 simple_featuregate_reader.go:171] Starting feature-gate-detector
-I0325 19:45:58.997439  102265 writer.go:87] NodeWriter initialized with credentials from /var/lib/kubelet/kubeconfig
-I0325 19:45:59.001580  102265 start.go:220] FeatureGates initialized: knownFeatureGates=[AWSEFSDriverVolumeMetrics AdditionalRoutingCapabilities AdminNetworkPolicy AlibabaPlatform AzureWorkloadIdentity BareMetalLoadBalancer BuildCSIVolumes CPMSMachineNamePrefix ChunkSizeMiB CloudDualStackNodeIPs ConsolePluginContentSecurityPolicy DisableKubeletCloudCredentialProviders GCPLabelsTags GatewayAPI GatewayAPIController HardwareSpeed IngressControllerLBSubnetsAWS KMSv1 MachineConfigNodes ManagedBootImages ManagedBootImagesAWS MetricsCollectionProfiles MultiArchInstallAWS MultiArchInstallGCP NetworkDiagnosticsConfig NetworkLiveMigration NetworkSegmentation NewOLM NodeDisruptionPolicy OnClusterBuild PersistentIPsForVirtualization PinnedImages PrivateHostedZoneAWS RouteAdvertisements RouteExternalCertificate ServiceAccountTokenNodeBinding SetEIPForNLBIngressController StreamingCollectionEncodingToJSON StreamingCollectionEncodingToProtobuf VSphereDriverConfiguration VSphereMultiVCenters ValidatingAdmissionPolicy AWSClusterHostedDNS AutomatedEtcdBackup BootcNodeManagement ClusterAPIInstall ClusterAPIInstallIBMCloud ClusterMonitoringConfig ClusterVersionOperatorConfiguration DNSNameResolver DualReplica DyanmicServiceEndpointIBMCloud DynamicResourceAllocation EtcdBackendQuota EventedPLEG Example Example2 ExternalOIDC ExternalOIDCWithUIDAndExtraClaimMappings GCPClusterHostedDNS GCPCustomAPIEndpoints HighlyAvailableArbiter ImageStreamImportMode IngressControllerDynamicConfigurationManager InsightsConfig InsightsConfigAPI InsightsOnDemandDataGather InsightsRuntimeExtractor KMSEncryptionProvider MachineAPIMigration MachineAPIOperatorDisableMachineHealthCheckController MachineAPIProviderOpenStack MaxUnavailableStatefulSet MinimumKubeletVersion MixedCPUsAllocation MultiArchInstallAzure NewOLMCatalogdAPIV1Metas NewOLMOwnSingleNamespace NewOLMPreflightPermissionChecks NodeSwap NutanixMultiSubnets OVNObservability OpenShiftPodSecurityAdmission PlatformOperators ProcMountType SELinuxChangePolicy SELinuxMount ShortCertRotation SignatureStores SigstoreImageVerification SigstoreImageVerificationPKI TranslateStreamCloseWebsocketRequests UpgradeStatus UserNamespacesPodSecurityStandards UserNamespacesSupport VSphereConfigurableMaxAllowedBlockVolumesPerNode VSphereHostVMGroupZonal VSphereMultiDisk VSphereMultiNetworks VolumeAttributesClass VolumeGroupSnapshot]
-I0325 19:45:59.002450  102265 event.go:377] Event(v1.ObjectReference{Kind:"Node", Namespace:"openshift-machine-config-operator", Name:"ocp-cp-1.lab1.srib-lab-ocp.lan", UID:"18e81865-5948-4191-b78e-dfe39c9501ae", APIVersion:"v1", ResourceVersion:"", FieldPath:""}): type: 'Normal' reason: 'FeatureGatesInitialized' FeatureGates updated to featuregates.Features{Enabled:[]v1.FeatureGateName{"AWSEFSDriverVolumeMetrics", "AdditionalRoutingCapabilities", "AdminNetworkPolicy", "AlibabaPlatform", "AzureWorkloadIdentity", "BareMetalLoadBalancer", "BuildCSIVolumes", "CPMSMachineNamePrefix", "ChunkSizeMiB", "CloudDualStackNodeIPs", "ConsolePluginContentSecurityPolicy", "DisableKubeletCloudCredentialProviders", "GCPLabelsTags", "GatewayAPI", "GatewayAPIController", "HardwareSpeed", "IngressControllerLBSubnetsAWS", "KMSv1", "MachineConfigNodes", "ManagedBootImages", "ManagedBootImagesAWS", "MetricsCollectionProfiles", "MultiArchInstallAWS", "MultiArchInstallGCP", "NetworkDiagnosticsConfig", "NetworkLiveMigration", "NetworkSegmentation", "NewOLM", "NodeDisruptionPolicy", "OnClusterBuild", "PersistentIPsForVirtualization", "PinnedImages", "PrivateHostedZoneAWS", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SetEIPForNLBIngressController", "StreamingCollectionEncodingToJSON", "StreamingCollectionEncodingToProtobuf", "VSphereDriverConfiguration", "VSphereMultiVCenters", "ValidatingAdmissionPolicy"}, Disabled:[]v1.FeatureGateName{"AWSClusterHostedDNS", "AutomatedEtcdBackup", "BootcNodeManagement", "ClusterAPIInstall", "ClusterAPIInstallIBMCloud", "ClusterMonitoringConfig", "ClusterVersionOperatorConfiguration", "DNSNameResolver", "DualReplica", "DyanmicServiceEndpointIBMCloud", "DynamicResourceAllocation", "EtcdBackendQuota", "EventedPLEG", "Example", "Example2", "ExternalOIDC", "ExternalOIDCWithUIDAndExtraClaimMappings", "GCPClusterHostedDNS", "GCPCustomAPIEndpoints", "HighlyAvailableArbiter", "ImageStreamImportMode", "IngressControllerDynamicConfigurationManager", "InsightsConfig", "InsightsConfigAPI", "InsightsOnDemandDataGather", "InsightsRuntimeExtractor", "KMSEncryptionProvider", "MachineAPIMigration", "MachineAPIOperatorDisableMachineHealthCheckController", "MachineAPIProviderOpenStack", "MaxUnavailableStatefulSet", "MinimumKubeletVersion", "MixedCPUsAllocation", "MultiArchInstallAzure", "NewOLMCatalogdAPIV1Metas", "NewOLMOwnSingleNamespace", "NewOLMPreflightPermissionChecks", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PlatformOperators", "ProcMountType", "SELinuxChangePolicy", "SELinuxMount", "ShortCertRotation", "SignatureStores", "SigstoreImageVerification", "SigstoreImageVerificationPKI", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereConfigurableMaxAllowedBlockVolumesPerNode", "VSphereHostVMGroupZonal", "VSphereMultiDisk", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
-I0325 19:45:59.002580  102265 start.go:222] Feature enabled: PinnedImages
-I0325 19:45:59.003356  102265 update.go:2820] "Starting to manage node: ocp-cp-3.lab1.srib-lab-ocp.lan"
-I0325 19:45:59.006522  102265 command_runner.go:24] Running captured: rpm-ostree status
-I0325 19:45:59.103904  102265 pinned_image_set.go:820] Starting PinnedImageSet Manager
-I0325 19:45:59.131177  102265 daemon.go:1811] State: idle
-Deployments:
-* ostree-unverified-registry:quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f435d0107d9aefcfaa6d6dd77a4825de06e4d0f6d0878d66eef40f12440829a3
-                   Digest: sha256:f435d0107d9aefcfaa6d6dd77a4825de06e4d0f6d0878d66eef40f12440829a3
-                  Version: 9.6.20260123-0 (2026-01-26T08:22:55Z)
-      RemovedBasePackages: kernel-modules-core kernel-modules-extra kernel-core kernel kernel-modules 5.14.0-570.82.1.el9_6
-          LayeredPackages: kernel-rt-core kernel-rt-kvm kernel-rt-modules
-                           kernel-rt-modules-extra
-I0325 19:45:59.131401  102265 coreos.go:53] CoreOS aleph version: mtime=2022-08-01 23:42:11 +0000 UTC
-{
-   "container-image": {
-      "image-digest": "sha256:a7e12974e664046023ddfba2f861ead846bbf5e3c17fb625fc2e2dd1b4713c23",
-      "image-labels": {
-         "containers.bootc": "1",
-         "coreos-assembler.image-config-checksum": "b444a32e2801642f1e41777fd51fa53304496c58a3a6b15e5964a1f86f866507",
-         "coreos-assembler.image-input-checksum": "c8631940e11a7a61d793271d4fe1c3fc2e1dbb70b7233f7b5766b22d13ec1b4a",
-         "io.openshift.build.version-display-names": "machine-os=Red Hat Enterprise Linux CoreOS",
-         "io.openshift.build.versions": "machine-os=418.94.202508060022-0",
-         "org.opencontainers.image.revision": "96f1c70f3498be6011a9c7135ad4de9ff6cc3fee",
-         "org.opencontainers.image.source": "https://github.com/openshift/os",
-         "org.opencontainers.image.version": "418.94.202508060022-0",
-         "ostree.bootable": "true",
-         "ostree.commit": "9e057f59da83359b6151f70b7c2ef2a0f0e9f9dd927898d18249ac789c42d7ae",
-         "ostree.final-diffid": "sha256:12787d84fa137cd5649a9005efe98ec9d05ea46245fdc50aecb7dd007f2035b1",
-         "ostree.linux": "5.14.0-427.81.1.el9_4.x86_64",
-         "rpmostree.inputhash": "754102d802c1f7d1619dd922c6484b6bdce447f2096cfdbe6c88edc233abf46b"
-      },
-      "image-name": "oci-archive:/rhcos-418.94.202508060022-0-ostree.x86_64.ociarchive"
-   },
-   "osbuild-version": "147",
-   "ostree-commit": "9e057f59da83359b6151f70b7c2ef2a0f0e9f9dd927898d18249ac789c42d7ae",
-   "ref": "docker://ostree-image-signed:oci-archive:/rhcos-418.94.202508060022-0-ostree.x86_64.ociarchive",
-   "version": "418.94.202508060022-0"
-}
-I0325 19:45:59.131481  102265 coreos.go:70] Ignition provisioning: time=2026-02-27T18:05:45Z
-I0325 19:45:59.131491  102265 command_runner.go:24] Running captured: journalctl --list-boots
-I0325 19:45:59.200478  102265 daemon.go:1820] journalctl --list-boots:
-IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY
- -8 f369f04660d742f09b9dcaa4eac761f5 Wed 2026-03-18 10:24:34 UTC Tue 2026-03-24 14:08:10 UTC
- -7 79771fb949f14813994ba9d7aad9e95a Tue 2026-03-24 14:11:33 UTC Tue 2026-03-24 14:21:13 UTC
- -6 2c43c8fc63df4978a43277a13b3b8bcb Tue 2026-03-24 14:24:10 UTC Tue 2026-03-24 14:47:22 UTC
- -5 822ee2819b524675b8bd299733d40a0f Tue 2026-03-24 14:50:38 UTC Wed 2026-03-25 14:31:45 UTC
- -4 0420a397547649089ba7019c9cdd0de1 Wed 2026-03-25 14:35:09 UTC Wed 2026-03-25 17:58:21 UTC
- -3 c21447fe5fcc45449f8a4e93a0d11685 Wed 2026-03-25 18:01:36 UTC Wed 2026-03-25 18:13:31 UTC
- -2 d3736feffc8e4fab88bf1f30fa2c9c2a Wed 2026-03-25 18:16:18 UTC Wed 2026-03-25 18:35:33 UTC
- -1 8a2b1eee816047c7972fa21fe4d4ebb7 Wed 2026-03-25 18:38:53 UTC Wed 2026-03-25 18:53:48 UTC
-  0 b08c34b11a204c309836be04901aa5bb Wed 2026-03-25 18:57:05 UTC Wed 2026-03-25 19:45:59 UTC
-I0325 19:45:59.200499  102265 command_runner.go:24] Running captured: systemctl list-units --state=failed --no-legend
-I0325 19:45:59.207878  102265 daemon.go:1834] systemctl --failed:
-● chronyd.service                    loaded failed failed NTP client/server
-● NetworkManager-wait-online.service loaded failed failed Network Manager Wait Online
-I0325 19:45:59.207895  102265 daemon.go:1389] Starting MachineConfigDaemon
-I0325 19:45:59.207972  102265 daemon.go:1396] Enabling Kubelet Healthz Monitor
-I0325 19:45:59.443570  102265 daemon.go:2988] Found 9 requested local packages in the booted deployment
-I0325 19:45:59.443592  102265 daemon.go:2997] Unsupported package kernel-rt-core
-I0325 19:45:59.443597  102265 daemon.go:2997] Unsupported package kernel-rt-kvm
-I0325 19:45:59.443602  102265 daemon.go:2997] Unsupported package kernel-rt-modules
-I0325 19:45:59.443605  102265 daemon.go:2997] Unsupported package kernel-rt-modules-extra
-I0325 19:45:59.443608  102265 daemon.go:2997] Unsupported package kernel
-I0325 19:45:59.443612  102265 daemon.go:2997] Unsupported package kernel-core
-I0325 19:45:59.443615  102265 daemon.go:2997] Unsupported package kernel-modules
-I0325 19:45:59.443619  102265 daemon.go:2997] Unsupported package kernel-modules-core
-I0325 19:45:59.443622  102265 daemon.go:2997] Unsupported package kernel-modules-extra
-I0325 19:46:00.000712  102265 daemon.go:673] Node ocp-cp-3.lab1.srib-lab-ocp.lan is part of the control plane
-I0325 19:46:00.032132  102265 daemon.go:2041] Running: /run/machine-config-daemon-bin/nmstatectl persist-nic-names --root / --kargs-out /tmp/nmstate-kargs3641506261 --cleanup
-[2026-03-25T19:46:00Z INFO  nmstatectl] Nmstate version: 2.2.56
-[2026-03-25T19:46:00Z INFO  nmstatectl::persist_nic] /etc/systemd/network/.nmstate-persist.stamp does not exist, no need to clean up
-
-I0325 19:46:00.053993  102265 daemon.go:1629] Previous boot ostree-finalize-staged.service appears successful
-I0325 19:46:00.054017  102265 daemon.go:1770] Current config: rendered-master-54232a3f7ceb661f33be3e20cf35123e
-I0325 19:46:00.054023  102265 daemon.go:1771] Desired config: rendered-master-0e41a7401614ad6250578b1988cc5a7c
-I0325 19:46:00.054029  102265 daemon.go:1779] state: Degraded
-I0325 19:46:00.054060  102265 update.go:2775] Running: rpm-ostree cleanup -r
-Deployments unchanged.
-I0325 19:46:00.113325  102265 daemon.go:2239] Validating against current config rendered-master-54232a3f7ceb661f33be3e20cf35123e
-I0325 19:46:00.113385  102265 daemon.go:2151] SSH key location ("/home/core/.ssh/authorized_keys.d/ignition") up-to-date!
-I0325 19:46:00.113395  102265 command_runner.go:24] Running captured: rpm-ostree kargs
-I0325 19:46:00.178892  102265 update.go:2820] "Validated on-disk state"
-I0325 19:46:00.183785  102265 update.go:2842] Adding SIGTERM protection
-I0325 19:46:00.215029  102265 update.go:1125] Checking Reconcilable for config rendered-master-54232a3f7ceb661f33be3e20cf35123e to rendered-master-0e41a7401614ad6250578b1988cc5a7c
-I0325 19:46:00.298455  102265 update.go:2820] "Starting update from rendered-master-54232a3f7ceb661f33be3e20cf35123e to rendered-master-0e41a7401614ad6250578b1988cc5a7c: &{osUpdate:false kargs:false fips:false passwd:false files:true units:false kernelType:false extensions:false oclEnabled:false revertFromOCL:false}"
-I0325 19:46:00.304038  102265 update.go:771] Calculating node disruption actions
-I0325 19:46:00.304076  102265 update.go:653] NodeDisruptionPolicy [{Special <nil> <nil>}] found for diff file /etc/containers/registries.conf
-I0325 19:46:00.304090  102265 update.go:800] Calculated node disruption actions:
-I0325 19:46:00.304096  102265 update.go:808] Special
-I0325 19:46:00.306325  102265 drain.go:132] Checking drain required for node disruption actions
-I0325 19:46:00.307008  102265 drain.go:245] /etc/containers/registries.conf: registry registry.redhat.io/openshift-logging has been removed
-I0325 19:46:00.307023  102265 update.go:1205] Drain calculated for node disruption: true for config rendered-master-0e41a7401614ad6250578b1988cc5a7c
-I0325 19:46:00.323141  102265 update.go:2820] "Update prepared; requesting cordon and drain via annotation to controller"
-I0325 19:46:59.444455  102265 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
-I0325 19:48:58.685229  102265 daemon.go:1356] Got SIGTERM, but actively updating
+srib@ocp-haproxy-1:~$ oc describe  mcp master
+Name:         master
+Namespace:
+Labels:       machineconfiguration.openshift.io/mco-built-in=
+              operator.machineconfiguration.openshift.io/required-for-upgrade=
+              pools.operator.machineconfiguration.openshift.io/master=
+Annotations:  <none>
+API Version:  machineconfiguration.openshift.io/v1
+Kind:         MachineConfigPool
+Metadata:
+  Creation Timestamp:  2026-02-27T18:13:36Z
+  Generation:          23
+  Resource Version:    14378753
+  UID:                 4c56963e-d318-4097-ba13-bcc86eb4b579
+Spec:
+  Configuration:
+    Name:  rendered-master-0e41a7401614ad6250578b1988cc5a7c
+    Source:
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         00-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-container-runtime
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-cpu-partitioning
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-masters-chrony-configuration
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-nto-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-performance-performance-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         97-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         98-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-assisted-installer-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-registries
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         disable-chronyd
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         load-sctp-module
+  Machine Config Selector:
+    Match Labels:
+      machineconfiguration.openshift.io/role:  master
+  Node Selector:
+    Match Labels:
+      node-role.kubernetes.io/master:
+  Paused:                              false
+Status:
+  Cert Expirys:
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-02-25T17:11:03Z
+    Subject:  CN=admin-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-03-30T13:02:27Z
+    Subject:  CN=kube-csr-signer_@1772283746
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-04-29T12:56:27Z
+    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1772283386
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-04-14T13:02:52Z
+    Subject:  CN=kube-csr-signer_@1773579772
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T17:43:50Z
+    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T17:43:50Z
+    Subject:  CN=kube-control-plane-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-02-25T17:43:48Z
+    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T18:13:08Z
+    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1772215988
+  Conditions:
+    Last Transition Time:  2026-02-27T18:14:09Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  RenderDegraded
+    Last Transition Time:  2026-03-24T11:50:53Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  PinnedImageSetsDegraded
+    Last Transition Time:  2026-03-25T09:33:03Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Updated
+    Last Transition Time:  2026-03-25T09:33:03Z
+    Message:               All nodes are updating to MachineConfig rendered-master-0e41a7401614ad6250578b1988cc5a7c
+    Reason:
+    Status:                True
+    Type:                  Updating
+    Last Transition Time:  2026-03-25T19:14:23Z
+    Message:               Node ocp-cp-3.lab1.srib-lab-ocp.lan is reporting: "unexpected on-disk state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e: content mismatch for file \"/etc/containers/registries.conf\""
+    Reason:                1 nodes are reporting degraded status on sync
+    Status:                True
+    Type:                  NodeDegraded
+    Last Transition Time:  2026-03-25T19:14:23Z
+    Message:               Node ocp-cp-3.lab1.srib-lab-ocp.lan is reporting: "unexpected on-disk state validating against rendered-master-54232a3f7ceb661f33be3e20cf35123e: content mismatch for file \"/etc/containers/registries.conf\""
+    Reason:
+    Status:                True
+    Type:                  Degraded
+  Configuration:
+    Name:  rendered-master-54232a3f7ceb661f33be3e20cf35123e
+    Source:
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                00-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-container-runtime
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-cpu-partitioning
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-masters-chrony-configuration
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-nto-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-performance-performance-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                97-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                98-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-assisted-installer-master-ssh
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-generated-registries
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-ssh
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                disable-chronyd
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                load-sctp-module
+  Degraded Machine Count:  1
+  Machine Count:           3
+  Observed Generation:     23
+  Pool Synchronizers Status:
+    Available Machine Count:    2
+    Machine Count:              3
+    Pool Synchronizer Type:     PinnedImageSets
+    Ready Machine Count:        0
+    Unavailable Machine Count:  1
+    Updated Machine Count:      3
+  Ready Machine Count:          0
+  Unavailable Machine Count:    1
+  Updated Machine Count:        0
+Events:                         <none>
 srib@ocp-haproxy-1:~$
