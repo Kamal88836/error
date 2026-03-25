@@ -1,161 +1,60 @@
-Good — this output tells us something very important 👇
-
----
-
-# 🚨 Your problem is STILL NOT FIXED
-
-Look carefully at this line:
-
-```text
-bastion.../ocp4/openshift4/openshift4/ose-local-storage...
-                           ❌ duplicated openshift4
-```
-
-👉 This means:
-
-❌ **Old IDMS is STILL active somewhere**
-❌ Cluster is still using **wrong mirror path**
-
----
-
-# 🎯 What should be happening
-
-From your new mirror config, it should be:
-
-```text
-bastion.../openshift4/ose-local-storage...
-```
-
-NOT:
-
-```text
-.../ocp4/openshift4/openshift4/... ❌
-```
-
----
-
-# 🔍 Root Cause
-
-👉 Even after your changes:
-
-* Old IDMS still exists **OR**
-* Nodes have not picked new config yet
-
----
-
-# 🚀 Fix it properly (do EXACT steps)
-
-## ✅ Step 1: Check current IDMS
-
-```bash
-oc get imagedigestmirrorset -o yaml
-```
-
-👉 Look for ANY entry containing:
-
-```
-ocp4/openshift4/openshift4 ❌
-```
-
----
-
-## ✅ Step 2: Clean EVERYTHING (important)
-
-```bash
-oc delete imagedigestmirrorset --all
-oc delete imagetagmirrorset --all
-```
-
----
-
-## ✅ Step 3: Re-apply ONLY new mirror configs
-
-```bash
-oc apply -f idms-oc-mirror.yaml
-oc apply -f itms-oc-mirror.yaml
-```
-
----
-
-## ✅ Step 4: Verify (VERY IMPORTANT)
-
-```bash
-oc get imagedigestmirrorset -o yaml
-```
-
-👉 It should show ONLY:
-
-```text
-bastion.srib-lab-ocp.lan:8443/openshift4
-```
-
-👉 NOT:
-
-```text
-ocp4/openshift4/openshift4 ❌
-```
-
----
-
-## ✅ Step 5: Force node to refresh image config
-
-Pick one master:
-
-```bash
-oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan
-chroot /host
-systemctl restart crio
-exit
-```
-
-👉 Do for all masters (important)
-
----
-
-## ✅ Step 6: Delete failed pods again
-
-```bash
-oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
-  oc delete pod $pod -n $ns
-done
-```
-
----
-
-# 🔥 Why restart CRI-O?
-
-👉 Nodes cache image pull config
-👉 Without restart, they may still use old mirror paths
-
----
-
-# 🎯 Expected result after fix
-
-✔ No more `openshift4/openshift4`
-✔ Image pulls from correct path
-✔ Pods start running
-✔ MCP progresses
-
----
-
-# ⚠️ Important Insight
-
-👉 Your mirror is now correct
-👉 But cluster is still using **old config (cached / leftover IDMS)**
-
----
-
-# 👍 Final Answer
-
-👉 Problem is NOT mirror now
-👉 Problem is **old mirror config still active**
-
----
-
-If you want, paste:
-
-```bash
-oc get imagedigestmirrorset -o yaml
-```
-
-I’ll confirm 100% clean state 👍
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get imagedigestmirrorset -o yaml
+apiVersion: v1
+items:
+- apiVersion: config.openshift.io/v1
+  kind: ImageDigestMirrorSet
+  metadata:
+    annotations:
+      createdAt: Wednesday, 25-Mar-26 16:41:47 UTC
+      createdBy: oc-mirror v2
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"config.openshift.io/v1","kind":"ImageDigestMirrorSet","metadata":{"annotations":{"createdAt":"Wednesday, 25-Mar-26 16:41:47 UTC","createdBy":"oc-mirror v2","oc-mirror_version":"4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6"},"name":"idms-operator-0"},"spec":{"imageDigestMirrors":[{"mirrors":["bastion.srib-lab-ocp.lan:8443/openshift4"],"source":"registry.redhat.io/openshift4"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/odf4"],"source":"registry.redhat.io/odf4"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/rhel9"],"source":"registry.redhat.io/rhel9"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/rhceph"],"source":"registry.redhat.io/rhceph"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/lvms4"],"source":"registry.redhat.io/lvms4"}]},"status":{}}
+      oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
+    creationTimestamp: "2026-03-25T16:59:23Z"
+    generation: 1
+    name: idms-operator-0
+    resourceVersion: "14317173"
+    uid: 60f02b4c-4758-41ba-8762-143981baa527
+  spec:
+    imageDigestMirrors:
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/openshift4
+      source: registry.redhat.io/openshift4
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/odf4
+      source: registry.redhat.io/odf4
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/rhel9
+      source: registry.redhat.io/rhel9
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/rhceph
+      source: registry.redhat.io/rhceph
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/lvms4
+      source: registry.redhat.io/lvms4
+- apiVersion: config.openshift.io/v1
+  kind: ImageDigestMirrorSet
+  metadata:
+    annotations:
+      createdAt: Wednesday, 25-Mar-26 16:41:47 UTC
+      createdBy: oc-mirror v2
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"config.openshift.io/v1","kind":"ImageDigestMirrorSet","metadata":{"annotations":{"createdAt":"Wednesday, 25-Mar-26 16:41:47 UTC","createdBy":"oc-mirror v2","oc-mirror_version":"4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6"},"name":"idms-release-0"},"spec":{"imageDigestMirrors":[{"mirrors":["bastion.srib-lab-ocp.lan:8443/openshift/release"],"source":"quay.io/openshift-release-dev/ocp-v4.0-art-dev"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/openshift/release-images"],"source":"quay.io/openshift-release-dev/ocp-release"}]},"status":{}}
+      oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
+    creationTimestamp: "2026-03-25T16:59:23Z"
+    generation: 1
+    name: idms-release-0
+    resourceVersion: "14317172"
+    uid: b2a258c8-2fb6-4cb6-bb6b-59fcae593aae
+  spec:
+    imageDigestMirrors:
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/openshift/release
+      source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/openshift/release-images
+      source: quay.io/openshift-release-dev/ocp-release
+kind: List
+metadata:
+  resourceVersion: ""
+srib@ocp-haproxy-1:~/ocp_4_19$
