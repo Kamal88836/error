@@ -1,185 +1,94 @@
-Good — this confirms **one very specific issue still remains** 👇
-
 ---
-
-# 🚨 Key Observation
-
-Even now it is trying:
-
-```text
-bastion.../ocp4/openshift4/openshift4/... ❌
-```
-
-👉 BUT your current IDMS is:
-
-```text
-bastion.../openshift4 ✔
-```
-
----
-
-# 🎯 Conclusion
-
-👉 **This is NOT an IDMS problem anymore**
-👉 This is **node-level cached registry config**
-
----
-
-# 🔥 Root Cause (final)
-
-Your nodes still have old config in:
-
-```text
-/etc/containers/registries.conf
-```
-
-👉 That file still contains:
-
-```text
-ocp4/openshift4/openshift4 ❌
-```
-
-👉 CRI-O is using that instead of new IDMS
-
----
-
-# 🚀 FINAL FIX (guaranteed solution)
-
-## ✅ Step 1: Check node config (VERY IMPORTANT)
-
-Run on master:
-
-```bash
-oc debug node/ocp-cp-3
-chroot /host
-cat /etc/containers/registries.conf
-```
-
-👉 You will see old entry like:
-
-```text
-ocp4/openshift4/openshift4 ❌
-```
-
----
-
-## ✅ Step 2: Restart machine-config-daemon (fix source)
-
-```bash
-systemctl restart machine-config-daemon
-```
-
----
-
-## ✅ Step 3: Restart CRI-O
-
-```bash
-systemctl restart crio
-```
-
----
-
-## 🔁 Repeat for ALL masters
-
-```bash
-oc debug node/ocp-cp-1
-oc debug node/ocp-cp-2
-oc debug node/ocp-cp-3
-```
-
----
-
-# 💥 Why this is needed
-
-👉 IDMS updates:
-
-```text
-MachineConfig → registries.conf
-```
-
-👉 But:
-
-* Node didn’t reconcile properly ❌
-* Old config still present ❌
-
----
-
-# 🔥 Alternative (faster fix)
-
-If above not working:
-
-## Force node re-render
-
-```bash
-oc delete pod -n openshift-machine-config-operator -l k8s-app=machine-config-daemon
-```
-
-👉 This forces nodes to re-apply config
-
----
-
-# ✅ Step 4: Verify again
-
-```bash
-oc debug node/ocp-cp-3
-chroot /host
-cat /etc/containers/registries.conf
-```
-
-👉 Should ONLY show:
-
-```text
-bastion.../openshift4 ✔
-```
-
----
-
-## ✅ Step 5: Delete failing pods
-
-```bash
-oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
-  oc delete pod $pod -n $ns
-done
-```
-
----
-
-# 🎯 Expected Result
-
-✔ No more `openshift4/openshift4`
-✔ Images pulled from correct path
-✔ Pods go Running
-✔ MCP starts progressing
-
----
-
-# ⚠️ Important insight
-
-👉 You fixed:
-
-* Mirror ✔
-* IDMS ✔
-
-👉 Only thing left:
-
-```text
-Node config not updated ❌
-```
-
----
-
-# 👍 Final Answer
-
-👉 Your cluster is **99% fixed**
-👉 Just force nodes to refresh `registries.conf`
-👉 Then everything will work
-
----
-
-If you want, paste:
-
-```bash
-cat /etc/containers/registries.conf
-```
-
-I’ll confirm exact issue 👍
+Last login: Wed Mar 25 13:53:47 2026 from 70.1.1.125
+[systemd]
+Failed Units: 2
+  chronyd.service
+  NetworkManager-wait-online.service
+[core@ocp-cp-1 ~]$ sudo -i
+[systemd]
+Failed Units: 2
+  chronyd.service
+  NetworkManager-wait-online.service
+[root@ocp-cp-1 ~]# vi /etc/containers/registries.conf
+[root@ocp-cp-1 ~]# cat /etc/containers/registries.conf
+unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
+short-name-mode = ""
+additional-layer-store-auth-helper = ""
+
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/lvms4"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/lvms4"
+    pull-from-mirror = "digest-only"
+
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/odf4"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/odf4"
+    pull-from-mirror = "digest-only"
+
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift-logging"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/openshift-logging"
+    pull-from-mirror = "digest-only"
+
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift4"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/openshift4"
+    pull-from-mirror = "digest-only"
+
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/rhceph"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/rhceph"
+    pull-from-mirror = "digest-only"
+
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/rhel9"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/rhel9"
+    pull-from-mirror = "digest-only"
+
+[[registry]]
+  prefix = ""
+  location = "quay.io/openshift-release-dev"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift-release-dev"
+    pull-from-mirror = "tag-only"
+
+[[registry]]
+  prefix = ""
+  location = "quay.io/openshift-release-dev/ocp-release"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images"
+    pull-from-mirror = "tag-only"
+
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/ubi8"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ubi8"
+    pull-from-mirror = "tag-only"
+
+[[registry]]
+  prefix = ""
+  location = "sribharbor.sec.samsung.net"
+  insecure = true
+[root@ocp-cp-1 ~]#
