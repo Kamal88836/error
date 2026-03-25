@@ -1,149 +1,26 @@
-Good question — let’s verify properly, not guess 👍
-
-
----
-
-✅ From your mirror logs (VERY IMPORTANT)
-
-In your oc mirror output I can clearly see:
-
-ocs-operator-bundle@sha256:...
-
-❗ BUT I do NOT see:
-
-ocs-client-operator-bundle
-
-
----
-
-🚨 Conclusion
-
-👉 ocs-client-operator is NOT mirrored
-
-That’s exactly why:
-
-constraints not satisfiable
-requires: ocs-client-operator
-
-
----
-
-🔍 Double confirmation (run this)
-
-On bastion:
-
-oc image list-tags bastion.srib-lab-ocp.lan:8443/odf4 | grep ocs-client
-
-OR
-
-podman search bastion.srib-lab-ocp.lan:8443/odf4 | grep ocs-client
-
-👉 You will likely see nothing
-
-
----
-
-💥 Root problem in your config
-
-Your ImageSetConfiguration had:
-
-- name: ocs-operator
-
-But NOT:
-
-- name: ocs-client-operator   ❌ missing
-
-
----
-
-🚀 FINAL FIX (mirror again)
-
-Update your ImageSetConfiguration:
-
-- catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
-  packages:
-
-  - name: odf-operator
-    channels:
-    - name: stable-4.19
-
-  - name: ocs-operator
-    channels:
-    - name: stable-4.19
-
-  - name: ocs-client-operator   # ✅ ADD THIS
-    channels:
-    - name: stable-4.19
-
-  - name: odf-csi-addons-operator
-    channels:
-    - name: stable-4.19
-
-
----
-
-⚡ Then re-run
-
-# 1. mirror to disk
-oc mirror -c imageset-config.yaml file:///root/mirror_fix --v2
-
-# 2. push to registry
-oc mirror -c imageset-config.yaml --from file:///root/mirror_fix docker://bastion.srib-lab-ocp.lan:8443 --v2
-
-
----
-
-✅ Apply updated IDMS + Catalog
-
-oc apply -f working-dir/cluster-resources/idms-oc-mirror.yaml
-oc apply -f working-dir/cluster-resources/cs-redhat-operator-index-v4-19.yaml
-
-
----
-
-🔁 Restart OLM (important)
-
-oc delete pod -n openshift-marketplace -l olm.catalogSource=cs-redhat-operator-index-v4-19
-
-
----
-
-🚀 Then recreate subscription
-
-oc delete subscription -n openshift-storage --all
-
-Recreate only:
-
-odf-operator
-
-👉 OLM will auto install everything (including ocs-client)
-
-
----
-
-🎯 Final expected
-
-oc get csv -n openshift-storage
-
-You should see:
-
-ocs-client-operator   ✅
-ocs-operator          ✅
-rook-ceph-operator    ✅
-cephcsi-operator      ✅
-mcg-operator          ✅
-
-
----
-
-🧠 Important lesson (you hit classic disconnected issue)
-
-👉 ODF dependency chain is NOT obvious 👉 Missing even 1 operator = full failure
-
-
----
-
-If you want, I’ll give you:
-
-✅ Bulletproof ImageSetConfig (ODF + all deps, zero miss)
-So you never debug this again 😄
+srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f idms-oc-mirror.yaml
+imagedigestmirrorset.config.openshift.io/idms-operator-0 configured
+srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f cs-redhat-operator-index-v4-19.yaml
+catalogsource.operators.coreos.com/cs-redhat-operator-index-v4-19 configured
+srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f cc-redhat-operator-index-v4-19.yaml
+clustercatalog.olm.operatorframework.io/cc-redhat-operator-index-v4-19 configured
+srib@ocp-haproxy-1:~/ocp_4_19$ oc delete pod -n openshift-marketplace -l olm.catalogSource=cs-redhat-operator-index-v4-19
+pod "cs-redhat-operator-index-v4-19-kmpnf" deleted
+srib@ocp-haproxy-1:~/ocp_4_19$ oc delete subscription -n openshift-storage --all
+subscription.operators.coreos.com "odf-dependencies" deleted
+subscription.operators.coreos.com "odf-operator" deleted
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc delete subscription -n openshift-storage --all
+No resources found
+srib@ocp-haproxy-1:~/ocp_4_19$ oc delete pod -n openshift-marketplace -l olm.catalogSource=cs-redhat-operator-index-v4-19
+pod "cs-redhat-operator-index-v4-19-5rg9x" deleted
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$
