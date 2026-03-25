@@ -1,10 +1,28 @@
-srib@ocp-haproxy-1:~$ oc get packagemanifest -n openshift-marketplace | grep odf-dependencies
-odf-dependencies                        24d
+srib@ocp-haproxy-1:~$ oc get csv -A
+NAMESPACE                              NAME                                              DISPLAY                            VERSION               REPLACES                                 PHASE
+openshift-local-storage                local-storage-operator.v4.18.0-202512031242       Local Storage                      4.18.0-202512031242                                            Succeeded
+openshift-nmstate                      kubernetes-nmstate-operator.4.18.0-202512031242   Kubernetes NMState Operator        4.18.0-202512031242                                            Succeeded
+openshift-operator-lifecycle-manager   packageserver                                     Package Server                     0.0.1-snapshot                                                 Succeeded
+openshift-ptp                          ptp-operator.v4.18.0-202512031242                 PTP Operator                       4.18.0-202512031242                                            Succeeded
+openshift-sriov-network-operator       sriov-network-operator.v4.18.0-202511261113       SR-IOV Network Operator            4.18.0-202511261113                                            Succeeded
+openshift-storage                      cephcsi-operator.v4.18.14-rhodf                   CephCSI operator                   4.18.14-rhodf         cephcsi-operator.v4.18.13-rhodf          Succeeded
+openshift-storage                      mcg-operator.v4.18.14-rhodf                       NooBaa Operator                    4.18.14-rhodf         mcg-operator.v4.18.13-rhodf              Succeeded
+openshift-storage                      ocs-client-operator.v4.18.14-rhodf                OpenShift Data Foundation Client   4.18.14-rhodf         ocs-client-operator.v4.18.13-rhodf       Succeeded
+openshift-storage                      ocs-operator.v4.18.14-rhodf                       OpenShift Container Storage        4.18.14-rhodf         ocs-operator.v4.18.13-rhodf              Succeeded
+openshift-storage                      odf-csi-addons-operator.v4.18.14-rhodf            CSI Addons                         4.18.14-rhodf         odf-csi-addons-operator.v4.18.13-rhodf   Succeeded
+openshift-storage                      odf-dependencies.v4.18.14-rhodf                   Data Foundation Dependencies       4.18.14-rhodf         odf-dependencies.v4.18.13-rhodf          Succeeded
+openshift-storage                      odf-operator.v4.19.12-rhodf                       OpenShift Data Foundation          4.19.12-rhodf         odf-operator.v4.18.14-rhodf              Succeeded
+openshift-storage                      odf-prometheus-operator.v4.18.14-rhodf            Prometheus Operator                4.18.14-rhodf         odf-prometheus-operator.v4.18.13-rhodf   Succeeded
+openshift-storage                      recipe.v4.18.14-rhodf                             Recipe                             4.18.14-rhodf         recipe.v4.18.13-rhodf                    Succeeded
+openshift-storage                      rook-ceph-operator.v4.18.14-rhodf                 Rook-Ceph                          4.18.14-rhodf         rook-ceph-operator.v4.18.13-rhodf        Succeeded
+srib@ocp-haproxy-1:~$ oc get catalogsource -n openshift-marketplace
+NAME                             DISPLAY   TYPE   PUBLISHER   AGE
+cs-redhat-operator-index-v4-19             grpc               6d16h
+srib@ocp-haproxy-1:~$ oc get  po -n openshift-marketplace
+NAME                                    READY   STATUS    RESTARTS   AGE
+cs-redhat-operator-index-v4-19-s22tt    1/1     Running   0          94s
+marketplace-operator-68585b676c-kh9zf   1/1     Running   0          95s
 srib@ocp-haproxy-1:~$ oc get packagemanifest -n openshift-marketplace | grep odf
 odf-csi-addons-operator                 6d16h
-odf-operator                            24d
 odf-operator                            6d16h
-odf-prometheus-operator                 24d
-odf-csi-addons-operator                 24d
-odf-dependencies                        24d
 srib@ocp-haproxy-1:~$
