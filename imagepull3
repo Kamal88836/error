@@ -1,8 +1,11 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get po -A  -o wide | grep ImagePullBackOff
-openshift-local-storage                            diskmaker-manager-7dqpw                                           0/2     ImagePullBackOff        0                44m     10.130.0.89    ocp-cp-1.lab1.srib-lab-ocp.lan   <none>           <none>
-openshift-nmstate                                  nmstate-handler-tw89v                                             0/1     ImagePullBackOff        0                48m     71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
-openshift-sriov-network-operator                   network-resources-injector-x62dp                                  0/1     ImagePullBackOff        0                50m     10.130.0.87    ocp-cp-1.lab1.srib-lab-ocp.lan   <none>           <none>
-openshift-sriov-network-operator                   operator-webhook-zrzds                                            0/1     ImagePullBackOff        0                50m     10.129.0.149   ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
-openshift-sriov-network-operator                   sriov-device-plugin-n2rqw                                         0/1     ImagePullBackOff        0                50m     71.1.1.230     ocp-cp-1.lab1.srib-lab-ocp.lan   <none>           <none>
-openshift-sriov-network-operator                   sriov-network-config-daemon-r5vwg                                 0/1     Init:ImagePullBackOff   0                50m     71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get pods -A | egrep -i "ImagePullBackOff|ErrImagePull|CrashLoopBackOff"
+openshift-insights                                 insights-runtime-extractor-9tqxv                                  1/3     ImagePullBackOff        0                9m41s
+openshift-local-storage                            diskmaker-discovery-xckww                                         0/2     ImagePullBackOff        0                8m25s
+openshift-local-storage                            diskmaker-manager-lqbpn                                           0/2     ImagePullBackOff        0                8m19s
+openshift-nmstate                                  nmstate-handler-pc4s5                                             0/1     ImagePullBackOff        0                8m18s
+openshift-ptp                                      linuxptp-daemon-kjff6                                             0/2     ImagePullBackOff        0                8m2s
+openshift-sriov-network-operator                   network-resources-injector-wwmtk                                  0/1     ImagePullBackOff        0                8m
+openshift-sriov-network-operator                   operator-webhook-wwhft                                            0/1     ImagePullBackOff        0                7m59s
+openshift-sriov-network-operator                   sriov-device-plugin-7d885                                         0/1     ImagePullBackOff        0                7m58s
+openshift-sriov-network-operator                   sriov-network-config-daemon-59btf                                 0/1     Init:ImagePullBackOff   0                12m
 srib@ocp-haproxy-1:~/ocp_4_19$
