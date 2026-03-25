@@ -1,78 +1,37 @@
-
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.19.23   True        False         False      23h
-baremetal                                  4.19.23   True        False         False      25d
-cloud-controller-manager                   4.19.23   True        False         False      25d
-cloud-credential                           4.19.23   True        False         False      25d
-cluster-autoscaler                         4.19.23   True        False         False      25d
-config-operator                            4.19.23   True        False         False      25d
-console                                    4.19.23   True        False         False      25d
-control-plane-machine-set                  4.19.23   True        False         False      25d
-csi-snapshot-controller                    4.19.23   True        False         False      25d
-dns                                        4.19.23   True        False         False      25d
-etcd                                       4.19.23   True        False         False      25d
-image-registry                             4.19.23   True        False         False      25d
-ingress                                    4.19.23   True        True          False      52m     ingresscontroller "default" is progressing: IngressControllerProgressing: One or more status conditions indicate progressing: DeploymentRollingOut=True (DeploymentRollingOut: Waiting for router deployment rollout to finish: 2 of 3 updated replica(s) are available......
-insights                                   4.19.23   True        False         False      18m
-kube-apiserver                             4.19.23   True        False         False      25d
-kube-controller-manager                    4.19.23   True        False         False      25d
-kube-scheduler                             4.19.23   True        False         False      25d
-kube-storage-version-migrator              4.19.23   True        False         False      24h
-machine-api                                4.19.23   True        False         False      25d
-machine-approver                           4.19.23   True        False         False      25d
-machine-config                             4.19.23   True        False         True       25d     Failed to resync 4.19.23 because: error during syncRequiredMachineConfigPools: [context deadline exceeded, error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 1, updated: 1, unavailable: 1, degraded: 0)]
-marketplace                                4.19.23   True        False         False      25d
-monitoring                                 4.19.23   True        False         False      20h
-network                                    4.19.23   True        False         False      25d
-node-tuning                                4.19.23   True        False         False      26h
-olm                                        4.19.23   True        False         False      73m
-openshift-apiserver                        4.19.23   True        False         False      25d
-openshift-controller-manager               4.19.23   True        False         False      25d
-openshift-samples                          4.19.23   True        False         False      25d
-operator-lifecycle-manager                 4.19.23   True        False         False      25d
-operator-lifecycle-manager-catalog         4.19.23   True        False         False      25d
-operator-lifecycle-manager-packageserver   4.19.23   True        False         False      3h12m
-service-ca                                 4.19.23   True        False         False      25d
-storage                                    4.19.23   True        False         False      25d
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get no
-NAME                             STATUS                     ROLES                         AGE   VERSION
-ocp-cp-1.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   25d   v1.32.10
-ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
-ocp-cp-3.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
-srib@ocp-haproxy-1:~/ocp_4_19$ oc describe no ocp-cp-1.lab1.srib-lab-ocp.lan
-Name:               ocp-cp-1.lab1.srib-lab-ocp.lan
+srib@ocp-haproxy-1:~/ocp_4_19$ oc describe node ocp-cp-3.lab1.srib-lab-ocp.lan
+Name:               ocp-cp-3.lab1.srib-lab-ocp.lan
 Roles:              control-plane,master,worker
 Labels:             beta.kubernetes.io/arch=amd64
                     beta.kubernetes.io/os=linux
                     cluster.ocs.openshift.io/openshift-storage=
                     feature.node.kubernetes.io/network-sriov.capable=true
                     kubernetes.io/arch=amd64
-                    kubernetes.io/hostname=ocp-cp-1.lab1.srib-lab-ocp.lan
+                    kubernetes.io/hostname=ocp-cp-3.lab1.srib-lab-ocp.lan
                     kubernetes.io/os=linux
                     node-role.kubernetes.io/control-plane=
                     node-role.kubernetes.io/master=
                     node-role.kubernetes.io/worker=
                     node.openshift.io/os_id=rhcos
                     sriovnetwork.openshift.io/device-plugin=Enabled
-                    topology.rook.io/rack=rack0
-Annotations:        k8s.ovn.org/host-cidrs: ["10.200.63.12/24","2405:100:200:71::1:564/64","71.1.1.230/23"]
+                    topology.rook.io/rack=rack2
+Annotations:        k8s.ovn.org/host-cidrs: ["10.200.63.14/24","2405:100:200:71::1:555/128","2405:100:200:71::1:566/64","71.1.0.209/32","71.1.1.229/23"]
                     k8s.ovn.org/l3-gateway-config:
-                      {"default":{"mode":"shared","bridge-id":"br-ex","interface-id":"br-ex_ocp-cp-1.lab1.srib-lab-ocp.lan","mac-address":"50:7c:6f:4b:9f:83","i...
-                    k8s.ovn.org/node-chassis-id: 8c5a5163-6e4a-47aa-bf2a-03cc79dbf0e4
-                    k8s.ovn.org/node-encap-ips: ["71.1.1.230"]
-                    k8s.ovn.org/node-id: 4
+                      {"default":{"mode":"shared","bridge-id":"br-ex","interface-id":"br-ex_ocp-cp-3.lab1.srib-lab-ocp.lan","mac-address":"6c:fe:54:63:0b:6f","i...
+                    k8s.ovn.org/node-chassis-id: 54978a11-c04a-4f06-928a-6e3d6db5ffdd
+                    k8s.ovn.org/node-encap-ips: ["71.1.1.229"]
+                    k8s.ovn.org/node-id: 2
                     k8s.ovn.org/node-masquerade-subnet: {"ipv4":"169.254.0.0/17","ipv6":"fd69::/112"}
-                    k8s.ovn.org/node-primary-ifaddr: {"ipv4":"71.1.1.230/23","ipv6":"2405:100:200:71::1:564/64"}
-                    k8s.ovn.org/node-subnets: {"default":["10.130.0.0/23","fd01:0:0:3::/64"]}
-                    k8s.ovn.org/node-transit-switch-port-ifaddr: {"ipv4":"100.88.0.4/16","ipv6":"fd97::4/64"}
-                    k8s.ovn.org/remote-zone-migrated: ocp-cp-1.lab1.srib-lab-ocp.lan
-                    k8s.ovn.org/zone-name: ocp-cp-1.lab1.srib-lab-ocp.lan
-                    machine.openshift.io/machine: openshift-machine-api/lab1-prpft-master-0
+                    k8s.ovn.org/node-primary-ifaddr: {"ipv4":"71.1.1.229/23","ipv6":"2405:100:200:71::1:566/64"}
+                    k8s.ovn.org/node-subnets: {"default":["10.129.0.0/23","fd01:0:0:2::/64"]}
+                    k8s.ovn.org/node-transit-switch-port-ifaddr: {"ipv4":"100.88.0.2/16","ipv6":"fd97::2/64"}
+                    k8s.ovn.org/remote-zone-migrated: ocp-cp-3.lab1.srib-lab-ocp.lan
+                    k8s.ovn.org/zone-name: ocp-cp-3.lab1.srib-lab-ocp.lan
+                    machine.openshift.io/machine: openshift-machine-api/lab1-prpft-master-2
                     machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
-                    machineconfiguration.openshift.io/currentConfig: rendered-master-dd8dc46a178b2414ddb071da5b373f4a
+                    machineconfiguration.openshift.io/currentConfig: rendered-master-54232a3f7ceb661f33be3e20cf35123e
                     machineconfiguration.openshift.io/desiredConfig: rendered-master-ca27c25ee1c96608c6f437b56ac1b162
                     machineconfiguration.openshift.io/desiredDrain: drain-rendered-master-ca27c25ee1c96608c6f437b56ac1b162
-                    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-dd8dc46a178b2414ddb071da5b373f4a
+                    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-54232a3f7ceb661f33be3e20cf35123e
                     machineconfiguration.openshift.io/lastObservedServerCAAnnotation: false
                     machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: 13581553
                     machineconfiguration.openshift.io/post-config-action:
@@ -83,37 +42,37 @@ Annotations:        k8s.ovn.org/host-cidrs: ["10.200.63.12/24","2405:100:200:71:
                     tuned.openshift.io/bootcmdline:
                       skew_tick=1 tsc=reliable rcupdate.rcu_normal_after_boot=1 rcutree.nohz_full_patience_delay=1000 nohz=on rcu_nocbs=1-27,29-55,57-82,85-110 ...
                     volumes.kubernetes.io/controller-managed-attach-detach: true
-CreationTimestamp:  Sat, 28 Feb 2026 00:05:46 +0530
+CreationTimestamp:  Fri, 27 Feb 2026 23:40:14 +0530
 Taints:             node.kubernetes.io/unschedulable:NoSchedule
 Unschedulable:      true
 Lease:
-  HolderIdentity:  ocp-cp-1.lab1.srib-lab-ocp.lan
+  HolderIdentity:  ocp-cp-3.lab1.srib-lab-ocp.lan
   AcquireTime:     <unset>
-  RenewTime:       Wed, 25 Mar 2026 19:17:51 +0530
+  RenewTime:       Wed, 25 Mar 2026 19:38:59 +0530
 Conditions:
   Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
   ----             ------  -----------------                 ------------------                ------                       -------
-  MemoryPressure   False   Wed, 25 Mar 2026 19:17:41 +0530   Wed, 25 Mar 2026 18:18:17 +0530   KubeletHasSufficientMemory   kubelet has sufficient memory available
-  DiskPressure     False   Wed, 25 Mar 2026 19:17:41 +0530   Wed, 25 Mar 2026 18:18:17 +0530   KubeletHasNoDiskPressure     kubelet has no disk pressure
-  PIDPressure      False   Wed, 25 Mar 2026 19:17:41 +0530   Wed, 25 Mar 2026 18:18:17 +0530   KubeletHasSufficientPID      kubelet has sufficient PID available
-  Ready            True    Wed, 25 Mar 2026 19:17:41 +0530   Wed, 25 Mar 2026 18:18:36 +0530   KubeletReady                 kubelet is posting ready status
+  MemoryPressure   False   Wed, 25 Mar 2026 19:38:51 +0530   Tue, 24 Mar 2026 20:22:31 +0530   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Wed, 25 Mar 2026 19:38:51 +0530   Tue, 24 Mar 2026 20:22:31 +0530   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Wed, 25 Mar 2026 19:38:51 +0530   Tue, 24 Mar 2026 20:22:31 +0530   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Wed, 25 Mar 2026 19:38:51 +0530   Tue, 24 Mar 2026 20:22:51 +0530   KubeletReady                 kubelet is posting ready status
 Addresses:
-  InternalIP:  71.1.1.230
-  InternalIP:  2405:100:200:71::1:564
-  Hostname:    ocp-cp-1.lab1.srib-lab-ocp.lan
+  InternalIP:  71.1.1.229
+  InternalIP:  2405:100:200:71::1:566
+  Hostname:    ocp-cp-3.lab1.srib-lab-ocp.lan
 Capacity:
   cpu:                                     112
   ephemeral-storage:                       1873933640Ki
   hugepages-1Gi:                           18Gi
   hugepages-2Mi:                           0
   management.workload.openshift.io/cores:  112k
-  memory:                                  528017396Ki
-  openshift.io/pci_sriov_net_bh0c:         5
-  openshift.io/pci_sriov_net_bh0c_1:       5
-  openshift.io/pci_sriov_net_bh0u:         4
-  openshift.io/pci_sriov_net_bh0u_1:       4
-  openshift.io/pci_sriov_net_bh0u_2:       4
-  openshift.io/pci_sriov_net_bh0u_2_1:     4
+  memory:                                  528017436Ki
+  openshift.io/pci_sriov_net_bh0c:         0
+  openshift.io/pci_sriov_net_bh0c_1:       0
+  openshift.io/pci_sriov_net_bh0u:         0
+  openshift.io/pci_sriov_net_bh0u_1:       0
+  openshift.io/pci_sriov_net_bh0u_2:       0
+  openshift.io/pci_sriov_net_bh0u_2_1:     0
   pods:                                    250
 Allocatable:
   cpu:                                     106
@@ -121,18 +80,18 @@ Allocatable:
   hugepages-1Gi:                           18Gi
   hugepages-2Mi:                           0
   management.workload.openshift.io/cores:  112k
-  memory:                                  490702836Ki
-  openshift.io/pci_sriov_net_bh0c:         5
-  openshift.io/pci_sriov_net_bh0c_1:       5
-  openshift.io/pci_sriov_net_bh0u:         4
-  openshift.io/pci_sriov_net_bh0u_1:       4
-  openshift.io/pci_sriov_net_bh0u_2:       4
-  openshift.io/pci_sriov_net_bh0u_2_1:     4
+  memory:                                  490702876Ki
+  openshift.io/pci_sriov_net_bh0c:         0
+  openshift.io/pci_sriov_net_bh0c_1:       0
+  openshift.io/pci_sriov_net_bh0u:         0
+  openshift.io/pci_sriov_net_bh0u_1:       0
+  openshift.io/pci_sriov_net_bh0u_2:       0
+  openshift.io/pci_sriov_net_bh0u_2_1:     0
   pods:                                    250
 System Info:
-  Machine ID:                             0c02304deda0400cbe4f3c2de0d5da72
-  System UUID:                            31353050-3237-4753-4833-34334d515051
-  Boot ID:                                a20ac6ef-f9b4-4eb4-ba1f-97a56a9646a4
+  Machine ID:                             7352e959b60b4b229b39815a924abd3c
+  System UUID:                            31353050-3237-4753-4833-34334d515054
+  Boot ID:                                822ee281-9b52-4675-b8bd-299733d40a0f
   Kernel Version:                         5.14.0-570.82.1.el9_6.x86_64+rt
   OS Image:                               Red Hat Enterprise Linux CoreOS 9.6.20260123-0 (Plow)
   Operating System:                       linux
@@ -140,44 +99,44 @@ System Info:
   Container Runtime Version:              cri-o://1.32.11-2.rhaos4.19.git1ea5a68.el9
   Kubelet Version:                        v1.32.10
   Kube-Proxy Version:                     v1.32.10
-ProviderID:                               baremetalhost:///openshift-machine-api/ocp-cp-1.lab1.srib-lab-ocp.lan/18317bbd-8f52-4cc8-bf87-ba80fe18192f
+ProviderID:                               baremetalhost:///openshift-machine-api/ocp-cp-3.lab1.srib-lab-ocp.lan/e8e718fa-24bd-45bf-85de-51e4c74c6a6f
 Non-terminated Pods:                      (34 in total)
   Namespace                               Name                                                       CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
   ---------                               ----                                                       ------------  ----------  ---------------  -------------  ---
-  openshift-cluster-node-tuning-operator  tuned-cjm5r                                                0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         26h
-  openshift-dns                           dns-default-wtnwc                                          0 (0%)        0 (0%)      110Mi (0%)       0 (0%)         26h
-  openshift-dns                           node-resolver-zpbtd                                        0 (0%)        0 (0%)      21Mi (0%)        0 (0%)         26h
-  openshift-etcd                          etcd-ocp-cp-1.lab1.srib-lab-ocp.lan                        0 (0%)        0 (0%)      960Mi (0%)       0 (0%)         22h
-  openshift-image-registry                node-ca-j99fp                                              0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         26h
-  openshift-ingress-canary                ingress-canary-56bhs                                       0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         26h
-  openshift-insights                      insights-runtime-extractor-lcz5k                           0 (0%)        0 (0%)      500Mi (0%)       0 (0%)         26h
-  openshift-kni-infra                     coredns-ocp-cp-1.lab1.srib-lab-ocp.lan                     200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         22h
-  openshift-kni-infra                     haproxy-ocp-cp-1.lab1.srib-lab-ocp.lan                     200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         22h
-  openshift-kni-infra                     keepalived-ocp-cp-1.lab1.srib-lab-ocp.lan                  200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         22h
-  openshift-kube-apiserver                kube-apiserver-ocp-cp-1.lab1.srib-lab-ocp.lan              0 (0%)        0 (0%)      1224Mi (0%)      0 (0%)         22h
-  openshift-kube-controller-manager       kube-controller-manager-ocp-cp-1.lab1.srib-lab-ocp.lan     0 (0%)        0 (0%)      500Mi (0%)       0 (0%)         22h
-  openshift-kube-scheduler                openshift-kube-scheduler-ocp-cp-1.lab1.srib-lab-ocp.lan    0 (0%)        0 (0%)      150Mi (0%)       0 (0%)         22h
-  openshift-local-storage                 diskmaker-discovery-sl4ff                                  0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         72m
-  openshift-local-storage                 diskmaker-manager-kmhl2                                    0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         72m
-  openshift-machine-api                   ironic-proxy-m2p9d                                         0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         20h
-  openshift-machine-config-operator       kube-rbac-proxy-crio-ocp-cp-1.lab1.srib-lab-ocp.lan        0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         22h
-  openshift-machine-config-operator       machine-config-daemon-7stjj                                0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         25h
-  openshift-machine-config-operator       machine-config-server-vhgzz                                0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         25h
-  openshift-monitoring                    node-exporter-5j7ps                                        0 (0%)        0 (0%)      47Mi (0%)        0 (0%)         26h
-  openshift-multus                        multus-additional-cni-plugins-rbr8m                        0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         26h
-  openshift-multus                        multus-r2mx4                                               0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         26h
-  openshift-multus                        network-metrics-daemon-vfpsm                               0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         26h
-  openshift-network-diagnostics           network-check-target-dttgx                                 0 (0%)        0 (0%)      15Mi (0%)        0 (0%)         26h
-  openshift-network-node-identity         network-node-identity-kq6rf                                0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         26h
-  openshift-network-operator              iptables-alerter-79ns8                                     0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         26h
-  openshift-nmstate                       nmstate-handler-dv4gs                                      100m (0%)     500m (0%)   100Mi (0%)       1Gi (0%)       73m
-  openshift-ovn-kubernetes                ovnkube-node-xts96                                         0 (0%)        0 (0%)      1630Mi (0%)      0 (0%)         24h
-  openshift-ptp                           linuxptp-daemon-8smk7                                      0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         59m
-  openshift-sriov-network-operator        network-resources-injector-kdbqs                           10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         73m
-  openshift-sriov-network-operator        operator-webhook-bg56g                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         59m
-  openshift-sriov-network-operator        sriov-device-plugin-zs87z                                  0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         54m
-  openshift-sriov-network-operator        sriov-network-config-daemon-xm982                          0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         59m
-  openshift-storage                       rook-ceph-osd-2-698df4db65-v978k                           2 (1%)        2 (1%)      5Gi (1%)         5Gi (1%)       61m
+  openshift-cluster-node-tuning-operator  tuned-xzpms                                                0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         27h
+  openshift-dns                           dns-default-p6pg9                                          0 (0%)        0 (0%)      110Mi (0%)       0 (0%)         26h
+  openshift-dns                           node-resolver-bnhd7                                        0 (0%)        0 (0%)      21Mi (0%)        0 (0%)         26h
+  openshift-etcd                          etcd-ocp-cp-3.lab1.srib-lab-ocp.lan                        0 (0%)        0 (0%)      960Mi (0%)       0 (0%)         23h
+  openshift-image-registry                node-ca-5h9lt                                              0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         27h
+  openshift-ingress-canary                ingress-canary-pjwxk                                       0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         27h
+  openshift-insights                      insights-runtime-extractor-9c98x                           0 (0%)        0 (0%)      500Mi (0%)       0 (0%)         27h
+  openshift-kni-infra                     coredns-ocp-cp-3.lab1.srib-lab-ocp.lan                     200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         23h
+  openshift-kni-infra                     haproxy-ocp-cp-3.lab1.srib-lab-ocp.lan                     200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         23h
+  openshift-kni-infra                     keepalived-ocp-cp-3.lab1.srib-lab-ocp.lan                  200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         23h
+  openshift-kube-apiserver                kube-apiserver-ocp-cp-3.lab1.srib-lab-ocp.lan              0 (0%)        0 (0%)      1224Mi (0%)      0 (0%)         23h
+  openshift-kube-controller-manager       kube-controller-manager-ocp-cp-3.lab1.srib-lab-ocp.lan     0 (0%)        0 (0%)      500Mi (0%)       0 (0%)         23h
+  openshift-kube-scheduler                openshift-kube-scheduler-ocp-cp-3.lab1.srib-lab-ocp.lan    0 (0%)        0 (0%)      150Mi (0%)       0 (0%)         23h
+  openshift-local-storage                 diskmaker-discovery-jss2q                                  0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         94m
+  openshift-local-storage                 diskmaker-manager-cfd9d                                    0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         94m
+  openshift-machine-api                   ironic-proxy-92wcm                                         0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         20h
+  openshift-machine-config-operator       kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan        0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         23h
+  openshift-machine-config-operator       machine-config-daemon-6dmhv                                0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         26h
+  openshift-machine-config-operator       machine-config-server-8sk2t                                0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         26h
+  openshift-monitoring                    node-exporter-mv9r6                                        0 (0%)        0 (0%)      47Mi (0%)        0 (0%)         27h
+  openshift-multus                        multus-9l6sp                                               0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         26h
+  openshift-multus                        multus-additional-cni-plugins-2b2bd                        0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         26h
+  openshift-multus                        network-metrics-daemon-r255c                               0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         26h
+  openshift-network-diagnostics           network-check-target-z9hlt                                 0 (0%)        0 (0%)      15Mi (0%)        0 (0%)         26h
+  openshift-network-node-identity         network-node-identity-zchqh                                0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         26h
+  openshift-network-operator              iptables-alerter-pxzhb                                     0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         26h
+  openshift-nmstate                       nmstate-handler-ljr8t                                      100m (0%)     500m (0%)   100Mi (0%)       1Gi (0%)       93m
+  openshift-ovn-kubernetes                ovnkube-node-fgv9s                                         0 (0%)        0 (0%)      1630Mi (0%)      0 (0%)         26h
+  openshift-ptp                           linuxptp-daemon-glm52                                      0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         94m
+  openshift-sriov-network-operator        network-resources-injector-9t69x                           10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         76m
+  openshift-sriov-network-operator        operator-webhook-wbvml                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         93m
+  openshift-sriov-network-operator        sriov-device-plugin-9db45                                  0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         77m
+  openshift-sriov-network-operator        sriov-network-config-daemon-m4kdg                          0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         94m
+  openshift-storage                       rook-ceph-osd-1-b944c5b94-24htw                            2 (1%)        2 (1%)      5Gi (1%)         5Gi (1%)       23h
 Allocated resources:
   (Total limits may be over 100 percent, i.e., overcommitted.)
   Resource                                Requests      Limits
@@ -195,24 +154,234 @@ Allocated resources:
   openshift.io/pci_sriov_net_bh0u_2       0             0
   openshift.io/pci_sriov_net_bh0u_2_1     0             0
 Events:
-  Type     Reason                   Age                From                 Message
-  ----     ------                   ----               ----                 -------
-  Normal   Starting                 73m                kubelet              Starting kubelet.
-  Normal   NodeNotSchedulable       73m                kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeNotSchedulable
-  Normal   NodeAllocatableEnforced  73m                kubelet              Updated Node Allocatable limit across pods
-  Normal   NodeHasSufficientMemory  73m                kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientMemory
-  Normal   NodeHasNoDiskPressure    73m                kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeHasNoDiskPressure
-  Normal   NodeHasSufficientPID     73m                kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientPID
-  Normal   NodeNotReady             66m (x2 over 20h)  node-controller      Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeNotReady
-  Normal   Starting                 59m                kubelet              Starting kubelet.
-  Normal   Starting                 59m                kubelet              Starting kubelet.
-  Normal   NodeAllocatableEnforced  59m                kubelet              Updated Node Allocatable limit across pods
-  Normal   NodeHasSufficientMemory  59m (x3 over 59m)  kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientMemory
-  Normal   NodeHasNoDiskPressure    59m (x3 over 59m)  kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeHasNoDiskPressure
-  Normal   NodeHasSufficientPID     59m (x3 over 59m)  kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientPID
-  Warning  Rebooted                 59m                kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan has been rebooted, boot id: a20ac6ef-f9b4-4eb4-ba1f-97a56a9646a4
-  Normal   NodeNotReady             59m (x2 over 59m)  kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeNotReady
-  Normal   NodeReady                59m                kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeReady
-  Normal   OSUpdateStaged           56m                machineconfigdaemon  Changes to OS staged
-  Normal   NodeSchedulable          12m (x2 over 56m)  kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeSchedulable
-  Normal   NodeNotSchedulable       10m (x3 over 59m)  kubelet              Node ocp-cp-1.lab1.srib-lab-ocp.lan status is now: NodeNotSchedulable
+  Type    Reason                   Age    From     Message
+  ----    ------                   ----   ----     -------
+  Normal  Starting                 113m   kubelet  Starting kubelet.
+  Normal  NodeAllocatableEnforced  113m   kubelet  Updated Node Allocatable limit across pods
+  Normal  NodeHasSufficientMemory  113m   kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    113m   kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     113m   kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientPID
+  Normal  Starting                 95m    kubelet  Starting kubelet.
+  Normal  NodeAllocatableEnforced  95m    kubelet  Updated Node Allocatable limit across pods
+  Normal  NodeHasSufficientMemory  95m    kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    95m    kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     95m    kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientPID
+  Normal  NodeNotSchedulable       5m32s  kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeNotSchedulable
+srib@ocp-haproxy-1:~/ocp_4_19$ oc describe node ocp-cp-3.lab1.srib-lab-ocp.lan
+Name:               ocp-cp-3.lab1.srib-lab-ocp.lan
+Roles:              control-plane,master,worker
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    cluster.ocs.openshift.io/openshift-storage=
+                    feature.node.kubernetes.io/network-sriov.capable=true
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=ocp-cp-3.lab1.srib-lab-ocp.lan
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node-role.kubernetes.io/master=
+                    node-role.kubernetes.io/worker=
+                    node.openshift.io/os_id=rhcos
+                    sriovnetwork.openshift.io/device-plugin=Enabled
+                    topology.rook.io/rack=rack2
+Annotations:        k8s.ovn.org/host-cidrs: ["10.200.63.14/24","2405:100:200:71::1:555/128","2405:100:200:71::1:566/64","71.1.0.209/32","71.1.1.229/23"]
+                    k8s.ovn.org/l3-gateway-config:
+                      {"default":{"mode":"shared","bridge-id":"br-ex","interface-id":"br-ex_ocp-cp-3.lab1.srib-lab-ocp.lan","mac-address":"6c:fe:54:63:0b:6f","i...
+                    k8s.ovn.org/node-chassis-id: 54978a11-c04a-4f06-928a-6e3d6db5ffdd
+                    k8s.ovn.org/node-encap-ips: ["71.1.1.229"]
+                    k8s.ovn.org/node-id: 2
+                    k8s.ovn.org/node-masquerade-subnet: {"ipv4":"169.254.0.0/17","ipv6":"fd69::/112"}
+                    k8s.ovn.org/node-primary-ifaddr: {"ipv4":"71.1.1.229/23","ipv6":"2405:100:200:71::1:566/64"}
+                    k8s.ovn.org/node-subnets: {"default":["10.129.0.0/23","fd01:0:0:2::/64"]}
+                    k8s.ovn.org/node-transit-switch-port-ifaddr: {"ipv4":"100.88.0.2/16","ipv6":"fd97::2/64"}
+                    k8s.ovn.org/remote-zone-migrated: ocp-cp-3.lab1.srib-lab-ocp.lan
+                    k8s.ovn.org/zone-name: ocp-cp-3.lab1.srib-lab-ocp.lan
+                    machine.openshift.io/machine: openshift-machine-api/lab1-prpft-master-2
+                    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+                    machineconfiguration.openshift.io/currentConfig: rendered-master-54232a3f7ceb661f33be3e20cf35123e
+                    machineconfiguration.openshift.io/desiredConfig: rendered-master-ca27c25ee1c96608c6f437b56ac1b162
+                    machineconfiguration.openshift.io/desiredDrain: drain-rendered-master-ca27c25ee1c96608c6f437b56ac1b162
+                    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-54232a3f7ceb661f33be3e20cf35123e
+                    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: false
+                    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: 13581553
+                    machineconfiguration.openshift.io/post-config-action:
+                    machineconfiguration.openshift.io/reason:
+                    machineconfiguration.openshift.io/state: Working
+                    sriovnetwork.openshift.io/current-state: Idle
+                    sriovnetwork.openshift.io/state: Idle
+                    tuned.openshift.io/bootcmdline:
+                      skew_tick=1 tsc=reliable rcupdate.rcu_normal_after_boot=1 rcutree.nohz_full_patience_delay=1000 nohz=on rcu_nocbs=1-27,29-55,57-82,85-110 ...
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Fri, 27 Feb 2026 23:40:14 +0530
+Taints:             node.kubernetes.io/unschedulable:NoSchedule
+Unschedulable:      true
+Lease:
+  HolderIdentity:  ocp-cp-3.lab1.srib-lab-ocp.lan
+  AcquireTime:     <unset>
+  RenewTime:       Wed, 25 Mar 2026 19:40:00 +0530
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Wed, 25 Mar 2026 19:39:53 +0530   Tue, 24 Mar 2026 20:22:31 +0530   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Wed, 25 Mar 2026 19:39:53 +0530   Tue, 24 Mar 2026 20:22:31 +0530   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Wed, 25 Mar 2026 19:39:53 +0530   Tue, 24 Mar 2026 20:22:31 +0530   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Wed, 25 Mar 2026 19:39:53 +0530   Tue, 24 Mar 2026 20:22:51 +0530   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  71.1.1.229
+  InternalIP:  2405:100:200:71::1:566
+  Hostname:    ocp-cp-3.lab1.srib-lab-ocp.lan
+Capacity:
+  cpu:                                     112
+  ephemeral-storage:                       1873933640Ki
+  hugepages-1Gi:                           18Gi
+  hugepages-2Mi:                           0
+  management.workload.openshift.io/cores:  112k
+  memory:                                  528017436Ki
+  openshift.io/pci_sriov_net_bh0c:         0
+  openshift.io/pci_sriov_net_bh0c_1:       0
+  openshift.io/pci_sriov_net_bh0u:         0
+  openshift.io/pci_sriov_net_bh0u_1:       0
+  openshift.io/pci_sriov_net_bh0u_2:       0
+  openshift.io/pci_sriov_net_bh0u_2_1:     0
+  pods:                                    250
+Allocatable:
+  cpu:                                     106
+  ephemeral-storage:                       1725943497941
+  hugepages-1Gi:                           18Gi
+  hugepages-2Mi:                           0
+  management.workload.openshift.io/cores:  112k
+  memory:                                  490702876Ki
+  openshift.io/pci_sriov_net_bh0c:         0
+  openshift.io/pci_sriov_net_bh0c_1:       0
+  openshift.io/pci_sriov_net_bh0u:         0
+  openshift.io/pci_sriov_net_bh0u_1:       0
+  openshift.io/pci_sriov_net_bh0u_2:       0
+  openshift.io/pci_sriov_net_bh0u_2_1:     0
+  pods:                                    250
+System Info:
+  Machine ID:                             7352e959b60b4b229b39815a924abd3c
+  System UUID:                            31353050-3237-4753-4833-34334d515054
+  Boot ID:                                822ee281-9b52-4675-b8bd-299733d40a0f
+  Kernel Version:                         5.14.0-570.82.1.el9_6.x86_64+rt
+  OS Image:                               Red Hat Enterprise Linux CoreOS 9.6.20260123-0 (Plow)
+  Operating System:                       linux
+  Architecture:                           amd64
+  Container Runtime Version:              cri-o://1.32.11-2.rhaos4.19.git1ea5a68.el9
+  Kubelet Version:                        v1.32.10
+  Kube-Proxy Version:                     v1.32.10
+ProviderID:                               baremetalhost:///openshift-machine-api/ocp-cp-3.lab1.srib-lab-ocp.lan/e8e718fa-24bd-45bf-85de-51e4c74c6a6f
+Non-terminated Pods:                      (34 in total)
+  Namespace                               Name                                                       CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                               ----                                                       ------------  ----------  ---------------  -------------  ---
+  openshift-cluster-node-tuning-operator  tuned-xzpms                                                0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         27h
+  openshift-dns                           dns-default-p6pg9                                          0 (0%)        0 (0%)      110Mi (0%)       0 (0%)         26h
+  openshift-dns                           node-resolver-bnhd7                                        0 (0%)        0 (0%)      21Mi (0%)        0 (0%)         26h
+  openshift-etcd                          etcd-ocp-cp-3.lab1.srib-lab-ocp.lan                        0 (0%)        0 (0%)      960Mi (0%)       0 (0%)         23h
+  openshift-image-registry                node-ca-5h9lt                                              0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         27h
+  openshift-ingress-canary                ingress-canary-pjwxk                                       0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         27h
+  openshift-insights                      insights-runtime-extractor-9c98x                           0 (0%)        0 (0%)      500Mi (0%)       0 (0%)         27h
+  openshift-kni-infra                     coredns-ocp-cp-3.lab1.srib-lab-ocp.lan                     200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         23h
+  openshift-kni-infra                     haproxy-ocp-cp-3.lab1.srib-lab-ocp.lan                     200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         23h
+  openshift-kni-infra                     keepalived-ocp-cp-3.lab1.srib-lab-ocp.lan                  200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         23h
+  openshift-kube-apiserver                kube-apiserver-ocp-cp-3.lab1.srib-lab-ocp.lan              0 (0%)        0 (0%)      1224Mi (0%)      0 (0%)         23h
+  openshift-kube-controller-manager       kube-controller-manager-ocp-cp-3.lab1.srib-lab-ocp.lan     0 (0%)        0 (0%)      500Mi (0%)       0 (0%)         23h
+  openshift-kube-scheduler                openshift-kube-scheduler-ocp-cp-3.lab1.srib-lab-ocp.lan    0 (0%)        0 (0%)      150Mi (0%)       0 (0%)         23h
+  openshift-local-storage                 diskmaker-discovery-jss2q                                  0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         95m
+  openshift-local-storage                 diskmaker-manager-cfd9d                                    0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         95m
+  openshift-machine-api                   ironic-proxy-92wcm                                         0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         20h
+  openshift-machine-config-operator       kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan        0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         23h
+  openshift-machine-config-operator       machine-config-daemon-6dmhv                                0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         26h
+  openshift-machine-config-operator       machine-config-server-8sk2t                                0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         26h
+  openshift-monitoring                    node-exporter-mv9r6                                        0 (0%)        0 (0%)      47Mi (0%)        0 (0%)         27h
+  openshift-multus                        multus-9l6sp                                               0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         26h
+  openshift-multus                        multus-additional-cni-plugins-2b2bd                        0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         26h
+  openshift-multus                        network-metrics-daemon-r255c                               0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         26h
+  openshift-network-diagnostics           network-check-target-z9hlt                                 0 (0%)        0 (0%)      15Mi (0%)        0 (0%)         26h
+  openshift-network-node-identity         network-node-identity-zchqh                                0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         26h
+  openshift-network-operator              iptables-alerter-pxzhb                                     0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         26h
+  openshift-nmstate                       nmstate-handler-ljr8t                                      100m (0%)     500m (0%)   100Mi (0%)       1Gi (0%)       94m
+  openshift-ovn-kubernetes                ovnkube-node-fgv9s                                         0 (0%)        0 (0%)      1630Mi (0%)      0 (0%)         26h
+  openshift-ptp                           linuxptp-daemon-glm52                                      0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         95m
+  openshift-sriov-network-operator        network-resources-injector-9t69x                           10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         77m
+  openshift-sriov-network-operator        operator-webhook-wbvml                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         94m
+  openshift-sriov-network-operator        sriov-device-plugin-9db45                                  0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         78m
+  openshift-sriov-network-operator        sriov-network-config-daemon-m4kdg                          0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         95m
+  openshift-storage                       rook-ceph-osd-1-b944c5b94-24htw                            2 (1%)        2 (1%)      5Gi (1%)         5Gi (1%)       23h
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                                Requests      Limits
+  --------                                --------      ------
+  cpu                                     2720m (2%)    2500m (2%)
+  memory                                  12727Mi (2%)  6Gi (1%)
+  ephemeral-storage                       0 (0%)        0 (0%)
+  hugepages-1Gi                           0 (0%)        0 (0%)
+  hugepages-2Mi                           0 (0%)        0 (0%)
+  management.workload.openshift.io/cores  1324          1324
+  openshift.io/pci_sriov_net_bh0c         0             0
+  openshift.io/pci_sriov_net_bh0c_1       0             0
+  openshift.io/pci_sriov_net_bh0u         0             0
+  openshift.io/pci_sriov_net_bh0u_1       0             0
+  openshift.io/pci_sriov_net_bh0u_2       0             0
+  openshift.io/pci_sriov_net_bh0u_2_1     0             0
+Events:
+  Type    Reason                   Age    From     Message
+  ----    ------                   ----   ----     -------
+  Normal  Starting                 114m   kubelet  Starting kubelet.
+  Normal  NodeAllocatableEnforced  114m   kubelet  Updated Node Allocatable limit across pods
+  Normal  NodeHasSufficientMemory  114m   kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    114m   kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     114m   kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientPID
+  Normal  Starting                 96m    kubelet  Starting kubelet.
+  Normal  NodeAllocatableEnforced  96m    kubelet  Updated Node Allocatable limit across pods
+  Normal  NodeHasSufficientMemory  96m    kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    96m    kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     96m    kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeHasSufficientPID
+  Normal  NodeNotSchedulable       6m39s  kubelet  Node ocp-cp-3.lab1.srib-lab-ocp.lan status is now: NodeNotSchedulable
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   25d   v1.32.10
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.19.23   True        True          7m6s    Unable to apply 4.19.23: the cluster operator kube-storage-version-migrator is not available
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.19.23   True        False         False      24h
+baremetal                                  4.19.23   True        False         False      25d
+cloud-controller-manager                   4.19.23   True        False         False      25d
+cloud-credential                           4.19.23   True        False         False      25d
+cluster-autoscaler                         4.19.23   True        False         False      25d
+config-operator                            4.19.23   True        False         False      25d
+console                                    4.19.23   True        True          False      25d     SyncLoopRefreshProgressing: working toward version 4.19.23, 1 replicas available
+control-plane-machine-set                  4.19.23   True        False         False      25d
+csi-snapshot-controller                    4.19.23   True        True          False      25d     CSISnapshotControllerProgressing: Waiting for Deployment to deploy pods
+dns                                        4.19.23   True        False         False      25d
+etcd                                       4.19.23   True        False         False      25d
+image-registry                             4.19.23   True        False         False      25d
+ingress                                    4.19.23   True        True          False      6m44s   ingresscontroller "default" is progressing: IngressControllerProgressing: One or more status conditions indicate progressing: DeploymentRollingOut=True (DeploymentRollingOut: Waiting for router deployment rollout to finish: 2 of 3 updated replica(s) are available......
+insights                                   4.19.23   True        False         False      42m
+kube-apiserver                             4.19.23   True        False         False      25d
+kube-controller-manager                    4.19.23   True        False         False      25d
+kube-scheduler                             4.19.23   True        False         False      25d
+kube-storage-version-migrator              4.19.23   False       True          False      7m6s    KubeStorageVersionMigratorAvailable: Waiting for Deployment
+machine-api                                4.19.23   True        False         False      25d
+machine-approver                           4.19.23   True        False         False      25d
+machine-config                             4.19.23   True        False         True       25d     Failed to resync 4.19.23 because: error during syncRequiredMachineConfigPools: [context deadline exceeded, error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 1, updated: 1, unavailable: 1, degraded: 0)]
+marketplace                                4.19.23   True        False         False      25d
+monitoring                                 4.19.23   True        False         False      20h
+network                                    4.19.23   True        False         False      25d
+node-tuning                                4.19.23   True        False         False      27h
+olm                                        4.19.23   False       True          False      7m30s   CatalogdDeploymentCatalogdControllerManagerAvailable: Waiting for Deployment
+openshift-apiserver                        4.19.23   True        False         False      25d
+openshift-controller-manager               4.19.23   True        False         False      25d
+openshift-samples                          4.19.23   True        False         False      25d
+operator-lifecycle-manager                 4.19.23   True        False         False      25d
+operator-lifecycle-manager-catalog         4.19.23   True        False         False      25d
+operator-lifecycle-manager-packageserver   4.19.23   True        False         False      3h36m
+service-ca                                 4.19.23   True        False         False      25d
+storage                                    4.19.23   True        False         False      25d
+srib@ocp-haproxy-1:~/ocp_4_19$
