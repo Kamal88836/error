@@ -1,150 +1,22 @@
-Got it 👍 — and yes, that explains everything now.
-
----
-
-# ⚠️ What you did (and why it worked)
-
-You manually edited:
-
-```bash
-/etc/containers/registries.conf
-```
-
-👉 That immediately fixed:
-
-* Image pull paths ✔
-* Pods started running ✔
-
----
-
-# 🚨 But there is a hidden problem
-
-From your earlier output:
-
-```text
-machineconfiguration.openshift.io/state: Degraded ❌
-reason: content mismatch for file "/etc/containers/registries.conf"
-```
-
-👉 This means:
-
-> OpenShift (MCO) thinks your node is **broken/out-of-sync**
-
----
-
-# ❗ Why this is dangerous
-
-Right now:
-
-| Thing       | Status     |
-| ----------- | ---------- |
-| Pods        | ✅ Working  |
-| Node config | ❌ Drifted  |
-| MCP         | ❌ Degraded |
-| Upgrade     | ❌ Blocked  |
-
-👉 If you leave like this:
-
-* Next reboot → your manual changes LOST ❌
-* MCO may overwrite anytime ❌
-* Upgrade will **never complete** ❌
-
----
-
-# 🎯 Correct Way Forward (VERY IMPORTANT)
-
-You have **2 options**
-
----
-
-# ✅ Option 1 (Recommended — Clean Fix)
-
-👉 Let OpenShift own config again
-
-### Step 1: Revert manual change (optional but clean)
-
-Don’t edit again manually.
-
-### Step 2: Force node reconcile
-
-```bash
-oc annotate node ocp-cp-3.lab1.srib-lab-ocp.lan machineconfiguration.openshift.io/forceReboot=true
-```
-
-👉 This will:
-
-* Reboot node
-* Apply correct IDMS-based config
-* Remove mismatch
-
----
-
-# ✅ Option 2 (Quick but not clean)
-
-👉 Keep manual config (not recommended long-term)
-
-Then:
-
-```bash
-oc get mcp
-```
-
-If still degraded → upgrade stuck
-
----
-
-# 🚀 Best Practice (important)
-
-👉 In disconnected OpenShift:
-
-NEVER manually edit:
-
-```text
-/etc/containers/registries.conf ❌
-```
-
-ALWAYS use:
-
-* ImageDigestMirrorSet ✔
-* oc-mirror ✔
-
----
-
-# 🔍 Why your cluster broke earlier
-
-Sequence:
-
-1. Old IDMS → wrong path ❌
-2. You fixed IDMS ✔
-3. cp-3 didn’t update ❌
-4. You manually fixed file ✔
-5. Now MCO detects drift ❌
-
----
-
-# 🎯 Final Recommendation
-
-👉 Since you already fixed mirror correctly:
-
-✔ Keep IDMS as source of truth
-✔ Fix node properly via reboot
-
----
-
-# 👍 Final Answer
-
-👉 Yes — manual edit fixed pods temporarily
-👉 BUT cluster is still **logically broken (MCP degraded)**
-
-👉 Proper fix:
-
-```bash
-oc annotate node ocp-cp-3 machineconfiguration.openshift.io/forceReboot=true
-```
-
----
-
-If you want safest path, I can give you:
-
-👉 “Zero-downtime clean recovery steps”
-👉 So you don’t risk cluster instability 👍
+srib@ocp-haproxy-1:~$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   25d   v1.32.10
+srib@ocp-haproxy-1:~$ oc adm uncordon ocp-cp-3.lab1.srib-lab-ocp.lan
+node/ocp-cp-3.lab1.srib-lab-ocp.lan uncordoned
+srib@ocp-haproxy-1:~$ oc get no
+NAME                             STATUS   ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
+srib@ocp-haproxy-1:~$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-54232a3f7ceb661f33be3e20cf35123e   False     True       True       3              0                   0                     1                      25d
+worker   rendered-worker-bc2946515b71a1f6ddc55175ebd446c1   True      False      False      0              0                   0                     0                      25d
+srib@ocp-haproxy-1:~$ oc get no
+NAME                             STATUS   ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready    control-plane,master,worker   25d   v1.32.10
+srib@ocp-haproxy-1:~$ oc get no
