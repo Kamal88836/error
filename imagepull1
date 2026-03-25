@@ -1,86 +1,112 @@
+Here is the **same valid ImageSetConfiguration.yaml** in plain (normal) YAML format — ready to copy and use:
+
+```yaml
 apiVersion: mirror.openshift.io/v2alpha1
 kind: ImageSetConfiguration
 
+archiveSize: 4
+
 mirror:
   platform:
+    graph: true
     channels:
-    - name: stable-4.19
-      minVersion: 4.19.23
-      maxVersion: 4.19.23
+      - name: stable-4.19
+        minVersion: 4.19.23
+        maxVersion: 4.19.23
 
   operators:
-  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
-    packages:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+      packages:
 
-    # =========================
-    # ODF FULL STACK (REQUIRED)
-    # =========================
-    - name: odf-operator
-      channels:
-      - name: stable-4.19
+        # ODF STACK
+        - name: odf-operator
+          channels:
+            - name: stable-4.19
 
-    - name: ocs-operator
-      channels:
-      - name: stable-4.19
+        - name: ocs-operator
+          channels:
+            - name: stable-4.19
 
-    - name: ocs-client-operator
-      channels:
-      - name: stable-4.19
+        - name: ocs-client-operator
+          channels:
+            - name: stable-4.19
 
-    - name: mcg-operator
-      channels:
-      - name: stable-4.19
+        - name: mcg-operator
+          channels:
+            - name: stable-4.19
 
-    - name: rook-ceph-operator
-      channels:
-      - name: stable-4.19
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.19
 
-    - name: cephcsi-operator
-      channels:
-      - name: stable-4.19
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.19
 
-    - name: odf-csi-addons-operator
-      channels:
-      - name: stable-4.19
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.19
 
-    - name: odf-prometheus-operator
-      channels:
-      - name: stable-4.19
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.19
 
-    - name: odf-dependencies
-      channels:
-      - name: stable-4.19
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.19
 
-    - name: recipe
-      channels:
-      - name: stable-4.19
+        - name: recipe
+          channels:
+            - name: stable-4.19
 
-    # =========================
-    # INFRA OPERATORS (CRITICAL)
-    # =========================
+        # INFRA OPERATORS
+        - name: local-storage-operator
+          channels:
+            - name: stable
 
-    - name: local-storage-operator
-      channels:
-      - name: stable
+        - name: kubernetes-nmstate-operator
+          channels:
+            - name: stable
 
-    - name: kubernetes-nmstate-operator
-      channels:
-      - name: stable
+        - name: ptp-operator
+          channels:
+            - name: stable
 
-    - name: ptp-operator
-      channels:
-      - name: stable
+        - name: sriov-network-operator
+          channels:
+            - name: stable
 
-    - name: sriov-network-operator
-      channels:
-      - name: stable
-
-    - name: lvms-operator
-      channels:
-      - name: stable-4.19
+        - name: lvms-operator
+          channels:
+            - name: stable-4.19
 
   additionalImages:
-  - name: quay.io/openshift-release-dev/ocp-release:4.19.23-x86_64
-  - name: registry.redhat.io/ubi8/ubi:latest
+    - name: registry.redhat.io/ubi8/ubi:latest
 
   helm: {}
+```
+
+---
+
+# ✅ Quick reminder (important for your issue)
+
+* Do **NOT** add `ocp-release` manually
+* Do **NOT** add `ocp-v4.0-art-dev`
+* Platform section already mirrors everything needed
+
+---
+
+# 🚀 Run
+
+```bash
+oc mirror --config imageset-config.yaml docker://bastion.srib-lab-ocp.lan:8443
+```
+
+---
+
+If you want, next I can:
+👉 Verify your mirror folder structure
+👉 Fix your IDMS paths exactly (root cause of your issue)
+👉 Help you complete upgrade cleanly
+
+Just tell 👍
