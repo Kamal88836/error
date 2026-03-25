@@ -1,163 +1,38 @@
-Good — this output is exactly what we needed. Your mirror is now correct and complete ✅
-
-But your current issue is NOT mirror anymore ❌
-It’s just a kubeconfig / apply mistake + refresh issue.
-
-
----
-
-🚨 Current Error
-
-error: Missing or incomplete configuration info
-
-👉 This means:
-
-❌ You are running oc apply from bastion without kubeconfig
-
-
----
-
-✅ Fix (VERY SIMPLE)
-
-Option 1 (Recommended)
-
-export KUBECONFIG=/root/auth/kubeconfig
-
-Then run:
-
-oc whoami
-
-👉 Must show cluster user
-
-
----
-
-Option 2
-
-oc login https://api.<cluster>:6443
-
-
----
-
-🚀 Now Apply Files (Correct Order)
-
-oc apply -f idms-oc-mirror.yaml
-oc apply -f cs-redhat-operator-index-v4-19.yaml
-
-(Optional but recommended for 4.19):
-
-oc apply -f cc-redhat-operator-index-v4-19.yaml
-
-
----
-
-🔄 Restart Marketplace (IMPORTANT)
-
-oc delete pod -n openshift-marketplace --all
-
-Wait 1–2 min.
-
-
----
-
-✅ Verify Catalog
-
-oc get packagemanifest -n openshift-marketplace | grep rook
-
-👉 Must show:
-
-rook-ceph-operator
-
-
----
-
-🚀 Recreate Subscriptions (Clean way)
-
-oc delete subscription -n openshift-storage --all
-
-Then apply:
-
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: odf-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.19
-  name: odf-operator
-  source: cs-redhat-operator-index-v4-19
-  sourceNamespace: openshift-marketplace
-  installPlanApproval: Automatic
-
-
----
-
-🔥 What Should Happen Now
-
-oc get installplan -n openshift-storage
-
-👉 You WILL see:
-
-install-xxxxx ✅
-
-Then:
-
-oc get csv -n openshift-storage
-
-👉 You’ll get:
-
-rook-ceph-operator ✅
-mcg-operator ✅
-cephcsi-operator ✅
-
-
----
-
-⚠️ Your Earlier Problem (Now Solved)
-
-Issue	Status
-
-Missing rook-ceph SA	❌ before
-No InstallPlan	❌ before
-Mirror incomplete	❌ before
-Mirror now complete	✅ FIXED
-Kubeconfig missing	🔥 current issue
-
-
-
----
-
-🎯 One Important Insight
-
-👉 Your mirror logs show:
-
-rook-ceph-operator-bundle ✅
-mcg-operator-bundle ✅
-cephcsi-operator-bundle ✅
-
-👉 That means:
-
-💯 You now have full ODF dependency chain mirrored correctly
-
-
----
-
-🚀 Final Step
-
-After applying IDMS + Catalog:
-
-👉 If still stuck, run:
-
-oc get installplan -n openshift-storage
-oc describe subscription odf-operator -n openshift-storage
-
-
----
-
-If you want, I can now:
-
-✔ Verify your cluster is 100% ready for upgrade
-✔ Check Ceph health (your mon-e + osd-0 issue)
-✔ Give exact fix for that scheduling + SA problem
-
-Just tell 👍
+srib@ocp-haproxy-1:~/ocp_4_19$ oc delete subscription -n openshift-storage --all
+subscription.operators.coreos.com "odf-dependencies" deleted
+subscription.operators.coreos.com "odf-operator" deleted
+subscription.operators.coreos.com "rook-ceph-operator" deleted
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ vi installplan.yaml
+srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f installplan.yaml
+subscription.operators.coreos.com/odf-operator created
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f installplan.yaml
+subscription.operators.coreos.com/odf-operator unchanged
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get sa -n openshift-storage
+NAME                                   SECRETS   AGE
+builder                                0         24d
+default                                0         24d
+deployer                               0         24d
+noobaa-db                              0         24d
+objectstorage-provisioner              0         24d
+ocs-metrics-exporter                   0         24d
+ocs-provider-server                    0         24d
+ocs-status-reporter                    0         24d
+odf-operator-controller-manager        0         24d
+onboarding-validation-keys-generator   0         24d
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_19$
