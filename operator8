@@ -1,209 +1,149 @@
-Perfect 👍 — now we finally see the REAL exact blocker (and this time it’s crystal clear).
+Good question — let’s verify properly, not guess 👍
 
 
 ---
 
-🚨 ROOT CAUSE (from your output)
+✅ From your mirror logs (VERY IMPORTANT)
 
-This line is the key:
+In your oc mirror output I can clearly see:
 
-constraints not satisfiable:
-bundle odf-dependencies.v4.19.12-rhodf requires:
-👉 ocs-client-operator (version 4.19.12-rhodf)
+ocs-operator-bundle@sha256:...
 
+❗ BUT I do NOT see:
 
----
-
-💥 What it means
-
-👉 Your catalog has ODF operator 👉 But it is missing one dependency operator
-
-❌ Missing:
-
-ocs-client-operator
-
+ocs-client-operator-bundle
 
 
 ---
 
-🔥 Why this happened
+🚨 Conclusion
 
-Even though you mirrored many operators, your ImageSetConfiguration missed one critical dependency:
+👉 ocs-client-operator is NOT mirrored
 
-👉 ocs-client-operator
+That’s exactly why:
 
-
----
-
-✅ GOOD NEWS
-
-👉 Everything else is working:
-
-✅ CatalogSource READY
-
-✅ InstallPlan created
-
-✅ ODF operator installed
-
-❌ Only dependency resolution failing
-
+constraints not satisfiable
+requires: ocs-client-operator
 
 
 ---
 
-🚀 FINAL FIX (VERY SIMPLE)
+🔍 Double confirmation (run this)
 
-✅ STEP 1: Add missing operator
+On bastion:
 
-Create subscription manually:
+oc image list-tags bastion.srib-lab-ocp.lan:8443/odf4 | grep ocs-client
 
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: ocs-client-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.19
-  name: ocs-client-operator
-  source: cs-redhat-operator-index-v4-19
-  sourceNamespace: openshift-marketplace
-  installPlanApproval: Automatic
+OR
 
-Apply:
+podman search bastion.srib-lab-ocp.lan:8443/odf4 | grep ocs-client
 
-oc apply -f ocs-client.yaml
+👉 You will likely see nothing
 
 
 ---
 
-✅ STEP 2: Watch install
+💥 Root problem in your config
 
-oc get installplan -n openshift-storage
-oc get csv -n openshift-storage -w
+Your ImageSetConfiguration had:
 
+- name: ocs-operator
 
----
+But NOT:
 
-👉 Expected:
-
-ocs-client-operator → Installing → Succeeded
+- name: ocs-client-operator   ❌ missing
 
 
 ---
 
-✅ STEP 3: ODF dependencies will auto-fix
+🚀 FINAL FIX (mirror again)
 
-Once above is installed:
+Update your ImageSetConfiguration:
 
-👉 odf-dependencies will resolve automatically
-👉 Then:
+- catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+  packages:
 
-rook-ceph-operator
-mcg-operator
-cephcsi-operator
+  - name: odf-operator
+    channels:
+    - name: stable-4.19
 
-👉 will start installing
+  - name: ocs-operator
+    channels:
+    - name: stable-4.19
+
+  - name: ocs-client-operator   # ✅ ADD THIS
+    channels:
+    - name: stable-4.19
+
+  - name: odf-csi-addons-operator
+    channels:
+    - name: stable-4.19
 
 
 ---
 
-🔥 IMPORTANT (Disconnected env lesson)
+⚡ Then re-run
 
-In disconnected:
+# 1. mirror to disk
+oc mirror -c imageset-config.yaml file:///root/mirror_fix --v2
 
-👉 OLM DOES NOT auto-fetch missing operators 👉 You MUST mirror ALL dependencies
+# 2. push to registry
+oc mirror -c imageset-config.yaml --from file:///root/mirror_fix docker://bastion.srib-lab-ocp.lan:8443 --v2
 
 
 ---
 
-📦 FINAL REQUIRED LIST (ODF 4.19)
+✅ Apply updated IDMS + Catalog
 
-You should always include:
+oc apply -f working-dir/cluster-resources/idms-oc-mirror.yaml
+oc apply -f working-dir/cluster-resources/cs-redhat-operator-index-v4-19.yaml
+
+
+---
+
+🔁 Restart OLM (important)
+
+oc delete pod -n openshift-marketplace -l olm.catalogSource=cs-redhat-operator-index-v4-19
+
+
+---
+
+🚀 Then recreate subscription
+
+oc delete subscription -n openshift-storage --all
+
+Recreate only:
 
 odf-operator
-odf-dependencies
-ocs-operator
-ocs-client-operator   ✅ (YOU MISSED THIS)
-rook-ceph-operator
-cephcsi-operator
-mcg-operator
-odf-csi-addons-operator
-odf-prometheus-operator
+
+👉 OLM will auto install everything (including ocs-client)
 
 
 ---
 
-⚠️ Why InstallPlan was weird earlier
+🎯 Final expected
 
-OLM partially resolved
-
-Then got stuck due to missing dependency
-
-That’s why:
-
-CSV installed
-
-But no full dependency chain
-
-
-
-
----
-
-🚀 After fix
-
-Run:
-
-oc get subscription -n openshift-storage
 oc get csv -n openshift-storage
 
 You should see:
 
-rook-ceph-operator   ✅
-cephcsi-operator     ✅
-mcg-operator         ✅
-ocs-operator         ✅
-ocs-client-operator  ✅
+ocs-client-operator   ✅
+ocs-operator          ✅
+rook-ceph-operator    ✅
+cephcsi-operator      ✅
+mcg-operator          ✅
 
 
 ---
 
-🎯 Your current state
+🧠 Important lesson (you hit classic disconnected issue)
 
-Component	Status
-
-Mirror	✅ Perfect
-Catalog	✅ Healthy
-ODF operator	✅ Installed
-Dependency chain	❌ Missing ocs-client
-
+👉 ODF dependency chain is NOT obvious 👉 Missing even 1 operator = full failure
 
 
 ---
 
-🧠 Pro Tip (VERY IMPORTANT)
+If you want, I’ll give you:
 
-Next time:
-
-👉 Always run:
-
-oc adm catalog mirror --manifests-only
-
-OR
-
-oc mirror --config ... (full dependency mode)
-
-👉 So you NEVER miss hidden deps like this
-
-
----
-
-🚀 If you want next
-
-I can help you:
-
-✔ Build perfect disconnected ImageSetConfig (zero issues)
-✔ Fix rook-ceph-mon scheduling issue
-✔ Validate ODF cluster health end-to-end
-
-Just say 👍
+✅ Bulletproof ImageSetConfig (ODF + all deps, zero miss)
+So you never debug this again 😄
