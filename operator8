@@ -1,26 +1,163 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f idms-oc-mirror.yaml
-imagedigestmirrorset.config.openshift.io/idms-operator-0 configured
-srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f cs-redhat-operator-index-v4-19.yaml
-catalogsource.operators.coreos.com/cs-redhat-operator-index-v4-19 configured
-srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f cc-redhat-operator-index-v4-19.yaml
-clustercatalog.olm.operatorframework.io/cc-redhat-operator-index-v4-19 configured
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete pod -n openshift-marketplace -l olm.catalogSource=cs-redhat-operator-index-v4-19
-pod "cs-redhat-operator-index-v4-19-kmpnf" deleted
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete subscription -n openshift-storage --all
-subscription.operators.coreos.com "odf-dependencies" deleted
-subscription.operators.coreos.com "odf-operator" deleted
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete subscription -n openshift-storage --all
-No resources found
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete pod -n openshift-marketplace -l olm.catalogSource=cs-redhat-operator-index-v4-19
-pod "cs-redhat-operator-index-v4-19-5rg9x" deleted
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$
+Perfect 👍 — you’ve done cleanup correctly. Now you’re at the clean slate stage (this is exactly where we want to be).
+
+
+---
+
+✅ Current State (Good)
+
+✔ Catalog refreshed
+✔ IDMS updated
+✔ Old subscriptions removed
+✔ OLM restarted
+
+👉 Now we install fresh and correctly
+
+
+---
+
+🚨 IMPORTANT BEFORE NEXT STEP
+
+We must confirm one thing:
+
+👉 Did you re-mirror with ocs-client-operator included?
+
+If NO, stop here ❌
+If YES, continue ✅
+
+
+---
+
+🚀 STEP 1: Verify ocs-client exists in catalog
+
+Run:
+
+oc get packagemanifest -n openshift-marketplace | grep ocs-client
+
+
+---
+
+👉 Expected output:
+
+ocs-client-operator
+
+
+---
+
+❌ If NOT present
+
+👉 Your mirror is still incomplete
+👉 Go back and re-mirror (I’ll guide if needed)
+
+
+---
+
+🚀 STEP 2: Create ONLY ODF subscription
+
+Now apply ONLY this:
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: odf-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.19
+  name: odf-operator
+  source: cs-redhat-operator-index-v4-19
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+
+Apply:
+
+oc apply -f odf-sub.yaml
+
+
+---
+
+🚀 STEP 3: Watch magic (OLM dependency resolution)
+
+Run:
+
+oc get installplan -n openshift-storage
+oc get csv -n openshift-storage -w
+
+
+---
+
+✅ Expected flow
+
+You should see:
+
+odf-operator                ✅
+odf-dependencies            ✅
+ocs-operator                ✅
+ocs-client-operator         ✅   ⭐ (this was missing earlier)
+rook-ceph-operator          ✅
+cephcsi-operator            ✅
+mcg-operator                ✅
+
+
+---
+
+🔥 If InstallPlan NOT created again
+
+Then 100% this is still the issue:
+
+👉 ocs-client-operator NOT in catalog
+
+
+---
+
+🔍 Quick deep check
+
+Run:
+
+oc get packagemanifest ocs-client-operator -n openshift-marketplace -o yaml
+
+
+---
+
+If error:
+
+NotFound
+
+👉 Mirror is incomplete ❌
+
+
+---
+
+🎯 Summary
+
+Step	Status
+
+Mirror operators	⚠️ Need confirm ocs-client
+Catalog	✅ OK
+IDMS	✅ OK
+Subscription	⏳ Ready to recreate
+
+
+
+---
+
+💡 Key understanding (VERY IMPORTANT)
+
+👉 ODF is meta operator 👉 It DOES NOT work alone
+
+It strictly depends on:
+
+ocs-client-operator ← YOU MISSED THIS
+
+Without it: ❌ No InstallPlan
+❌ No dependencies
+❌ No rook-ceph SA → (your earlier issue)
+
+
+---
+
+🚀 Next step
+
+👉 Run this and paste output:
+
+oc get packagemanifest | grep ocs-client
+
+I’ll tell you instantly if you’re 100% fixed or still missing something 👍
