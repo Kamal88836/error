@@ -1,12 +1,63 @@
-apiVersion: mirror.openshift.io/v2alpha1
 kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v2alpha1
 
 mirror:
-  operators:
-    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
-      packages:
+  platform:
+    channels:
+    - name: stable-4.19
+      type: ocp
+      minVersion: 4.19.23
+      maxVersion: 4.19.23
+      shortestPath: true
 
-        # ODF FULL STACK (MANDATORY)
+  operators:
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+    packages:
+
+    # ODF (Top-level only)
+    - name: odf-operator
+      channels:
+      - name: stable-4.19
+    - name: ocs-operator
+      channels:
+      - name: stable-4.19
+    - name: odf-csi-addons-operator
+      channels:
+      - name: stable-4.19
+
+    # Networking / Infra
+    - name: sriov-network-operator
+      channels:
+      - name: stable
+    - name: ptp-operator
+      channels:
+      - name: stable
+    - name: kubernetes-nmstate-operator
+      channels:
+      - name: stable
+
+    # Storage
+    - name: local-storage-operator
+      channels:
+      - name: stable
+    - name: lvms-operator
+      defaultchannel: stable-4.19
+
+
+    # Logging
+    - name: cluster-logging
+      channels:
+      - name: stable-6.4
+
+  additionalImages:
+  - name: quay.io/openshift-release-dev/ocp-release:4.19.23-x86_64
+  - name: registry.redhat.io/ubi8/ubi:latest
+
+  helm: {}
+[root@bastion mirror_4_19_23]#
+
+
+# ODF FULL STACK (MANDATORY)
         - name: odf-operator
           channels:
             - name: stable-4.19
@@ -70,63 +121,3 @@ mirror:
         - name: cluster-logging
           channels:
 
-
-
-
-
-===================
-
-
-apiVersion: mirror.openshift.io/v2alpha1
-
-mirror:
-  platform:
-    channels:
-    - name: stable-4.19
-      type: ocp
-      minVersion: 4.19.23
-      maxVersion: 4.19.23
-      shortestPath: true
-
-  operators:
-  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
-    packages:
-
-    # ODF (Top-level only)
-    - name: odf-operator
-      channels:
-      - name: stable-4.19
-    - name: ocs-operator
-      channels:
-      - name: stable-4.19
-    - name: odf-csi-addons-operator
-      channels:
-      - name: stable-4.19
-
-    # Networking / Infra
-    - name: sriov-network-operator
-      channels:
-      - name: stable
-    - name: ptp-operator
-      channels:
-      - name: stable
-    - name: kubernetes-nmstate-operator
-      channels:
-      - name: stable
-
-    # Storage
-    - name: local-storage-operator
-      channels:
-      - name: stable
-    - name: lvms-operator
-      defaultchannel: stable-4.19
-
-
-    # Logging
-    - name: cluster-logging
-      channels:
-      - name: stable-6.4
-
-  additionalImages:
-  - name: quay.io/openshift-release-dev/ocp-release:4.19.23-x86_64
-  - name: registry.redhat.io/ubi8/ubi:latest
