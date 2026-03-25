@@ -1,338 +1,172 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-NAME                 PACKAGE              SOURCE                           CHANNEL
-cephcsi-operator     cephcsi-operator     cs-redhat-operator-index-v4-19   stable-4.19
-mcg-operator         mcg-operator         cs-redhat-operator-index-v4-19   stable-4.19
-ocs-operator         ocs-operator         cs-redhat-operator-index-v4-19   stable-4.19
-odf-dependencies     odf-dependencies     cs-redhat-operator-index-v4-19   stable-4.19
-odf-operator         odf-operator         cs-redhat-operator-index-v4-19   stable-4.19
-rook-ceph-operator   rook-ceph-operator   cs-redhat-operator-index-v4-19   stable-4.19
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get po  -n  openshift-storage
-NAME                                                              READY   STATUS     RESTARTS   AGE
-noobaa-core-0                                                     2/2     Running    0          16h
-noobaa-db-pg-0                                                    1/1     Running    0          16h
-noobaa-endpoint-7dc7855867-vpd2k                                  1/1     Running    0          16h
-ocs-metrics-exporter-74c467b6c7-zx2pg                             2/3     Running    0          16h
-odf-console-69695b478d-h4ltd                                      1/1     Running    0          14m
-odf-operator-controller-manager-79cdcbd66f-5v6g8                  1/1     Running    0          14m
-rook-ceph-crashcollector-ocp-cp-3.lab1.srib-lab-ocp.lan-774s8fn   1/1     Running    0          18h
-rook-ceph-exporter-ocp-cp-3.lab1.srib-lab-ocp.lan-7dc8d48ch95wt   1/1     Running    0          18h
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-56d96bf9hd9pf   2/2     Running    0          18h
-rook-ceph-mgr-a-55958fc9f-blfpx                                   4/4     Running    0          18h
-rook-ceph-mon-b-75cf66c988-x6sxp                                  2/2     Running    0          16h
-rook-ceph-mon-d-5786d97596-7nsk8                                  2/2     Running    0          19h
-rook-ceph-mon-e-864b4dcddd-rg78j                                  0/2     Init:0/2   0          17m
-rook-ceph-osd-0-75d85658c7-t7zs4                                  0/2     Init:0/4   0          17m
-rook-ceph-osd-1-b944c5b94-24htw                                   2/2     Running    0          18h
-rook-ceph-osd-2-698df4db65-cx4mv                                  2/2     Running    0          16h
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-7f7b5b64z2n7   2/2     Running    0          16h
-srib@ocp-haproxy-1:~/ocp_4_19$ oc describe  po rook-ceph-mon-e-864b4dcddd-rg78j  -n  openshift-storage
-Name:                 rook-ceph-mon-e-864b4dcddd-rg78j
-Namespace:            openshift-storage
-Priority:             2000001000
-Priority Class Name:  system-node-critical
-Service Account:      rook-ceph-default
-Node:                 ocp-cp-2.lab1.srib-lab-ocp.lan/71.1.1.227
-Start Time:           Wed, 25 Mar 2026 15:06:28 +0530
-Labels:               app=rook-ceph-mon
-                      app.kubernetes.io/component=cephclusters.ceph.rook.io
-                      app.kubernetes.io/created-by=rook-ceph-operator
-                      app.kubernetes.io/instance=e
-                      app.kubernetes.io/managed-by=rook-ceph-operator
-                      app.kubernetes.io/name=ceph-mon
-                      app.kubernetes.io/part-of=ocs-storagecluster-cephcluster
-                      ceph_daemon_id=e
-                      ceph_daemon_type=mon
-                      mon=e
-                      mon_cluster=openshift-storage
-                      mon_daemon=true
-                      odf-resource-profile=
-                      pod-template-hash=864b4dcddd
-                      rook.io/operator-namespace=openshift-storage
-                      rook_cluster=openshift-storage
-Annotations:          k8s.ovn.org/pod-networks:
-                        {"default":{"ip_addresses":["10.128.0.108/23","fd01:0:0:1::6c/64"],"mac_address":"0a:58:0a:80:00:6c","gateway_ips":["10.128.0.1","fd01:0:0...
-                      k8s.v1.cni.cncf.io/networks: [{"name":"ocs-public-cluster","namespace":"openshift-storage"}]
-                      openshift.io/scc: rook-ceph
-Status:               Pending
-IP:
-IPs:                  <none>
-Controlled By:        ReplicaSet/rook-ceph-mon-e-864b4dcddd
-Init Containers:
-  chown-container-data-dir:
-    Container ID:
-    Image:         registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:18dcebef13476420597458155ce97d12ab426a5a014e7fd816f7a531d5ee4b92
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      chown
-    Args:
-      --verbose
-      --recursive
-      ceph:ceph
-      /var/log/ceph
-      /var/lib/ceph/crash
-      /run/ceph
-      /var/lib/ceph/mon/ceph-e
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:     1
-      memory:  2Gi
-    Requests:
-      cpu:        1
-      memory:     2Gi
-    Environment:  <none>
-    Mounts:
-      /etc/ceph from rook-config-override (ro)
-      /etc/ceph/keyring-store/ from rook-ceph-mons-keyring (ro)
-      /run/ceph from ceph-daemons-sock-dir (rw)
-      /var/lib/ceph/crash from rook-ceph-crash (rw)
-      /var/lib/ceph/mon/ceph-e from ceph-daemon-data (rw)
-      /var/log/ceph from rook-ceph-log (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5hwbm (ro)
-  init-mon-fs:
-    Container ID:
-    Image:         registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:18dcebef13476420597458155ce97d12ab426a5a014e7fd816f7a531d5ee4b92
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      ceph-mon
-    Args:
-      --fsid=06e4958b-e790-42e2-baad-82569c965b0a
-      --keyring=/etc/ceph/keyring-store/keyring
-      --default-log-to-stderr=true
-      --default-err-to-stderr=true
-      --default-mon-cluster-log-to-stderr=true
-      --default-log-stderr-prefix=debug
-      --default-log-to-file=false
-      --default-mon-cluster-log-to-file=false
-      --mon-host=$(ROOK_CEPH_MON_HOST)
-      --mon-initial-members=$(ROOK_CEPH_MON_INITIAL_MEMBERS)
-      --id=e
-      --setuser=ceph
-      --setgroup=ceph
-      --ms-bind-ipv4=true
-      --ms-bind-ipv6=false
-      --public-addr=172.30.204.69
-      --mkfs
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:     1
-      memory:  2Gi
-    Requests:
-      cpu:     1
-      memory:  2Gi
-    Environment:
-      CONTAINER_IMAGE:                registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:18dcebef13476420597458155ce97d12ab426a5a014e7fd816f7a531d5ee4b92
-      POD_NAME:                       rook-ceph-mon-e-864b4dcddd-rg78j (v1:metadata.name)
-      POD_NAMESPACE:                  openshift-storage (v1:metadata.namespace)
-      NODE_NAME:                       (v1:spec.nodeName)
-      POD_MEMORY_LIMIT:               2147483648 (limits.memory)
-      POD_MEMORY_REQUEST:             2147483648 (requests.memory)
-      POD_CPU_LIMIT:                  1 (limits.cpu)
-      POD_CPU_REQUEST:                1 (requests.cpu)
-      CEPH_USE_RANDOM_NONCE:          true
-      ROOK_MSGR2:                     msgr2_true_encryption_false_compression_false
-      ROOK_CEPH_MON_HOST:             <set to the key 'mon_host' in secret 'rook-ceph-config'>             Optional: false
-      ROOK_CEPH_MON_INITIAL_MEMBERS:  <set to the key 'mon_initial_members' in secret 'rook-ceph-config'>  Optional: false
-    Mounts:
-      /etc/ceph from rook-config-override (ro)
-      /etc/ceph/keyring-store/ from rook-ceph-mons-keyring (ro)
-      /run/ceph from ceph-daemons-sock-dir (rw)
-      /var/lib/ceph/crash from rook-ceph-crash (rw)
-      /var/lib/ceph/mon/ceph-e from ceph-daemon-data (rw)
-      /var/log/ceph from rook-ceph-log (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5hwbm (ro)
-Containers:
-  mon:
-    Container ID:
-    Image:         registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:18dcebef13476420597458155ce97d12ab426a5a014e7fd816f7a531d5ee4b92
-    Image ID:
-    Port:          3300/TCP
-    Host Port:     0/TCP
-    Command:
-      ceph-mon
-    Args:
-      --fsid=06e4958b-e790-42e2-baad-82569c965b0a
-      --keyring=/etc/ceph/keyring-store/keyring
-      --default-log-to-stderr=true
-      --default-err-to-stderr=true
-      --default-mon-cluster-log-to-stderr=true
-      --default-log-stderr-prefix=debug
-      --default-log-to-file=false
-      --default-mon-cluster-log-to-file=false
-      --mon-host=$(ROOK_CEPH_MON_HOST)
-      --mon-initial-members=$(ROOK_CEPH_MON_INITIAL_MEMBERS)
-      --id=e
-      --setuser=ceph
-      --setgroup=ceph
-      --ms-bind-ipv4=true
-      --ms-bind-ipv6=false
-      --foreground
-      --public-addr=172.30.204.69
-      --setuser-match-path=/var/lib/ceph/mon/ceph-e/store.db
-      --ms-bind-msgr1=false
-      --public-bind-addr=$(ROOK_POD_IP):3300
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:     1
-      memory:  2Gi
-    Requests:
-      cpu:     1
-      memory:  2Gi
-    Liveness:  exec [env -i sh -c
-outp="$(ceph --admin-daemon /run/ceph/ceph-mon.e.asok mon_status 2>&1)"
-rc=$?
-if [ $rc -ne 0 ]; then
-  echo "ceph daemon health check failed with the following output:"
-  echo "$outp" | sed -e 's/^/> /g'
-  exit $rc
-fi
-] delay=10s timeout=5s period=10s #success=1 #failure=3
-    Startup:  exec [env -i sh -c
-outp="$(ceph --admin-daemon /run/ceph/ceph-mon.e.asok mon_status 2>&1)"
-rc=$?
-if [ $rc -ne 0 ]; then
-  echo "ceph daemon health check failed with the following output:"
-  echo "$outp" | sed -e 's/^/> /g'
-  exit $rc
-fi
-] delay=10s timeout=5s period=10s #success=1 #failure=6
-    Environment:
-      CONTAINER_IMAGE:                registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:18dcebef13476420597458155ce97d12ab426a5a014e7fd816f7a531d5ee4b92
-      POD_NAME:                       rook-ceph-mon-e-864b4dcddd-rg78j (v1:metadata.name)
-      POD_NAMESPACE:                  openshift-storage (v1:metadata.namespace)
-      NODE_NAME:                       (v1:spec.nodeName)
-      POD_MEMORY_LIMIT:               2147483648 (limits.memory)
-      POD_MEMORY_REQUEST:             2147483648 (requests.memory)
-      POD_CPU_LIMIT:                  1 (limits.cpu)
-      POD_CPU_REQUEST:                1 (requests.cpu)
-      CEPH_USE_RANDOM_NONCE:          true
-      ROOK_MSGR2:                     msgr2_true_encryption_false_compression_false
-      ROOK_CEPH_MON_HOST:             <set to the key 'mon_host' in secret 'rook-ceph-config'>             Optional: false
-      ROOK_CEPH_MON_INITIAL_MEMBERS:  <set to the key 'mon_initial_members' in secret 'rook-ceph-config'>  Optional: false
-      ROOK_POD_IP:                     (v1:status.podIP)
-    Mounts:
-      /etc/ceph from rook-config-override (ro)
-      /etc/ceph/keyring-store/ from rook-ceph-mons-keyring (ro)
-      /run/ceph from ceph-daemons-sock-dir (rw)
-      /var/lib/ceph/crash from rook-ceph-crash (rw)
-      /var/lib/ceph/mon/ceph-e from ceph-daemon-data (rw)
-      /var/log/ceph from rook-ceph-log (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5hwbm (ro)
-  log-collector:
-    Container ID:
-    Image:         registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:18dcebef13476420597458155ce97d12ab426a5a014e7fd816f7a531d5ee4b92
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      /bin/bash
-      -x
-      -e
-      -m
-      -c
+You’ve done the hard part already 👍 — operators are now correctly subscribed and upgrading.
 
-      CEPH_CLIENT_ID=ceph-mon.e
-      PERIODICITY=daily
-      LOG_ROTATE_CEPH_FILE=/etc/logrotate.d/ceph
-      LOG_MAX_SIZE=524M
-      ROTATE=7
+But the issue you’re seeing now is NOT operator upgrade anymore.
+It’s a runtime problem in Ceph (ODF) 👇
 
-      # edit the logrotate file to only rotate a specific daemon log
-      # otherwise we will logrotate log files without reloading certain daemons
-      # this might happen when multiple daemons run on the same machine
-      sed -i "s|*.log|$CEPH_CLIENT_ID.log|" "$LOG_ROTATE_CEPH_FILE"
 
-      # replace default daily with given user input
-      sed --in-place "s/daily/$PERIODICITY/g" "$LOG_ROTATE_CEPH_FILE"
+---
 
-      # replace rotate count, default 7 for all ceph daemons other than rbd-mirror
-      sed --in-place "s/rotate 7/rotate $ROTATE/g" "$LOG_ROTATE_CEPH_FILE"
+🚨 Root Cause (Very Clear)
 
-      if [ "$LOG_MAX_SIZE" != "0" ]; then
-        # adding maxsize $LOG_MAX_SIZE at the 4th line of the logrotate config file with 4 spaces to maintain indentation
-        sed --in-place "4i \ \ \ \ maxsize $LOG_MAX_SIZE" "$LOG_ROTATE_CEPH_FILE"
-      fi
+From your pod:
 
-      while true; do
-        # we don't force the logrorate but we let the logrotate binary handle the rotation based on user's input for periodicity and size
-        logrotate --verbose "$LOG_ROTATE_CEPH_FILE"
-        sleep 15m
-      done
+FailedMount: serviceaccounts "rook-ceph-default" not found
 
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Environment:    <none>
-    Mounts:
-      /etc/ceph from rook-config-override (ro)
-      /run/ceph from ceph-daemons-sock-dir (rw)
-      /var/lib/ceph/crash from rook-ceph-crash (rw)
-      /var/log/ceph from rook-ceph-log (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5hwbm (ro)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   False
-  Initialized                 False
-  Ready                       False
-  ContainersReady             False
-  PodScheduled                True
-Volumes:
-  rook-config-override:
-    Type:               Projected (a volume that contains injected data from multiple sources)
-    ConfigMapName:      rook-config-override
-    ConfigMapOptional:  <nil>
-  rook-ceph-mons-keyring:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  rook-ceph-mons-keyring
-    Optional:    false
-  ceph-daemons-sock-dir:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/lib/rook/exporter
-    HostPathType:  DirectoryOrCreate
-  rook-ceph-log:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/lib/rook/openshift-storage/log
-    HostPathType:
-  rook-ceph-crash:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/lib/rook/openshift-storage/crash
-    HostPathType:
-  ceph-daemon-data:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/lib/rook/mon-e/data
-    HostPathType:
-  kube-api-access-5hwbm:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-QoS Class:                   Burstable
-Node-Selectors:              kubernetes.io/hostname=ocp-cp-2.lab1.srib-lab-ocp.lan
-Tolerations:                 node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-                             node.ocs.openshift.io/storage=true:NoSchedule
-Events:
-  Type     Reason            Age                From               Message
-  ----     ------            ----               ----               -------
-  Warning  FailedScheduling  17m                default-scheduler  0/3 nodes are available: 1 node(s) were unschedulable, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  14m                default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {node.kubernetes.io/unschedulable: }, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
-  Normal   Scheduled         14m                default-scheduler  Successfully assigned openshift-storage/rook-ceph-mon-e-864b4dcddd-rg78j to ocp-cp-2.lab1.srib-lab-ocp.lan
-  Warning  FailedMount       5s (x15 over 14m)  kubelet            MountVolume.SetUp failed for volume "kube-api-access-5hwbm" : failed to fetch token: serviceaccounts "rook-ceph-default" not found
-srib@ocp-haproxy-1:~/ocp_4_19$
+👉 This is the problem.
+
+
+---
+
+🧠 What Happened
+
+When you did:
+
+oc delete subscription --all
+
+👉 OLM likely removed some dependent resources, including:
+
+ServiceAccounts ❌
+
+RBAC ❌
+
+
+But:
+
+Pods still exist ✔
+
+Storage cluster CR still exists ✔
+
+
+👉 So now: Pods are trying to start, but required ServiceAccount is missing
+
+
+---
+
+🔥 Current Impact
+
+rook-ceph-mon stuck ❌
+
+osd stuck ❌
+
+Cluster partially degraded ❌
+
+
+
+---
+
+✅ FIX (Safe, No Data Loss)
+
+🔥 Step 1: Check missing ServiceAccount
+
+oc get sa -n openshift-storage | grep rook
+
+👉 You will NOT see:
+
+rook-ceph-default ❌
+
+
+---
+
+🔥 Step 2: Restart rook-ceph-operator (IMPORTANT)
+
+oc delete pod -n openshift-storage -l app=rook-ceph-operator
+
+👉 This forces operator to:
+
+Recreate ServiceAccounts ✔
+
+Recreate RBAC ✔
+
+
+
+---
+
+🔄 Step 3: Watch Recovery
+
+oc get sa -n openshift-storage
+
+👉 You should see:
+
+rook-ceph-default ✅
+
+
+---
+
+🔄 Step 4: Restart failing pods
+
+oc delete pod -n openshift-storage \
+  -l app=rook-ceph-mon
+
+oc delete pod -n openshift-storage \
+  -l app=rook-ceph-osd
+
+
+---
+
+🚀 Expected Result
+
+Pods will move:
+
+Init → Running ✅
+
+
+---
+
+⚠️ If Still Not Created
+
+👉 Then force full reconcile:
+
+oc delete pod -n openshift-storage -l app=odf-operator
+oc delete pod -n openshift-storage -l app=rook-ceph-operator
+
+
+---
+
+🧠 Why This Happened (Important Lesson)
+
+In ODF:
+
+odf-operator → manages high-level
+
+rook-ceph-operator → manages Ceph internals
+
+
+👉 Deleting subscriptions temporarily breaks:
+
+ServiceAccounts
+
+Roles
+
+Operator ownership
+
+
+
+---
+
+✅ Your Current Progress
+
+Component	Status
+
+Mirror	✅
+Catalog	✅
+Subscriptions	✅
+Operator upgrade	✅
+Storage runtime	❌ (fix now)
+
+
+
+---
+
+🚀 Do This Now
+
+Run:
+
+oc get sa -n openshift-storage
+oc delete pod -n openshift-storage -l app=rook-ceph-operator
+
+Then send:
+
+oc get sa -n openshift-storage
+oc get po -n openshift-storage
+
+👉 I’ll confirm full recovery 👍
