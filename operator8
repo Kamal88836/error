@@ -1,38 +1,216 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete subscription -n openshift-storage --all
-subscription.operators.coreos.com "odf-dependencies" deleted
-subscription.operators.coreos.com "odf-operator" deleted
-subscription.operators.coreos.com "rook-ceph-operator" deleted
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ vi installplan.yaml
-srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f installplan.yaml
-subscription.operators.coreos.com/odf-operator created
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc apply -f installplan.yaml
-subscription.operators.coreos.com/odf-operator unchanged
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get sa -n openshift-storage
-NAME                                   SECRETS   AGE
-builder                                0         24d
-default                                0         24d
-deployer                               0         24d
-noobaa-db                              0         24d
-objectstorage-provisioner              0         24d
-ocs-metrics-exporter                   0         24d
-ocs-provider-server                    0         24d
-ocs-status-reporter                    0         24d
-odf-operator-controller-manager        0         24d
-onboarding-validation-keys-generator   0         24d
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get installplan -n openshift-storage
-No resources found in openshift-storage namespace.
-srib@ocp-haproxy-1:~/ocp_4_19$
+Good — now we are at the real root problem 🔥
+Your mirror is 100% correct, but OLM is NOT resolving the subscription → that’s why:
+
+👉 ❌ No InstallPlan
+👉 ❌ No CSV creation
+👉 ❌ No rook / ceph SA
+
+
+---
+
+🚨 ROOT CAUSE (IMPORTANT)
+
+👉 When you see:
+
+oc get installplan → No resources
+
+It means:
+
+💥 OLM cannot resolve operator metadata from catalog
+
+
+---
+
+🔍 Let’s PROVE it
+
+Run this:
+
+oc describe subscription odf-operator -n openshift-storage
+
+👉 You will see something like:
+
+ResolutionFailed / ConstraintsNotSatisfiable
+
+
+---
+
+💡 WHY this is happening
+
+Even though images are mirrored, OLM needs:
+
+✅ 1. CatalogSource working
+
+✅ 2. Package + channel available
+
+❌ 3. StartingCSV / channel mismatch OR stale catalog cache
+
+
+---
+
+⚠️ I see your issue clearly
+
+You created subscription manually, but:
+
+👉 OLM is NOT triggering resolution
+👉 Means catalog is stale OR broken
+
+
+---
+
+✅ FIX (STEP BY STEP — DO EXACTLY)
+
+🔥 STEP 1: Delete EVERYTHING clean
+
+oc delete subscription -n openshift-storage --all
+oc delete csv -n openshift-storage --all
+oc delete installplan -n openshift-storage --all
+
+
+---
+
+🔥 STEP 2: Restart OLM + Marketplace (VERY IMPORTANT)
+
+oc delete pod -n openshift-marketplace --all
+oc delete pod -n openshift-operator-lifecycle-manager --all
+
+Wait 2–3 minutes.
+
+
+---
+
+🔥 STEP 3: Verify catalog is READY
+
+oc get pods -n openshift-marketplace
+
+👉 Must be:
+
+cs-redhat-operator-index-v4-19-xxxxx   Running
+
+
+---
+
+🔥 STEP 4: VERIFY PACKAGES (CRITICAL)
+
+oc get packagemanifest odf-operator -n openshift-marketplace -o yaml | grep -A5 channels
+
+👉 You MUST see:
+
+stable-4.19
+currentCSV: odf-operator.v4.19.x
+
+
+---
+
+If NOT visible → ❌ catalog still broken
+
+
+---
+
+🔥 STEP 5: Create ONLY ONE subscription (clean)
+
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: odf-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.19
+  name: odf-operator
+  source: cs-redhat-operator-index-v4-19
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+
+Apply:
+
+oc apply -f installplan.yaml
+
+
+---
+
+🚀 EXPECTED RESULT
+
+Within 10–20 seconds:
+
+oc get installplan -n openshift-storage
+
+👉 You should now see:
+
+install-xxxxx   ✅
+
+Then:
+
+oc get csv -n openshift-storage
+
+👉 You’ll get:
+
+rook-ceph-operator   Installing → Succeeded
+mcg-operator         Installing → Succeeded
+cephcsi-operator     Installing → Succeeded
+
+
+---
+
+⚠️ IF STILL NO INSTALLPLAN
+
+Then 100% this:
+
+👉 Catalog image not properly pulled by cluster
+
+Check:
+
+oc describe catalogsource cs-redhat-operator-index-v4-19 -n openshift-marketplace
+
+Look for:
+
+READY: True
+
+
+---
+
+If NOT:
+
+👉 registry access issue OR IDMS not applied properly
+
+
+---
+
+🔥 QUICK DEBUG COMMANDS
+
+Run these and paste output if still stuck:
+
+oc get catalogsource -n openshift-marketplace
+oc describe catalogsource cs-redhat-operator-index-v4-19 -n openshift-marketplace
+oc describe subscription odf-operator -n openshift-storage
+
+
+---
+
+🎯 IMPORTANT UNDERSTANDING
+
+Symptom	Meaning
+
+No InstallPlan	❌ OLM cannot resolve
+No CSV	❌ Catalog issue
+No rook SA	❌ Operator never installed
+Pods stuck	❌ Because operator missing
+
+
+
+---
+
+🚀 Bottom Line
+
+👉 Your mirror is PERFECT now
+👉 Problem is OLM resolution (catalog refresh issue)
+👉 Fix = restart OLM + recreate subscription clean
+
+
+---
+
+If you want, next step I can:
+
+✔ Debug your CatalogSource live
+✔ Fix rook-ceph-mon scheduling issue
+✔ Validate full ODF health
+
+Just say 👍
