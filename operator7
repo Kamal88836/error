@@ -1,22 +1,196 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get csv -n openshift-storage | grep rook
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete subscription rook-ceph-operator -n openshift-storage
-subscription.operators.coreos.com "rook-ceph-operator" deleted
-srib@ocp-haproxy-1:~/ocp_4_19$ cat <<EOF | oc apply -f -
-> apiVersion: operators.coreos.com/v1alpha1
-> kind: Subscription
-> metadata:
->   name: rook-ceph-operator
->   namespace: openshift-storage
-> spec:
->   channel: stable-4.19
->   name: rook-ceph-operator
->   source: cs-redhat-operator-index-v4-19
->   sourceNamespace: openshift-marketplace
->   installPlanApproval: Automatic
-> EOF
-subscription.operators.coreos.com/rook-ceph-operator created
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get sa -n openshift-storage | grep rook
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get csv -n openshift-storage
-NAME                          DISPLAY                     VERSION         REPLACES                      PHASE
-odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.18.14-rhodf   Succeeded
-srib@ocp-haproxy-1:~/ocp_4_19$
+Good, you did the right step 👍 — but the behavior you’re seeing tells us something important.
+
+
+---
+
+🚨 Current Problem (Precise)
+
+👉 You created subscription:
+
+rook-ceph-operator
+
+But:
+
+oc get csv -n openshift-storage
+
+❌ No rook-ceph CSV created
+
+👉 That means: 💥 OLM is unable to resolve/install the operator
+
+
+---
+
+🧠 Why This Happens (Key Insight)
+
+In ODF 4.19:
+
+👉 You should NOT manually install rook-ceph-operator
+
+It is:
+
+Managed internally by ODF
+
+Not meant to be independently subscribed
+
+
+
+---
+
+🔥 What’s Actually Broken
+
+When you deleted subscriptions earlier:
+
+👉 You removed:
+
+ODF dependency chain ❌
+
+Ownership references ❌
+
+
+Now:
+
+ODF operator exists ✔
+
+But dependency graph is broken ❌
+
+
+
+---
+
+✅ Correct Fix (Clean Recovery)
+
+👉 We need to let ODF operator recreate everything properly
+
+
+---
+
+🔥 Step 1: DELETE manual subscriptions (important)
+
+oc delete subscription -n openshift-storage \
+  rook-ceph-operator \
+  cephcsi-operator \
+  mcg-operator \
+  ocs-operator
+
+👉 Keep ONLY:
+
+odf-operator
+odf-dependencies
+
+
+---
+
+🔄 Step 2: Restart ODF operator (force reconcile)
+
+oc delete pod -n openshift-storage -l app=odf-operator
+
+
+---
+
+🔄 Step 3: Watch subscriptions auto-created
+
+watch oc get subscription -n openshift-storage
+
+👉 You should see ODF recreate:
+
+mcg
+
+cephcsi
+
+rook-ceph
+
+etc
+
+
+
+---
+
+🔄 Step 4: Watch CSV
+
+watch oc get csv -n openshift-storage
+
+
+---
+
+🚀 Expected Behavior
+
+ODF operator will:
+
+✔ Recreate missing operators
+✔ Recreate ServiceAccounts
+✔ Fix RBAC
+✔ Recover Ceph
+
+
+---
+
+⚠️ IMPORTANT RULE (Remember Forever)
+
+👉 In ODF:
+
+❌ Don’t manually install:
+
+rook-ceph
+
+cephcsi
+
+mcg
+
+
+✔ Only manage:
+
+odf-operator
+
+
+
+---
+
+🧠 Why Your Manual Way Failed
+
+Even though catalog has:
+
+rook-ceph-operator
+
+👉 ODF uses:
+
+controlled install
+
+dependency resolution
+
+specific versions
+
+
+👉 Manual install breaks compatibility
+
+
+---
+
+🔥 If Still Not Working (Plan B)
+
+If ODF doesn’t recreate automatically:
+
+👉 Then we will:
+
+Patch StorageCluster
+
+Or re-trigger reconcile
+
+
+
+---
+
+🚀 Do This Now
+
+Run:
+
+oc delete subscription -n openshift-storage \
+  rook-ceph-operator cephcsi-operator mcg-operator ocs-operator
+
+oc delete pod -n openshift-storage -l app=odf-operator
+
+Then send:
+
+oc get subscription -n openshift-storage
+oc get csv -n openshift-storage
+
+👉 I’ll take you to final recovery 👍
