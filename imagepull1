@@ -1,46 +1,74 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ cat cs-redhat-operator-index-v4-19.yaml
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
+[root@bastion cluster-resources]# podman pull bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943
+Trying to pull bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943...
+Error: initializing source docker://bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: reading manifest sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ose-local-storage-diskmaker-rhel9: name unknown: repository not found
+
+
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get imagedigestmirrorset -o yaml
+apiVersion: v1
+items:
+- apiVersion: config.openshift.io/v1
+  kind: ImageDigestMirrorSet
+  metadata:
+    annotations:
+      createdAt: Monday, 23-Mar-26 07:12:38 UTC
+      createdBy: oc-mirror v2
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"config.openshift.io/v1","kind":"ImageDigestMirrorSet","metadata":{"annotations":{"createdAt":"Monday, 23-Mar-26 07:12:38 UTC","createdBy":"oc-mirror v2","oc-mirror_version":"4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6"},"name":"idms-operator-0"},"spec":{"imageDigestMirrors":[{"mirrors":["bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhceph"],"source":"registry.redhat.io/rhceph"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4"],"source":"registry.redhat.io/odf4"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4"],"source":"registry.redhat.io/openshift4"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/lvms4"],"source":"registry.redhat.io/lvms4"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift-logging"],"source":"registry.redhat.io/openshift-logging"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhel9"],"source":"registry.redhat.io/rhel9"}]},"status":{}}
+      oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
+    creationTimestamp: "2026-02-28T06:33:26Z"
+    generation: 7
+    name: idms-operator-0
+    resourceVersion: "14245691"
+    uid: 0fc06e70-a65d-4467-8fd1-18359241e2d4
+  spec:
+    imageDigestMirrors:
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhceph
+      source: registry.redhat.io/rhceph
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4
+      source: registry.redhat.io/odf4
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4
+      source: registry.redhat.io/openshift4
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/lvms4
+      source: registry.redhat.io/lvms4
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift-logging
+      source: registry.redhat.io/openshift-logging
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhel9
+      source: registry.redhat.io/rhel9
+- apiVersion: config.openshift.io/v1
+  kind: ImageDigestMirrorSet
+  metadata:
+    annotations:
+      createdAt: Monday, 23-Mar-26 07:12:38 UTC
+      createdBy: oc-mirror v2
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"config.openshift.io/v1","kind":"ImageDigestMirrorSet","metadata":{"annotations":{"createdAt":"Monday, 23-Mar-26 07:12:38 UTC","createdBy":"oc-mirror v2","oc-mirror_version":"4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6"},"name":"idms-release-0"},"spec":{"imageDigestMirrors":[{"mirrors":["bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release"],"source":"quay.io/openshift-release-dev/ocp-v4.0-art-dev"},{"mirrors":["bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images"],"source":"quay.io/openshift-release-dev/ocp-release"}]},"status":{}}
+      oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
+    creationTimestamp: "2026-03-25T14:20:33Z"
+    generation: 1
+    name: idms-release-0
+    resourceVersion: "14245690"
+    uid: b612e2e8-819c-4bd1-8861-9bcf55c65ea1
+  spec:
+    imageDigestMirrors:
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release
+      source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+    - mirrors:
+      - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images
+      source: quay.io/openshift-release-dev/ocp-release
+kind: List
 metadata:
-  annotations:
-    createdAt: Wednesday, 25-Mar-26 10:52:55 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: cs-redhat-operator-index-v4-19
-  namespace: openshift-marketplace
-spec:
-  image: bastion.srib-lab-ocp.lan:8443/redhat/redhat-operator-index:v4.19
-  sourceType: grpc
-status: {}
-srib@ocp-haproxy-1:~/ocp_4_19$ cat idms-oc-mirror.yaml
----
-apiVersion: config.openshift.io/v1
-kind: ImageDigestMirrorSet
+  resourceVersion: ""
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get imagecontentsourcepolicy -o yaml
+apiVersion: v1
+items: []
+kind: List
 metadata:
-  annotations:
-    createdAt: Wednesday, 25-Mar-26 10:52:55 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: idms-operator-0
-spec:
-  imageDigestMirrors:
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/rhceph
-    source: registry.redhat.io/rhceph
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/rhel9
-    source: registry.redhat.io/rhel9
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/lvms4
-    source: registry.redhat.io/lvms4
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/odf4
-    source: registry.redhat.io/odf4
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/openshift-logging
-    source: registry.redhat.io/openshift-logging
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/openshift4
-    source: registry.redhat.io/openshift4
-status: {}
+  resourceVersion: ""
 srib@ocp-haproxy-1:~/ocp_4_19$
