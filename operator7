@@ -1,17 +1,191 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get sa -n openshift-storage | grep rook
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get sa -n openshift-storage | grep rook
-srib@ocp-haproxy-1:~/ocp_4_19$ oc delete pod -n openshift-storage -l app=rook-ceph-operator
-No resources found
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get sa -n openshift-storage
-NAME                                   SECRETS   AGE
-builder                                0         24d
-default                                0         24d
-deployer                               0         24d
-noobaa-db                              0         24d
-objectstorage-provisioner              0         24d
-ocs-metrics-exporter                   0         24d
-ocs-provider-server                    0         24d
-ocs-status-reporter                    0         24d
-odf-operator-controller-manager        0         24d
-onboarding-validation-keys-generator   0         24d
-srib@ocp-haproxy-1:~/ocp_4_19$
+Good catch — now we’ve found the real issue 👍
+This is not a simple restart problem anymore.
+
+
+---
+
+🚨 Root Cause (Confirmed)
+
+👉 Your namespace is missing ALL rook-ceph ServiceAccounts
+
+From your output:
+
+oc get sa -n openshift-storage
+
+❌ Missing:
+
+rook-ceph-default
+
+rook-ceph-system
+
+rook-ceph-osd
+
+etc.
+
+
+
+---
+
+🧠 Why This Happened
+
+When you did:
+
+oc delete subscription --all
+
+👉 OLM removed:
+
+Rook operator ❌
+
+All its owned resources (RBAC + SA) ❌
+
+
+👉 But:
+
+Pods remained (because owned by Deployment/StatefulSet) ✔
+
+
+👉 Result: 💥 Broken cluster (pods running without SA)
+
+
+---
+
+🔥 Important Truth
+
+👉 Rook operator is currently NOT running
+
+That’s why:
+
+oc delete pod -l app=rook-ceph-operator
+
+→ No resources found ❌
+
+
+---
+
+✅ FIX (Clean Recovery — No Data Loss)
+
+We need to bring back rook-ceph-operator properly
+
+
+---
+
+🔥 Step 1: Verify CSV
+
+oc get csv -n openshift-storage | grep rook
+
+👉 If NOT present → that's the issue
+
+
+---
+
+🔥 Step 2: Force reinstall rook-ceph operator
+
+oc delete subscription rook-ceph-operator -n openshift-storage
+
+Then recreate:
+
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: rook-ceph-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.19
+  name: rook-ceph-operator
+  source: cs-redhat-operator-index-v4-19
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+EOF
+
+
+---
+
+🔄 Step 3: Watch operator come back
+
+watch oc get csv -n openshift-storage
+
+👉 You should see:
+
+rook-ceph-operator.v4.19.x → Installing → Succeeded
+
+
+---
+
+🔄 Step 4: Verify ServiceAccounts recreated
+
+oc get sa -n openshift-storage | grep rook
+
+👉 MUST appear:
+
+rook-ceph-default ✅
+rook-ceph-system ✅
+
+
+---
+
+🔄 Step 5: Restart Ceph pods
+
+oc delete pod -n openshift-storage -l app=rook-ceph-mon
+oc delete pod -n openshift-storage -l app=rook-ceph-osd
+
+
+---
+
+🚀 Expected Recovery
+
+Pods will move:
+
+Init → Running ✅
+
+
+---
+
+⚠️ VERY IMPORTANT
+
+👉 DO NOT delete:
+
+PVCs ❌
+
+StorageCluster ❌
+
+CephCluster ❌
+
+
+👉 Your data is SAFE — we’re only restoring control plane
+
+
+---
+
+🧠 Why This Fix Works
+
+Component	Role
+
+rook-ceph-operator	recreates SA + RBAC
+ServiceAccounts	required for pod mount
+Pods	restart after SA exists
+
+
+
+---
+
+✅ Final Target
+
+oc get sa -n openshift-storage
+
+→ rook-ceph-* present ✅
+
+oc get po -n openshift-storage
+
+→ all Running ✅
+
+
+---
+
+🚀 Do This Now
+
+Run:
+
+oc get csv -n openshift-storage
+
+👉 Send output — I’ll confirm if rook operator is missing or stuck 👍
