@@ -1,8 +1,195 @@
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get subscription -n openshift-storage
-NAME               PACKAGE            SOURCE                           CHANNEL
-odf-dependencies   odf-dependencies   cs-redhat-operator-index-v4-19   stable-4.19
-odf-operator       odf-operator       cs-redhat-operator-index-v4-19   stable-4.19
-srib@ocp-haproxy-1:~/ocp_4_19$ oc get csv -n openshift-storage
-NAME                          DISPLAY                     VERSION         REPLACES                      PHASE
-odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.18.14-rhodf   Succeeded
-srib@ocp-haproxy-1:~/ocp_4_19$
+Perfect 👍 — now your situation is clear and healthy, but there’s one last step to make everything complete.
+
+
+---
+
+✅ Current State (Good)
+
+✔ Catalog → 4.19 only
+✔ ODF operator → 4.19 (Succeeded)
+✔ Subscriptions recreated:
+
+odf-operator
+odf-dependencies
+
+
+---
+
+🚨 What’s Missing
+
+👉 Only odf-operator CSV is present
+
+oc get csv -n openshift-storage
+→ only odf-operator
+
+👉 Missing:
+
+mcg-operator
+
+cephcsi-operator
+
+rook-ceph-operator
+
+ocs-operator
+
+etc
+
+
+
+---
+
+🧠 Why This Happens
+
+👉 ODF operator does NOT reinstall dependencies automatically if they already exist
+
+Your cluster already has:
+
+rook-ceph pods ✔
+
+noobaa pods ✔
+
+
+👉 So ODF thinks:
+
+> “Dependencies already exist → no need to reinstall”
+
+
+
+
+---
+
+🔥 But Problem
+
+Those operators are still:
+
+v4.18 ❌
+
+👉 So they must be upgraded explicitly
+
+
+---
+
+✅ FINAL FIX (Manual Trigger — Safe)
+
+🔥 Step 1: Recreate missing subscriptions
+
+Run:
+
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ocs-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.19
+  name: ocs-operator
+  source: cs-redhat-operator-index-v4-19
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: rook-ceph-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.19
+  name: rook-ceph-operator
+  source: cs-redhat-operator-index-v4-19
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: cephcsi-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.19
+  name: cephcsi-operator
+  source: cs-redhat-operator-index-v4-19
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: mcg-operator
+  namespace: openshift-storage
+spec:
+  channel: stable-4.19
+  name: mcg-operator
+  source: cs-redhat-operator-index-v4-19
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+EOF
+
+
+---
+
+🔄 Step 2: Watch Upgrade
+
+watch oc get csv -n openshift-storage
+
+
+---
+
+🚀 Expected Result
+
+You should now see:
+
+cephcsi-operator.v4.19.x      Installing → Succeeded
+mcg-operator.v4.19.x          Installing → Succeeded
+rook-ceph-operator.v4.19.x    Installing → Succeeded
+ocs-operator.v4.19.x          Installing → Succeeded
+
+
+---
+
+⚠️ Important
+
+👉 This is safe because:
+
+You are NOT deleting data
+
+Only upgrading operators
+
+Storage will remain intact
+
+
+
+---
+
+🧠 Why This Step Was Needed
+
+You did:
+
+delete subscriptions ✔
+
+recreate only odf-operator ✔
+
+
+👉 But dependencies were not recreated automatically
+
+
+---
+
+✅ Final Target State
+
+oc get csv -n openshift-storage
+
+👉 All should be:
+
+v4.19.x → Succeeded
+
+
+---
+
+🚀 You’re at Final Step
+
+Run the YAML and send:
+
+oc get csv -n openshift-storage
+
+👉 I’ll confirm everything is fully upgraded 👍
