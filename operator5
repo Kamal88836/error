@@ -1,59 +1,10 @@
-srib@ocp-haproxy-1:~$ oc describe  subscription odf-dependencies  -n openshift-storage
-Name:         odf-dependencies
-Namespace:    openshift-storage
-Labels:       operators.coreos.com/odf-dependencies.openshift-storage=
-Annotations:  <none>
-API Version:  operators.coreos.com/v1alpha1
-Kind:         Subscription
-Metadata:
-  Creation Timestamp:  2026-03-25T06:21:15Z
-  Generation:          1
-  Owner References:
-    API Version:           operators.coreos.com/v1alpha1
-    Block Owner Deletion:  true
-    Controller:            true
-    Kind:                  Subscription
-    Name:                  odf-operator
-    UID:                   6eba88f4-7626-440b-98a7-aa290a529d2a
-  Resource Version:        14041791
-  UID:                     1c61ca8c-66d1-4fe4-aa2e-5d3f1689aa0f
-Spec:
-  Channel:  stable-4.19
-  Config:
-  Name:              odf-dependencies
-  Source:            cs-redhat-operator-index-v4-19
-  Source Namespace:  openshift-marketplace
-  Starting CSV:      odf-dependencies.v4.19.12-rhodf
-Status:
-  Catalog Health:
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              cs-redhat-operator-index-v4-18
-      Namespace:         openshift-marketplace
-      Resource Version:  14032544
-      UID:               40d403f7-4196-443b-845d-d56ab9d68f1a
-    Healthy:             true
-    Last Updated:        2026-03-25T06:21:16Z
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              cs-redhat-operator-index-v4-19
-      Namespace:         openshift-marketplace
-      Resource Version:  14032535
-      UID:               430c9193-100e-470a-98e0-e627f3ccc054
-    Healthy:             true
-    Last Updated:        2026-03-25T06:21:16Z
-  Conditions:
-    Last Transition Time:  2026-03-25T06:21:18Z
-    Message:               all available catalogsources are healthy
-    Reason:                AllCatalogSourcesHealthy
-    Status:                False
-    Type:                  CatalogSourcesUnhealthy
-    Message:               constraints not satisfiable: no operators found in package odf-dependencies in the catalog referenced by subscription odf-dependencies, subscription odf-dependencies exists
-    Reason:                ConstraintsNotSatisfiable
-    Status:                True
-    Type:                  ResolutionFailed
-  Last Updated:            2026-03-25T06:21:18Z
-Events:                    <none>
+srib@ocp-haproxy-1:~$ oc get packagemanifest -n openshift-marketplace | grep odf-dependencies
+odf-dependencies                        24d
+srib@ocp-haproxy-1:~$ oc get packagemanifest -n openshift-marketplace | grep odf
+odf-csi-addons-operator                 6d16h
+odf-operator                            24d
+odf-operator                            6d16h
+odf-prometheus-operator                 24d
+odf-csi-addons-operator                 24d
+odf-dependencies                        24d
 srib@ocp-haproxy-1:~$
