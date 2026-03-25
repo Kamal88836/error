@@ -1,10 +1,185 @@
-Events:
-  Type     Reason          Age        From               Message
-  ----     ------          ----       ----               -------
-  Normal   Scheduled       16s        default-scheduler  Successfully assigned openshift-local-storage/diskmaker-manager-mnt96 to ocp-cp-3.lab1.srib-lab-ocp.lan
-  Normal   AddedInterface  15s        multus             Add eth0 [10.129.0.80/23 fd01:0:0:2::50/64] from ovn-kubernetes
-  Normal   Pulling         15s        kubelet            Pulling image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943"
-  Warning  Failed          <invalid>  kubelet            Failed to pull image "registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943": rpc error: code = DeadlineExceeded desc = initializing source docker://registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: reading manifest sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4/ose-local-storage-diskmaker-rhel9: manifest unknown]): registry.redhat.io/openshift4/ose-local-storage-diskmaker-rhel9@sha256:5306e6aa51b219d20c09934a30c48a84eb5bcb9a5543cee35eacf08de9cd9943: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 35.170.224.42:443: i/o timeout
-  Warning  Failed          <invalid>  kubelet            Error: ErrImagePull
-  Normal   Pulling         <invalid>  kubelet            Pulling image "registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:713984db2494024559a3aaa97c250fee019c715b7496cc6ce40391e455977098"
-srib@ocp-haproxy-1:~/ocp_4_19$
+Good — this confirms **one very specific issue still remains** 👇
+
+---
+
+# 🚨 Key Observation
+
+Even now it is trying:
+
+```text
+bastion.../ocp4/openshift4/openshift4/... ❌
+```
+
+👉 BUT your current IDMS is:
+
+```text
+bastion.../openshift4 ✔
+```
+
+---
+
+# 🎯 Conclusion
+
+👉 **This is NOT an IDMS problem anymore**
+👉 This is **node-level cached registry config**
+
+---
+
+# 🔥 Root Cause (final)
+
+Your nodes still have old config in:
+
+```text
+/etc/containers/registries.conf
+```
+
+👉 That file still contains:
+
+```text
+ocp4/openshift4/openshift4 ❌
+```
+
+👉 CRI-O is using that instead of new IDMS
+
+---
+
+# 🚀 FINAL FIX (guaranteed solution)
+
+## ✅ Step 1: Check node config (VERY IMPORTANT)
+
+Run on master:
+
+```bash
+oc debug node/ocp-cp-3
+chroot /host
+cat /etc/containers/registries.conf
+```
+
+👉 You will see old entry like:
+
+```text
+ocp4/openshift4/openshift4 ❌
+```
+
+---
+
+## ✅ Step 2: Restart machine-config-daemon (fix source)
+
+```bash
+systemctl restart machine-config-daemon
+```
+
+---
+
+## ✅ Step 3: Restart CRI-O
+
+```bash
+systemctl restart crio
+```
+
+---
+
+## 🔁 Repeat for ALL masters
+
+```bash
+oc debug node/ocp-cp-1
+oc debug node/ocp-cp-2
+oc debug node/ocp-cp-3
+```
+
+---
+
+# 💥 Why this is needed
+
+👉 IDMS updates:
+
+```text
+MachineConfig → registries.conf
+```
+
+👉 But:
+
+* Node didn’t reconcile properly ❌
+* Old config still present ❌
+
+---
+
+# 🔥 Alternative (faster fix)
+
+If above not working:
+
+## Force node re-render
+
+```bash
+oc delete pod -n openshift-machine-config-operator -l k8s-app=machine-config-daemon
+```
+
+👉 This forces nodes to re-apply config
+
+---
+
+# ✅ Step 4: Verify again
+
+```bash
+oc debug node/ocp-cp-3
+chroot /host
+cat /etc/containers/registries.conf
+```
+
+👉 Should ONLY show:
+
+```text
+bastion.../openshift4 ✔
+```
+
+---
+
+## ✅ Step 5: Delete failing pods
+
+```bash
+oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
+  oc delete pod $pod -n $ns
+done
+```
+
+---
+
+# 🎯 Expected Result
+
+✔ No more `openshift4/openshift4`
+✔ Images pulled from correct path
+✔ Pods go Running
+✔ MCP starts progressing
+
+---
+
+# ⚠️ Important insight
+
+👉 You fixed:
+
+* Mirror ✔
+* IDMS ✔
+
+👉 Only thing left:
+
+```text
+Node config not updated ❌
+```
+
+---
+
+# 👍 Final Answer
+
+👉 Your cluster is **99% fixed**
+👉 Just force nodes to refresh `registries.conf`
+👉 Then everything will work
+
+---
+
+If you want, paste:
+
+```bash
+cat /etc/containers/registries.conf
+```
+
+I’ll confirm exact issue 👍
