@@ -1,66 +1,269 @@
-[root@bastion mirror_4_19_23]# ll
-total 12842172
--rw-r--r--  1 root root        1428 Mar 24 10:19 checksum-4.19.23.yaml
--rw-r--r--  1 root root        1176 Mar 18 10:23 imageset-config_4_19_23.yaml
--rw-r--r--  1 root root 13150371840 Mar 18 12:37 mirror_000001.tar
--rw-r-----  1 root root        3031 Mar 23 10:50 pull-secret.yaml
-drwxr-xr-x  3 root root          28 Mar 23 07:11 root
-drwxr-xr-x 10 root root         156 Mar 23 07:11 working-dir
-[root@bastion mirror_4_19_23]# cat imageset-config_4_19_23.yaml
-kind: ImageSetConfiguration
+Got it 👍 — if you only want operators (no release payload), you can simplify your ImageSetConfiguration a lot.
+
+👉 You do NOT need:
+
+platform section ❌
+
+additionalImages (release images) ❌
+
+
+👉 You only need:
+
+operators section ✅
+
+
+
+---
+
+✅ Minimal Operator-Only ImageSetConfiguration
+
+Use this 👇
+
 apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+
+storageConfig:
+  registry:
+    imageURL: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
 
 mirror:
-  platform:
-    channels:
-    - name: stable-4.19
-      type: ocp
-      minVersion: 4.19.23
-      maxVersion: 4.19.23
-      shortestPath: true
-
   operators:
-  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
-    packages:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+      packages:
 
-    # ODF (Top-level only)
-    - name: odf-operator
-      channels:
-      - name: stable-4.19
-    - name: ocs-operator
-      channels:
-      - name: stable-4.19
-    - name: odf-csi-addons-operator
-      channels:
-      - name: stable-4.19
+        # 🔴 ODF FULL STACK (MANDATORY)
+        - name: odf-operator
+          channels:
+            - name: stable-4.19
 
-    # Networking / Infra
-    - name: sriov-network-operator
-      channels:
-      - name: stable
-    - name: ptp-operator
-      channels:
-      - name: stable
-    - name: kubernetes-nmstate-operator
-      channels:
-      - name: stable
+        - name: ocs-operator
+          channels:
+            - name: stable-4.19
 
-    # Storage
-    - name: local-storage-operator
-      channels:
-      - name: stable
-    - name: lvms-operator
-      defaultchannel: stable-4.19
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.19
 
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.19
 
-    # Logging
-    - name: cluster-logging
-      channels:
-      - name: stable-6.4
+        - name: mcg-operator
+          channels:
+            - name: stable-4.19
 
-  additionalImages:
-  - name: quay.io/openshift-release-dev/ocp-release:4.19.23-x86_64
-  - name: registry.redhat.io/ubi8/ubi:latest
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.19
+
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.19
+
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.19
+
+        - name: recipe
+          channels:
+            - name: stable-4.19
+
+        # 🟢 OTHER OPERATORS
+        - name: local-storage-operator
+          channels:
+            - name: stable
+
+        - name: kubernetes-nmstate-operator
+          channels:
+            - name: stable
+
+        - name: ptp-operator
+          channels:
+            - name: stable
+
+        - name: sriov-network-operator
+          channels:
+            - name: stable
+
+        - name: lvms-operator
+          channels:
+            - name: stable-4.19
+
+        - name: cluster-logging
+          channels:
+            - name: stable-6.4
 
   helm: {}
-[root@bastion mirror_4_19_23]#
+
+
+---
+
+🚀 How To Run
+
+oc mirror --config imageset-config.yaml docker://bastion.srib-lab-ocp.lan:8443
+
+
+---
+
+🔍 After Mirror (IMPORTANT)
+
+Re-apply catalog:
+
+oc apply -f cs-redhat-operator-index-v4-19.yaml
+
+
+---
+
+✅ Verify (VERY IMPORTANT)
+
+oc get packagemanifest -n openshift-marketplace | grep odf
+
+👉 Must show ALL:
+
+odf-operator
+
+odf-dependencies
+
+mcg-operator
+
+rook-ceph
+
+cephcsi
+
+
+
+---
+
+⚠️ Important Notes
+
+1️⃣ No release images = only operator upgrade possible
+
+❌ Cannot upgrade cluster
+
+✅ Can upgrade operators
+
+
+
+---
+
+2️⃣ Why we still list all ODF packages
+
+👉 In disconnected setup:
+
+> OLM does NOT auto-fetch dependencies from internet
+
+
+
+So you must include:
+
+dependencies
+
+metadata
+
+images
+
+
+
+---
+
+🧠 Pro Tip (Advanced)
+
+If you want smaller mirror size, I can:
+
+remove unused operators
+
+include only ODF + your current ones
+
+reduce ~50–70% size
+
+
+
+---
+
+🚀 If You Want
+
+I can generate: ✅ Ultra-minimal config (only what your cluster uses)
+✅ Size-optimized mirror
+✅ Step-by-step cleanup of current broken state
+
+Just tell 👍
+
+
+
+
+
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+
+storageConfig:
+  registry:
+    imageURL: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+
+mirror:
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+      packages:
+
+        # 🔴 ODF FULL STACK (MANDATORY)
+        - name: odf-operator
+          channels:
+            - name: stable-4.19
+
+        - name: ocs-operator
+          channels:
+            - name: stable-4.19
+
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.19
+
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.19
+
+        - name: mcg-operator
+          channels:
+            - name: stable-4.19
+
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.19
+
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.19
+
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.19
+
+        - name: recipe
+          channels:
+            - name: stable-4.19
+
+        # 🟢 OTHER OPERATORS
+        - name: local-storage-operator
+          channels:
+            - name: stable
+
+        - name: kubernetes-nmstate-operator
+          channels:
+            - name: stable
+
+        - name: ptp-operator
+          channels:
+            - name: stable
+
+        - name: sriov-network-operator
+          channels:
+            - name: stable
+
+        - name: lvms-operator
+          channels:
+            - name: stable-4.19
+
+        - name: cluster-logging
+          channels:
+            - name: stable-6.4
+
+  helm: {}
