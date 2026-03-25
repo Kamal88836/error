@@ -1,145 +1,162 @@
-Perfect — this finally shows the **real root cause clearly** 👇
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   25d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   25d   v1.32.10
+srib@ocp-haproxy-1:~/ocp_4_19$ oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan
+Temporary namespace openshift-debug-qrjp8 is created for debugging node...
+Starting pod/ocp-cp-3lab1srib-lab-ocplan-debug-5vt5t ...
+To use host binaries, run `chroot /host`
+Pod IP: 71.1.1.229
+If you don't see a command prompt, try pressing enter.
+sh-5.1# chroot /host
+sh-5.1# systemctl restart machine-config-daemon
+Failed to restart machine-config-daemon.service: Unit machine-config-daemon.service not found.
+sh-5.1# systemctl restart crio
 
----
+Removing debug pod ...
+Temporary namespace openshift-debug-qrjp8 was removed.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc debug node/ocp-cp-3.lab1.srib-lab-ocp.lan
+Temporary namespace openshift-debug-gjkng is created for debugging node...
+Starting pod/ocp-cp-3lab1srib-lab-ocplan-debug-c4cbt ...
+To use host binaries, run `chroot /host`
+Pod IP: 71.1.1.229
+If you don't see a command prompt, try pressing enter.
+sh-5.1# chroot /host
+sh-5.1# cat /etc/containers/registries.conf
+unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
+short-name-mode = ""
+additional-layer-store-auth-helper = ""
 
-# 🚨 Problem Identified (100%)
+[[registry]]
+  prefix = ""
+  location = "quay.io/openshift-release-dev/ocp-release"
 
-👉 Your nodes are **NOT consistent**
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4"
+    pull-from-mirror = "digest-only"
 
-### ✔ cp-1 & cp-2 (CORRECT)
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images"
+    pull-from-mirror = "digest-only"
 
-```text
-bastion...:8443/openshift4   ✅
-```
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images"
+    pull-from-mirror = "tag-only"
 
-### ❌ cp-3 (WRONG — OLD CONFIG STILL THERE)
+[[registry]]
+  prefix = ""
+  location = "quay.io/openshift-release-dev/ocp-v4.0-art-dev"
 
-```text
-bastion...:8443/ocp4/openshift4   ❌
-```
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4"
+    pull-from-mirror = "digest-only"
 
-👉 That’s exactly why:
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release"
+    pull-from-mirror = "digest-only"
 
-```text
-openshift4/openshift4 error still happening ❌
-```
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/lvms4"
 
----
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/lvms4"
+    pull-from-mirror = "digest-only"
 
-# 🎯 Root Cause
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/odf4"
 
-👉 MachineConfig NOT applied properly on **ocp-cp-3**
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4"
+    pull-from-mirror = "digest-only"
 
-So:
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift-logging"
 
-* cp-1, cp-2 → using new mirror ✔
-* cp-3 → still using old mirror ❌
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift-logging"
+    pull-from-mirror = "digest-only"
 
-👉 Your failing pods are scheduled on cp-3 → failure
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift4"
 
----
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4"
+    pull-from-mirror = "digest-only"
 
-# 🚀 FINAL FIX (target only cp-3)
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/rhceph"
 
-## ✅ Step 1: Force MachineConfig re-apply on cp-3
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhceph"
+    pull-from-mirror = "digest-only"
 
-Run:
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/rhel9"
 
-```bash
-oc debug node/ocp-cp-3
-chroot /host
-systemctl restart machine-config-daemon
-```
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhel9"
+    pull-from-mirror = "digest-only"
 
----
+[[registry]]
+  prefix = ""
+  location = "quay.io/openshift-release-dev"
 
-## ✅ Step 2: Restart CRI-O
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift-release-dev"
+    pull-from-mirror = "tag-only"
 
-```bash
-systemctl restart crio
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/ubi8"
+
+  [[registry.mirror]]
+    location = "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ubi8"
+    pull-from-mirror = "tag-only"
+
+[[registry]]
+  prefix = ""
+  location = "sribharbor.sec.samsung.net"
+  insecure = true
+sh-5.1# oc delete pod -n openshift-machine-config-operator -l k8s-app=machine-config-daemon
+error: Missing or incomplete configuration info.  Please point to an existing, complete config file:
+
+
+  1. Via the command-line flag --kubeconfig
+  2. Via the KUBECONFIG environment variable
+  3. In your home directory as ~/.kube/config
+
+To view or setup config directly use the 'config' command.
+sh-5.1#
 exit
-```
+sh-5.1# oc delete pod -n openshift-machine-config-operator -l k8s-app=machine-config-daemon
+Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:openshift-debug-gjkng:default" cannot list resource "pods" in API group "" in the namespace "openshift-machine-config-operator"
+sh-5.1#
+exit
 
----
-
-## ✅ Step 3: Verify config is fixed
-
-```bash
-oc debug node/ocp-cp-3
-chroot /host
-cat /etc/containers/registries.conf
-```
-
-👉 It MUST match cp-1 / cp-2:
-
-```text
-bastion...:8443/openshift4   ✅
-```
-
-👉 And NOT:
-
-```text
-ocp4/openshift4 ❌
-```
-
----
-
-## 🔥 If still not fixed (strong fix)
-
-Force re-sync from MCO:
-
-```bash
-oc delete pod -n openshift-machine-config-operator -l k8s-app=machine-config-daemon
-```
-
-👉 This will recreate daemon and fix node
-
----
-
-## ✅ Step 4: Delete failing pods
-
-```bash
-oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
-  oc delete pod $pod -n $ns
-done
-```
-
----
-
-# 🎯 Expected result
-
-✔ cp-3 uses correct mirror
-✔ No more `ocp4/openshift4`
-✔ Image pulls succeed
-✔ Pods go Running
-✔ MCP becomes healthy
-
----
-
-# ⚠️ Important Insight
-
-👉 This was NOT mirror issue anymore
-👉 NOT IDMS issue
-
-👉 It was:
-
-```text
-ONE node not updated ❌
-```
-
----
-
-# 👍 Final Answer
-
-👉 Fix cp-3 registries.conf → everything will work
-👉 Your cluster is basically fixed after this
-
----
-
-If you want, after fix run:
-
-```bash
-oc get mcp
-```
-
-I’ll confirm upgrade recovery 👍
+Removing debug pod ...
+Temporary namespace openshift-debug-gjkng was removed.
+srib@ocp-haproxy-1:~/ocp_4_19$ oc delete pod -n openshift-machine-config-operator -l k8s-app=machine-config-daemon
+pod "machine-config-daemon-cnhpp" deleted
+pod "machine-config-daemon-m9k8w" deleted
+pod "machine-config-daemon-s4rlq" deleted
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get pods -A | grep -i pull | awk '{print $1, $2}' | while read ns pod; do
+>   oc delete pod $pod -n $ns
+> done
+pod "insights-runtime-extractor-47kkb" deleted
+pod "insights-runtime-extractor-9tqxv" deleted
+pod "diskmaker-discovery-mglcr" deleted
+pod "diskmaker-manager-wp59k" deleted
+pod "nmstate-handler-pc4s5" deleted
+pod "linuxptp-daemon-kjff6" deleted
+pod "network-resources-injector-wwmtk" deleted
+pod "operator-webhook-wwhft" deleted
+pod "sriov-device-plugin-7d885" deleted
+pod "sriov-network-config-daemon-59btf" deleted
+srib@ocp-haproxy-1:~/ocp_4_19$
