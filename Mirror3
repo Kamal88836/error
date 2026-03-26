@@ -1,0 +1,175 @@
+Good 👍 — this is the most important part after applying IDMS, ITMS, and CatalogSource.
+I’ll give you the exact next steps in correct order so your upgrade doesn’t fail.
+
+
+---
+
+✅ After Applying (IDMS + ITMS + CatalogSource)
+
+🧭 Step 1: Wait for cluster to pick mirror config
+
+oc get co
+
+👉 Ensure:
+
+All ClusterOperators → Available=True
+
+No progressing/Degraded issues
+
+
+
+---
+
+🔍 Step 2: Verify image pull is using your registry
+
+Run:
+
+oc get pods -A -o wide | grep -i image
+
+Or better:
+
+oc adm release info <your-local-release-image>
+
+Example:
+
+oc adm release info bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23-x86_64
+
+👉 If this works → mirror is correct ✅
+👉 If error → mirror config issue ❌
+
+
+---
+
+📦 Step 3: Verify CatalogSource is READY
+
+oc get catalogsource -n openshift-marketplace
+
+👉 Check:
+
+STATUS = READY
+
+
+Then:
+
+oc get pods -n openshift-marketplace
+
+👉 Catalog pod should be:
+
+Running ✅
+
+
+
+---
+
+🔌 Step 4: Check Operators (very important)
+
+oc get packagemanifests
+
+👉 You should see operators listed
+
+If empty ❌ → CatalogSource issue
+
+
+---
+
+🧪 Step 5: Test image pull manually (optional but powerful)
+
+oc debug node/<node-name>
+
+Then inside:
+
+crictl pull bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:<tag>
+
+👉 Confirms nodes can pull images
+
+
+---
+
+🚀 Step 6: Set Upgrade Image
+
+Now prepare upgrade:
+
+oc adm upgrade
+
+👉 Should show available updates (if channel configured)
+
+
+---
+
+If not showing (offline case 👇)
+
+You must upgrade using image:
+
+oc adm upgrade \
+  --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.19.23-x86_64 \
+  --allow-explicit-upgrade
+
+
+---
+
+📊 Step 7: Monitor Upgrade
+
+oc get clusterversion
+
+and:
+
+watch oc get co
+
+
+---
+
+🚨 Common Problems After This Step
+
+Issue	Cause
+
+Image pull error	IDMS/ITMS wrong
+No operators visible	CatalogSource issue
+Upgrade not starting	Wrong release image
+Degraded operators	Missing images
+
+
+
+---
+
+🏁 Final Flow Summary
+
+👉 After applying mirror configs:
+
+1. Wait for cluster stable
+
+
+2. Verify release image
+
+
+3. Verify catalog source
+
+
+4. Check operators
+
+
+5. Trigger upgrade
+
+
+6. Monitor
+
+
+
+
+---
+
+💡 Pro Tip (Don’t Skip)
+
+Run this before upgrade:
+
+oc adm upgrade --allow-explicit-upgrade --to-image=<image> --dry-run
+
+👉 This avoids breaking cluster 👍
+
+
+---
+
+If you want, I can: ✅ Verify your release image string
+✅ Check your catalogsource YAML
+✅ Help you monitor upgrade live
+
+Just paste your oc adm upgrade output 👍
