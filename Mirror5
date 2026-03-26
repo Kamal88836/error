@@ -177,3 +177,74 @@ oc get clusterversion -o yaml | grep -A5 Upgradeable
 ```
 
 👉 I’ll pinpoint exact blocker 👍
+
+
+
+
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.19.23   True        False         15m     Cluster version is 4.19.23
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get configmap -n openshift-config-managed
+NAME                                          DATA   AGE
+admin-gates                                   2      26d
+bound-sa-token-signing-certs                  1      26d
+console-public                                1      26d
+csr-controller-ca                             1      26d
+dashboard-cluster-total                       1      26d
+dashboard-k8s-resources-cluster               1      26d
+dashboard-k8s-resources-namespace             1      26d
+dashboard-k8s-resources-node                  1      26d
+dashboard-k8s-resources-pod                   1      26d
+dashboard-k8s-resources-workload              1      26d
+dashboard-k8s-resources-workloads-namespace   1      26d
+dashboard-namespace-by-pod                    1      26d
+dashboard-node-cluster-rsrc-use               1      26d
+dashboard-node-rsrc-use                       1      26d
+dashboard-pod-total                           1      26d
+dashboard-prometheus                          1      26d
+default-ingress-cert                          1      26d
+etcd-dashboard                                1      26d
+grafana-dashboard-apiserver-performance       1      26d
+grafana-dashboard-ingress-operator            1      26d
+grafana-dashboard-network-stats               1      26d
+grafana-dashboard-ovn-health                  1      26d
+image-registry-ca                             0      26d
+kube-apiserver-aggregator-client-ca           1      26d
+kube-apiserver-client-ca                      1      26d
+kube-apiserver-server-ca                      1      26d
+kube-root-ca.crt                              1      26d
+kubelet-bootstrap-kubeconfig                  1      26d
+kubelet-serving-ca                            1      26d
+merged-trusted-image-registry-ca              0      26d
+mirrored-release-signatures                   1      3h31m
+monitoring-shared-config                      5      26d
+node-cluster                                  1      26d
+oauth-openshift                               1      26d
+oauth-serving-cert                            1      26d
+openshift-network-features                    2      26d
+openshift-service-ca.crt                      1      26d
+release-verification                          3      26d
+sa-token-signing-certs                        2      26d
+service-ca                                    1      26d
+signatures-managed                            1      3h29m
+trusted-ca-bundle                             1      26d
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get configmap mirrored-release-signatures -n openshift-config-managed -o yaml
+apiVersion: v1
+binaryData:
+  sha256-682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566-1: owGbwMvMwMEoOU9/4l9n2UDG0wf6khgyu9ZtqFZKLsosyUxOzFGyUqhWysxNTE8Fs1Lyk7NTi3RzE/My01KLS3RTMtOBFFBKqTgj0cjUzMrMwijVwjQpLdXCwNjE0sgk1dTSLMnIwjA1xSItNS3VxMTUMNUszSzZNCkx2cA8yTQ12djAwMTEODU1ycjY1MxMqVZHQamksgBknVJiSX5uZrJCcn5eSWJmXmqRQnFmel5iSWlRqhJQVWZKal5JZkklssOKgHYUpeYlg7UXliZW6mXm6+cXpOYVZ2SmlQClc1ITi1N1U1LL9POTC2B8KxM9IwM9QxPdCguzeDMTpVqQI/ILSjLz86AhkFyUCnRMEcjUoNQUBY/EEgV/oKnBIFMVgoGuysxLV3AsLcnIB4ZbpYKBHtA4oDGdTDIsDIwcDGysTKBgZeDiFIAFdryFAMPEvSo/kmxmhoYWNnQKbTvsxDNbN9ZavEp37X117j6rdy9C7/XqXP1baTcrsehWcYk/q0C+zvSeaXb1KUfvT310OYZn3anbi3+x592t/bPh28ZZr1ambog41mBybO7xrTMm7rgZv/OKMKvoZ/cz6XWTBFW6md4m21fH6Iequuz89HKpx34H7W2TLqu/maDoNufdFiXWbjffY35W+aJZl+79z7VOWGTWLWiw/vW+l/MlNgqqRpwNn3y4qyxc6FqV1nnhUAZLhW+7QivrP8UZTeldPW/dTUtewaUF+2f+7ew3YfMr/LtbkuvehY084UqtMRNEX5zuvSbcdnvXxuCuF90z9FryeO4KNmo/MPb+Mf3EDynOr2nlkzdzXPw3886Hlo1y7+4EJxnc37DqsfuCpid8nLKZa/x8WUoeP3u/54S0yI4C+7cqrz5osffPPVRTv4z9j0bKvGXGveYqaZI3FjF/qmD7WLOssWcOc1HNibcfd7xTy3aZE9Ymuvt3kBO3/YGnfcc+F8gdWqi4xIAhpbHA+tJuV7uHvFIL9fQD849Na1Ex0z//svV1c5tx1kmvlXO3fOHrXe17OjLBVeCdgfj56p8/rPqPv8md+zD/2u4H77419Uec2nLX839FtWugoNmmn71T7h6o9mXcF/+ovNJ1yXon2yfFLUyM1w9cl9jJJCiVddDq/7/tUzb5z2GcJrT5n8PD3C/ZVrYnSo8CAA==
+kind: ConfigMap
+metadata:
+  annotations:
+    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
+    createdBy: oc-mirror v2
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","binaryData":{"sha256-682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566-1":"owGbwMvMwMEoOU9/4l9n2UDG0wf6khgyu9ZtqFZKLsosyUxOzFGyUqhWysxNTE8Fs1Lyk7NTi3RzE/My01KLS3RTMtOBFFBKqTgj0cjUzMrMwijVwjQpLdXCwNjE0sgk1dTSLMnIwjA1xSItNS3VxMTUMNUszSzZNCkx2cA8yTQ12djAwMTEODU1ycjY1MxMqVZHQamksgBknVJiSX5uZrJCcn5eSWJmXmqRQnFmel5iSWlRqhJQVWZKal5JZkklssOKgHYUpeYlg7UXliZW6mXm6+cXpOYVZ2SmlQClc1ITi1N1U1LL9POTC2B8KxM9IwM9QxPdCguzeDMTpVqQI/ILSjLz86AhkFyUCnRMEcjUoNQUBY/EEgV/oKnBIFMVgoGuysxLV3AsLcnIB4ZbpYKBHtA4oDGdTDIsDIwcDGysTKBgZeDiFIAFdryFAMPEvSo/kmxmhoYWNnQKbTvsxDNbN9ZavEp37X117j6rdy9C7/XqXP1baTcrsehWcYk/q0C+zvSeaXb1KUfvT310OYZn3anbi3+x592t/bPh28ZZr1ambog41mBybO7xrTMm7rgZv/OKMKvoZ/cz6XWTBFW6md4m21fH6Iequuz89HKpx34H7W2TLqu/maDoNufdFiXWbjffY35W+aJZl+79z7VOWGTWLWiw/vW+l/MlNgqqRpwNn3y4qyxc6FqV1nnhUAZLhW+7QivrP8UZTeldPW/dTUtewaUF+2f+7ew3YfMr/LtbkuvehY084UqtMRNEX5zuvSbcdnvXxuCuF90z9FryeO4KNmo/MPb+Mf3EDynOr2nlkzdzXPw3886Hlo1y7+4EJxnc37DqsfuCpid8nLKZa/x8WUoeP3u/54S0yI4C+7cqrz5osffPPVRTv4z9j0bKvGXGveYqaZI3FjF/qmD7WLOssWcOc1HNibcfd7xTy3aZE9Ymuvt3kBO3/YGnfcc+F8gdWqi4xIAhpbHA+tJuV7uHvFIL9fQD849Na1Ex0z//svV1c5tx1kmvlXO3fOHrXe17OjLBVeCdgfj56p8/rPqPv8md+zD/2u4H77419Uec2nLX839FtWugoNmmn71T7h6o9mXcF/+ovNJ1yXon2yfFLUyM1w9cl9jJJCiVddDq/7/tUzb5z2GcJrT5n8PD3C/ZVrYnSo8CAA=="},"kind":"ConfigMap","metadata":{"annotations":{"createdAt":"Thursday, 26-Mar-26 11:59:24 UTC","createdBy":"oc-mirror v2","oc-mirror_version":"4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6"},"labels":{"release.openshift.io/verification-signatures":""},"name":"mirrored-release-signatures","namespace":"openshift-config-managed"}}
+    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
+  creationTimestamp: "2026-03-26T12:56:20Z"
+  labels:
+    release.openshift.io/verification-signatures: ""
+  name: mirrored-release-signatures
+  namespace: openshift-config-managed
+  resourceVersion: "14867229"
+  uid: bac16d08-f844-4cc7-8fb1-2288609c5f94
+srib@ocp-haproxy-1:~/ocp_4_20$
