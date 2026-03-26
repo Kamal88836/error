@@ -1,12 +1,179 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.19.23   True        False         10m     Cluster version is 4.19.23
-srib@ocp-haproxy-1:~/ocp_4_20$ oc -n openshift-machine-api annotate mhc machine-api-termination-handler cluster.x-k8s.io/paused=""
-machinehealthcheck.machine.openshift.io/machine-api-termination-handler annotate
-srib@ocp-haproxy-1:~/ocp_4_20$ oc adm upgrade --allow-explicit-upgrade --allow-upgrade-with-warnings --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
-warning: The requested upgrade image is not one of the available updates. You have used --allow-explicit-upgrade for the update to proceed anyway
-Requested update to release image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.19.23   True        False         11m     Cluster version is 4.19.23
-srib@ocp-haproxy-1:~/ocp_4_20$
+Good 👍 — now this is a **very important stage**, and I can see exactly why upgrade is **not starting**.
+
+---
+
+# 🚨 ROOT ISSUE
+
+You ran correct command ✔️
+But:
+
+```bash
+PROGRESSING = False ❌
+VERSION still = 4.19.23 ❌
+```
+
+👉 Means:
+💥 **Cluster rejected the upgrade silently**
+
+---
+
+# 🧠 WHY this happens
+
+In disconnected upgrade, even with:
+
+```bash
+--allow-explicit-upgrade
+```
+
+👉 Upgrade will NOT start if:
+
+### ❌ Missing / wrong **signature ConfigMap**
+
+OR
+
+### ❌ Signature does not match digest
+
+---
+
+# 🔍 Your critical check
+
+You are upgrading to:
+
+```bash
+sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+```
+
+👉 Now check your signature configmap:
+
+---
+
+## ✅ Step 1: Verify signature exists
+
+```bash
+oc get configmap -n openshift-config-managed
+```
+
+👉 You should see:
+
+```bash
+mirrored-release-signatures
+```
+
+---
+
+## ✅ Step 2: Verify digest inside it
+
+```bash
+oc get configmap mirrored-release-signatures -n openshift-config-managed -o yaml
+```
+
+👉 Check for:
+
+```yaml
+sha256-682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+```
+
+---
+
+# 🚨 If NOT present
+
+👉 That’s your problem ❌
+
+---
+
+# 🏆 FIX (VERY IMPORTANT)
+
+## Re-apply signature configmap
+
+```bash
+oc apply -f signature-configmap.yaml
+```
+
+👉 Wait 30–60 seconds
+
+---
+
+## Then retry upgrade
+
+```bash
+oc adm upgrade \
+--allow-explicit-upgrade \
+--allow-upgrade-with-warnings \
+--to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+```
+
+---
+
+# 🔥 If STILL not starting
+
+Run:
+
+```bash
+oc describe clusterversion
+```
+
+👉 Look for:
+
+* `reason`
+* `message`
+
+---
+
+# 💡 Another possible blocker
+
+Earlier you had:
+
+```bash
+Upgradeable=False (AdminAckRequired)
+```
+
+👉 Check:
+
+```bash
+oc get clusterversion -o jsonpath='{.status.conditions[?(@.type=="Upgradeable")].status}'
+```
+
+If:
+
+```bash
+False ❌
+```
+
+👉 Then fix:
+
+```bash
+oc -n openshift-config patch cm admin-acks \
+--type=merge \
+-p '{"data":{"ack-4.19-kube-1.32-api-removals-in-4.20":"true"}}'
+```
+
+---
+
+# 🏁 FINAL CHECKLIST
+
+Before upgrade starts:
+
+✔ Correct image path
+✔ Correct digest
+✔ Signature ConfigMap applied
+✔ Upgradeable=True
+✔ No blocking condition
+
+---
+
+# 👍 You are VERY close
+
+👉 This is last step before upgrade starts
+
+---
+
+# 🚀 Next
+
+Run and paste:
+
+```bash
+oc get configmap -n openshift-config-managed
+oc get clusterversion -o yaml | grep -A5 Upgradeable
+```
+
+👉 I’ll pinpoint exact blocker 👍
