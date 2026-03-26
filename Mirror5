@@ -1,3 +1,66 @@
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get node ocp-cp-3.lab1.srib-lab-ocp.lan -o yaml | grep machineconfiguration.openshift.io
+    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+    machineconfiguration.openshift.io/currentConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/desiredConfig: rendered-master-c65faf6a52d416453c211631a2d9af28
+    machineconfiguration.openshift.io/desiredDrain: drain-rendered-master-c65faf6a52d416453c211631a2d9af28
+    machineconfiguration.openshift.io/forceReboot: "true"
+    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: "false"
+    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: "13581553"
+    machineconfiguration.openshift.io/post-config-action: ""
+    machineconfiguration.openshift.io/reason: ""
+    machineconfiguration.openshift.io/state: Working
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.32.10
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.19.23   True        False         7h4m    Error while reconciling 4.19.23: authentication, machine-config, openshift-apiserver has an unknown error: ClusterOperatorsDegraded
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.19.23   True        False         True       47h     APIServerDeploymentDegraded: 1 of 3 requested instances are unavailable for apiserver.openshift-oauth-apiserver ()...
+baremetal                                  4.19.23   True        False         False      26d
+cloud-controller-manager                   4.19.23   True        False         False      26d
+cloud-credential                           4.19.23   True        False         False      26d
+cluster-autoscaler                         4.19.23   True        False         False      26d
+config-operator                            4.19.23   True        False         False      26d
+console                                    4.19.23   True        False         False      26d
+control-plane-machine-set                  4.19.23   True        False         False      26d
+csi-snapshot-controller                    4.19.23   True        False         False      26d
+dns                                        4.19.23   True        False         False      26d
+etcd                                       4.19.23   True        False         False      26d
+image-registry                             4.19.23   True        False         False      26d
+ingress                                    4.19.23   True        True          False      38m     ingresscontroller "default" is progressing: IngressControllerProgressing: One or more status conditions indicate progressing: DeploymentRollingOut=True (DeploymentRollingOut: Waiting for router deployment rollout to finish: 2 of 3 updated replica(s) are available......
+insights                                   4.19.23   True        False         False      39m
+kube-apiserver                             4.19.23   True        False         False      26d
+kube-controller-manager                    4.19.23   True        False         False      26d
+kube-scheduler                             4.19.23   True        False         False      26d
+kube-storage-version-migrator              4.19.23   True        False         False      39m
+machine-api                                4.19.23   True        False         False      26d
+machine-approver                           4.19.23   True        False         False      26d
+machine-config                             4.19.23   True        False         True       26d     Failed to resync 4.19.23 because: error during syncRequiredMachineConfigPools: [context deadline exceeded, error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 0, updated: 0, unavailable: 1, degraded: 0)]
+marketplace                                4.19.23   True        False         False      26d
+monitoring                                 4.19.23   True        False         False      43h
+network                                    4.19.23   True        False         False      26d
+node-tuning                                4.19.23   True        False         False      2d2h
+olm                                        4.19.23   True        False         False      39m
+openshift-apiserver                        4.19.23   True        False         True       26d     APIServerDeploymentDegraded: 1 of 3 requested instances are unavailable for apiserver.openshift-apiserver ()
+openshift-controller-manager               4.19.23   True        False         False      26d
+openshift-samples                          4.19.23   True        False         False      26d
+operator-lifecycle-manager                 4.19.23   True        False         False      26d
+operator-lifecycle-manager-catalog         4.19.23   True        False         False      26d
+operator-lifecycle-manager-packageserver   4.19.23   True        False         False      27h
+service-ca                                 4.19.23   True        False         False      26d
+storage                                    4.19.23   True        False         False      26d
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-a22a7214fd353f47683b50f217422aa1   False     True       False      3              0                   0                     0                      26d
+worker   rendered-worker-89cff240e099cc0d77762a69adf42c3b   True      False      False      0              0                   0                     0                      26d
 srib@ocp-haproxy-1:~/ocp_4_20$ oc logs machine-config-daemon-p8rgs
 Defaulted container "machine-config-daemon" out of: machine-config-daemon, kube-rbac-proxy
 I0326 05:49:53.973991   55955 start.go:68] Version: 3cc3465c (b405535023b88949e231be90778e5cf63e438c40)
@@ -130,27 +193,193 @@ I0326 12:54:35.378863   55955 drain.go:245] /etc/containers/registries.conf: reg
 I0326 12:54:35.378926   55955 update.go:1205] Drain calculated for node disruption: true for config rendered-master-c65faf6a52d416453c211631a2d9af28
 I0326 12:54:35.404418   55955 update.go:2820] "Update prepared; requesting cordon and drain via annotation to controller"
 I0326 13:09:20.955084   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get node ocp-cp-2.lab1.srib-lab-ocp.lan -o yaml | grep machineconfiguration.openshift.io
-    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
-    machineconfiguration.openshift.io/currentConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
-    machineconfiguration.openshift.io/desiredConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
-    machineconfiguration.openshift.io/desiredDrain: uncordon-rendered-master-a22a7214fd353f47683b50f217422aa1
-    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-a22a7214fd353f47683b50f217422aa1
-    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: "false"
-    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: "13581553"
-    machineconfiguration.openshift.io/post-config-action: ""
-    machineconfiguration.openshift.io/reason: ""
-    machineconfiguration.openshift.io/state: Done
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get node ocp-cp-3.lab1.srib-lab-ocp.lan -o yaml | grep machineconfiguration.openshift.io
-    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
-    machineconfiguration.openshift.io/currentConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
-    machineconfiguration.openshift.io/desiredConfig: rendered-master-c65faf6a52d416453c211631a2d9af28
-    machineconfiguration.openshift.io/desiredDrain: drain-rendered-master-c65faf6a52d416453c211631a2d9af28
-    machineconfiguration.openshift.io/forceReboot: "true"
-    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-a22a7214fd353f47683b50f217422aa1
-    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: "false"
-    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: "13581553"
-    machineconfiguration.openshift.io/post-config-action: ""
-    machineconfiguration.openshift.io/reason: ""
-    machineconfiguration.openshift.io/state: Working
+srib@ocp-haproxy-1:~/ocp_4_20$ oc describe  mcp master
+Name:         master
+Namespace:
+Labels:       machineconfiguration.openshift.io/mco-built-in=
+              operator.machineconfiguration.openshift.io/required-for-upgrade=
+              pools.operator.machineconfiguration.openshift.io/master=
+Annotations:  <none>
+API Version:  machineconfiguration.openshift.io/v1
+Kind:         MachineConfigPool
+Metadata:
+  Creation Timestamp:  2026-02-27T18:13:36Z
+  Generation:          32
+  Resource Version:    14786131
+  UID:                 4c56963e-d318-4097-ba13-bcc86eb4b579
+Spec:
+  Configuration:
+    Name:  rendered-master-90e0e60e03f1a6f7a9eff1ec0d3dd4e6
+    Source:
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         00-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-container-runtime
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-cpu-partitioning
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-masters-chrony-configuration
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-nto-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-performance-performance-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         97-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         98-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-assisted-installer-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-registries
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         disable-chronyd
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         load-sctp-module
+  Machine Config Selector:
+    Match Labels:
+      machineconfiguration.openshift.io/role:  master
+  Node Selector:
+    Match Labels:
+      node-role.kubernetes.io/master:
+  Paused:                              false
+Status:
+  Cert Expirys:
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-02-25T17:11:03Z
+    Subject:  CN=admin-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-03-30T13:02:27Z
+    Subject:  CN=kube-csr-signer_@1772283746
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-04-29T12:56:27Z
+    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1772283386
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-04-14T13:02:52Z
+    Subject:  CN=kube-csr-signer_@1773579772
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T17:43:50Z
+    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T17:43:50Z
+    Subject:  CN=kube-control-plane-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-02-25T17:43:48Z
+    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-02-27T18:13:08Z
+    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1772215988
+  Conditions:
+    Last Transition Time:  2026-02-27T18:14:09Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  RenderDegraded
+    Last Transition Time:  2026-03-24T11:50:53Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  PinnedImageSetsDegraded
+    Last Transition Time:  2026-03-26T04:51:15Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  NodeDegraded
+    Last Transition Time:  2026-03-26T04:51:15Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Degraded
+    Last Transition Time:  2026-03-26T12:54:33Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Updated
+    Last Transition Time:  2026-03-26T12:54:33Z
+    Message:               All nodes are updating to MachineConfig rendered-master-90e0e60e03f1a6f7a9eff1ec0d3dd4e6
+    Reason:
+    Status:                True
+    Type:                  Updating
+  Configuration:
+    Name:  rendered-master-a22a7214fd353f47683b50f217422aa1
+    Source:
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                00-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-container-runtime
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-cpu-partitioning
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                01-master-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-masters-chrony-configuration
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-nto-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                50-performance-performance-master
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                97-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                98-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-assisted-installer-master-ssh
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-generated-kubelet
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-generated-registries
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                99-master-ssh
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                disable-chronyd
+      API Version:         machineconfiguration.openshift.io/v1
+      Kind:                MachineConfig
+      Name:                load-sctp-module
+  Degraded Machine Count:  0
+  Machine Count:           3
+  Observed Generation:     32
+  Pool Synchronizers Status:
+    Available Machine Count:    2
+    Machine Count:              3
+    Pool Synchronizer Type:     PinnedImageSets
+    Ready Machine Count:        0
+    Unavailable Machine Count:  1
+    Updated Machine Count:      3
+  Ready Machine Count:          0
+  Unavailable Machine Count:    1
+  Updated Machine Count:        0
+Events:                         <none>
 srib@ocp-haproxy-1:~/ocp_4_20$
