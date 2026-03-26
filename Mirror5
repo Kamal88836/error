@@ -1,203 +1,168 @@
-Perfect — now we got the **real root cause** 🔥
-
----
-
-# 🚨 EXACT PROBLEM (100% confirmed)
-
-Your cluster still has **active usage of `v1beta1` APIs**:
-
-### From your output:
-
-* `machine.openshift.io v1beta1`
-* `cluster.x-k8s.io v1beta1`
-* `metal3 remediation v1beta1`
-* webhook paths using `v1beta1`
-
-👉 These are **NOT just present — they are actively used by webhooks**
-
----
-
-# ⚠️ WHY UPGRADE IS BLOCKED
-
-Even though:
-
-✔ admin-ack = true
-❌ Upgradeable = False
-
-Because:
-
-👉 OpenShift detects **live usage of deprecated APIs**
-
-**Important:**
-
-* Having API available → OK
-* **Using it in webhooks/resources → BLOCKER ❌**
-
----
-
-# 🎯 ROOT CAUSE IN YOUR CLUSTER
-
-From your data:
-
-👉 These are causing block:
-
-### 1️⃣ Machine API (very important)
-
-```
-machine.openshift.io/v1beta1
-```
-
-### 2️⃣ Metal3 / Baremetal
-
-```
-infrastructure.cluster.x-k8s.io/v1beta1
-```
-
-👉 These come from:
-
-* Machine API Operator
-* Baremetal Operator
-
----
-
-# 🚀 FIX — STEP BY STEP (NO GUESSWORK)
-
-## ✅ STEP 1 — Identify exact webhook names
-
-Run:
-
-```bash
-oc get mutatingwebhookconfigurations
-oc get validatingwebhookconfigurations
-```
-
-👉 Look for names like:
-
-* machine-api
-* metal3
-* cluster-x
-
----
-
-## ✅ STEP 2 — Inspect one webhook
-
-Example:
-
-```bash
-oc get mutatingwebhookconfiguration <name> -o yaml
-```
-
-Check:
-
-```yaml
-admissionReviewVersions:
-- v1beta1   ❌
-```
-
----
-
-## 🔥 STEP 3 — FIX (IMPORTANT)
-
-### OPTION A (BEST) ✅
-
-👉 Upgrade operator that owns webhook
-
-But in disconnected cluster → not easy
-
----
-
-### OPTION B (FASTEST FIX) ⚡
-
-👉 Patch webhook to remove `v1beta1`
-
-Example:
-
-```bash
-oc patch mutatingwebhookconfiguration <name> \
---type='json' \
--p='[{"op":"replace","path":"/webhooks/0/admissionReviewVersions","value":["v1"]}]'
-```
-
-👉 Do for ALL webhooks containing:
-
-```
-v1beta1
-```
-
----
-
-### ⚠️ If multiple webhooks inside
-
-You may need to patch multiple indexes:
-
-```bash
-/webhooks/0/
-/webhooks/1/
-/webhooks/2/
-```
-
----
-
-## 🧨 STEP 4 — Restart CVO
-
-```bash
-oc delete pod -n openshift-cluster-version -l app=cluster-version-operator
-```
-
----
-
-## ✅ STEP 5 — Retry upgrade
-
-```bash
-oc adm upgrade \
---allow-explicit-upgrade \
---allow-upgrade-with-warnings \
---to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
-```
-
----
-
-# 💡 IMPORTANT INSIGHT
-
-👉 Your issue is **NOT mirror / checksum / IDMS**
-
-👉 It is:
-
-> ❌ Deprecated API still referenced by webhooks
-
----
-
-# 🧠 WHY THIS HAPPENS
-
-In disconnected clusters:
-
-* Operators don’t auto-upgrade
-* Old webhook configs remain
-* CVO blocks upgrade for safety
-
----
-
-# 🏁 FINAL RESULT AFTER FIX
-
-You should see:
-
-```bash
-oc get clusterversion
-```
-
-```
-Progressing=True  ✅
-```
-
----
-
-# 🚀 If you want fastest resolution
-
-👉 Paste this:
-
-```bash
-oc get mutatingwebhookconfigurations
-oc get validatingwebhookconfigurations
-```
-
-I’ll give you **exact patch commands per webhook (ready copy-paste)** ✅
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.19.23   True        False         59m     Cluster version is 4.19.23
+srib@ocp-haproxy-1:~/ocp_4_20$ oc describe clusterversion
+Name:         version
+Namespace:
+Labels:       <none>
+Annotations:  <none>
+API Version:  config.openshift.io/v1
+Kind:         ClusterVersion
+Metadata:
+  Creation Timestamp:  2026-02-27T17:50:06Z
+  Generation:          10
+  Resource Version:    14897955
+  UID:                 ed02d0f1-f2bf-44d8-ba4d-1d48cd16647a
+Spec:
+  Capabilities:
+    Additional Enabled Capabilities:
+    Baseline Capability Set:  None
+  Channel:                    stable-4.20
+  Cluster ID:                 63837200-ea8f-437a-834a-49f8d7d36dac
+  Desired Update:
+    Architecture:
+    Force:         false
+    Image:         bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+    Version:
+Status:
+  Available Updates:  <nil>
+  Capabilities:
+    Enabled Capabilities:
+      Build
+      CSISnapshot
+      CloudControllerManager
+      CloudCredential
+      Console
+      DeploymentConfig
+      ImageRegistry
+      Ingress
+      Insights
+      MachineAPI
+      NodeTuning
+      OperatorLifecycleManager
+      OperatorLifecycleManagerV1
+      Storage
+      baremetal
+      marketplace
+      openshift-samples
+    Known Capabilities:
+      Build
+      CSISnapshot
+      CloudControllerManager
+      CloudCredential
+      Console
+      DeploymentConfig
+      ImageRegistry
+      Ingress
+      Insights
+      MachineAPI
+      NodeTuning
+      OperatorLifecycleManager
+      OperatorLifecycleManagerV1
+      Storage
+      baremetal
+      marketplace
+      openshift-samples
+  Conditions:
+    Last Transition Time:  2026-02-27T17:50:26Z
+    Message:               The admissionregistration.k8s.io/v1beta1 group version is deprecated in 4.19 and will be removed in 4.20. Any clients using the v1beta1 version of these resources must be updated to use the corresponding v1 version instead. See https://access.redhat.com/articles/7130599 for more information.
+    Reason:                AdminAckRequired
+    Status:                False
+    Type:                  Upgradeable
+    Last Transition Time:  2026-03-25T05:33:20Z
+    Message:               The following capabilities could not be disabled: Build, CSISnapshot, CloudControllerManager, CloudCredential, Console, DeploymentConfig, ImageRegistry, Ingress, Insights, MachineAPI, NodeTuning, OperatorLifecycleManager, OperatorLifecycleManagerV1, Storage, baremetal, marketplace, openshift-samples
+    Reason:                CapabilitiesImplicitlyEnabled
+    Status:                True
+    Type:                  ImplicitlyEnabledCapabilities
+    Last Transition Time:  2026-03-26T16:51:34Z
+    Message:               Preconditions failed for payload loaded version="4.20.14" image="bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566": Multiple precondition checks failed:
+* Precondition "ClusterVersionUpgradeable" failed because of "AdminAckRequired": The admissionregistration.k8s.io/v1beta1 group version is deprecated in 4.19 and will be removed in 4.20. Any clients using the v1beta1 version of these resources must be updated to use the corresponding v1 version instead. See https://access.redhat.com/articles/7130599 for more information.
+* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.19.23 to 4.20.14 is unknown.
+    Reason:                PreconditionChecks
+    Status:                False
+    Type:                  ReleaseAccepted
+    Last Transition Time:  2026-02-27T18:38:28Z
+    Message:               Done applying 4.19.23
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  2026-03-26T16:51:20Z
+    Status:                False
+    Type:                  Failing
+    Last Transition Time:  2026-03-26T16:12:19Z
+    Message:               Cluster version is 4.19.23
+    Status:                False
+    Type:                  Progressing
+    Last Transition Time:  2026-02-27T17:50:26Z
+    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.20&id=63837200-ea8f-437a-834a-49f8d7d36dac&version=4.19.23": dial tcp 98.88.147.59:443: connect: connection timed out
+    Reason:                RemoteFailed
+    Status:                False
+    Type:                  RetrievedUpdates
+  Desired:
+    Image:    bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
+    URL:      https://access.redhat.com/errata/RHSA-2026:1552
+    Version:  4.19.23
+  History:
+    Completion Time:    2026-03-24T17:53:56Z
+    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
+    Started Time:       2026-03-24T10:37:10Z
+    State:              Completed
+    Verified:           true
+    Version:            4.19.23
+    Completion Time:    2026-02-27T18:38:28Z
+    Image:              quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+    Started Time:       2026-02-27T17:50:26Z
+    State:              Completed
+    Verified:           false
+    Version:            4.18.23
+  Observed Generation:  10
+  Version Hash:         AJkHbViX_GU=
+Events:                 <none>
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-90e0e60e03f1a6f7a9eff1ec0d3dd4e6   True      False      False      3              3                   3                     0                      26d
+worker   rendered-worker-89cff240e099cc0d77762a69adf42c3b   True      False      False      0              0                   0                     0                      26d
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.19.23   True        False         False      65m
+baremetal                                  4.19.23   True        False         False      26d
+cloud-controller-manager                   4.19.23   True        False         False      26d
+cloud-credential                           4.19.23   True        False         False      26d
+cluster-autoscaler                         4.19.23   True        False         False      26d
+config-operator                            4.19.23   True        False         False      26d
+console                                    4.19.23   True        False         False      26d
+control-plane-machine-set                  4.19.23   True        False         False      26d
+csi-snapshot-controller                    4.19.23   True        False         False      26d
+dns                                        4.19.23   True        False         False      26d
+etcd                                       4.19.23   True        False         False      26d
+image-registry                             4.19.23   True        False         False      26d
+ingress                                    4.19.23   True        False         False      61m
+insights                                   4.19.23   True        False         False      71m
+kube-apiserver                             4.19.23   True        False         False      26d
+kube-controller-manager                    4.19.23   True        False         False      26d
+kube-scheduler                             4.19.23   True        False         False      26d
+kube-storage-version-migrator              4.19.23   True        False         False      4h17m
+machine-api                                4.19.23   True        False         False      26d
+machine-approver                           4.19.23   True        False         False      26d
+machine-config                             4.19.23   True        False         False      26d
+marketplace                                4.19.23   True        False         False      26d
+monitoring                                 4.19.23   True        False         False      47h
+network                                    4.19.23   True        False         False      26d
+node-tuning                                4.19.23   True        False         False      2d6h
+olm                                        4.19.23   True        False         False      64m
+openshift-apiserver                        4.19.23   True        False         False      26d
+openshift-controller-manager               4.19.23   True        False         False      26d
+openshift-samples                          4.19.23   True        False         False      26d
+operator-lifecycle-manager                 4.19.23   True        False         False      26d
+operator-lifecycle-manager-catalog         4.19.23   True        False         False      26d
+operator-lifecycle-manager-packageserver   4.19.23   True        False         False      30h
+service-ca                                 4.19.23   True        False         False      26d
+storage                                    4.19.23   True        False         False      26d
+srib@ocp-haproxy-1:~/ocp_4_20$ oc adm upgrade --allow-explicit-upgrade --allow-upgrade-with-warnings --to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+warning: The requested upgrade image is not one of the available updates. You have used --allow-explicit-upgrade for the update to proceed anyway
+Requested update to release image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.19.23   True        False         61m     Cluster version is 4.19.23
+srib@ocp-haproxy-1:~/ocp_4_20$
