@@ -1,6 +1,135 @@
-oc mirror -c imageset-config_4_20_14.yaml --from file:///root/mirror_4_20_14/  docker://bastion.srib-lab-ocp.lan:8443 --v2
-
-export LOCAL_REGISTRY="bastion.srib-lab-ocp.lan:8443"
-[root@bastion ocp-update-version]# export LOCAL_REPOSITORY="ocp4/openshift4"
+[root@bastion ocp-update-version]# oc adm release info -o 'jsonpath={.digest}{"\n"}' bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
+sha256:68e5111465b0e50a887ae2a10212517122fba44366749fb2bde8f6dd15bb49c8
 [root@bastion ocp-update-version]#
-[root@bastion ocp-update-version]# oc mirror -c imageset-config.yaml --from file://registry docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
+[root@bastion ocp-update-version]#
+[root@bastion ocp-update-version]# DIGEST="$(oc adm release info -o 'jsonpath={.digest}{"\n"}' bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64)"
+[root@bastion ocp-update-version]# DIGEST_ALGO="${DIGEST%%:*}"
+[root@bastion ocp-update-version]# DIGEST_ENCODED="${DIGEST#*:}"
+[root@bastion ocp-update-version]#
+[root@bastion ocp-update-version]# SIGNATURE_BASE64=$(curl -s "https://mirror.openshift.com/pub/openshift-v4/signatures/openshift/release/${DIGEST_ALGO}=${DIGEST_ENCODED}/signature-1" | base64 -w0 && echo)
+[root@bastion ocp-update-version]#
+
+cat >checksum-4.14.46.yaml <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-image-4.14.46
+  namespace: openshift-config-managed
+  labels:
+    release.openshift.io/verification-signatures: ""
+binaryData:
+  ${DIGEST_ALGO}-${DIGEST_ENCODED}: ${SIGNATURE_BASE64}
+EOF
+
+[root@bastion ocp-update-version]#
+[root@bastion ocp-update-version]# cat checksum-4.14.46.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-image-4.14.46
+  namespace: openshift-config-managed
+  labels:
+    release.openshift.io/verification-signatures: ""
+binaryData:
+  sha256-68e5111465b0e50a887ae2a10212517122fba44366749fb2bde8f6dd15bb49c8: owGbwMvMwMEoOU9/4l9n2UDGtYwpSWLxRQW5xZnpukWphboVhfGOORV6SZl56XNm7KhWSi7KLMlMTsxRslKoVsrMTUxPBbNS8pOzU4t0cxPzMtNSi0t0UzLTgRRQSqk4I9HI1MzKzCLV1NDQ0MTMNMkg1dQg0cLCPDHVKNHQwMjQyNTQ3NDIKC0p0cTE2MzM3MQyLckoKSXVIs0sJcXQNCnJxDLZQqlWR0GppLIAZJ1SYkl+bmayQnJ+XkliZl5qkQLQtXmJJaVFqUpAVZkpqXklmSWVyA4rSk1LLUrNSwZrLyxNrNTLzNfPL0jNK87ITCsBSuekJhan6qaklunnJxfA+FYmeoYmeiZmuhUWZvFmJkq1IEfkF5Rk5udBQyC5KBXomCKQqUGpKQoeiSUK/kBTg0GmKgQDXQUMNwXH0pKMfGC4VSoY6BnoGQKN6WSSYWFg5GBgY2UCBSsDF6cALAosb/D/Zj2onm7yc+7Cmtd7rDwSnk/Qkf+8asIbDj7l587NlhsaizR0pjZr9zw42XbLnTuwVYTZo3S9vdSqVjmWtTla5jfaLz/RX9GmOLf03rKlN6M3nZfQe37S6OLpf+0rzUwPZ76IipWRu8bjNek+w9OCI0L7Zrd5esQunu1rvc56xbGa47MtDn05Y8K968yr6edPfRVmzn7qlH6rQvjA0lw+Bn7Xr58EP5l0mlxiffhh/51rR/5rhXB/2BVq97//aJDa4eT+mDbmbKYtqzWVNE+Gc648o9SuNH3a9Sa3GbO/7y5VefjjcoDzusr9SZEHbz6y3Dz1Q6j4m3p3v6wEna+H5W+2FS+p1RNz75y0ZV6A0oG2Kanty2KnLVMsZd1yN6R1Y9tTl6uvF/Bv11WW+nHsmK525+RtSj7rW+L4fhju/eDan8u08rHaqk7ZzOSFVeed6rUP+V18Isb9bevdpLNyN18qyjPXHrq7713cnLL1N7yW3p5kzrB0Um2PnmL2tTMiXr6nPTKFT/71kDjx6njjpKqIPzqXbu8pj1R6fLOiL+rJ3P+SrtH/H2WnfL/1UOfzhhnv36887+U3f1P9BodFvybV/ncN42RVd+Z/cvJzWTDv8h8q/F0+1zfJtx6c/6ZOb2HtiTQxCZl1gcvYAj4Ev3h7cHmv/b+6mFMRyq69XI4v9ijP+LX1hvy0i1fD7v5hWbr34Y46NUkepylm2/8CAA==
+
+
+4. Upgrade the cluster
+4.1.  Pause Machine Health Check
+
+
+srib@ocp-haproxy-1:~$ oc -n openshift-machine-api annotate mhc machine-api-termination-handler cluster.x-k8s.io/paused=""
+machinehealthcheck.machine.openshift.io/machine-api-termination-handler annotate
+srib@ocp-haproxy-1:~$
+
+
+Check machine health yaml Collapse source
+
+
+srib@ocp-haproxy-1:~$ oc get machinehealthcheck -n openshift-machine-api -oyaml
+apiVersion: v1
+items:
+- apiVersion: machine.openshift.io/v1beta1
+  kind: MachineHealthCheck
+  metadata:
+    annotations:
+      capability.openshift.io/name: MachineAPI
+      cluster.x-k8s.io/paused: ""
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+    creationTimestamp: "2024-05-07T15:50:51Z"
+    generation: 1
+    labels:
+      api: clusterapi
+      k8s-app: termination-handler
+    name: machine-api-termination-handler
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      controller: true
+      kind: ClusterVersion
+      name: version
+      uid: d22a248c-88fe-491c-a15b-c8b1bc8e7d87
+    resourceVersion: "324595880"
+    uid: a6af9e82-f913-405e-b926-e9b2f6bc27b4
+  spec:
+    maxUnhealthy: 100%
+    nodeStartupTimeout: "0"
+    selector:
+      matchLabels:
+        machine.openshift.io/interruptible-instance: ""
+    unhealthyConditions:
+    - status: "True"
+      timeout: 0s
+      type: Terminating
+kind: List
+metadata:
+  resourceVersion: ""
+srib@ocp-haproxy-1:~$
+4.2. Patch Cluster version based on reference of upgrade map
+
+
+srib@ocp-haproxy-1:~$ oc patch clusterversion version --type merge -p '{"spec": {"channel": "stable-4.14"}}'
+clusterversion.config.openshift.io/version patched (no change)
+srib@ocp-haproxy-1:~$
+4.3. Apply target version config map 
+copy checksum-4.14.46.yaml file bastion to haproxy VM
+
+
+
+
+srib@ocp-haproxy-1:~/ocp-config$ oc apply -f checksum-4.14.46.yaml
+configmap/release-image-4.14.46 created
+srib@ocp-haproxy-1:~/ocp-config$
+4.4. Upgrade the cluster
+
+
+#check the SHA256 of openshift4:4.14.46-x86_64 from step 3.5
+
+srib@ocp-haproxy-1:~/ocp-configMNO$ oc adm upgrade --allow-explicit-upgrade --allow-upgrade-with-warnings --to-image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:883088e3e6efa7443b0ac28cd7682c2fdbda889b576edad626769bf956ac0858
+warning: The requested upgrade image is not one of the available updates. You have used --allow-explicit-upgrade for the update to proceed anyway
+warning: --allow-upgrade-with-warnings is bypassing: the cluster is experiencing an error reconciling "4.14.0":
+
+  Reason: ClusterOperatorNotAvailable
+  Message: Cluster operator insights is not available
+Requested update to release image bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:883088e3e6efa7443b0ac28cd7682c2fdbda889b576edad626769bf956ac0858
+srib@ocp-haproxy-1:~/ocp-config$
+srib@ocp-haproxy-1:~/ocp-configMNO$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.14.43   True        True          72m     Working towards 4.14.46: 109 of 880 done (12% complete), waiting up to 40 minutes on etcd, kube-apiserver
+
+
+
+
+
+# *IF* even after sometime, clusterversion is not in 'Progressing' state, then delete insights operators
+srib@ocp-haproxy-1:~/ocp-configMNO$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.14.43   True        False         2d2h    Error while reconciling 4.14.43: the cluster operator insights is not available    =====> if this error
+srib@ocp-haproxy-1:~/ocp-configMNO$
+srib@ocp-haproxy-1:~/ocp-configMNO$
+srib@ocp-haproxy-1:~/ocp-configMNO$ oc delete deployment insights-operator -n openshift-insights
+deployment.apps "insights-operator" deleted
+srib@ocp-haproxy-1:~/ocp-configMNO$ oc delete co/insights
+clusteroperator.config.openshift.io "insights" deleted
+srib@ocp-haproxy-1:~/ocp-configMNO$
