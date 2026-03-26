@@ -1,135 +1,48 @@
-Perfect 👍 — now we see the **exact issue clearly**, and your error actually tells the fix.
 
----
-
-# 🚨 Why your patch FAILED
-
-Error:
-
-```bash
-minAvailable and maxUnavailable cannot be both set
-```
-
-👉 Your PDB already has:
-
-```bash
-maxUnavailable: 0
-```
-
-👉 So adding `minAvailable` ❌ is invalid
-
----
-
-# 🧠 Correct Fix (VERY IMPORTANT)
-
-👉 You should **modify `maxUnavailable`**, NOT add `minAvailable`
-
----
-
-# 🏆 DO THIS EXACTLY
-
-## ✅ Step 1: Patch OSD PDB correctly
-
-```bash
-oc patch pdb rook-ceph-osd-rack-rack0 -n openshift-storage \
---type merge -p '{"spec":{"maxUnavailable":1}}'
-
-oc patch pdb rook-ceph-osd-rack-rack2 -n openshift-storage \
---type merge -p '{"spec":{"maxUnavailable":1}}'
-```
-
----
-
-## 🔍 Step 2: Verify
-
-```bash
-oc get pdb -n openshift-storage
-```
-
-👉 You should now see:
-
-```bash
-MAX UNAVAILABLE = 1
-ALLOWED DISRUPTIONS >= 1 ✅
-```
-
----
-
-# 🚀 Step 3: Retry drain
-
-```bash
-oc adm drain ocp-cp-3.lab1.srib-lab-ocp.lan \
---ignore-daemonsets --delete-emptydir-data --force --grace-period=0
-```
-
-👉 This time:
-✔ OSD pod will be evicted
-✔ Drain will succeed
-
----
-
-# 🔄 Step 4: Watch upgrade resume
-
-```bash
-watch oc get mcp
-```
-
-👉 Expect:
-
-```bash
-master → UPDATED=True
-UPDATING=False
-```
-
----
-
-# ⚠️ Why this works
-
-Before:
-
-```bash
-maxUnavailable = 0 → no eviction ❌
-```
-
-After:
-
-```bash
-maxUnavailable = 1 → eviction allowed ✅
-```
-
----
-
-# 💡 Small but critical concept
-
-| Setting          | Meaning                |
-| ---------------- | ---------------------- |
-| maxUnavailable=0 | Block ALL evictions ❌  |
-| maxUnavailable=1 | Allow 1 pod eviction ✅ |
-
----
-
-# 🏁 Final Answer
-
-👉 ❌ Don’t use `minAvailable`
-👉 ✅ Update `maxUnavailable`
-
----
-
-# 👍 You’re literally at final unblock step
-
-👉 After this:
-
-* Drain will succeed
-* Node updates
-* MachineConfig recovers
-* Upgrade continues
-
----
-
-If still stuck after patch, paste:
-
-```bash
-oc get pdb -n openshift-storage
-```
-
-I’ll finish it completely 👍
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-a22a7214fd353f47683b50f217422aa1   True      False      False      3              3                   3                     0                      26d
+worker   rendered-worker-73be8c206c0e9d1f05333eceaa9ad422   True      False      False      0              0                   0                     0                      26d
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.19.23   True        False         9h      Error while reconciling 4.19.23: an unknown error has occurred: MultipleErrors
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.19.23   True        False         False      2d2h
+baremetal                                  4.19.23   True        False         False      26d
+cloud-controller-manager                   4.19.23   True        False         False      26d
+cloud-credential                           4.19.23   True        False         False      26d
+cluster-autoscaler                         4.19.23   True        False         False      26d
+config-operator                            4.19.23   True        False         False      26d
+console                                    4.19.23   True        False         False      26d
+control-plane-machine-set                  4.19.23   True        False         False      26d
+csi-snapshot-controller                    4.19.23   True        False         False      26d
+dns                                        4.19.23   True        False         False      26d
+etcd                                       4.19.23   True        False         False      26d
+image-registry                             4.19.23   True        False         False      26d
+ingress                                    4.19.23   True        False         False      179m
+insights                                   4.19.23   False       False         True       56m     Unable to report: unable to build request to connect to Insights server: Post "https://console.redhat.com/api/ingress/v1/upload": dial tcp 2.18.51.203:443: i/o timeout
+kube-apiserver                             4.19.23   True        False         False      26d
+kube-controller-manager                    4.19.23   True        False         False      26d
+kube-scheduler                             4.19.23   True        False         False      26d
+kube-storage-version-migrator              4.19.23   True        False         False      179m
+machine-api                                4.19.23   True        False         False      26d
+machine-approver                           4.19.23   True        False         False      26d
+machine-config                             4.19.23   True        False         False      26d
+marketplace                                4.19.23   True        False         False      26d
+monitoring                                 4.19.23   True        False         False      46h
+network                                    4.19.23   True        False         False      26d
+node-tuning                                4.19.23   True        False         False      2d4h
+olm                                        4.19.23   True        False         False      179m
+openshift-apiserver                        4.19.23   True        False         False      26d
+openshift-controller-manager               4.19.23   True        False         False      26d
+openshift-samples                          4.19.23   True        False         False      26d
+operator-lifecycle-manager                 4.19.23   True        False         False      26d
+operator-lifecycle-manager-catalog         4.19.23   True        False         False      26d
+operator-lifecycle-manager-packageserver   4.19.23   True        False         False      29h
+service-ca                                 4.19.23   True        False         False      26d
+storage                                    4.19.23   True        False         False      26d
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.19.23   True        False         9h      Error while reconciling 4.19.23: an unknown error has occurred: MultipleErrors
+srib@ocp-haproxy-1:~/ocp_4_20$
