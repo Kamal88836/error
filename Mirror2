@@ -1,0 +1,123 @@
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+
+archiveSize: 4
+
+mirror:
+  platform:
+    graph: true
+    channels:
+      - name: stable-4.20
+        minVersion: 4.20.14
+        maxVersion: 4.20.14
+
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.20
+      packages:
+
+        # 🔴 ODF FULL STACK
+        - name: odf-operator
+          channels:
+            - name: stable-4.20
+
+        - name: ocs-operator
+          channels:
+            - name: stable-4.20
+
+        - name: ocs-client-operator
+          channels:
+            - name: stable-4.20
+
+        - name: mcg-operator
+          channels:
+            - name: stable-4.20
+
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.20
+
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.20
+
+        - name: recipe
+          channels:
+            - name: stable-4.20
+
+        # 🟠 STORAGE / INFRA
+        - name: lvms-operator
+          channels:
+            - name: stable-4.20
+
+        - name: local-storage-operator
+          channels:
+            - name: stable
+
+        # 🟡 NETWORK / NODE
+        - name: kubernetes-nmstate-operator
+          channels:
+            - name: stable
+
+        - name: sriov-network-operator
+          channels:
+            - name: stable
+
+        - name: ptp-operator
+          channels:
+            - name: stable
+
+        # 🟢 MONITORING / LOGGING
+        - name: cluster-logging
+          channels:
+            - name: stable
+
+        - name: loki-operator
+          channels:
+            - name: stable
+
+        - name: elasticsearch-operator
+          channels:
+            - name: stable
+
+        # 🔵 SECURITY
+        - name: openshift-cert-manager-operator
+          channels:
+            - name: stable
+
+        # ⚪ OPTIONAL (safe)
+        - name: cluster-observability-operator
+          channels:
+            - name: stable
+
+        - name: kubernetes-image-registry-operator
+          channels:
+            - name: stable
+
+  additionalImages:
+    # 🔴 CORE RELEASE
+    - name: quay.io/openshift-release-dev/ocp-release:4.20.14-x86_64
+
+    # 🟠 BASE IMAGES
+    - name: registry.redhat.io/ubi9/ubi:latest
+    - name: registry.redhat.io/ubi9/ubi-minimal:latest
+    - name: registry.redhat.io/ubi9/ubi-init:latest
+
+    # 🟡 SUPPORT
+    - name: registry.redhat.io/rhel9/support-tools:latest
+
+    # 🔵 INSIGHTS (IMPORTANT for disconnected)
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:*
+
+  helm: {}
