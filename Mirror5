@@ -1,0 +1,136 @@
+Yes 👍 — this step is important, and you’re asking at the right time.
+
+
+---
+
+🏆 Short Answer
+
+👉 YES — delete old configs before applying new ones
+
+But do it carefully (not blindly everything) 👇
+
+
+---
+
+🚀 EXACT SAFE STEPS
+
+✅ Step 1: Delete old IDMS
+
+oc delete imagedigestmirrorset --all
+
+
+---
+
+✅ Step 2: Delete old ITMS
+
+oc delete imagetagmirrorset --all
+
+
+---
+
+✅ Step 3: Delete old CatalogSource
+
+oc delete catalogsource --all -n openshift-marketplace
+
+
+---
+
+⚠️ Step 4: Signature ConfigMap (IMPORTANT)
+
+👉 Check first:
+
+oc get configmap -n openshift-config-managed | grep signature
+
+If old exists → delete:
+
+oc delete configmap -n openshift-config-managed -l release.openshift.io/verification-signatures
+
+
+---
+
+❌ Step 5: DO NOT delete these
+
+👉 Don’t touch:
+
+Nodes ❌
+
+Operators ❌
+
+Namespaces ❌
+
+ClusterVersion ❌
+
+
+
+---
+
+🧠 Why deletion is required
+
+If you don’t delete:
+
+❌ Old mirror paths remain
+❌ Cluster pulls wrong images
+❌ Upgrade fails or behaves weird
+
+
+---
+
+🏁 After deletion → immediately apply new
+
+oc apply -f idms-oc-mirror.yaml
+oc apply -f itms-oc-mirror.yaml
+oc apply -f cs-redhat-operator-index-v4-20.yaml
+oc apply -f signature-configmap.yaml
+
+(Optional)
+
+oc apply -f updateService.yaml
+
+
+---
+
+⚠️ Important Timing
+
+👉 Do this ONLY when:
+
+Cluster is stable ✅
+
+No upgrade running ❗
+
+
+
+---
+
+🔍 Verify after applying
+
+oc get imagedigestmirrorset
+oc get imagetagmirrorset
+oc get catalogsource -n openshift-marketplace
+
+
+---
+
+💡 Pro Tip
+
+👉 After applying, wait 2–3 minutes before upgrade
+(so cluster picks new mirror config)
+
+
+---
+
+👍 Final Answer
+
+👉 ✔ Yes, delete old configs
+👉 ✔ Then apply new ones immediately
+
+
+---
+
+If you want, next I can: ✅ Verify your cluster is 100% ready before upgrade
+✅ Catch issues before they break upgrade
+
+Just run:
+
+oc get co
+
+and paste 👍
