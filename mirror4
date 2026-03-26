@@ -1,154 +1,147 @@
----
-apiVersion: config.openshift.io/v1
-kind: ImageDigestMirrorSet
-metadata:
-  annotations:
-    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: idms-release-0
-spec:
-  imageDigestMirrors:
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release
-    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images
-    source: quay.io/openshift-release-dev/ocp-release
-status: {}
----
-apiVersion: config.openshift.io/v1
-kind: ImageDigestMirrorSet
-metadata:
-  annotations:
-    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: idms-operator-0
-spec:
-  imageDigestMirrors:
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhel9
-    source: registry.redhat.io/rhel9
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/cert-manager
-    source: registry.redhat.io/cert-manager
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift4
-    source: registry.redhat.io/openshift4
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/cluster-observability-operator
-    source: registry.redhat.io/cluster-observability-operator
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4
-    source: registry.redhat.io/odf4
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/lvms4
-    source: registry.redhat.io/lvms4
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhceph
-    source: registry.redhat.io/rhceph
-status: {}
+Perfect 👍 — now this is crystal clear, and I can give you the exact correct command.
 
-
-===============================
 
 ---
-apiVersion: config.openshift.io/v1
-kind: ImageTagMirrorSet
-metadata:
-  annotations:
-    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: itms-release-0
-spec:
-  imageTagMirrors:
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images
-    source: quay.io/openshift-release-dev/ocp-release
-status: {}
+
+🧠 ROOT CAUSE (your error)
+
+From your IDMS:
+
+mirrors:
+- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images
+source: quay.io/openshift-release-dev/ocp-release
+
+👉 This tells us:
+
+💥 Your release image path is:
+
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images
+
+
 ---
-apiVersion: config.openshift.io/v1
-kind: ImageTagMirrorSet
-metadata:
-  annotations:
-    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: itms-generic-0
-spec:
-  imageTagMirrors:
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift-release-dev
-    source: quay.io/openshift-release-dev
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/rhel9
-    source: registry.redhat.io/rhel9
-  - mirrors:
-    - bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/ubi9
-    source: registry.redhat.io/ubi9
-status: {}
+
+❌ What you were using (WRONG)
+
+.../ocp4/openshift4:4.20.14-x86_64
+
+👉 Missing:
+
+/openshift/release-images
 
 
-====================================
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  annotations:
-    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: cs-redhat-operator-index-v4-20
-  namespace: openshift-marketplace
-spec:
-  image: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.20
-  sourceType: grpc
-status: {}
-=================================================
 
-apiVersion: olm.operatorframework.io/v1
-kind: ClusterCatalog
-metadata:
-  annotations:
-    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: cc-redhat-operator-index-v4-20
-spec:
-  priority: 0
-  source:
-    image:
-      ref: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.20
-    type: Image
-status: {}
+---
 
-==================================================
-apiVersion: v1
-binaryData:
-  sha256-682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566-1: owGbwMvMwMEoOU9/4l9n2UDG0wf6khgyu9ZtqFZKLsosyUxOzFGyUqhWysxNTE8Fs1Lyk7NTi3RzE/My01KLS3RTMtOBFFBKqTgj0cjUzMrMwijVwjQpLdXCwNjE0sgk1dTSLMnIwjA1xSItNS3VxMTUMNUszSzZNCkx2cA8yTQ12djAwMTEODU1ycjY1MxMqVZHQamksgBknVJiSX5uZrJCcn5eSWJmXmqRQnFmel5iSWlRqhJQVWZKal5JZkklssOKgHYUpeYlg7UXliZW6mXm6+cXpOYVZ2SmlQClc1ITi1N1U1LL9POTC2B8KxM9IwM9QxPdCguzeDMTpVqQI/ILSjLz86AhkFyUCnRMEcjUoNQUBY/EEgV/oKnBIFMVgoGuysxLV3AsLcnIB4ZbpYKBHtA4oDGdTDIsDIwcDGysTKBgZeDiFIAFdryFAMPEvSo/kmxmhoYWNnQKbTvsxDNbN9ZavEp37X117j6rdy9C7/XqXP1baTcrsehWcYk/q0C+zvSeaXb1KUfvT310OYZn3anbi3+x592t/bPh28ZZr1ambog41mBybO7xrTMm7rgZv/OKMKvoZ/cz6XWTBFW6md4m21fH6Iequuz89HKpx34H7W2TLqu/maDoNufdFiXWbjffY35W+aJZl+79z7VOWGTWLWiw/vW+l/MlNgqqRpwNn3y4qyxc6FqV1nnhUAZLhW+7QivrP8UZTeldPW/dTUtewaUF+2f+7ew3YfMr/LtbkuvehY084UqtMRNEX5zuvSbcdnvXxuCuF90z9FryeO4KNmo/MPb+Mf3EDynOr2nlkzdzXPw3886Hlo1y7+4EJxnc37DqsfuCpid8nLKZa/x8WUoeP3u/54S0yI4C+7cqrz5osffPPVRTv4z9j0bKvGXGveYqaZI3FjF/qmD7WLOssWcOc1HNibcfd7xTy3aZE9Ymuvt3kBO3/YGnfcc+F8gdWqi4xIAhpbHA+tJuV7uHvFIL9fQD849Na1Ex0z//svV1c5tx1kmvlXO3fOHrXe17OjLBVeCdgfj56p8/rPqPv8md+zD/2u4H77419Uec2nLX839FtWugoNmmn71T7h6o9mXcF/+ovNJ1yXon2yfFLUyM1w9cl9jJJCiVddDq/7/tUzb5z2GcJrT5n8PD3C/ZVrYnSo8CAA==
-kind: ConfigMap
-metadata:
-  annotations:
-    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  labels:
-    release.openshift.io/verification-signatures: ""
-  name: mirrored-release-signatures
-  namespace: openshift-config-managed
-===============================
-apiVersion: updateservice.operator.openshift.io/v1
-kind: UpdateService
-metadata:
-  annotations:
-    createdAt: Thursday, 26-Mar-26 11:59:24 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.19.0-202509151411.p2.ge176bf6.assembly.stream.el9-e176bf6
-  name: update-service-oc-mirror
-spec:
-  graphDataImage: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/graph-image:latest
-  releases: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images
-  replicas: 2
-status: {}
+✅ CORRECT COMMAND (VERY IMPORTANT)
 
+🔍 Step 1: Get digest
+
+DIGEST=$(oc adm release info -o 'jsonpath={.digest}{"\n"}' \
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.14-x86_64)
+
+
+---
+
+🚀 Step 2: Upgrade
+
+oc adm upgrade \
+--to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@$DIGEST \
+--allow-explicit-upgrade
+
+
+---
+
+🔥 Why this is correct
+
+From your configs:
+
+IDMS:
+
+ocp-release → /openshift/release-images ✅
+
+
+UpdateService:
+
+releases: bastion.../openshift/release-images
+
+👉 Confirms same path ✅
+
+
+---
+
+🧪 Test first (don’t skip)
+
+Run this BEFORE upgrade:
+
+oc adm release info \
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.14-x86_64
+
+👉 If this works → you’re 100% good
+
+
+---
+
+🚨 If still “manifest unknown”
+
+Then list tags:
+
+oc image list-tags \
+bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images
+
+👉 Use exact tag shown
+
+
+---
+
+🏁 FINAL FLOW FOR YOU
+
+1. Apply:
+
+IDMS ✅
+
+ITMS ✅
+
+CatalogSource ✅
+
+signature-configmap.yaml ✅
+
+
+
+2. Verify release image (correct path) ✅
+
+
+3. Upgrade using digest ✅
+
+
+
+
+---
+
+💡 Key Learning (VERY IMPORTANT)
+
+👉 In oc-mirror v2:
+
+Release images are stored under:
+
+
+/openshift/release-images
+
+👉 NOT directly under:
+
+/openshift4
+
+
+---
+
+👍 You are very close now
+
+👉 This was the last blocker (path issue)
+
+
+---
+
+If you want, I can next: ✅ Validate your cluster before upgrade
+✅ Give live troubleshooting during upgrade
+✅ Check operators readiness
+
+Just say 👍
