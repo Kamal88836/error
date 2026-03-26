@@ -1,55 +1,156 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.19.23   True        False         6h37m   Cluster version is 4.19.23
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get imagedigestmirrorset
-NAME              AGE
-idms-operator-0   12m
-idms-release-0    12m
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get imagetagmirrorset
-NAME             AGE
-itms-generic-0   12m
-itms-release-0   12m
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get catalogsource -n openshift-marketplace
-NAME                             DISPLAY   TYPE   PUBLISHER   AGE
-cs-redhat-operator-index-v4-20             grpc               12m
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.19.23   True        False         False      47h
-baremetal                                  4.19.23   True        False         False      26d
-cloud-controller-manager                   4.19.23   True        False         False      26d
-cloud-credential                           4.19.23   True        False         False      26d
-cluster-autoscaler                         4.19.23   True        False         False      26d
-config-operator                            4.19.23   True        False         False      26d
-console                                    4.19.23   True        False         False      26d
-control-plane-machine-set                  4.19.23   True        False         False      26d
-csi-snapshot-controller                    4.19.23   True        False         False      26d
-dns                                        4.19.23   True        False         False      26d
-etcd                                       4.19.23   True        False         False      26d
-image-registry                             4.19.23   True        False         False      26d
-ingress                                    4.19.23   True        True          False      12m     ingresscontroller "default" is progressing: IngressControllerProgressing: One or more status conditions indicate progressing: DeploymentRollingOut=True (DeploymentRollingOut: Waiting for router deployment rollout to finish: 2 of 3 updated replica(s) are available......
-insights                                   4.19.23   True        False         False      13m
-kube-apiserver                             4.19.23   True        False         False      26d
-kube-controller-manager                    4.19.23   True        False         False      26d
-kube-scheduler                             4.19.23   True        False         False      26d
-kube-storage-version-migrator              4.19.23   True        False         False      13m
-machine-api                                4.19.23   True        False         False      26d
-machine-approver                           4.19.23   True        False         False      26d
-machine-config                             4.19.23   True        False         False      26d
-marketplace                                4.19.23   True        False         False      26d
-monitoring                                 4.19.23   True        False         False      43h
-network                                    4.19.23   True        False         False      26d
-node-tuning                                4.19.23   True        False         False      2d2h
-olm                                        4.19.23   True        False         False      13m
-openshift-apiserver                        4.19.23   True        False         False      26d
-openshift-controller-manager               4.19.23   True        False         False      26d
-openshift-samples                          4.19.23   True        False         False      26d
-operator-lifecycle-manager                 4.19.23   True        False         False      26d
-operator-lifecycle-manager-catalog         4.19.23   True        False         False      26d
-operator-lifecycle-manager-packageserver   4.19.23   True        False         False      26h
-service-ca                                 4.19.23   True        False         False      26d
-storage                                    4.19.23   True        False         False      26d
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-a22a7214fd353f47683b50f217422aa1   False     True       False      3              0                   0                     0                      26d
-worker   rendered-worker-89cff240e099cc0d77762a69adf42c3b   True      False      False      0              0                   0                     0                      26d
+srib@ocp-haproxy-1:~/ocp_4_20$ oc logs machine-config-daemon-p8rgs
+Defaulted container "machine-config-daemon" out of: machine-config-daemon, kube-rbac-proxy
+I0326 05:49:53.973991   55955 start.go:68] Version: 3cc3465c (b405535023b88949e231be90778e5cf63e438c40)
+I0326 05:49:53.974061   55955 update.go:2775] Running: mount --rbind /run/secrets /rootfs/run/secrets
+I0326 05:49:53.975973   55955 update.go:2775] Running: mount --rbind /usr/bin /rootfs/run/machine-config-daemon-bin
+I0326 05:49:53.977436   55955 daemon.go:539] using appropriate binary for source=rhel-9 target=rhel-9
+I0326 05:49:54.031773   55955 daemon.go:592] Invoking re-exec /run/bin/machine-config-daemon
+I0326 05:49:54.117221   55955 start.go:68] Version: 3cc3465c (b405535023b88949e231be90778e5cf63e438c40)
+I0326 05:49:54.117530   55955 image_manager_helper.go:126] Linking rpm-ostree authfile to /etc/mco/internal-registry-pull-secret.json
+I0326 05:49:54.390813   55955 daemon.go:337] Booted osImageURL: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f435d0107d9aefcfaa6d6dd77a4825de06e4d0f6d0878d66eef40f12440829a3 (9.6.20260123-0) c189e00bd51358001cbbd7ed5d98b4bd7155e6f038484b66ce7f762842d88a19
+I0326 05:49:54.392202   55955 start.go:134] overriding kubernetes api to https://api-int.lab1.srib-lab-ocp.lan:6443
+I0326 05:49:54.393038   55955 metrics.go:92] Registering Prometheus metrics
+I0326 05:49:54.393144   55955 metrics.go:99] Starting metrics listener on 127.0.0.1:8797
+I0326 05:49:54.406856   55955 simple_featuregate_reader.go:171] Starting feature-gate-detector
+I0326 05:49:54.407951   55955 writer.go:87] NodeWriter initialized with credentials from /var/lib/kubelet/kubeconfig
+I0326 05:49:54.412339   55955 start.go:220] FeatureGates initialized: knownFeatureGates=[AWSEFSDriverVolumeMetrics AdditionalRoutingCapabilities AdminNetworkPolicy AlibabaPlatform AzureWorkloadIdentity BareMetalLoadBalancer BuildCSIVolumes CPMSMachineNamePrefix ChunkSizeMiB CloudDualStackNodeIPs ConsolePluginContentSecurityPolicy DisableKubeletCloudCredentialProviders GCPLabelsTags GatewayAPI GatewayAPIController HardwareSpeed IngressControllerLBSubnetsAWS KMSv1 MachineConfigNodes ManagedBootImages ManagedBootImagesAWS MetricsCollectionProfiles MultiArchInstallAWS MultiArchInstallGCP NetworkDiagnosticsConfig NetworkLiveMigration NetworkSegmentation NewOLM NodeDisruptionPolicy OnClusterBuild PersistentIPsForVirtualization PinnedImages PrivateHostedZoneAWS RouteAdvertisements RouteExternalCertificate ServiceAccountTokenNodeBinding SetEIPForNLBIngressController StreamingCollectionEncodingToJSON StreamingCollectionEncodingToProtobuf VSphereDriverConfiguration VSphereMultiVCenters ValidatingAdmissionPolicy AWSClusterHostedDNS AutomatedEtcdBackup BootcNodeManagement ClusterAPIInstall ClusterAPIInstallIBMCloud ClusterMonitoringConfig ClusterVersionOperatorConfiguration DNSNameResolver DualReplica DyanmicServiceEndpointIBMCloud DynamicResourceAllocation EtcdBackendQuota EventedPLEG Example Example2 ExternalOIDC ExternalOIDCWithUIDAndExtraClaimMappings GCPClusterHostedDNS GCPCustomAPIEndpoints HighlyAvailableArbiter ImageStreamImportMode IngressControllerDynamicConfigurationManager InsightsConfig InsightsConfigAPI InsightsOnDemandDataGather InsightsRuntimeExtractor KMSEncryptionProvider MachineAPIMigration MachineAPIOperatorDisableMachineHealthCheckController MachineAPIProviderOpenStack MaxUnavailableStatefulSet MinimumKubeletVersion MixedCPUsAllocation MultiArchInstallAzure NewOLMCatalogdAPIV1Metas NewOLMOwnSingleNamespace NewOLMPreflightPermissionChecks NodeSwap NutanixMultiSubnets OVNObservability OpenShiftPodSecurityAdmission PlatformOperators ProcMountType SELinuxChangePolicy SELinuxMount ShortCertRotation SignatureStores SigstoreImageVerification SigstoreImageVerificationPKI TranslateStreamCloseWebsocketRequests UpgradeStatus UserNamespacesPodSecurityStandards UserNamespacesSupport VSphereConfigurableMaxAllowedBlockVolumesPerNode VSphereHostVMGroupZonal VSphereMultiDisk VSphereMultiNetworks VolumeAttributesClass VolumeGroupSnapshot]
+I0326 05:49:54.412911   55955 start.go:222] Feature enabled: PinnedImages
+I0326 05:49:54.412531   55955 event.go:377] Event(v1.ObjectReference{Kind:"Node", Namespace:"openshift-machine-config-operator", Name:"ocp-cp-1.lab1.srib-lab-ocp.lan", UID:"18e81865-5948-4191-b78e-dfe39c9501ae", APIVersion:"v1", ResourceVersion:"", FieldPath:""}): type: 'Normal' reason: 'FeatureGatesInitialized' FeatureGates updated to featuregates.Features{Enabled:[]v1.FeatureGateName{"AWSEFSDriverVolumeMetrics", "AdditionalRoutingCapabilities", "AdminNetworkPolicy", "AlibabaPlatform", "AzureWorkloadIdentity", "BareMetalLoadBalancer", "BuildCSIVolumes", "CPMSMachineNamePrefix", "ChunkSizeMiB", "CloudDualStackNodeIPs", "ConsolePluginContentSecurityPolicy", "DisableKubeletCloudCredentialProviders", "GCPLabelsTags", "GatewayAPI", "GatewayAPIController", "HardwareSpeed", "IngressControllerLBSubnetsAWS", "KMSv1", "MachineConfigNodes", "ManagedBootImages", "ManagedBootImagesAWS", "MetricsCollectionProfiles", "MultiArchInstallAWS", "MultiArchInstallGCP", "NetworkDiagnosticsConfig", "NetworkLiveMigration", "NetworkSegmentation", "NewOLM", "NodeDisruptionPolicy", "OnClusterBuild", "PersistentIPsForVirtualization", "PinnedImages", "PrivateHostedZoneAWS", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SetEIPForNLBIngressController", "StreamingCollectionEncodingToJSON", "StreamingCollectionEncodingToProtobuf", "VSphereDriverConfiguration", "VSphereMultiVCenters", "ValidatingAdmissionPolicy"}, Disabled:[]v1.FeatureGateName{"AWSClusterHostedDNS", "AutomatedEtcdBackup", "BootcNodeManagement", "ClusterAPIInstall", "ClusterAPIInstallIBMCloud", "ClusterMonitoringConfig", "ClusterVersionOperatorConfiguration", "DNSNameResolver", "DualReplica", "DyanmicServiceEndpointIBMCloud", "DynamicResourceAllocation", "EtcdBackendQuota", "EventedPLEG", "Example", "Example2", "ExternalOIDC", "ExternalOIDCWithUIDAndExtraClaimMappings", "GCPClusterHostedDNS", "GCPCustomAPIEndpoints", "HighlyAvailableArbiter", "ImageStreamImportMode", "IngressControllerDynamicConfigurationManager", "InsightsConfig", "InsightsConfigAPI", "InsightsOnDemandDataGather", "InsightsRuntimeExtractor", "KMSEncryptionProvider", "MachineAPIMigration", "MachineAPIOperatorDisableMachineHealthCheckController", "MachineAPIProviderOpenStack", "MaxUnavailableStatefulSet", "MinimumKubeletVersion", "MixedCPUsAllocation", "MultiArchInstallAzure", "NewOLMCatalogdAPIV1Metas", "NewOLMOwnSingleNamespace", "NewOLMPreflightPermissionChecks", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PlatformOperators", "ProcMountType", "SELinuxChangePolicy", "SELinuxMount", "ShortCertRotation", "SignatureStores", "SigstoreImageVerification", "SigstoreImageVerificationPKI", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereConfigurableMaxAllowedBlockVolumesPerNode", "VSphereHostVMGroupZonal", "VSphereMultiDisk", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
+I0326 05:49:54.414096   55955 update.go:2820] "Starting to manage node: ocp-cp-3.lab1.srib-lab-ocp.lan"
+I0326 05:49:54.418394   55955 command_runner.go:24] Running captured: rpm-ostree status
+I0326 05:49:54.515167   55955 pinned_image_set.go:820] Starting PinnedImageSet Manager
+I0326 05:49:54.559504   55955 daemon.go:1811] State: idle
+Deployments:
+* ostree-unverified-registry:quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f435d0107d9aefcfaa6d6dd77a4825de06e4d0f6d0878d66eef40f12440829a3
+                   Digest: sha256:f435d0107d9aefcfaa6d6dd77a4825de06e4d0f6d0878d66eef40f12440829a3
+                  Version: 9.6.20260123-0 (2026-01-26T08:22:55Z)
+      RemovedBasePackages: kernel-modules-core kernel-modules-extra kernel-core kernel kernel-modules 5.14.0-570.82.1.el9_6
+          LayeredPackages: kernel-rt-core kernel-rt-kvm kernel-rt-modules
+                           kernel-rt-modules-extra
+I0326 05:49:54.559745   55955 coreos.go:53] CoreOS aleph version: mtime=2022-08-01 23:42:11 +0000 UTC
+{
+   "container-image": {
+      "image-digest": "sha256:a7e12974e664046023ddfba2f861ead846bbf5e3c17fb625fc2e2dd1b4713c23",
+      "image-labels": {
+         "containers.bootc": "1",
+         "coreos-assembler.image-config-checksum": "b444a32e2801642f1e41777fd51fa53304496c58a3a6b15e5964a1f86f866507",
+         "coreos-assembler.image-input-checksum": "c8631940e11a7a61d793271d4fe1c3fc2e1dbb70b7233f7b5766b22d13ec1b4a",
+         "io.openshift.build.version-display-names": "machine-os=Red Hat Enterprise Linux CoreOS",
+         "io.openshift.build.versions": "machine-os=418.94.202508060022-0",
+         "org.opencontainers.image.revision": "96f1c70f3498be6011a9c7135ad4de9ff6cc3fee",
+         "org.opencontainers.image.source": "https://github.com/openshift/os",
+         "org.opencontainers.image.version": "418.94.202508060022-0",
+         "ostree.bootable": "true",
+         "ostree.commit": "9e057f59da83359b6151f70b7c2ef2a0f0e9f9dd927898d18249ac789c42d7ae",
+         "ostree.final-diffid": "sha256:12787d84fa137cd5649a9005efe98ec9d05ea46245fdc50aecb7dd007f2035b1",
+         "ostree.linux": "5.14.0-427.81.1.el9_4.x86_64",
+         "rpmostree.inputhash": "754102d802c1f7d1619dd922c6484b6bdce447f2096cfdbe6c88edc233abf46b"
+      },
+      "image-name": "oci-archive:/rhcos-418.94.202508060022-0-ostree.x86_64.ociarchive"
+   },
+   "osbuild-version": "147",
+   "ostree-commit": "9e057f59da83359b6151f70b7c2ef2a0f0e9f9dd927898d18249ac789c42d7ae",
+   "ref": "docker://ostree-image-signed:oci-archive:/rhcos-418.94.202508060022-0-ostree.x86_64.ociarchive",
+   "version": "418.94.202508060022-0"
+}
+I0326 05:49:54.559863   55955 coreos.go:70] Ignition provisioning: time=2026-02-27T18:05:45Z
+I0326 05:49:54.559895   55955 command_runner.go:24] Running captured: journalctl --list-boots
+I0326 05:49:54.608422   55955 daemon.go:1820] journalctl --list-boots:
+IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY
+ -9 f369f04660d742f09b9dcaa4eac761f5 Wed 2026-03-18 13:44:25 UTC Tue 2026-03-24 14:08:10 UTC
+ -8 79771fb949f14813994ba9d7aad9e95a Tue 2026-03-24 14:11:33 UTC Tue 2026-03-24 14:21:13 UTC
+ -7 2c43c8fc63df4978a43277a13b3b8bcb Tue 2026-03-24 14:24:10 UTC Tue 2026-03-24 14:47:22 UTC
+ -6 822ee2819b524675b8bd299733d40a0f Tue 2026-03-24 14:50:38 UTC Wed 2026-03-25 14:31:45 UTC
+ -5 0420a397547649089ba7019c9cdd0de1 Wed 2026-03-25 14:35:09 UTC Wed 2026-03-25 17:58:21 UTC
+ -4 c21447fe5fcc45449f8a4e93a0d11685 Wed 2026-03-25 18:01:36 UTC Wed 2026-03-25 18:13:31 UTC
+ -3 d3736feffc8e4fab88bf1f30fa2c9c2a Wed 2026-03-25 18:16:18 UTC Wed 2026-03-25 18:35:33 UTC
+ -2 8a2b1eee816047c7972fa21fe4d4ebb7 Wed 2026-03-25 18:38:53 UTC Wed 2026-03-25 18:53:48 UTC
+ -1 b08c34b11a204c309836be04901aa5bb Wed 2026-03-25 18:57:05 UTC Thu 2026-03-26 05:31:34 UTC
+  0 bafff5557ea04ace9ba034681506ac33 Thu 2026-03-26 05:34:46 UTC Thu 2026-03-26 05:49:54 UTC
+I0326 05:49:54.608467   55955 command_runner.go:24] Running captured: systemctl list-units --state=failed --no-legend
+I0326 05:49:54.616971   55955 daemon.go:1834] systemctl --failed:
+● chronyd.service                    loaded failed failed NTP client/server
+● NetworkManager-wait-online.service loaded failed failed Network Manager Wait Online
+I0326 05:49:54.616992   55955 daemon.go:1389] Starting MachineConfigDaemon
+I0326 05:49:54.617055   55955 daemon.go:1396] Enabling Kubelet Healthz Monitor
+I0326 05:49:54.853579   55955 daemon.go:2988] Found 9 requested local packages in the booted deployment
+I0326 05:49:54.853654   55955 daemon.go:2997] Unsupported package kernel-rt-core
+I0326 05:49:54.853666   55955 daemon.go:2997] Unsupported package kernel-rt-kvm
+I0326 05:49:54.853671   55955 daemon.go:2997] Unsupported package kernel-rt-modules
+I0326 05:49:54.853675   55955 daemon.go:2997] Unsupported package kernel-rt-modules-extra
+I0326 05:49:54.853680   55955 daemon.go:2997] Unsupported package kernel
+I0326 05:49:54.853684   55955 daemon.go:2997] Unsupported package kernel-core
+I0326 05:49:54.853687   55955 daemon.go:2997] Unsupported package kernel-modules
+I0326 05:49:54.853689   55955 daemon.go:2997] Unsupported package kernel-modules-core
+I0326 05:49:54.853692   55955 daemon.go:2997] Unsupported package kernel-modules-extra
+I0326 05:49:55.413856   55955 daemon.go:673] Node ocp-cp-3.lab1.srib-lab-ocp.lan is part of the control plane
+I0326 05:49:55.501194   55955 daemon.go:2041] Running: /run/machine-config-daemon-bin/nmstatectl persist-nic-names --root / --kargs-out /tmp/nmstate-kargs1937163655 --cleanup
+[2026-03-26T05:49:55Z INFO  nmstatectl] Nmstate version: 2.2.56
+[2026-03-26T05:49:55Z INFO  nmstatectl::persist_nic] /etc/systemd/network/.nmstate-persist.stamp does not exist, no need to clean up
+
+I0326 05:49:55.526694   55955 daemon.go:1629] Previous boot ostree-finalize-staged.service appears successful
+I0326 05:49:55.526717   55955 daemon.go:1764] Current+desired config: rendered-master-a22a7214fd353f47683b50f217422aa1
+I0326 05:49:55.526725   55955 daemon.go:1779] state: Done
+I0326 05:49:55.526755   55955 update.go:2775] Running: rpm-ostree cleanup -r
+Deployments unchanged.
+I0326 05:49:55.581478   55955 daemon.go:2239] Validating against current config rendered-master-a22a7214fd353f47683b50f217422aa1
+I0326 05:49:55.581539   55955 daemon.go:2151] SSH key location ("/home/core/.ssh/authorized_keys.d/ignition") up-to-date!
+I0326 05:49:55.581552   55955 command_runner.go:24] Running captured: rpm-ostree kargs
+I0326 05:49:55.640800   55955 update.go:2820] "Validated on-disk state"
+I0326 05:49:55.661558   55955 daemon.go:2349] Completing update to target MachineConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
+I0326 05:50:05.667009   55955 update.go:2820] "Update completed for config rendered-master-a22a7214fd353f47683b50f217422aa1 and node has been successfully uncordoned"
+I0326 05:50:05.669671   55955 daemon.go:2374] In desired state MachineConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
+I0326 05:50:05.705334   55955 config_drift_monitor.go:246] Config Drift Monitor started
+I0326 05:50:05.705446   55955 daemon.go:768] Transitioned from state:  -> Done
+I0326 05:50:54.854278   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 05:51:05.713620   55955 daemon.go:903] Starting health listener on 127.0.0.1:8798
+I0326 06:05:06.800993   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 06:43:40.814693   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 07:22:14.828748   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 08:00:48.844384   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 08:39:22.856417   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 09:17:56.870441   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 09:56:30.884343   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 10:35:04.898255   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 11:13:38.912145   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 11:52:12.926300   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 12:30:46.940952   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 12:54:34.866080   55955 command_runner.go:24] Running captured: rpm-ostree kargs
+I0326 12:54:35.167749   55955 daemon.go:966] Preflight config drift check successful (took 301.670044ms)
+I0326 12:54:35.172411   55955 config_drift_monitor.go:255] Config Drift Monitor has shut down
+I0326 12:54:35.208294   55955 update.go:2842] Adding SIGTERM protection
+I0326 12:54:35.274485   55955 update.go:1125] Checking Reconcilable for config rendered-master-a22a7214fd353f47683b50f217422aa1 to rendered-master-c65faf6a52d416453c211631a2d9af28
+I0326 12:54:35.370105   55955 update.go:2820] "Starting update from rendered-master-a22a7214fd353f47683b50f217422aa1 to rendered-master-c65faf6a52d416453c211631a2d9af28: &{osUpdate:false kargs:false fips:false passwd:false files:true units:false kernelType:false extensions:false oclEnabled:false revertFromOCL:false}"
+I0326 12:54:35.376234   55955 update.go:771] Calculating node disruption actions
+I0326 12:54:35.376266   55955 update.go:653] NodeDisruptionPolicy [{Special <nil> <nil>}] found for diff file /etc/containers/registries.conf
+I0326 12:54:35.376280   55955 update.go:800] Calculated node disruption actions:
+I0326 12:54:35.376286   55955 update.go:808] Special
+I0326 12:54:35.378452   55955 drain.go:132] Checking drain required for node disruption actions
+I0326 12:54:35.378863   55955 drain.go:245] /etc/containers/registries.conf: registry registry.redhat.io/openshift4 has been removed
+I0326 12:54:35.378926   55955 update.go:1205] Drain calculated for node disruption: true for config rendered-master-c65faf6a52d416453c211631a2d9af28
+I0326 12:54:35.404418   55955 update.go:2820] "Update prepared; requesting cordon and drain via annotation to controller"
+I0326 13:09:20.955084   55955 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get node ocp-cp-2.lab1.srib-lab-ocp.lan -o yaml | grep machineconfiguration.openshift.io
+    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+    machineconfiguration.openshift.io/currentConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/desiredConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/desiredDrain: uncordon-rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: "false"
+    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: "13581553"
+    machineconfiguration.openshift.io/post-config-action: ""
+    machineconfiguration.openshift.io/reason: ""
+    machineconfiguration.openshift.io/state: Done
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get node ocp-cp-3.lab1.srib-lab-ocp.lan -o yaml | grep machineconfiguration.openshift.io
+    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+    machineconfiguration.openshift.io/currentConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/desiredConfig: rendered-master-c65faf6a52d416453c211631a2d9af28
+    machineconfiguration.openshift.io/desiredDrain: drain-rendered-master-c65faf6a52d416453c211631a2d9af28
+    machineconfiguration.openshift.io/forceReboot: "true"
+    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: "false"
+    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: "13581553"
+    machineconfiguration.openshift.io/post-config-action: ""
+    machineconfiguration.openshift.io/reason: ""
+    machineconfiguration.openshift.io/state: Working
 srib@ocp-haproxy-1:~/ocp_4_20$
