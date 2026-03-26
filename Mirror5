@@ -1,141 +1,49 @@
-Good — this is actually a **very important clue** 👍
-
----
-
-# 🚨 Why `apirequests` command failed
-
-```bash
-error: the server doesn't have a resource type "apirequests"
-```
-
-👉 This means:
-
-❌ The **APIRequestCounts CRD is not available in your cluster**
-
-👉 That happens in:
-
-* Disconnected clusters (common)
-* Some installs where APIRequestCount is not enabled/exposed
-
----
-
-# 🧠 So how do we debug NOW?
-
-We **manually find deprecated APIs**.
-
----
-
-# 🔍 STEP 1 — Check for v1beta1 usage directly
-
-Run:
-
-```bash
-oc get mutatingwebhookconfigurations -o yaml | grep v1beta1 -i
-oc get validatingwebhookconfigurations -o yaml | grep v1beta1 -i
-```
-
----
-
-# 🔍 STEP 2 — Check CRDs
-
-```bash
-oc get crd | grep v1beta1
-```
-
-Then inspect:
-
-```bash
-oc get crd <crd-name> -o yaml | grep v1beta1
-```
-
----
-
-# 🔍 STEP 3 — Check API services
-
-```bash
-oc get apiservices | grep v1beta1
-```
-
----
-
-# 🔥 VERY IMPORTANT (Your cluster hint)
-
-You have:
-
-```text
-openshift-storage (ODF / Ceph)
-```
-
-👉 These operators are **MOST COMMON cause** of this exact issue.
-
----
-
-# 🎯 HIGH PROBABILITY ROOT CAUSE
-
-👉 One of these is still using v1beta1:
-
-* rook-ceph operator
-* webhook configs from ODF
-* CRDs installed by storage operators
-
----
-
-# 🏆 FASTEST WAY (recommended)
-
-Run this:
-
-```bash
-oc get mutatingwebhookconfigurations
-oc get validatingwebhookconfigurations
-```
-
-Then share output.
-
----
-
-# ⚡ QUICK CHECK (shortcut)
-
-Try this:
-
-```bash
-oc get mutatingwebhookconfigurations -o jsonpath='{.items[*].apiVersion}'
-```
-
----
-
-# 🧨 WHY UPGRADE NOT STARTING
-
-Even though:
-
-✔ admin-ack = true
-❌ Upgradeable still False
-
-👉 Because:
-
-> OpenShift detects **actual usage**, not just ack
-
----
-
-# 🏁 SUMMARY
-
-| Item            | Status                 |
-| --------------- | ---------------------- |
-| Mirror          | ✅ OK                   |
-| Signatures      | ✅ OK                   |
-| Command         | ✅ Correct              |
-| AdminAck        | ✅ Set                  |
-| Upgrade Blocker | ❌ Deprecated API usage |
-
----
-
-# 🚀 NEXT STEP
-
-Run these and paste:
-
-```bash
-oc get mutatingwebhookconfigurations
-oc get validatingwebhookconfigurations
-oc get crd | grep beta
-```
-
-👉 I’ll pinpoint **exact object to delete/update** (no trial & error).
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mutatingwebhookconfigurations -o yaml | grep v1beta1 -i
+        path: /mutate-machine-openshift-io-v1beta1-machine
+      - v1beta1
+        path: /mutate-machine-openshift-io-v1beta1-machineset
+      - v1beta1
+        path: /mutate-infrastructure-cluster-x-k8s-io-v1beta1-metal3remediation
+      - v1beta1
+        path: /mutate-infrastructure-cluster-x-k8s-io-v1beta1-metal3remediationtemplate
+      - v1beta1
+    - v1beta1
+    - v1beta1
+      - v1beta1
+    - v1beta1
+      - v1beta1
+    - v1beta1
+      - v1beta1
+    - v1beta1
+      - v1beta1
+    - v1beta1
+      - v1beta1
+    - v1beta1
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get validatingwebhookconfigurations -o yaml | grep v1beta1 -i
+    - v1beta1
+      - v1beta1
+    - v1beta1
+    - v1beta1
+    - v1beta1
+        path: /validate-machine-openshift-io-v1beta1-machine
+      - v1beta1
+        path: /validate-machine-openshift-io-v1beta1-machineset
+      - v1beta1
+        path: /validate-infrastructure-cluster-x-k8s-io-v1beta1-metal3remediation
+      - v1beta1
+        path: /validate-infrastructure-cluster-x-k8s-io-v1beta1-metal3remediationtemplate
+      - v1beta1
+    - v1beta1
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get crd | grep v1beta1
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get apiservices | grep v1beta1
+v1beta1.admissionregistration.k8s.io          Local                                                        True        26d
+v1beta1.autoscaling.openshift.io              Local                                                        True        26d
+v1beta1.gateway.networking.k8s.io             Local                                                        True        2d6h
+v1beta1.helm.openshift.io                     Local                                                        True        26d
+v1beta1.infrastructure.cluster.x-k8s.io       Local                                                        True        26d
+v1beta1.ipam.cluster.x-k8s.io                 Local                                                        True        26d
+v1beta1.machine.openshift.io                  Local                                                        True        26d
+v1beta1.metrics.k8s.io                        openshift-monitoring/metrics-server                          True        26d
+v1beta1.monitoring.coreos.com                 Local                                                        True        26d
+v1beta1.nmstate.io                            Local                                                        True        26d
+srib@ocp-haproxy-1:~/ocp_4_20$
