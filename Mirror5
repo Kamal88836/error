@@ -1,209 +1,189 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get no
-NAME                             STATUS                     ROLES                         AGE   VERSION
-ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
-ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
-ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.32.10
-srib@ocp-haproxy-1:~/ocp_4_20$ oc describe node ocp-cp-3.lab1.srib-lab-ocp.lan | grep -A6 Conditions
-Conditions:
-  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
-  ----             ------  -----------------                 ------------------                ------                       -------
-  MemoryPressure   False   Thu, 26 Mar 2026 21:03:15 +0530   Thu, 26 Mar 2026 20:23:39 +0530   KubeletHasSufficientMemory   kubelet has sufficient memory available
-  DiskPressure     False   Thu, 26 Mar 2026 21:03:15 +0530   Thu, 26 Mar 2026 20:23:39 +0530   KubeletHasNoDiskPressure     kubelet has no disk pressure
-  PIDPressure      False   Thu, 26 Mar 2026 21:03:15 +0530   Thu, 26 Mar 2026 20:23:39 +0530   KubeletHasSufficientPID      kubelet has sufficient PID available
-  Ready            True    Thu, 26 Mar 2026 21:03:15 +0530   Thu, 26 Mar 2026 20:24:02 +0530   KubeletReady                 kubelet is posting ready status
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get no
-NAME                             STATUS                     ROLES                         AGE   VERSION
-ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
-ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
-ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.32.10
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get po
-NAME                                                  READY   STATUS    RESTARTS     AGE
-kube-rbac-proxy-crio-ocp-cp-1.lab1.srib-lab-ocp.lan   1/1     Running   5            2d
-kube-rbac-proxy-crio-ocp-cp-2.lab1.srib-lab-ocp.lan   1/1     Running   0            45h
-kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan   1/1     Running   9            2d1h
-machine-config-controller-56db9884cf-zghcf            2/2     Running   0            9h
-machine-config-daemon-k8m79                           2/2     Running   5 (9h ago)   20h
-machine-config-daemon-p8rgs                           2/2     Running   7            19h
-machine-config-daemon-phldr                           2/2     Running   0            20h
-machine-config-operator-58d55cdb99-krpp8              2/2     Running   0            9h
-machine-config-server-8sk2t                           1/1     Running   11           2d3h
-machine-config-server-b6rnl                           1/1     Running   2            2d3h
-machine-config-server-vhgzz                           1/1     Running   8            2d3h
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get deploy
-NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
-machine-config-controller   1/1     1            1           26d
-machine-config-operator     1/1     1            1           26d
-srib@ocp-haproxy-1:~/ocp_4_20$ oc logs  deploy machine-config-operator
-Error from server (NotFound): pods "deploy" not found
-srib@ocp-haproxy-1:~/ocp_4_20$ oc logs  machine-config-operator
-Error from server (NotFound): pods "machine-config-operator" not found
-srib@ocp-haproxy-1:~/ocp_4_20$ oc logs  deploy/machine-config-operator
-Defaulted container "machine-config-operator" out of: machine-config-operator, kube-rbac-proxy
-I0326 06:25:41.648161       1 start.go:52] Version: 4.19.23 (Raw: 3cc3465c, Hash: b405535023b88949e231be90778e5cf63e438c40)
-I0326 06:25:41.648757       1 leaderelection.go:121] The leader election gives 4 retries and allows for 30s of clock skew. The kube-apiserver downtime tolerance is 78s. Worst non-graceful lease acquisition is 2m43s. Worst graceful lease acquisition is {26s}.
-I0326 06:25:41.648862       1 metrics.go:92] Registering Prometheus metrics
-I0326 06:25:41.648968       1 metrics.go:99] Starting metrics listener on 127.0.0.1:8797
-I0326 06:25:41.711534       1 leaderelection.go:257] attempting to acquire leader lease openshift-machine-config-operator/machine-config...
-I0326 06:25:41.788570       1 leaderelection.go:271] successfully acquired lease openshift-machine-config-operator/machine-config
-I0326 06:25:41.812749       1 simple_featuregate_reader.go:171] Starting feature-gate-detector
-I0326 06:25:42.184695       1 start.go:131] FeatureGates initialized: knownFeatureGates=[AWSEFSDriverVolumeMetrics AdditionalRoutingCapabilities AdminNetworkPolicy AlibabaPlatform AzureWorkloadIdentity BareMetalLoadBalancer BuildCSIVolumes CPMSMachineNamePrefix ChunkSizeMiB CloudDualStackNodeIPs ConsolePluginContentSecurityPolicy DisableKubeletCloudCredentialProviders GCPLabelsTags GatewayAPI GatewayAPIController HardwareSpeed IngressControllerLBSubnetsAWS KMSv1 MachineConfigNodes ManagedBootImages ManagedBootImagesAWS MetricsCollectionProfiles MultiArchInstallAWS MultiArchInstallGCP NetworkDiagnosticsConfig NetworkLiveMigration NetworkSegmentation NewOLM NodeDisruptionPolicy OnClusterBuild PersistentIPsForVirtualization PinnedImages PrivateHostedZoneAWS RouteAdvertisements RouteExternalCertificate ServiceAccountTokenNodeBinding SetEIPForNLBIngressController StreamingCollectionEncodingToJSON StreamingCollectionEncodingToProtobuf VSphereDriverConfiguration VSphereMultiVCenters ValidatingAdmissionPolicy AWSClusterHostedDNS AutomatedEtcdBackup BootcNodeManagement ClusterAPIInstall ClusterAPIInstallIBMCloud ClusterMonitoringConfig ClusterVersionOperatorConfiguration DNSNameResolver DualReplica DyanmicServiceEndpointIBMCloud DynamicResourceAllocation EtcdBackendQuota EventedPLEG Example Example2 ExternalOIDC ExternalOIDCWithUIDAndExtraClaimMappings GCPClusterHostedDNS GCPCustomAPIEndpoints HighlyAvailableArbiter ImageStreamImportMode IngressControllerDynamicConfigurationManager InsightsConfig InsightsConfigAPI InsightsOnDemandDataGather InsightsRuntimeExtractor KMSEncryptionProvider MachineAPIMigration MachineAPIOperatorDisableMachineHealthCheckController MachineAPIProviderOpenStack MaxUnavailableStatefulSet MinimumKubeletVersion MixedCPUsAllocation MultiArchInstallAzure NewOLMCatalogdAPIV1Metas NewOLMOwnSingleNamespace NewOLMPreflightPermissionChecks NodeSwap NutanixMultiSubnets OVNObservability OpenShiftPodSecurityAdmission PlatformOperators ProcMountType SELinuxChangePolicy SELinuxMount ShortCertRotation SignatureStores SigstoreImageVerification SigstoreImageVerificationPKI TranslateStreamCloseWebsocketRequests UpgradeStatus UserNamespacesPodSecurityStandards UserNamespacesSupport VSphereConfigurableMaxAllowedBlockVolumesPerNode VSphereHostVMGroupZonal VSphereMultiDisk VSphereMultiNetworks VolumeAttributesClass VolumeGroupSnapshot]
-I0326 06:25:42.185848       1 event.go:377] Event(v1.ObjectReference{Kind:"Node", Namespace:"openshift-machine-config-operator", Name:"ocp-cp-1.lab1.srib-lab-ocp.lan", UID:"18e81865-5948-4191-b78e-dfe39c9501ae", APIVersion:"v1", ResourceVersion:"", FieldPath:""}): type: 'Normal' reason: 'FeatureGatesInitialized' FeatureGates updated to featuregates.Features{Enabled:[]v1.FeatureGateName{"AWSEFSDriverVolumeMetrics", "AdditionalRoutingCapabilities", "AdminNetworkPolicy", "AlibabaPlatform", "AzureWorkloadIdentity", "BareMetalLoadBalancer", "BuildCSIVolumes", "CPMSMachineNamePrefix", "ChunkSizeMiB", "CloudDualStackNodeIPs", "ConsolePluginContentSecurityPolicy", "DisableKubeletCloudCredentialProviders", "GCPLabelsTags", "GatewayAPI", "GatewayAPIController", "HardwareSpeed", "IngressControllerLBSubnetsAWS", "KMSv1", "MachineConfigNodes", "ManagedBootImages", "ManagedBootImagesAWS", "MetricsCollectionProfiles", "MultiArchInstallAWS", "MultiArchInstallGCP", "NetworkDiagnosticsConfig", "NetworkLiveMigration", "NetworkSegmentation", "NewOLM", "NodeDisruptionPolicy", "OnClusterBuild", "PersistentIPsForVirtualization", "PinnedImages", "PrivateHostedZoneAWS", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SetEIPForNLBIngressController", "StreamingCollectionEncodingToJSON", "StreamingCollectionEncodingToProtobuf", "VSphereDriverConfiguration", "VSphereMultiVCenters", "ValidatingAdmissionPolicy"}, Disabled:[]v1.FeatureGateName{"AWSClusterHostedDNS", "AutomatedEtcdBackup", "BootcNodeManagement", "ClusterAPIInstall", "ClusterAPIInstallIBMCloud", "ClusterMonitoringConfig", "ClusterVersionOperatorConfiguration", "DNSNameResolver", "DualReplica", "DyanmicServiceEndpointIBMCloud", "DynamicResourceAllocation", "EtcdBackendQuota", "EventedPLEG", "Example", "Example2", "ExternalOIDC", "ExternalOIDCWithUIDAndExtraClaimMappings", "GCPClusterHostedDNS", "GCPCustomAPIEndpoints", "HighlyAvailableArbiter", "ImageStreamImportMode", "IngressControllerDynamicConfigurationManager", "InsightsConfig", "InsightsConfigAPI", "InsightsOnDemandDataGather", "InsightsRuntimeExtractor", "KMSEncryptionProvider", "MachineAPIMigration", "MachineAPIOperatorDisableMachineHealthCheckController", "MachineAPIProviderOpenStack", "MaxUnavailableStatefulSet", "MinimumKubeletVersion", "MixedCPUsAllocation", "MultiArchInstallAzure", "NewOLMCatalogdAPIV1Metas", "NewOLMOwnSingleNamespace", "NewOLMPreflightPermissionChecks", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PlatformOperators", "ProcMountType", "SELinuxChangePolicy", "SELinuxMount", "ShortCertRotation", "SignatureStores", "SigstoreImageVerification", "SigstoreImageVerificationPKI", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereConfigurableMaxAllowedBlockVolumesPerNode", "VSphereHostVMGroupZonal", "VSphereMultiDisk", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
-I0326 06:25:42.197999       1 operator.go:382] On-cluster layering featuregate enabled, starting MachineOSConfig informer
-I0326 06:25:43.062893       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 06:25:43.498246       1 operator.go:409] Starting MachineConfigOperator
-I0326 06:55:58.588555       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 07:26:14.108191       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 07:56:29.625238       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 08:26:45.146524       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 08:57:00.666891       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 09:27:16.186559       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 09:57:31.704068       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 10:27:47.224187       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 10:58:02.746250       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 11:28:18.263418       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 11:58:33.784009       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 12:28:49.310741       1 operator.go:429] Change observed to kube-apiserver-server-ca
-I0326 12:59:04.824783       1 operator.go:429] Change observed to kube-apiserver-server-ca
-E0326 13:24:32.657535       1 sync.go:1788] Error syncing Required MachineConfigPools: "error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 0, updated: 0, unavailable: 1, degraded: 0)"
-I0326 13:24:32.657660       1 event.go:377] Event(v1.ObjectReference{Kind:"", Namespace:"openshift-machine-config-operator", Name:"machine-config", UID:"f2da6215-61bb-4f8e-b964-8b245e15f52d", APIVersion:"", ResourceVersion:"", FieldPath:""}): type: 'Warning' reason: 'OperatorDegraded: RequiredPoolsFailed' Failed to resync 4.19.23 because: error during syncRequiredMachineConfigPools: [context deadline exceeded, error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 0, updated: 0, unavailable: 1, degraded: 0)]
-I0326 13:29:20.344487       1 operator.go:429] Change observed to kube-apiserver-server-ca
-E0326 13:54:37.203130       1 sync.go:1788] Error syncing Required MachineConfigPools: "error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 0, updated: 0, unavailable: 1, degraded: 0)"
-I0326 13:54:37.203540       1 event.go:377] Event(v1.ObjectReference{Kind:"", Namespace:"openshift-machine-config-operator", Name:"machine-config", UID:"f2da6215-61bb-4f8e-b964-8b245e15f52d", APIVersion:"", ResourceVersion:"", FieldPath:""}): type: 'Warning' reason: 'OperatorDegraded: RequiredPoolsFailed' Failed to resync 4.19.23 because: error during syncRequiredMachineConfigPools: [context deadline exceeded, error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 0, updated: 0, unavailable: 1, degraded: 0)]
-I0326 13:59:35.864167       1 operator.go:429] Change observed to kube-apiserver-server-ca
-E0326 14:26:03.409387       1 sync.go:1788] Error syncing Required MachineConfigPools: "error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 2, updated: 2, unavailable: 1, degraded: 0)"
-I0326 14:26:03.409535       1 event.go:377] Event(v1.ObjectReference{Kind:"", Namespace:"openshift-machine-config-operator", Name:"machine-config", UID:"f2da6215-61bb-4f8e-b964-8b245e15f52d", APIVersion:"", ResourceVersion:"", FieldPath:""}): type: 'Warning' reason: 'OperatorDegraded: RequiredPoolsFailed' Failed to resync 4.19.23 because: error during syncRequiredMachineConfigPools: [context deadline exceeded, error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 2, updated: 2, unavailable: 1, degraded: 0)]
-I0326 14:29:51.384315       1 operator.go:429] Change observed to kube-apiserver-server-ca
-E0326 14:56:07.947096       1 sync.go:1788] Error syncing Required MachineConfigPools: "error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 2, updated: 2, unavailable: 1, degraded: 0)"
-I0326 15:00:06.903522       1 operator.go:429] Change observed to kube-apiserver-server-ca
-E0326 15:26:12.473398       1 sync.go:1788] Error syncing Required MachineConfigPools: "error required MachineConfigPool master is not ready, retrying. Status: (total: 3, ready 2, updated: 2, unavailable: 1, degraded: 0)"
-I0326 15:30:22.423132       1 operator.go:429] Change observed to kube-apiserver-server-ca
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$ oc describe clusterverstion
-error: the server doesn't have a resource type "clusterverstion"
-srib@ocp-haproxy-1:~/ocp_4_20$ oc describe clusterversion
-Name:         version
-Namespace:
-Labels:       <none>
-Annotations:  <none>
-API Version:  config.openshift.io/v1
-Kind:         ClusterVersion
-Metadata:
-  Creation Timestamp:  2026-02-27T17:50:06Z
-  Generation:          7
-  Resource Version:    14854408
-  UID:                 ed02d0f1-f2bf-44d8-ba4d-1d48cd16647a
-Spec:
-  Capabilities:
-    Additional Enabled Capabilities:
-    Baseline Capability Set:  None
-  Channel:                    stable-4.19
-  Cluster ID:                 63837200-ea8f-437a-834a-49f8d7d36dac
-  Desired Update:
-    Architecture:
-    Force:         true
-    Image:         bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    Version:
-Status:
-  Available Updates:  <nil>
-  Capabilities:
-    Enabled Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-    Known Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-  Conditions:
-    Last Transition Time:  2026-02-27T17:50:26Z
-    Message:               The admissionregistration.k8s.io/v1beta1 group version is deprecated in 4.19 and will be removed in 4.20. Any clients using the v1beta1 version of these resources must be updated to use the corresponding v1 version instead. See https://access.redhat.com/articles/7130599 for more information.
-    Reason:                AdminAckRequired
-    Status:                False
-    Type:                  Upgradeable
-    Last Transition Time:  2026-03-25T05:33:20Z
-    Message:               The following capabilities could not be disabled: Build, CSISnapshot, CloudControllerManager, CloudCredential, Console, DeploymentConfig, ImageRegistry, Ingress, Insights, MachineAPI, NodeTuning, OperatorLifecycleManager, OperatorLifecycleManagerV1, Storage, baremetal, marketplace, openshift-samples
-    Reason:                CapabilitiesImplicitlyEnabled
-    Status:                True
-    Type:                  ImplicitlyEnabledCapabilities
-    Last Transition Time:  2026-03-24T10:37:10Z
-    Message:               Payload loaded version="4.19.23" image="bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206" architecture="amd64"
-    Reason:                PayloadLoaded
-    Status:                True
-    Type:                  ReleaseAccepted
-    Last Transition Time:  2026-02-27T18:38:28Z
-    Message:               Done applying 4.19.23
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-03-26T13:27:31Z
-    Message:               Multiple errors are preventing progress:
-* Cluster operator insights is not available
-* Cluster operators authentication, machine-config, openshift-apiserver are degraded
-    Reason:                MultipleErrors
-    Status:                True
-    Type:                  Failing
-    Last Transition Time:  2026-03-26T06:29:47Z
-    Message:               Error while reconciling 4.19.23: an unknown error has occurred: MultipleErrors
-    Reason:                MultipleErrors
-    Status:                False
-    Type:                  Progressing
-    Last Transition Time:  2026-02-27T17:50:26Z
-    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.19&id=63837200-ea8f-437a-834a-49f8d7d36dac&version=4.19.23": dial tcp 98.88.147.59:443: connect: connection timed out
-    Reason:                RemoteFailed
-    Status:                False
-    Type:                  RetrievedUpdates
-  Desired:
-    Image:    bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    URL:      https://access.redhat.com/errata/RHSA-2026:1552
-    Version:  4.19.23
-  History:
-    Accepted Risks:  Forced through blocking failures: Multiple precondition checks failed:
-* Precondition "ClusterVersionUpgradeable" failed because of "Degraded": Cluster operator insights should not be upgraded between minor versions: Unable to report: unable to build request to connect to Insights server: Post "https://console.redhat.com/api/ingress/v1/upload": dial tcp 2.18.51.203:443: i/o timeout
-* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.18.23 to 4.19.23 is unknown.
-    Completion Time:    2026-03-24T17:53:56Z
-    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    Started Time:       2026-03-24T10:37:10Z
-    State:              Completed
-    Verified:           true
-    Version:            4.19.23
-    Completion Time:    2026-02-27T18:38:28Z
-    Image:              quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
-    Started Time:       2026-02-27T17:50:26Z
-    State:              Completed
-    Verified:           false
-    Version:            4.18.23
-  Observed Generation:  7
-  Version Hash:         AJkHbViX_GU=
-Events:                 <none>
+Perfect 👍 — this output tells the **exact situation clearly**. Let’s break it and fix it properly.
+
+---
+
+# 🚨 ROOT CAUSE (100% clear now)
+
+From your logs:
+
+```text
+MachineConfigPool master is not ready
+ready 2, updated 2, unavailable 1
+```
+
+👉 And:
+
+```bash
+oc get nodes
+ocp-cp-3 → Ready,SchedulingDisabled
+```
+
+👉 So:
+
+💥 **Node `ocp-cp-3` is stuck in drain state**
+💥 That’s why **machine-config is degraded**
+💥 That’s why **upgrade is blocked**
+
+---
+
+# 🧠 What already happened
+
+* Node was cordoned ✔️
+* Drain attempted ❌ (blocked by Ceph earlier)
+* Node never completed update ❌
+* MCO waiting forever ⏳
+
+---
+
+# 🏆 FIX (SAFE & CORRECT)
+
+We will **complete the stuck node update**
+
+---
+
+## ✅ Step 1: Check pods still on node
+
+```bash
+oc get pods -A -o wide | grep ocp-cp-3
+```
+
+👉 You’ll see Ceph or system pods still there
+
+---
+
+## ✅ Step 2: Force drain AGAIN (now PDB adjusted)
+
+```bash
+oc adm drain ocp-cp-3.lab1.srib-lab-ocp.lan \
+--ignore-daemonsets --delete-emptydir-data --force --grace-period=0
+```
+
+👉 This time it should succeed (since you handled PDB)
+
+---
+
+## ❗ If STILL blocked
+
+Then manually delete remaining pods:
+
+```bash
+oc get pods -A -o wide | grep ocp-cp-3
+```
+
+Then delete problematic ones:
+
+```bash
+oc delete pod <pod> -n <namespace> --force --grace-period=0
+```
+
+---
+
+## ✅ Step 3: Watch node
+
+```bash
+watch oc get nodes
+```
+
+👉 Expect:
+
+```text
+ocp-cp-3 → NotReady → reboot → Ready
+```
+
+---
+
+## ✅ Step 4: Watch MCP
+
+```bash
+watch oc get mcp
+```
+
+👉 Wait for:
+
+```text
+master → UPDATED=True
+UPDATING=False
+```
+
+---
+
+## ✅ Step 5: Verify machine-config
+
+```bash
+oc get co machine-config
+```
+
+👉 Should become:
+
+```text
+Available=True
+Degraded=False
+```
+
+---
+
+# 🚨 Additional Issues (you also have)
+
+From ClusterVersion:
+
+```text
+authentication degraded
+openshift-apiserver degraded
+insights not available
+```
+
+---
+
+## 🔧 Fix insights (safe in airgap)
+
+```bash
+oc delete deployment insights-operator -n openshift-insights
+oc delete co insights
+```
+
+---
+
+## 🔍 Check authentication
+
+```bash
+oc get co authentication
+oc describe co authentication
+```
+
+👉 Usually auto-recovers after MCO fixed
+
+---
+
+# 💡 Important Understanding
+
+👉 Your upgrade is NOT broken
+👉 It is **waiting for 1 node (ocp-cp-3)**
+
+Once that node updates:
+💥 Everything will recover automatically
+
+---
+
+# 🏁 FINAL PLAN
+
+1. Force drain node ✅
+2. Ensure reboot happens ✅
+3. Wait for MCP complete ✅
+4. Machine-config becomes healthy ✅
+5. Other operators recover ✅
+
+---
+
+# 👍 You’re very close
+
+👉 This is **last real blocker** in your upgrade
+
+---
+
+If after drain still stuck, paste:
+
+```bash
+oc get pods -A -o wide | grep ocp-cp-3
+```
+
+I’ll tell exactly which pod is blocking 👍
