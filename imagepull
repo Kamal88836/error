@@ -1,157 +1,148 @@
-Short answer: ⚠️ Force reboot is NOT the right first solution here.
-
-
----
-
-❗ Why force reboot is risky
-
-Your node has:
-
-rook-ceph-osd pod → Cannot evict
-
-👉 That means Ceph is protecting data
-
-If you force reboot:
-
-❌ OSD pod dies abruptly
-
-❌ Data may become degraded
-
-❌ Cluster may go into HEALTH_WARN / HEALTH_ERR
-
-❌ Upgrade may still fail after reboot
-
-
-
----
-
-🔥 When force reboot can work
-
-Force reboot might help ONLY IF:
-
-Node is already drained (not your case ❌)
-
-OR cluster is non-critical/test lab (maybe your case 🤏)
-
-
-
----
-
-🎯 Your situation (based on logs)
-
-👉 Drain is NOT completed
-
-A previously requested drain has not yet completed
-
-👉 So reboot = skipping Kubernetes safety
-
-
----
-
-✅ CORRECT APPROACH (Recommended)
-
-Step 1 (SAFE)
-
-Allow eviction:
-
-oc patch pdb rook-ceph-osd -n openshift-storage \
-  -p '{"spec":{"minAvailable":0}}'
-
-
----
-
-Step 2
-
-Drain again:
-
-oc adm drain ocp-cp-1 \
-  --ignore-daemonsets \
-  --delete-emptydir-data \
-  --force
-
-
----
-
-Step 3
-
-Then reboot:
-
-reboot
-
-
----
-
-⚠️ If you still want FORCE reboot
-
-👉 Only do this if:
-
-This is LAB environment ✅
-
-You accept temporary storage issues ✅
-
-
-
----
-
-Safe-ish forced reboot sequence:
-
-oc adm cordon ocp-cp-1
-
-Then:
-
-oc debug node/ocp-cp-1
-chroot /host
-reboot -f
-
-
----
-
-🔥 My Recommendation (based on your setup)
-
-Since you are doing disconnected + ODF + upgrade
-
-👉 DO NOT force reboot yet
-
-👉 First fix PDB → then drain → then reboot
-
-
----
-
-🧠 Simple analogy
-
-Drain = "asking pods to move safely"
-
-Force reboot = "cutting power suddenly"
-
-
-👉 Ceph hates sudden power cuts 😄
-
-
----
-
-✅ Final Answer
-
-👉 Will force reboot help?
-
-✔ Maybe (temporary progress)
-
-❌ Not correct fix
-
-❌ Can create new problems
-
-
-
----
-
-🚀 Best move right now
-
-👉 Do this:
-
-oc patch pdb rook-ceph-osd -n openshift-storage -p '{"spec":{"minAvailable":0}}'
-
-
----
-
-If you want, I can guide you:
-
-👉 how to safely upgrade ODF clusters step-by-step (production method)
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get node ocp-cp-3.lab1.srib-lab-ocp.lan -o yaml | grep machineconfiguration.openshift.io
+    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+    machineconfiguration.openshift.io/currentConfig: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+    machineconfiguration.openshift.io/desiredConfig: rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/desiredDrain: drain-rendered-master-a22a7214fd353f47683b50f217422aa1
+    machineconfiguration.openshift.io/forceReboot: "true"
+    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-0e41a7401614ad6250578b1988cc5a7c
+    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: "false"
+    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: "13581553"
+    machineconfiguration.openshift.io/post-config-action: ""
+    machineconfiguration.openshift.io/reason: ""
+    machineconfiguration.openshift.io/state: Working
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get po
+NAME                                                  READY   STATUS    RESTARTS   AGE
+kube-rbac-proxy-crio-ocp-cp-1.lab1.srib-lab-ocp.lan   1/1     Running   4          38h
+kube-rbac-proxy-crio-ocp-cp-2.lab1.srib-lab-ocp.lan   1/1     Running   0          35h
+kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan   1/1     Running   6          38h
+machine-config-controller-56db9884cf-fvck2            2/2     Running   0          9h
+machine-config-daemon-k8m79                           2/2     Running   2          9h
+machine-config-daemon-p8rgs                           2/2     Running   0          8h
+machine-config-daemon-phldr                           2/2     Running   0          9h
+machine-config-operator-58d55cdb99-ddb7s              2/2     Running   0          9h
+machine-config-server-8sk2t                           1/1     Running   8          41h
+machine-config-server-b6rnl                           1/1     Running   2          41h
+machine-config-server-vhgzz                           1/1     Running   7          41h
+srib@ocp-haproxy-1:~/ocp_4_19$ oc logs -n openshift-machine-config-operator machine-config-daemon-k8m79 -c machine-config-daemon --tail 100^C
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get po -o wide
+NAME                                                  READY   STATUS    RESTARTS   AGE   IP             NODE                             NOMINATED NODE   READINESS GATES
+kube-rbac-proxy-crio-ocp-cp-1.lab1.srib-lab-ocp.lan   1/1     Running   4          38h   71.1.1.230     ocp-cp-1.lab1.srib-lab-ocp.lan   <none>           <none>
+kube-rbac-proxy-crio-ocp-cp-2.lab1.srib-lab-ocp.lan   1/1     Running   0          35h   71.1.1.227     ocp-cp-2.lab1.srib-lab-ocp.lan   <none>           <none>
+kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan   1/1     Running   6          38h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-controller-56db9884cf-fvck2            2/2     Running   0          9h    10.128.1.100   ocp-cp-2.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-daemon-k8m79                           2/2     Running   2          9h    71.1.1.230     ocp-cp-1.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-daemon-p8rgs                           2/2     Running   0          8h    71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-daemon-phldr                           2/2     Running   0          9h    71.1.1.227     ocp-cp-2.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-operator-58d55cdb99-ddb7s              2/2     Running   0          9h    10.128.1.101   ocp-cp-2.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-server-8sk2t                           1/1     Running   8          41h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-server-b6rnl                           1/1     Running   2          41h   71.1.1.227     ocp-cp-2.lab1.srib-lab-ocp.lan   <none>           <none>
+machine-config-server-vhgzz                           1/1     Running   7          41h   71.1.1.230     ocp-cp-1.lab1.srib-lab-ocp.lan   <none>           <none>
+srib@ocp-haproxy-1:~/ocp_4_19$ oc logs -n openshift-machine-config-operator machine-config-daemon-p8rgs -c machine-config-daemon --tail 100
+         "ostree.bootable": "true",
+         "ostree.commit": "9e057f59da83359b6151f70b7c2ef2a0f0e9f9dd927898d18249ac789c42d7ae",
+         "ostree.final-diffid": "sha256:12787d84fa137cd5649a9005efe98ec9d05ea46245fdc50aecb7dd007f2035b1",
+         "ostree.linux": "5.14.0-427.81.1.el9_4.x86_64",
+         "rpmostree.inputhash": "754102d802c1f7d1619dd922c6484b6bdce447f2096cfdbe6c88edc233abf46b"
+      },
+      "image-name": "oci-archive:/rhcos-418.94.202508060022-0-ostree.x86_64.ociarchive"
+   },
+   "osbuild-version": "147",
+   "ostree-commit": "9e057f59da83359b6151f70b7c2ef2a0f0e9f9dd927898d18249ac789c42d7ae",
+   "ref": "docker://ostree-image-signed:oci-archive:/rhcos-418.94.202508060022-0-ostree.x86_64.ociarchive",
+   "version": "418.94.202508060022-0"
+}
+I0325 20:25:01.039967  182960 coreos.go:70] Ignition provisioning: time=2026-02-27T18:05:45Z
+I0325 20:25:01.039978  182960 command_runner.go:24] Running captured: journalctl --list-boots
+I0325 20:25:01.090598  182960 daemon.go:1820] journalctl --list-boots:
+IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY
+ -8 f369f04660d742f09b9dcaa4eac761f5 Wed 2026-03-18 10:24:34 UTC Tue 2026-03-24 14:08:10 UTC
+ -7 79771fb949f14813994ba9d7aad9e95a Tue 2026-03-24 14:11:33 UTC Tue 2026-03-24 14:21:13 UTC
+ -6 2c43c8fc63df4978a43277a13b3b8bcb Tue 2026-03-24 14:24:10 UTC Tue 2026-03-24 14:47:22 UTC
+ -5 822ee2819b524675b8bd299733d40a0f Tue 2026-03-24 14:50:38 UTC Wed 2026-03-25 14:31:45 UTC
+ -4 0420a397547649089ba7019c9cdd0de1 Wed 2026-03-25 14:35:09 UTC Wed 2026-03-25 17:58:21 UTC
+ -3 c21447fe5fcc45449f8a4e93a0d11685 Wed 2026-03-25 18:01:36 UTC Wed 2026-03-25 18:13:31 UTC
+ -2 d3736feffc8e4fab88bf1f30fa2c9c2a Wed 2026-03-25 18:16:18 UTC Wed 2026-03-25 18:35:33 UTC
+ -1 8a2b1eee816047c7972fa21fe4d4ebb7 Wed 2026-03-25 18:38:53 UTC Wed 2026-03-25 18:53:48 UTC
+  0 b08c34b11a204c309836be04901aa5bb Wed 2026-03-25 18:57:05 UTC Wed 2026-03-25 20:25:01 UTC
+I0325 20:25:01.090621  182960 command_runner.go:24] Running captured: systemctl list-units --state=failed --no-legend
+I0325 20:25:01.098903  182960 daemon.go:1834] systemctl --failed:
+● chronyd.service                    loaded failed failed NTP client/server
+● NetworkManager-wait-online.service loaded failed failed Network Manager Wait Online
+I0325 20:25:01.098922  182960 daemon.go:1389] Starting MachineConfigDaemon
+I0325 20:25:01.098970  182960 daemon.go:1396] Enabling Kubelet Healthz Monitor
+I0325 20:25:01.338047  182960 daemon.go:2988] Found 9 requested local packages in the booted deployment
+I0325 20:25:01.338074  182960 daemon.go:2997] Unsupported package kernel-rt-core
+I0325 20:25:01.338080  182960 daemon.go:2997] Unsupported package kernel-rt-kvm
+I0325 20:25:01.338085  182960 daemon.go:2997] Unsupported package kernel-rt-modules
+I0325 20:25:01.338088  182960 daemon.go:2997] Unsupported package kernel-rt-modules-extra
+I0325 20:25:01.338091  182960 daemon.go:2997] Unsupported package kernel
+I0325 20:25:01.338093  182960 daemon.go:2997] Unsupported package kernel-core
+I0325 20:25:01.338096  182960 daemon.go:2997] Unsupported package kernel-modules
+I0325 20:25:01.338101  182960 daemon.go:2997] Unsupported package kernel-modules-core
+I0325 20:25:01.338105  182960 daemon.go:2997] Unsupported package kernel-modules-extra
+I0325 20:25:01.876304  182960 daemon.go:673] Node ocp-cp-3.lab1.srib-lab-ocp.lan is part of the control plane
+I0325 20:25:02.035071  182960 daemon.go:2041] Running: /run/machine-config-daemon-bin/nmstatectl persist-nic-names --root / --kargs-out /tmp/nmstate-kargs1378797797 --cleanup
+[2026-03-25T20:25:02Z INFO  nmstatectl] Nmstate version: 2.2.56
+[2026-03-25T20:25:02Z INFO  nmstatectl::persist_nic] /etc/systemd/network/.nmstate-persist.stamp does not exist, no need to clean up
+
+I0325 20:25:02.059358  182960 daemon.go:1629] Previous boot ostree-finalize-staged.service appears successful
+I0325 20:25:02.059377  182960 daemon.go:1764] Current+desired config: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 20:25:02.059384  182960 daemon.go:1779] state: Done
+I0325 20:25:02.059406  182960 update.go:2775] Running: rpm-ostree cleanup -r
+Deployments unchanged.
+I0325 20:25:02.109455  182960 daemon.go:2239] Validating against current config rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 20:25:02.109531  182960 daemon.go:2151] SSH key location ("/home/core/.ssh/authorized_keys.d/ignition") up-to-date!
+I0325 20:25:02.109543  182960 command_runner.go:24] Running captured: rpm-ostree kargs
+I0325 20:25:02.182447  182960 update.go:2820] "Validated on-disk state"
+I0325 20:25:02.200705  182960 daemon.go:2349] Completing update to target MachineConfig: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 20:25:12.204997  182960 update.go:2820] "Update completed for config rendered-master-0e41a7401614ad6250578b1988cc5a7c and node has been successfully uncordoned"
+I0325 20:25:12.207625  182960 daemon.go:2374] In desired state MachineConfig: rendered-master-0e41a7401614ad6250578b1988cc5a7c
+I0325 20:25:12.240559  182960 config_drift_monitor.go:246] Config Drift Monitor started
+I0325 20:25:28.265538  182960 daemon.go:768] Transitioned from state:  -> Done
+I0325 20:26:01.338768  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 20:26:28.273552  182960 daemon.go:903] Starting health listener on 127.0.0.1:8798
+I0325 20:47:58.296956  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 21:10:55.704717  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 21:33:53.112640  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 21:56:50.520730  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 22:19:47.928498  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 22:42:45.337025  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 23:05:42.745029  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 23:28:40.153430  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0325 23:51:37.561337  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 00:14:34.969370  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 00:37:32.377008  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 01:00:29.784489  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 01:23:27.192955  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 01:46:24.600348  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 02:09:22.008172  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 02:32:19.416131  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 02:55:16.824118  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 03:18:14.232110  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 03:41:11.639595  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 04:04:09.048081  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 04:27:06.456012  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 04:50:03.864200  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+I0326 04:51:16.243273  182960 command_runner.go:24] Running captured: rpm-ostree kargs
+I0326 04:51:16.563268  182960 daemon.go:966] Preflight config drift check successful (took 319.996961ms)
+I0326 04:51:16.567899  182960 config_drift_monitor.go:255] Config Drift Monitor has shut down
+I0326 04:51:16.581367  182960 update.go:2842] Adding SIGTERM protection
+I0326 04:51:16.640380  182960 update.go:1125] Checking Reconcilable for config rendered-master-0e41a7401614ad6250578b1988cc5a7c to rendered-master-a22a7214fd353f47683b50f217422aa1
+I0326 04:51:16.721447  182960 update.go:2820] "Starting update from rendered-master-0e41a7401614ad6250578b1988cc5a7c to rendered-master-a22a7214fd353f47683b50f217422aa1: &{osUpdate:false kargs:false fips:false passwd:false files:true units:false kernelType:false extensions:false oclEnabled:false revertFromOCL:false}"
+I0326 04:51:16.727390  182960 update.go:771] Calculating node disruption actions
+I0326 04:51:16.727488  182960 update.go:653] NodeDisruptionPolicy [{Special <nil> <nil>}] found for diff file /etc/containers/registries.conf
+I0326 04:51:16.727529  182960 update.go:800] Calculated node disruption actions:
+I0326 04:51:16.727552  182960 update.go:808] Special
+I0326 04:51:16.729612  182960 drain.go:132] Checking drain required for node disruption actions
+I0326 04:51:16.730600  182960 drain.go:245] /etc/containers/registries.conf: registry quay.io/openshift-release-dev has been removed
+I0326 04:51:16.730690  182960 update.go:1205] Drain calculated for node disruption: true for config rendered-master-a22a7214fd353f47683b50f217422aa1
+I0326 04:51:16.758463  182960 update.go:2820] "Update prepared; requesting cordon and drain via annotation to controller"
+I0326 05:13:01.272005  182960 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 13581553
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$
+srib@ocp-haproxy-1:~/ocp_4_19$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   26d   v1.32.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.32.10
+srib@ocp-haproxy-1:~/ocp_4_19$
