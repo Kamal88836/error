@@ -1,189 +1,53 @@
-Perfect 👍 — this output tells the **exact situation clearly**. Let’s break it and fix it properly.
-
----
-
-# 🚨 ROOT CAUSE (100% clear now)
-
-From your logs:
-
-```text
-MachineConfigPool master is not ready
-ready 2, updated 2, unavailable 1
-```
-
-👉 And:
-
-```bash
-oc get nodes
-ocp-cp-3 → Ready,SchedulingDisabled
-```
-
-👉 So:
-
-💥 **Node `ocp-cp-3` is stuck in drain state**
-💥 That’s why **machine-config is degraded**
-💥 That’s why **upgrade is blocked**
-
----
-
-# 🧠 What already happened
-
-* Node was cordoned ✔️
-* Drain attempted ❌ (blocked by Ceph earlier)
-* Node never completed update ❌
-* MCO waiting forever ⏳
-
----
-
-# 🏆 FIX (SAFE & CORRECT)
-
-We will **complete the stuck node update**
-
----
-
-## ✅ Step 1: Check pods still on node
-
-```bash
-oc get pods -A -o wide | grep ocp-cp-3
-```
-
-👉 You’ll see Ceph or system pods still there
-
----
-
-## ✅ Step 2: Force drain AGAIN (now PDB adjusted)
-
-```bash
-oc adm drain ocp-cp-3.lab1.srib-lab-ocp.lan \
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get pods -A -o wide | grep ocp-cp-3
+openshift-cluster-node-tuning-operator             tuned-xzpms                                                       1/1     Running     11             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-dns                                      dns-default-p6pg9                                                 2/2     Running     22             2d4h   10.129.0.180   ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-dns                                      node-resolver-bnhd7                                               1/1     Running     11             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-etcd                                     etcd-ocp-cp-3.lab1.srib-lab-ocp.lan                               5/5     Running     45             2d1h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-image-registry                           node-ca-5h9lt                                                     1/1     Running     11             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-ingress-canary                           ingress-canary-pjwxk                                              1/1     Running     11             2d4h   10.129.0.101   ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-insights                                 insights-runtime-extractor-7qm97                                  3/3     Running     21             21h    10.129.0.104   ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-kni-infra                                coredns-ocp-cp-3.lab1.srib-lab-ocp.lan                            2/2     Running     19             2d1h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-kni-infra                                haproxy-ocp-cp-3.lab1.srib-lab-ocp.lan                            2/2     Running     18             2d1h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-kni-infra                                keepalived-ocp-cp-3.lab1.srib-lab-ocp.lan                         2/2     Running     18             2d1h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-kube-apiserver                           kube-apiserver-ocp-cp-3.lab1.srib-lab-ocp.lan                     5/5     Running     45             2d1h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-kube-controller-manager                  kube-controller-manager-ocp-cp-3.lab1.srib-lab-ocp.lan            4/4     Running     43             2d1h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-kube-scheduler                           openshift-kube-scheduler-ocp-cp-3.lab1.srib-lab-ocp.lan           3/3     Running     29             2d1h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-local-storage                            diskmaker-discovery-pv84q                                         2/2     Running     14             22h    10.129.0.95    ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-local-storage                            diskmaker-manager-xnzwv                                           2/2     Running     14             22h    10.129.0.96    ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-machine-api                              ironic-proxy-6zkd9                                                1/1     Running     2              168m   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-machine-config-operator                  kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan               1/1     Running     9              2d1h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-machine-config-operator                  machine-config-daemon-p8rgs                                       2/2     Running     7              19h    71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-machine-config-operator                  machine-config-server-8sk2t                                       1/1     Running     11             2d3h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-monitoring                               node-exporter-mv9r6                                               2/2     Running     22             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-multus                                   multus-9l6sp                                                      1/1     Running     12             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-multus                                   multus-additional-cni-plugins-2b2bd                               1/1     Running     11             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-multus                                   network-metrics-daemon-r255c                                      2/2     Running     22             2d4h   10.129.0.178   ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-network-diagnostics                      network-check-target-z9hlt                                        1/1     Running     11             2d4h   10.129.0.6     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-network-node-identity                    network-node-identity-zchqh                                       2/2     Running     24             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-network-operator                         iptables-alerter-pxzhb                                            1/1     Running     11             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-nmstate                                  nmstate-handler-xqkvh                                             1/1     Running     8              22h    71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-ovn-kubernetes                           ovnkube-node-fgv9s                                                8/8     Running     93             2d4h   71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-ptp                                      linuxptp-daemon-nrnv9                                             2/2     Running     14             22h    71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-sriov-network-operator                   network-resources-injector-j6zrg                                  1/1     Running     7              22h    10.129.0.97    ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-sriov-network-operator                   operator-webhook-s8kqc                                            1/1     Running     7              22h    10.129.0.98    ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-sriov-network-operator                   sriov-device-plugin-97mvn                                         1/1     Running     0              49m    71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-sriov-network-operator                   sriov-network-config-daemon-4bcm2                                 1/1     Running     7              22h    71.1.1.229     ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+openshift-storage                                  rook-ceph-crashcollector-ocp-cp-3.lab1.srib-lab-ocp.lan-74p58vg   0/1     Pending     0              46m    <none>         <none>                           <none>           <none>
+openshift-storage                                  rook-ceph-exporter-ocp-cp-3.lab1.srib-lab-ocp.lan-6956678c5bxd4   0/1     Pending     0              46m    <none>         <none>                           <none>           <none>
+openshift-storage                                  rook-ceph-osd-1-b944c5b94-jsbtn                                   2/2     Running     0              59m    10.129.0.19    ocp-cp-3.lab1.srib-lab-ocp.lan   <none>           <none>
+srib@ocp-haproxy-1:~/ocp_4_20$ oc adm drain ocp-cp-3.lab1.srib-lab-ocp.lan \
 --ignore-daemonsets --delete-emptydir-data --force --grace-period=0
-```
-
-👉 This time it should succeed (since you handled PDB)
-
----
-
-## ❗ If STILL blocked
-
-Then manually delete remaining pods:
-
-```bash
-oc get pods -A -o wide | grep ocp-cp-3
-```
-
-Then delete problematic ones:
-
-```bash
-oc delete pod <pod> -n <namespace> --force --grace-period=0
-```
-
----
-
-## ✅ Step 3: Watch node
-
-```bash
-watch oc get nodes
-```
-
-👉 Expect:
-
-```text
-ocp-cp-3 → NotReady → reboot → Ready
-```
-
----
-
-## ✅ Step 4: Watch MCP
-
-```bash
-watch oc get mcp
-```
-
-👉 Wait for:
-
-```text
-master → UPDATED=True
-UPDATING=False
-```
-
----
-
-## ✅ Step 5: Verify machine-config
-
-```bash
-oc get co machine-config
-```
-
-👉 Should become:
-
-```text
-Available=True
-Degraded=False
-```
-
----
-
-# 🚨 Additional Issues (you also have)
-
-From ClusterVersion:
-
-```text
-authentication degraded
-openshift-apiserver degraded
-insights not available
-```
-
----
-
-## 🔧 Fix insights (safe in airgap)
-
-```bash
-oc delete deployment insights-operator -n openshift-insights
-oc delete co insights
-```
-
----
-
-## 🔍 Check authentication
-
-```bash
-oc get co authentication
-oc describe co authentication
-```
-
-👉 Usually auto-recovers after MCO fixed
-
----
-
-# 💡 Important Understanding
-
-👉 Your upgrade is NOT broken
-👉 It is **waiting for 1 node (ocp-cp-3)**
-
-Once that node updates:
-💥 Everything will recover automatically
-
----
-
-# 🏁 FINAL PLAN
-
-1. Force drain node ✅
-2. Ensure reboot happens ✅
-3. Wait for MCP complete ✅
-4. Machine-config becomes healthy ✅
-5. Other operators recover ✅
-
----
-
-# 👍 You’re very close
-
-👉 This is **last real blocker** in your upgrade
-
----
-
-If after drain still stuck, paste:
-
-```bash
-oc get pods -A -o wide | grep ocp-cp-3
-```
-
-I’ll tell exactly which pod is blocking 👍
+node/ocp-cp-3.lab1.srib-lab-ocp.lan already cordoned
+Warning: ignoring DaemonSet-managed Pods: openshift-cluster-node-tuning-operator/tuned-xzpms, openshift-dns/dns-default-p6pg9, openshift-dns/node-resolver-bnhd7, openshift-image-registry/node-ca-5h9lt, openshift-ingress-canary/ingress-canary-pjwxk, openshift-insights/insights-runtime-extractor-7qm97, openshift-local-storage/diskmaker-discovery-pv84q, openshift-local-storage/diskmaker-manager-xnzwv, openshift-machine-api/ironic-proxy-6zkd9, openshift-machine-config-operator/machine-config-daemon-p8rgs, openshift-machine-config-operator/machine-config-server-8sk2t, openshift-monitoring/node-exporter-mv9r6, openshift-multus/multus-9l6sp, openshift-multus/multus-additional-cni-plugins-2b2bd, openshift-multus/network-metrics-daemon-r255c, openshift-network-diagnostics/network-check-target-z9hlt, openshift-network-node-identity/network-node-identity-zchqh, openshift-network-operator/iptables-alerter-pxzhb, openshift-nmstate/nmstate-handler-xqkvh, openshift-ovn-kubernetes/ovnkube-node-fgv9s, openshift-ptp/linuxptp-daemon-nrnv9, openshift-sriov-network-operator/network-resources-injector-j6zrg, openshift-sriov-network-operator/operator-webhook-s8kqc, openshift-sriov-network-operator/sriov-device-plugin-97mvn, openshift-sriov-network-operator/sriov-network-config-daemon-4bcm2
+evicting pod openshift-storage/rook-ceph-osd-1-b944c5b94-jsbtn
+error when evicting pods/"rook-ceph-osd-1-b944c5b94-jsbtn" -n "openshift-storage" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+evicting pod openshift-storage/rook-ceph-osd-1-b944c5b94-jsbtn
+error when evicting pods/"rook-ceph-osd-1-b944c5b94-jsbtn" -n "openshift-storage" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+evicting pod openshift-storage/rook-ceph-osd-1-b944c5b94-jsbtn
+error when evicting pods/"rook-ceph-osd-1-b944c5b94-jsbtn" -n "openshift-storage" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+evicting pod openshift-storage/rook-ceph-osd-1-b944c5b94-jsbtn
+error when evicting pods/"rook-ceph-osd-1-b944c5b94-jsbtn" -n "openshift-storage" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+evicting pod openshift-storage/rook-ceph-osd-1-b944c5b94-jsbtn
+error when evicting pods/"rook-ceph-osd-1-b944c5b94-jsbtn" -n "openshift-storage" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+^C
+srib@ocp-haproxy-1:~/ocp_4_20$
