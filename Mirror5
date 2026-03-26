@@ -1,136 +1,55 @@
-Yes 👍 — this step is important, and you’re asking at the right time.
-
-
----
-
-🏆 Short Answer
-
-👉 YES — delete old configs before applying new ones
-
-But do it carefully (not blindly everything) 👇
-
-
----
-
-🚀 EXACT SAFE STEPS
-
-✅ Step 1: Delete old IDMS
-
-oc delete imagedigestmirrorset --all
-
-
----
-
-✅ Step 2: Delete old ITMS
-
-oc delete imagetagmirrorset --all
-
-
----
-
-✅ Step 3: Delete old CatalogSource
-
-oc delete catalogsource --all -n openshift-marketplace
-
-
----
-
-⚠️ Step 4: Signature ConfigMap (IMPORTANT)
-
-👉 Check first:
-
-oc get configmap -n openshift-config-managed | grep signature
-
-If old exists → delete:
-
-oc delete configmap -n openshift-config-managed -l release.openshift.io/verification-signatures
-
-
----
-
-❌ Step 5: DO NOT delete these
-
-👉 Don’t touch:
-
-Nodes ❌
-
-Operators ❌
-
-Namespaces ❌
-
-ClusterVersion ❌
-
-
-
----
-
-🧠 Why deletion is required
-
-If you don’t delete:
-
-❌ Old mirror paths remain
-❌ Cluster pulls wrong images
-❌ Upgrade fails or behaves weird
-
-
----
-
-🏁 After deletion → immediately apply new
-
-oc apply -f idms-oc-mirror.yaml
-oc apply -f itms-oc-mirror.yaml
-oc apply -f cs-redhat-operator-index-v4-20.yaml
-oc apply -f signature-configmap.yaml
-
-(Optional)
-
-oc apply -f updateService.yaml
-
-
----
-
-⚠️ Important Timing
-
-👉 Do this ONLY when:
-
-Cluster is stable ✅
-
-No upgrade running ❗
-
-
-
----
-
-🔍 Verify after applying
-
-oc get imagedigestmirrorset
-oc get imagetagmirrorset
-oc get catalogsource -n openshift-marketplace
-
-
----
-
-💡 Pro Tip
-
-👉 After applying, wait 2–3 minutes before upgrade
-(so cluster picks new mirror config)
-
-
----
-
-👍 Final Answer
-
-👉 ✔ Yes, delete old configs
-👉 ✔ Then apply new ones immediately
-
-
----
-
-If you want, next I can: ✅ Verify your cluster is 100% ready before upgrade
-✅ Catch issues before they break upgrade
-
-Just run:
-
-oc get co
-
-and paste 👍
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.19.23   True        False         6h37m   Cluster version is 4.19.23
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get imagedigestmirrorset
+NAME              AGE
+idms-operator-0   12m
+idms-release-0    12m
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get imagetagmirrorset
+NAME             AGE
+itms-generic-0   12m
+itms-release-0   12m
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get catalogsource -n openshift-marketplace
+NAME                             DISPLAY   TYPE   PUBLISHER   AGE
+cs-redhat-operator-index-v4-20             grpc               12m
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.19.23   True        False         False      47h
+baremetal                                  4.19.23   True        False         False      26d
+cloud-controller-manager                   4.19.23   True        False         False      26d
+cloud-credential                           4.19.23   True        False         False      26d
+cluster-autoscaler                         4.19.23   True        False         False      26d
+config-operator                            4.19.23   True        False         False      26d
+console                                    4.19.23   True        False         False      26d
+control-plane-machine-set                  4.19.23   True        False         False      26d
+csi-snapshot-controller                    4.19.23   True        False         False      26d
+dns                                        4.19.23   True        False         False      26d
+etcd                                       4.19.23   True        False         False      26d
+image-registry                             4.19.23   True        False         False      26d
+ingress                                    4.19.23   True        True          False      12m     ingresscontroller "default" is progressing: IngressControllerProgressing: One or more status conditions indicate progressing: DeploymentRollingOut=True (DeploymentRollingOut: Waiting for router deployment rollout to finish: 2 of 3 updated replica(s) are available......
+insights                                   4.19.23   True        False         False      13m
+kube-apiserver                             4.19.23   True        False         False      26d
+kube-controller-manager                    4.19.23   True        False         False      26d
+kube-scheduler                             4.19.23   True        False         False      26d
+kube-storage-version-migrator              4.19.23   True        False         False      13m
+machine-api                                4.19.23   True        False         False      26d
+machine-approver                           4.19.23   True        False         False      26d
+machine-config                             4.19.23   True        False         False      26d
+marketplace                                4.19.23   True        False         False      26d
+monitoring                                 4.19.23   True        False         False      43h
+network                                    4.19.23   True        False         False      26d
+node-tuning                                4.19.23   True        False         False      2d2h
+olm                                        4.19.23   True        False         False      13m
+openshift-apiserver                        4.19.23   True        False         False      26d
+openshift-controller-manager               4.19.23   True        False         False      26d
+openshift-samples                          4.19.23   True        False         False      26d
+operator-lifecycle-manager                 4.19.23   True        False         False      26d
+operator-lifecycle-manager-catalog         4.19.23   True        False         False      26d
+operator-lifecycle-manager-packageserver   4.19.23   True        False         False      26h
+service-ca                                 4.19.23   True        False         False      26d
+storage                                    4.19.23   True        False         False      26d
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-a22a7214fd353f47683b50f217422aa1   False     True       False      3              0                   0                     0                      26d
+worker   rendered-worker-89cff240e099cc0d77762a69adf42c3b   True      False      False      0              0                   0                     0                      26d
+srib@ocp-haproxy-1:~/ocp_4_20$
