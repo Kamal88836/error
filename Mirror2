@@ -1,13 +1,6 @@
-[root@bastion mirror_4_20_14]# oc mirror -c imageset-config_4_20_14.yaml file:///root/mirror_4_20_14/ --v2
-2026/03/26 09:37:03  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/03/26 09:37:03  [INFO]   : ⚙️  setting up the environment for you...
-2026/03/26 09:37:03  [INFO]   : 🔀 workflow mode: mirrorToDisk
-2026/03/26 09:37:03  [INFO]   : 🕵  going to discover the necessary images...
-2026/03/26 09:37:03  [INFO]   : 🔍 collecting release images...
-2026/03/26 09:37:13  [INFO]   : 🔍 collecting operator images...
- ✗   (8s) Collecting catalog registry.redhat.io/redhat/redhat-operator-index:v4.20
-2026/03/26 09:37:22  [INFO]   : 🔍 collecting additional images...
-2026/03/26 09:37:22  [INFO]   : 🔍 collecting helm images...
-2026/03/26 09:37:22  [INFO]   : mirror time     : 18.719352914s
-2026/03/26 09:37:22  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
-2026/03/26 09:37:22  [ERROR]  : [Executor] collection error: collect catalog "registry.redhat.io/redhat/redhat-operator-index:v4.20": invalid default channel configuration for package "openshift-cert-manager-operator": the default channel "stable-v1" was filtered out, a new default channel must be configured for this package
+oc mirror -c imageset-config_4_20_14.yaml --from file:///root/mirror_4_20_14/  docker://bastion.srib-lab-ocp.lan:8443 --v2
+
+export LOCAL_REGISTRY="bastion.srib-lab-ocp.lan:8443"
+[root@bastion ocp-update-version]# export LOCAL_REPOSITORY="ocp4/openshift4"
+[root@bastion ocp-update-version]#
+[root@bastion ocp-update-version]# oc mirror -c imageset-config.yaml --from file://registry docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
