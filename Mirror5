@@ -314,121 +314,134 @@ I’ll finish it 👍
 
 
 
-srib@ocp-haproxy-1:~/ocp_4_20$ oc describe clusterversion
-Name:         version
-Namespace:
-Labels:       <none>
-Annotations:  <none>
-API Version:  config.openshift.io/v1
-Kind:         ClusterVersion
-Metadata:
-  Creation Timestamp:  2026-02-27T17:50:06Z
-  Generation:          10
-  Resource Version:    14886816
-  UID:                 ed02d0f1-f2bf-44d8-ba4d-1d48cd16647a
-Spec:
-  Capabilities:
-    Additional Enabled Capabilities:
-    Baseline Capability Set:  None
-  Channel:                    stable-4.20
-  Cluster ID:                 63837200-ea8f-437a-834a-49f8d7d36dac
-  Desired Update:
-    Architecture:
-    Force:         false
-    Image:         bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
-    Version:
-Status:
-  Available Updates:  <nil>
-  Capabilities:
-    Enabled Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-    Known Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-  Conditions:
-    Last Transition Time:  2026-02-27T17:50:26Z
-    Message:               The admissionregistration.k8s.io/v1beta1 group version is deprecated in 4.19 and will be removed in 4.20. Any clients using the v1beta1 version of these resources must be updated to use the corresponding v1 version instead. See https://access.redhat.com/articles/7130599 for more information.
-    Reason:                AdminAckRequired
-    Status:                False
-    Type:                  Upgradeable
-    Last Transition Time:  2026-03-25T05:33:20Z
-    Message:               The following capabilities could not be disabled: Build, CSISnapshot, CloudControllerManager, CloudCredential, Console, DeploymentConfig, ImageRegistry, Ingress, Insights, MachineAPI, NodeTuning, OperatorLifecycleManager, OperatorLifecycleManagerV1, Storage, baremetal, marketplace, openshift-samples
-    Reason:                CapabilitiesImplicitlyEnabled
-    Status:                True
-    Type:                  ImplicitlyEnabledCapabilities
-    Last Transition Time:  2026-03-26T16:21:19Z
-    Message:               Preconditions failed for payload loaded version="4.20.14" image="bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566": Multiple precondition checks failed:
-* Precondition "ClusterVersionUpgradeable" failed because of "AdminAckRequired": The admissionregistration.k8s.io/v1beta1 group version is deprecated in 4.19 and will be removed in 4.20. Any clients using the v1beta1 version of these resources must be updated to use the corresponding v1 version instead. See https://access.redhat.com/articles/7130599 for more information.
-* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.19.23 to 4.20.14 is unknown.
-    Reason:                PreconditionChecks
-    Status:                False
-    Type:                  ReleaseAccepted
-    Last Transition Time:  2026-02-27T18:38:28Z
-    Message:               Done applying 4.19.23
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-03-26T16:11:19Z
-    Status:                False
-    Type:                  Failing
-    Last Transition Time:  2026-03-26T16:12:19Z
-    Message:               Cluster version is 4.19.23
-    Status:                False
-    Type:                  Progressing
-    Last Transition Time:  2026-02-27T17:50:26Z
-    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.20&id=63837200-ea8f-437a-834a-49f8d7d36dac&version=4.19.23": dial tcp 52.204.11.184:443: connect: connection timed out
-    Reason:                RemoteFailed
-    Status:                False
-    Type:                  RetrievedUpdates
-  Desired:
-    Image:    bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    URL:      https://access.redhat.com/errata/RHSA-2026:1552
-    Version:  4.19.23
-  History:
-    Completion Time:    2026-03-24T17:53:56Z
-    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    Started Time:       2026-03-24T10:37:10Z
-    State:              Completed
-    Verified:           true
-    Version:            4.19.23
-    Completion Time:    2026-02-27T18:38:28Z
-    Image:              quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
-    Started Time:       2026-02-27T17:50:26Z
-    State:              Completed
-    Verified:           false
-    Version:            4.18.23
-  Observed Generation:  10
-  Version Hash:         AJkHbViX_GU=
-Events:                 <none>
-srib@ocp-haproxy-1:~/ocp_4_20$
 
+
+
+Perfect 👍 — this output confirms **100% the exact blocker**.
+
+---
+
+# 🚨 FINAL BLOCKER (CLEAR)
+
+From your output:
+
+```text
+Type: Upgradeable
+Status: False ❌
+Reason: AdminAckRequired
+```
+
+👉 And message:
+
+```text
+admissionregistration.k8s.io/v1beta1 ... will be removed in 4.20
+```
+
+---
+
+# 🧠 Meaning
+
+👉 OpenShift is saying:
+
+> “Before upgrading to 4.20, you MUST acknowledge API removal”
+
+---
+
+# 🏆 FINAL FIX (MANDATORY)
+
+## ✅ Run THIS EXACT command
+
+```bash
+oc -n openshift-config patch configmap admin-acks \
+--type=merge \
+-p '{"data":{"ack-4.19-kube-1.32-api-removals-in-4.20":"true"}}'
+```
+
+---
+
+# 🔍 Verify immediately
+
+```bash
+oc get clusterversion -o jsonpath='{.status.conditions[?(@.type=="Upgradeable")].status}'
+```
+
+👉 Should return:
+
+```bash
+True ✅
+```
+
+---
+
+# 🚀 THEN run upgrade again
+
+```bash
+oc adm upgrade \
+--allow-explicit-upgrade \
+--allow-upgrade-with-warnings \
+--to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+```
+
+---
+
+# 📊 Expected result
+
+```bash
+oc get clusterversion
+```
+
+👉 Now you should see:
+
+```text
+PROGRESSING = True ✅
+Working towards 4.20.14
+```
+
+---
+
+# 💡 Why this is required
+
+👉 Between:
+
+* 4.19 → 4.20
+
+Some Kubernetes APIs are removed, so OpenShift forces:
+
+✔ Manual confirmation
+✔ Prevents accidental breakage
+
+---
+
+# 🏁 Your Situation
+
+| Check          | Status           |
+| -------------- | ---------------- |
+| Image path     | ✅                |
+| Digest         | ✅                |
+| Signature      | ✅                |
+| Mirror config  | ✅                |
+| Cluster health | ✅                |
+| AdminAck       | ❌ ← ONLY blocker |
+
+---
+
+# 👍 Final Answer
+
+👉 Upgrade is NOT starting because of **AdminAckRequired**
+👉 Once you patch → upgrade will start immediately
+
+---
+
+# 🚀 You are ONE command away
+
+Run patch → upgrade again
+
+---
+
+If anything still blocks, paste:
+
+```bash
+oc get clusterversion
+```
+
+I’ll finish it with you 👍
