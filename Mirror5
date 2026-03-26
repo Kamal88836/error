@@ -1,22 +1,135 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get pdb -n openshift-storage
-NAME                       MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
-rook-ceph-mgr-pdb          N/A             1                 1                     26d
-rook-ceph-mon-pdb          N/A             1                 0                     26d
-rook-ceph-osd-rack-rack0   N/A             0                 0                     30h
-rook-ceph-osd-rack-rack2   N/A             0                 0                     30h
-srib@ocp-haproxy-1:~/ocp_4_20$ oc patch pdb rook-ceph-osd-rack-rack0 -n openshift-storage \
--p '{"spec":{"minAvailable":0}}'
-The PodDisruptionBudget "rook-ceph-osd-rack-rack0" is invalid: spec: Invalid value: policy.PodDisruptionBudgetSpec{MinAvailable:(*intstr.IntOrString)(0xc05b444700), Selector:(*v1.LabelSelector)(0xc05b444720), MaxUnavailable:(*intstr.IntOrString)(0xc05b444740), UnhealthyPodEvictionPolicy:(*policy.UnhealthyPodEvictionPolicyType)(nil)}: minAvailable and maxUnavailable cannot be both set
-srib@ocp-haproxy-1:~/ocp_4_20$ oc patch pdb rook-ceph-osd-rack-rack2 -n openshift-storage \
--p '{"spec":{"minAvailable":0}}'
-The PodDisruptionBudget "rook-ceph-osd-rack-rack2" is invalid: spec: Invalid value: policy.PodDisruptionBudgetSpec{MinAvailable:(*intstr.IntOrString)(0xc028b9dce0), Selector:(*v1.LabelSelector)(0xc028b9dd00), MaxUnavailable:(*intstr.IntOrString)(0xc028b9dd20), UnhealthyPodEvictionPolicy:(*policy.UnhealthyPodEvictionPolicyType)(nil)}: minAvailable and maxUnavailable cannot be both set
-srib@ocp-haproxy-1:~/ocp_4_20$ oc adm drain ocp-cp-3.lab1.srib-lab-ocp.lan \
+Perfect 👍 — now we see the **exact issue clearly**, and your error actually tells the fix.
+
+---
+
+# 🚨 Why your patch FAILED
+
+Error:
+
+```bash
+minAvailable and maxUnavailable cannot be both set
+```
+
+👉 Your PDB already has:
+
+```bash
+maxUnavailable: 0
+```
+
+👉 So adding `minAvailable` ❌ is invalid
+
+---
+
+# 🧠 Correct Fix (VERY IMPORTANT)
+
+👉 You should **modify `maxUnavailable`**, NOT add `minAvailable`
+
+---
+
+# 🏆 DO THIS EXACTLY
+
+## ✅ Step 1: Patch OSD PDB correctly
+
+```bash
+oc patch pdb rook-ceph-osd-rack-rack0 -n openshift-storage \
+--type merge -p '{"spec":{"maxUnavailable":1}}'
+
+oc patch pdb rook-ceph-osd-rack-rack2 -n openshift-storage \
+--type merge -p '{"spec":{"maxUnavailable":1}}'
+```
+
+---
+
+## 🔍 Step 2: Verify
+
+```bash
+oc get pdb -n openshift-storage
+```
+
+👉 You should now see:
+
+```bash
+MAX UNAVAILABLE = 1
+ALLOWED DISRUPTIONS >= 1 ✅
+```
+
+---
+
+# 🚀 Step 3: Retry drain
+
+```bash
+oc adm drain ocp-cp-3.lab1.srib-lab-ocp.lan \
 --ignore-daemonsets --delete-emptydir-data --force --grace-period=0
-node/ocp-cp-3.lab1.srib-lab-ocp.lan already cordoned
-Warning: ignoring DaemonSet-managed Pods: openshift-cluster-node-tuning-operator/tuned-xzpms, openshift-dns/dns-default-p6pg9, openshift-dns/node-resolver-bnhd7, openshift-image-registry/node-ca-5h9lt, openshift-ingress-canary/ingress-canary-pjwxk, openshift-insights/insights-runtime-extractor-7qm97, openshift-local-storage/diskmaker-discovery-pv84q, openshift-local-storage/diskmaker-manager-xnzwv, openshift-machine-api/ironic-proxy-6zkd9, openshift-machine-config-operator/machine-config-daemon-p8rgs, openshift-machine-config-operator/machine-config-server-8sk2t, openshift-monitoring/node-exporter-mv9r6, openshift-multus/multus-9l6sp, openshift-multus/multus-additional-cni-plugins-2b2bd, openshift-multus/network-metrics-daemon-r255c, openshift-network-diagnostics/network-check-target-z9hlt, openshift-network-node-identity/network-node-identity-zchqh, openshift-network-operator/iptables-alerter-pxzhb, openshift-nmstate/nmstate-handler-xqkvh, openshift-ovn-kubernetes/ovnkube-node-fgv9s, openshift-ptp/linuxptp-daemon-nrnv9, openshift-sriov-network-operator/network-resources-injector-j6zrg, openshift-sriov-network-operator/operator-webhook-s8kqc, openshift-sriov-network-operator/sriov-device-plugin-97mvn, openshift-sriov-network-operator/sriov-network-config-daemon-4bcm2
-evicting pod openshift-storage/rook-ceph-osd-1-b944c5b94-jsbtn
-error when evicting pods/"rook-ceph-osd-1-b944c5b94-jsbtn" -n "openshift-storage" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
-evicting pod openshift-storage/rook-ceph-osd-1-b944c5b94-jsbtn
-error when evicting pods/"rook-ceph-osd-1-b944c5b94-jsbtn" -n "openshift-storage" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
-^C
-srib@ocp-haproxy-1:~/ocp_4_20$
+```
+
+👉 This time:
+✔ OSD pod will be evicted
+✔ Drain will succeed
+
+---
+
+# 🔄 Step 4: Watch upgrade resume
+
+```bash
+watch oc get mcp
+```
+
+👉 Expect:
+
+```bash
+master → UPDATED=True
+UPDATING=False
+```
+
+---
+
+# ⚠️ Why this works
+
+Before:
+
+```bash
+maxUnavailable = 0 → no eviction ❌
+```
+
+After:
+
+```bash
+maxUnavailable = 1 → eviction allowed ✅
+```
+
+---
+
+# 💡 Small but critical concept
+
+| Setting          | Meaning                |
+| ---------------- | ---------------------- |
+| maxUnavailable=0 | Block ALL evictions ❌  |
+| maxUnavailable=1 | Allow 1 pod eviction ✅ |
+
+---
+
+# 🏁 Final Answer
+
+👉 ❌ Don’t use `minAvailable`
+👉 ✅ Update `maxUnavailable`
+
+---
+
+# 👍 You’re literally at final unblock step
+
+👉 After this:
+
+* Drain will succeed
+* Node updates
+* MachineConfig recovers
+* Upgrade continues
+
+---
+
+If still stuck after patch, paste:
+
+```bash
+oc get pdb -n openshift-storage
+```
+
+I’ll finish it completely 👍
