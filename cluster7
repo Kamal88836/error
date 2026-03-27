@@ -1,67 +1,101 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc describe sub odf-operator
-Name:         odf-operator
-Namespace:    openshift-storage
-Labels:       operators.coreos.com/odf-operator.openshift-storage=
-Annotations:  <none>
-API Version:  operators.coreos.com/v1alpha1
-Kind:         Subscription
-Metadata:
-  Creation Timestamp:  2026-03-25T11:36:12Z
-  Generation:          3
-  Resource Version:    15402868
-  UID:                 093202a8-8ed2-4e12-b82b-47f755d0751a
-Spec:
-  Channel:                stable-4.20
-  Install Plan Approval:  Automatic
-  Name:                   odf-operator
-  Source:                 cs-redhat-operator-index-v4-20
-  Source Namespace:       openshift-marketplace
-Status:
-  Catalog Health:
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              cs-redhat-operator-index-v4-19
-      Namespace:         openshift-marketplace
-      Resource Version:  14822589
-      UID:               f8d96148-6fbe-45d6-aecf-832139a314af
-    Healthy:             true
-    Last Updated:        2026-03-26T14:08:31Z
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              cs-redhat-operator-index-v4-20
-      Namespace:         openshift-marketplace
-      Resource Version:  14786589
-      UID:               8c7af676-b52b-4142-b568-674b9cea5e04
-    Healthy:             true
-    Last Updated:        2026-03-26T14:08:31Z
-  Conditions:
-    Last Transition Time:   2026-03-26T14:08:31Z
-    Message:                all available catalogsources are healthy
-    Reason:                 AllCatalogSourcesHealthy
-    Status:                 False
-    Type:                   CatalogSourcesUnhealthy
-    Message:                constraints not satisfiable: bundle ocs-client-operator.v4.20.7-rhodf requires an operator with package: odf-external-snapshotter-operator and with version in range: 4.20.7-rhodf, subscription ocs-client-operator exists, subscription ocs-client-operator requires cs-redhat-operator-index-v4-20/openshift-marketplace/stable-4.20/ocs-client-operator.v4.20.7-rhodf
-    Reason:                 ConstraintsNotSatisfiable
-    Status:                 True
-    Type:                   ResolutionFailed
-  Current CSV:              odf-operator.v4.20.7-rhodf
-  Install Plan Generation:  3
-  Install Plan Ref:
-    API Version:       operators.coreos.com/v1alpha1
-    Kind:              InstallPlan
-    Name:              install-v52lf
-    Namespace:         openshift-storage
-    Resource Version:  15355783
-    UID:               86d19e90-65b4-4e2a-bc3c-52e2bff700b9
-  Installed CSV:       odf-operator.v4.20.7-rhodf
-  Installplan:
-    API Version:  operators.coreos.com/v1alpha1
-    Kind:         InstallPlan
-    Name:         install-v52lf
-    Uuid:         86d19e90-65b4-4e2a-bc3c-52e2bff700b9
-  Last Updated:   2026-03-27T10:44:33Z
-  State:          AtLatestKnown
-Events:           <none>
-srib@ocp-haproxy-1:~/ocp_4_20$
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+
+archiveSize: 4
+
+mirror:
+  platform:
+    graph: true
+    channels:
+      - name: stable-4.20
+        minVersion: 4.20.14
+        maxVersion: 4.20.14
+
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.20
+      packages:
+
+        # ODF FULL STACK
+        - name: odf-operator
+          channels:
+            - name: stable-4.20
+
+        - name: ocs-operator
+          channels:
+            - name: stable-4.20
+
+        - name: ocs-client-operator
+          channels:
+            - name: stable-4.20
+
+        - name: mcg-operator
+          channels:
+            - name: stable-4.20
+
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.20
+
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.20
+
+        - name: recipe
+          channels:
+            - name: stable-4.20
+
+        # STORAGE
+        - name: lvms-operator
+          channels:
+            - name: stable-4.20
+
+        - name: local-storage-operator
+          channels:
+            - name: stable
+
+        # NETWORK
+        - name: kubernetes-nmstate-operator
+          channels:
+            - name: stable
+
+        - name: sriov-network-operator
+          channels:
+            - name: stable
+
+        - name: ptp-operator
+          channels:
+            - name: stable
+
+        # SECURITY / OPTIONAL
+        - name: openshift-cert-manager-operator
+        - name: cluster-observability-operator
+        - name: kubernetes-image-registry-operator
+
+  additionalImages:
+    # CORE RELEASE
+    - name: quay.io/openshift-release-dev/ocp-release:4.20.14-x86_64
+
+    # 🔥 CRITICAL FIX (digest instead of latest)
+    - name: registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7
+
+    # BASE IMAGES
+    - name: registry.redhat.io/ubi9/ubi:latest
+    - name: registry.redhat.io/ubi9/ubi-minimal:latest
+    - name: registry.redhat.io/ubi9/ubi-init:latest
+
+    # SUPPORT
+    - name: registry.redhat.io/rhel9/support-tools:latest
+
+  helm: {}
