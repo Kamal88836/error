@@ -1,188 +1,40 @@
-Perfect 🔥 — you did the hardest part correctly.
-
-Now you’re **very close**, but one last piece is missing 👇
-
----
-
-# 🚨 Current Problem
-
-Right now you only have:
-
-```text
-odf-operator
-odf-dependencies
-```
-
-👉 But ODF **does NOT install everything automatically in disconnected mode**
-
-It **expects other operators (rook, mcg, cephcsi, etc.) via subscriptions**
-
----
-
-# ⚠️ Why nothing is happening
-
-Your `StorageCluster` is stuck because:
-
-❌ Missing required operators:
-
-* rook-ceph-operator
-* mcg-operator
-* ocs-operator
-* cephcsi-operator
-* etc.
-
-👉 So ODF operator is waiting silently (no pods created)
-
----
-
-# ✅ FINAL FIX (you must recreate subscriptions)
-
-Now create **clean subscriptions pointing to v4.20 catalog**
-
----
-
-## 📌 Apply this YAML
-
-```yaml
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: ocs-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.20
-  name: ocs-operator
-  source: cs-redhat-operator-index-v4-20
-  sourceNamespace: openshift-marketplace
----
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: mcg-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.20
-  name: mcg-operator
-  source: cs-redhat-operator-index-v4-20
-  sourceNamespace: openshift-marketplace
----
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: cephcsi-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.20
-  name: cephcsi-operator
-  source: cs-redhat-operator-index-v4-20
-  sourceNamespace: openshift-marketplace
----
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: rook-ceph-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.20
-  name: rook-ceph-operator
-  source: cs-redhat-operator-index-v4-20
-  sourceNamespace: openshift-marketplace
----
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: ocs-client-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.20
-  name: ocs-client-operator
-  source: cs-redhat-operator-index-v4-20
-  sourceNamespace: openshift-marketplace
-```
-
----
-
-## 🚀 Apply it
-
-```bash
-oc apply -f odf-subs.yaml
-```
-
----
-
-# 🔍 What you should see next
-
-```bash
-oc get csv -n openshift-storage -w
-```
-
-👉 Expected:
-
-```text
-rook-ceph-operator.v4.20.x     Installing
-mcg-operator.v4.20.x           Installing
-ocs-operator.v4.20.x           Installing
-cephcsi-operator.v4.20.x       Installing
-```
-
----
-
-# 🚀 Then cluster will start building
-
-```bash
-oc get pods -n openshift-storage -w
-```
-
-👉 You will see:
-
-* rook-ceph-mon
-* rook-ceph-osd
-* noobaa pods
-* csi pods
-
----
-
-# 🎯 Final State
-
-```bash
-oc get storagecluster -n openshift-storage
-```
-
-👉 Should become:
-
-```text
-PHASE: Ready ✅
-VERSION: 4.20.x
-```
-
----
-
-# 🧠 Important lesson (very key)
-
-In disconnected OCP:
-
-👉 ODF = **multi-operator stack**
-
-| Component    | Needed          |
-| ------------ | --------------- |
-| odf-operator | orchestration   |
-| ocs-operator | core            |
-| rook-ceph    | storage         |
-| mcg          | object (NooBaa) |
-| cephcsi      | CSI             |
-
-👉 If ANY missing → cluster won’t start
-
----
-
-# ⚡ You are 95% done
-
-👉 Just apply subscriptions → everything will come up
-
----
-
-If you want, I can also give:
-✅ Minimal mirror YAML (only required images, super optimized)
-✅ Troubleshooting commands for ODF bring-up
-
-Just tell 👍
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get sub
+NAME               PACKAGE            SOURCE                           CHANNEL
+odf-dependencies   odf-dependencies   cs-redhat-operator-index-v4-20   stable-4.20
+odf-operator       odf-operator       cs-redhat-operator-index-v4-20   stable-4.20
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -n openshift-storage
+NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
+odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get storagecluster -n openshift-storage
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   23m                      2026-03-27T10:13:13Z
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -n openshift-storage
+NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
+odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$ vi subscriptions.yaml
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$ oc apply -f subscriptions.yaml
+subscription.operators.coreos.com/ocs-operator created
+subscription.operators.coreos.com/mcg-operator created
+subscription.operators.coreos.com/cephcsi-operator created
+subscription.operators.coreos.com/rook-ceph-operator created
+subscription.operators.coreos.com/ocs-client-operator created
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -n openshift-storage
+NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
+odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get pods -n openshift-storage
+NAME                                                       READY   STATUS      RESTARTS   AGE
+cluster-cleanup-job-ocp-cp-1.lab1.srib-lab-ocp.lan-7dx6c   0/1     Completed   0          37m
+cluster-cleanup-job-ocp-cp-2.lab1.srib-lab-ocp.lan-mn522   0/1     Completed   0          37m
+cluster-cleanup-job-ocp-cp-3.lab1.srib-lab-ocp.lan-r5hz2   0/1     Completed   0          37m
+odf-console-7f97dc7cc5-6m67s                               1/1     Running     0          88m
+odf-operator-controller-manager-546bb96c7d-cnpll           1/1     Running     0          88m
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get storagecluster -n openshift-storage
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   27m                      2026-03-27T10:13:13Z
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -n openshift-storage
+NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
+odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$
