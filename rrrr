@@ -1,5 +1,6 @@
 kind: ImageSetConfiguration
 apiVersion: mirror.openshift.io/v1alpha2
+
 mirror:
   platform:
     channels:
@@ -7,60 +8,76 @@ mirror:
       minVersion: 4.18.23
       maxVersion: 4.18.23
     graph: true
+
   operators:
   - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.18
     packages:
-    - name: odf-dependencies
-      channels:
-      - name: stable-4.18
-    - name: cephcsi-operator
-      channels:
-      - name: stable-4.18
-    - name: ocs-client-operator
-      channels:
-      - name: stable-4.18
-    - name: rook-ceph-operator
-      channels:
-      - name: stable-4.18
-    - name: odf-prometheus-operator
-      channels:
-      - name: stable-4.18
-    - name: odr-cluster-operator
-      channels:
-      - name: stable-4.18
-    - name: odr-hub-operator
-      channels:
-      - name: stable-4.18
-    - name: recipe
-      channels:
-      - name: stable-4.18
-    - name: sriov-network-operator
-      channels:
-      - name: stable
+
+    # 🔵 ODF + related (expanded but valid)
     - name: odf-operator
       channels:
       - name: stable-4.18
+
     - name: odf-csi-addons-operator
       channels:
       - name: stable-4.18
-    - name: ocs-operator
+
+    - name: cephcsi-operator
       channels:
       - name: stable-4.18
-    - name: ptp-operator
+
+    - name: rook-ceph-operator
       channels:
-      - name: stable
-    - name: local-storage-operator
-      channels:
-      - name: stable
+      - name: stable-4.18
+
     - name: mcg-operator
       channels:
       - name: stable-4.18
+
+    - name: odf-prometheus-operator
+      channels:
+      - name: stable-4.18
+
+    - name: ocs-client-operator
+      channels:
+      - name: stable-4.18
+
+    # ⚠️ DR (only if you use disaster recovery)
+    - name: odr-cluster-operator
+      channels:
+      - name: stable-4.18
+
+    - name: odr-hub-operator
+      channels:
+      - name: stable-4.18
+
+    # 🔵 Infra / Storage
+    - name: local-storage-operator
+      channels:
+      - name: stable
+
     - name: lvms-operator
       channels:
       - name: stable-4.18
+
+    # 🔵 Networking
+    - name: sriov-network-operator
+      channels:
+      - name: stable
+
     - name: kubernetes-nmstate-operator
       channels:
       - name: stable
+
+    - name: ptp-operator
+      channels:
+      - name: stable
+
+    # 🔵 Logging (fixed)
     - name: cluster-logging
       channels:
-      - name: stable-6.4
+      - name: stable-5.9
+
+storageConfig:
+  local:
+    path: ./mirror
