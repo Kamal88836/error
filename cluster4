@@ -1,16 +1,26 @@
-Events:
-  Type     Reason          Age                      From               Message
-  ----     ------          ----                     ----               -------
-  Normal   Scheduled       68s                      default-scheduler  Successfully assigned openshift-storage/cnpg-controller-manager-685cc9f96d-jk82p to ocp-cp-2.lab1.srib-lab-ocp.lan
-  Normal   AddedInterface  66s                      multus             Add eth0 [10.128.0.43/23 fd01:0:0:1::2b/64] from ovn-kubernetes
-  Warning  Failed          5s                       kubelet            Failed to pull image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7": rpc error: code = DeadlineExceeded desc = unable to pull image or OCI artifact: pull image err: initializing source docker://registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 34.238.32.80:443: i/o timeout; artifact err: get manifest: build image source: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 3.234.77.102:443: i/o timeout
-  Warning  Failed          5s                       kubelet            Error: ErrImagePull
-  Normal   BackOff         5s                       kubelet            Back-off pulling image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7"
-  Warning  Failed          5s                       kubelet            Error: ImagePullBackOff
-  Normal   Pulling         <invalid> (x2 over 66s)  kubelet            Pulling image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7"
-srib@ocp-haproxy-1:~/ocp_4_20$
+Got it 👍 — you **don’t want full catalog (size concern)**, but still need to fix missing ODF images.
 
-[root@bastion mirror_4_20_14]# cat imageset-config_4_20_14.yaml
+So we’ll **keep your YAML mostly same** and just add the **missing dependency explicitly**.
+
+---
+
+# 🔥 Root Issue Recap (important)
+
+Missing image:
+
+```text
+odf-cloudnative-pg-rhel9-operator
+```
+
+👉 This is **NOT included automatically** even though you added ODF packages.
+
+---
+
+# ✅ FIXED YAML (minimal change to YOUR config)
+
+👉 I only added the required missing image in `additionalImages`
+
+```yaml
 apiVersion: mirror.openshift.io/v2alpha1
 kind: ImageSetConfiguration
 
@@ -69,7 +79,7 @@ mirror:
           channels:
             - name: stable-4.20
 
-        #  STORAGE / INFRA
+        # STORAGE
         - name: lvms-operator
           channels:
             - name: stable-4.20
@@ -78,7 +88,7 @@ mirror:
           channels:
             - name: stable
 
-        #  NETWORK / NODE
+        # NETWORK
         - name: kubernetes-nmstate-operator
           channels:
             - name: stable
@@ -91,20 +101,19 @@ mirror:
           channels:
             - name: stable
 
-
-        #  SECURITY
+        # SECURITY / OPTIONAL
         - name: openshift-cert-manager-operator
-
-        #  OPTIONAL (safe)
         - name: cluster-observability-operator
-
         - name: kubernetes-image-registry-operator
 
   additionalImages:
     # CORE RELEASE
     - name: quay.io/openshift-release-dev/ocp-release:4.20.14-x86_64
 
-    # ASE IMAGES
+    # 🔥 CRITICAL FIX (THIS WAS MISSING)
+    - name: registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator:latest
+
+    # BASE IMAGES
     - name: registry.redhat.io/ubi9/ubi:latest
     - name: registry.redhat.io/ubi9/ubi-minimal:latest
     - name: registry.redhat.io/ubi9/ubi-init:latest
@@ -112,5 +121,83 @@ mirror:
     # SUPPORT
     - name: registry.redhat.io/rhel9/support-tools:latest
 
-
   helm: {}
+```
+
+---
+
+# ⚠️ Important note (READ THIS)
+
+👉 Your cluster is using **digest**:
+
+```text
+@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7
+```
+
+But we added:
+
+```yaml
+:latest
+```
+
+👉 This usually works because:
+
+* `oc mirror` pulls full manifest list
+* digest will match internally
+
+---
+
+# 🚀 If still fails (rare case)
+
+Then use exact digest:
+
+```yaml
+- name: registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7
+```
+
+---
+
+# 🚀 Next Steps
+
+1️⃣ Run mirror again
+
+```bash
+oc mirror -c imageset-config.yaml file:///root/mirror_4_20/ --v2
+```
+
+2️⃣ Push to registry
+
+3️⃣ Restart pod
+
+```bash
+oc delete pod -n openshift-storage -l app.kubernetes.io/name=cloudnative-pg
+```
+
+---
+
+# 🎯 Expected Result
+
+```text
+cnpg-controller-manager → Running ✅
+mcg-operator → Succeeded ✅
+Upgrade resumes 🚀
+```
+
+---
+
+# 💬 Honest advice (important)
+
+👉 Your approach (minimal mirror) works BUT:
+
+* You may hit **more missing images later**
+* ODF has many hidden dependencies
+
+👉 If you face next failure → better switch to full catalog
+
+---
+
+If you want, I can help you:
+✅ Find ALL required ODF images (fully optimized small mirror)
+✅ So you avoid trial-and-error
+
+Just tell me 👍
