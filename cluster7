@@ -1,158 +1,33 @@
-Perfect — now I can clearly see the **exact problem** 👇
-
----
-
-# 🚨 Root Cause (confirmed)
-
-Your subscriptions are **mixed between catalogs**:
-
-| Operator     | Source  | Problem |
-| ------------ | ------- | ------- |
-| odf-operator | ✅ v4.20 | OK      |
-| ALL others   | ❌ v4.19 | WRONG   |
-
-Example:
-
-```text
-cephcsi-operator → cs-redhat-operator-index-v4-19 ❌
-mcg-operator     → cs-redhat-operator-index-v4-19 ❌
-rook-ceph        → cs-redhat-operator-index-v4-19 ❌
-```
-
----
-
-# 🔥 Why ODF is stuck
-
-Even though channel is `stable-4.20`:
-
-👉 Source is still **v4.19 catalog**
-
-So OLM cannot find 4.20 bundles for dependencies
-
-➡️ Result:
-
-* No new CSVs created
-* No pods created
-* StorageCluster stuck
-
----
-
-# ✅ FIX (critical step)
-
-👉 You must move ALL subscriptions to:
-
-```text
-cs-redhat-operator-index-v4-20
-```
-
----
-
-# 🚀 Option 1 (Recommended – clean fix)
-
-Delete old subscriptions (safe):
-
-```bash
-oc delete sub -n openshift-storage \
-cephcsi-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
-mcg-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
-ocs-client-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
-ocs-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
-odf-csi-addons-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
-odf-dependencies \
-odf-prometheus-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
-recipe-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
-rook-ceph-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace
-```
-
----
-
-# 🚀 Option 2 (quick patch – faster)
-
-Patch all subscriptions:
-
-```bash
-for i in $(oc get sub -n openshift-storage -o name | grep -v odf-operator); do
-  oc patch $i -n openshift-storage \
-  --type=merge \
-  -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
-done
-```
-
----
-
-# 🔍 After fix — verify
-
-```bash
-oc get sub -n openshift-storage
-```
-
-👉 Expected:
-
-```text
-SOURCE → cs-redhat-operator-index-v4-20 ✅
-```
-
----
-
-# 🚀 What will happen next
-
-Immediately after fix:
-
-```bash
-oc get csv -n openshift-storage -w
-```
-
-👉 You should see:
-
-```text
-rook-ceph-operator.v4.20.x → Installing
-mcg-operator.v4.20.x      → Installing
-ocs-operator.v4.20.x      → Installing
-```
-
----
-
-# 🔥 Then cluster starts
-
-```bash
-oc get storagecluster -n openshift-storage -w
-```
-
-👉 Expected flow:
-
-```text
-Pending → Progressing → Ready ✅
-```
-
----
-
-# ⚠️ Important insight
-
-You hit a **classic disconnected cluster issue**:
-
-👉 Mixing catalog versions = ❌ dependency resolution failure
-
----
-
-# 🧠 Final Summary
-
-| Issue                          | Fix                       |
-| ------------------------------ | ------------------------- |
-| ODF operator upgraded          | ✅                         |
-| Dependencies stuck on 4.19     | ❌                         |
-| StorageCluster not progressing | ❌                         |
-| Fix                            | 👉 Move all subs to v4.20 |
-
----
-
-# ⚡ Next step
-
-👉 Run the **patch loop command** (fastest)
-
-Then send:
-
-```bash
-oc get csv -n openshift-storage
-```
-
-I’ll verify everything is upgrading correctly 👍
+srib@ocp-haproxy-1:~/ocp_4_20$ oc delete sub -n openshift-storage \
+> cephcsi-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
+> mcg-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
+> ocs-client-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
+> ocs-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
+> odf-csi-addons-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
+> odf-dependencies \
+> odf-prometheus-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
+> recipe-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace \
+> rook-ceph-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace
+subscription.operators.coreos.com "cephcsi-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace" deleted
+subscription.operators.coreos.com "mcg-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace" deleted
+subscription.operators.coreos.com "ocs-client-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace" deleted
+subscription.operators.coreos.com "ocs-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace" deleted
+subscription.operators.coreos.com "odf-csi-addons-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace" deleted
+subscription.operators.coreos.com "odf-dependencies" deleted
+subscription.operators.coreos.com "odf-prometheus-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace" deleted
+subscription.operators.coreos.com "recipe-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace" deleted
+subscription.operators.coreos.com "rook-ceph-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace" deleted
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get sub
+NAME               PACKAGE            SOURCE                           CHANNEL
+odf-dependencies   odf-dependencies   cs-redhat-operator-index-v4-20   stable-4.20
+odf-operator       odf-operator       cs-redhat-operator-index-v4-20   stable-4.20
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -n openshift-storage
+NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
+odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get storagecluster -n openshift-storage
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   23m                      2026-03-27T10:13:13Z
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -n openshift-storage
+NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
+odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$
