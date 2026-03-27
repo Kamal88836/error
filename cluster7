@@ -1,0 +1,29 @@
+srib@ocp-haproxy-1:~/ocp_4_20$ oc patch storagecluster ocs-storagecluster \
+> -n openshift-storage \
+> --type=merge -p '{"metadata":{"finalizers":[]}}'
+storagecluster.ocs.openshift.io/ocs-storagecluster patched
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get storagecluster -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get storagecluster -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_20$ oc patch cephcluster ocs-storagecluster-cephcluster \
+> -n openshift-storage \
+> --type=merge -p '{"metadata":{"finalizers":[]}}'
+Error from server (NotFound): cephclusters.ceph.rook.io "ocs-storagecluster-cephcluster" not found
+srib@ocp-haproxy-1:~/ocp_4_20$ oc patch storagecluster ocs-storagecluster \
+> -n openshift-storage \
+> --type=merge -p '{"metadata":{"finalizers":["storagecluster.ocs.openshift.io"]}}'
+Error from server (NotFound): storageclusters.ocs.openshift.io "ocs-storagecluster" not found
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.19.12-rhodf          CephCSI operator                   4.19.12-rhodf   cephcsi-operator.v4.19.11-rhodf          Succeeded
+mcg-operator.v4.19.12-rhodf              NooBaa Operator                    4.19.12-rhodf   mcg-operator.v4.19.11-rhodf              Succeeded
+ocs-client-operator.v4.19.12-rhodf       OpenShift Data Foundation Client   4.19.12-rhodf   ocs-client-operator.v4.19.11-rhodf       Succeeded
+ocs-operator.v4.19.12-rhodf              OpenShift Container Storage        4.19.12-rhodf   ocs-operator.v4.19.11-rhodf              Succeeded
+odf-csi-addons-operator.v4.19.12-rhodf   CSI Addons                         4.19.12-rhodf   odf-csi-addons-operator.v4.19.11-rhodf   Succeeded
+odf-dependencies.v4.19.12-rhodf          Data Foundation Dependencies       4.19.12-rhodf   odf-dependencies.v4.19.11-rhodf          Succeeded
+odf-operator.v4.20.7-rhodf               OpenShift Data Foundation          4.20.7-rhodf    odf-operator.v4.19.12-rhodf              Succeeded
+odf-prometheus-operator.v4.19.12-rhodf   Prometheus Operator                4.19.12-rhodf   odf-prometheus-operator.v4.19.11-rhodf   Succeeded
+recipe.v4.19.12-rhodf                    Recipe                             4.19.12-rhodf   recipe.v4.19.11-rhodf                    Succeeded
+rook-ceph-operator.v4.19.12-rhodf        Rook-Ceph                          4.19.12-rhodf   rook-ceph-operator.v4.19.11-rhodf        Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$
