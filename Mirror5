@@ -1,208 +1,162 @@
-Good — now I’ll **translate those Red Hat articles into exact actionable steps for YOUR cluster** (not generic theory).
-
----
-
-# 📘 What those articles actually say (simplified)
-
-From:
-
-* [Preparing to upgrade to OpenShift 4.20](https://access.redhat.com/articles/7130599?utm_source=chatgpt.com)
-* [Navigating Kubernetes API deprecations](https://access.redhat.com/articles/6955985?utm_source=chatgpt.com)
-
-### 🔑 Core requirement
-
-Before upgrade:
-
-> ❗ You must **remove ALL usage of removed APIs**, not just acknowledge
-> ❗ Otherwise upgrade is **BLOCKED by CVO** ([docs.okd.io][1])
-
----
-
-# 🚨 YOUR EXACT ISSUE (mapped to article)
-
-From your logs:
-
-```text
-v1beta1 admissionregistration APIs still used
-```
-
-From Red Hat:
-
-👉 Removed in 4.20:
-
-* `admissionregistration.k8s.io/v1beta1` ❌
-* Must use: `v1` ✅ ([docs.redhat.com][2])
-
----
-
-# ❌ Why your upgrade is stuck
-
-Even though:
-
-✔ admin-ack = true
-❌ still blocked
-
-Because:
-
-> OpenShift detects **real usage of deprecated API (webhooks)**
-> → blocks upgrade intentionally
-
----
-
-# 🧠 IMPORTANT (from article 6955985)
-
-Red Hat clearly says:
-
-> OpenShift **cannot automatically detect all usage**
-> → admin must manually fix it ([Red Hat Customer Portal][3])
-
-👉 That is exactly your case
-
----
-
-# 🚀 REAL SOLUTION (based on articles + your cluster)
-
-## 🔥 STEP 1 — Identify actual objects (YOU ALREADY DID)
-
-You found:
-
-```text
-mutatingwebhookconfigurations → v1beta1 ❌
-validatingwebhookconfigurations → v1beta1 ❌
-```
-
-👉 This is the blocker
-
----
-
-# 🔧 STEP 2 — FIX (MANDATORY)
-
-## ✔ Convert webhook to v1
-
-👉 Red Hat recommendation = **migrate API version**
-
-So do:
-
-```bash
-oc get mutatingwebhookconfiguration <name> -o yaml
-```
-
-Find:
-
-```yaml
-admissionReviewVersions:
-- v1beta1
-```
-
----
-
-## ✏️ PATCH TO v1
-
-```bash
-oc patch mutatingwebhookconfiguration <name> \
---type='json' \
--p='[{"op":"replace","path":"/webhooks/0/admissionReviewVersions","value":["v1"]}]'
-```
-
----
-
-## 🔁 Repeat for ALL webhooks
-
-Do same for:
-
-```bash
-oc get validatingwebhookconfiguration
-```
-
----
-
-# ⚠️ IMPORTANT (from article)
-
-> You must migrate ALL objects using removed APIs ([docs.okd.io][1])
-
-👉 So:
-
-* Not just 1 webhook
-* ALL must be fixed
-
----
-
-# 🧨 STEP 3 — Restart CVO
-
-```bash
-oc delete pod -n openshift-cluster-version -l app=cluster-version-operator
-```
-
----
-
-# 🔁 STEP 4 — Re-run upgrade
-
-```bash
-oc adm upgrade \
---allow-explicit-upgrade \
---allow-upgrade-with-warnings \
---to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
-```
-
----
-
-# ✅ EXPECTED RESULT
-
-```bash
-oc get clusterversion
-```
-
-You should see:
-
-```text
-Progressing=True  ✅
-```
-
----
-
-# 🧠 EXTRA (VERY IMPORTANT)
-
-From your cluster:
-
-```text
-machine.openshift.io
-cluster.x-k8s.io
-metal3
-```
-
-👉 These are managed by operators
-
-💡 So BEST long-term fix:
-
-* Upgrade operators (ODF / machine API)
-* OR patch temporarily (your case)
-
----
-
-# 🏁 FINAL CONCLUSION
-
-👉 Based on Red Hat articles:
-
-| Requirement       | Your status |
-| ----------------- | ----------- |
-| Admin ack         | ✅ Done      |
-| Removed API usage | ❌ NOT fixed |
-| Upgrade blocked   | ❌ Expected  |
-
----
-
-# 🚀 Next (I can make it EASY)
-
-Paste:
-
-```bash
-oc get mutatingwebhookconfigurations
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mutatingwebhookconfiguration
+NAME                                      WEBHOOKS   AGE
+catalogd-mutating-webhook-configuration   1          27d
+csv.odf.openshift.io                      1          46h
+machine-api                               2          27d
+machine-api-metal3-remediation            2          27d
+mbackup.cnpg.io-cvqgj                     1          40h
+mcluster.cnpg.io-hkcbp                    1          40h
+mdatabase.cnpg.io-n7zz6                   1          40h
+mscheduledbackup.cnpg.io-8jnb9            1          40h
+network-resources-injector-config         1          26d
+nmstate                                   5          26d
+sriov-operator-webhook-config             1          26d
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mutatingwebhookconfiguration catalogd-mutating-webhook-configuration -o yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    service.beta.openshift.io/inject-cabundle: "true"
+  creationTimestamp: "2026-02-27T18:13:01Z"
+  generation: 2
+  name: catalogd-mutating-webhook-configuration
+  resourceVersion: "7994"
+  uid: 0560d910-3348-452a-a825-d213383fc1e8
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURVVENDQWptZ0F3SUJBZ0lJUEV0Z1BEWFlRejB3RFFZSktvWklodmNOQVFFTEJRQXdOakUwTURJR0ExVUUKQXd3cmIzQmxibk5vYVdaMExYTmxjblpwWTJVdGMyVnlkbWx1WnkxemFXZHVaWEpBTVRjM01qSXhOVGs0TXpBZQpGdzB5TmpBeU1qY3hPREV6TURKYUZ3MHlPREEwTWpjeE9ERXpNRE5hTURZeE5EQXlCZ05WQkFNTUsyOXdaVzV6CmFHbG1kQzF6WlhKMmFXTmxMWE5sY25acGJtY3RjMmxuYm1WeVFERTNOekl5TVRVNU9ETXdnZ0VpTUEwR0NTcUcKU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRRFJKejBkb3lvbFJzMUI0MDVNeHVxVHpNaUdjcWJBWDhyNwprbWFFblB1aVg1ODB0VlJpQWpoY1F5Tkk3R0VVMTFSeFBaVUhMdkd6SXV0NGhlS0JuczJFV0xhZ0pyOGhmU25HCnBmZlhNVHlIOEplV1hEZnU1NC9ER1MwWkFxaUNzZnl2UEkvT3ppN2Q4MDYvbHdlMFJYbTBxS1hDeExNRS84WlIKd0w1N0R2UkhIOE8va0d4cHpud05xNzVCU0wzWWNVWGp6THJ4Vkd2NXhuVy9jcEtFWXZBelZSYTNnYzBaVlhtaApoSVVmbWR3aWN6a0xUemhqUElOcC9vMVBKR1l4UkQybU1teVhzMHpnMnJUTHQ0QW80cDJZeHR6ZDF3WGFCUjZBCkY4MW4vaXdxNmFZcWJqQllVSnFVd3VqM2s5SDJjVE5XK1BON2dHNXdXNWlMS3VqT25MZFZBZ01CQUFHall6QmgKTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVdCQlRGMjY5TApidXdRTmErUGtMZCtNYk4rZEd1bHBEQWZCZ05WSFNNRUdEQVdnQlRGMjY5TGJ1d1FOYStQa0xkK01iTitkR3VsCnBEQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFJK1Qrb3dsbC9YeFhiNGVEU1BuY3FhKzhxYi9jUHQ5RG1tYWwKbFh4NFBvdk9oV0R2NGdiZjg3RGdHRWtpL0hLWUsvVHdsa0krUTVRZnkvL0xqNzBTWGJUSFZvaWxWcWxpRkVCbQpjZEx0NnNOMjVKYk9qRFpOL3RaVlc0MzgwTW5Ka1pTVnBlMWZCMEhWTWJqaUZROVVPTklrVUZFZmlIa1JvRFdVClk5d01vSjhyY0szaE5DWUNrTDhGaU1ZWnQvckpqM29vQWVuMWtWeTd6OXJQdURJWk5MS3pZSGVmVXVqKzMraksKRmFVZThaOEJycm5nVzd4dGp4aGRkODVPUk5OVzdrbW4zUWM0M1FCdDM3RzdqYkE0MDdpNWY1WHM3aUhVa3ZLUQpMVHlhUThuR1F1ZmJXbGh2a3JTZG5NWTJlRUtWT1JQcWFWYWVFWGFBY2FNeGpYMUhHZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    service:
+      name: catalogd-service
+      namespace: openshift-catalogd
+      path: /mutate-olm-operatorframework-io-v1-clustercatalog
+      port: 9443
+  failurePolicy: Fail
+  matchConditions:
+  - expression: '''name'' in object.metadata && (!has(object.metadata.labels) || !(''olm.operatorframework.io/metadata.name''
+      in object.metadata.labels) || object.metadata.labels[''olm.operatorframework.io/metadata.name'']
+      != object.metadata.name)'
+    name: MissingOrIncorrectMetadataNameLabel
+  matchPolicy: Equivalent
+  name: inject-metadata-name.olm.operatorframework.io
+  namespaceSelector: {}
+  objectSelector: {}
+  reinvocationPolicy: Never
+  rules:
+  - apiGroups:
+    - olm.operatorframework.io
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - clustercatalogs
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mutatingwebhookconfiguration machine-api -o yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    service.beta.openshift.io/inject-cabundle: "true"
+  creationTimestamp: "2026-02-27T18:13:59Z"
+  generation: 2
+  name: machine-api
+  resourceVersion: "10905"
+  uid: 2d149e5f-9712-491b-a8a9-fc2640232ef4
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURVVENDQWptZ0F3SUJBZ0lJUEV0Z1BEWFlRejB3RFFZSktvWklodmNOQVFFTEJRQXdOakUwTURJR0ExVUUKQXd3cmIzQmxibk5vYVdaMExYTmxjblpwWTJVdGMyVnlkbWx1WnkxemFXZHVaWEpBTVRjM01qSXhOVGs0TXpBZQpGdzB5TmpBeU1qY3hPREV6TURKYUZ3MHlPREEwTWpjeE9ERXpNRE5hTURZeE5EQXlCZ05WQkFNTUsyOXdaVzV6CmFHbG1kQzF6WlhKMmFXTmxMWE5sY25acGJtY3RjMmxuYm1WeVFERTNOekl5TVRVNU9ETXdnZ0VpTUEwR0NTcUcKU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRRFJKejBkb3lvbFJzMUI0MDVNeHVxVHpNaUdjcWJBWDhyNwprbWFFblB1aVg1ODB0VlJpQWpoY1F5Tkk3R0VVMTFSeFBaVUhMdkd6SXV0NGhlS0JuczJFV0xhZ0pyOGhmU25HCnBmZlhNVHlIOEplV1hEZnU1NC9ER1MwWkFxaUNzZnl2UEkvT3ppN2Q4MDYvbHdlMFJYbTBxS1hDeExNRS84WlIKd0w1N0R2UkhIOE8va0d4cHpud05xNzVCU0wzWWNVWGp6THJ4Vkd2NXhuVy9jcEtFWXZBelZSYTNnYzBaVlhtaApoSVVmbWR3aWN6a0xUemhqUElOcC9vMVBKR1l4UkQybU1teVhzMHpnMnJUTHQ0QW80cDJZeHR6ZDF3WGFCUjZBCkY4MW4vaXdxNmFZcWJqQllVSnFVd3VqM2s5SDJjVE5XK1BON2dHNXdXNWlMS3VqT25MZFZBZ01CQUFHall6QmgKTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVdCQlRGMjY5TApidXdRTmErUGtMZCtNYk4rZEd1bHBEQWZCZ05WSFNNRUdEQVdnQlRGMjY5TGJ1d1FOYStQa0xkK01iTitkR3VsCnBEQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFJK1Qrb3dsbC9YeFhiNGVEU1BuY3FhKzhxYi9jUHQ5RG1tYWwKbFh4NFBvdk9oV0R2NGdiZjg3RGdHRWtpL0hLWUsvVHdsa0krUTVRZnkvL0xqNzBTWGJUSFZvaWxWcWxpRkVCbQpjZEx0NnNOMjVKYk9qRFpOL3RaVlc0MzgwTW5Ka1pTVnBlMWZCMEhWTWJqaUZROVVPTklrVUZFZmlIa1JvRFdVClk5d01vSjhyY0szaE5DWUNrTDhGaU1ZWnQvckpqM29vQWVuMWtWeTd6OXJQdURJWk5MS3pZSGVmVXVqKzMraksKRmFVZThaOEJycm5nVzd4dGp4aGRkODVPUk5OVzdrbW4zUWM0M1FCdDM3RzdqYkE0MDdpNWY1WHM3aUhVa3ZLUQpMVHlhUThuR1F1ZmJXbGh2a3JTZG5NWTJlRUtWT1JQcWFWYWVFWGFBY2FNeGpYMUhHZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    service:
+      name: machine-api-operator-webhook
+      namespace: openshift-machine-api
+      path: /mutate-machine-openshift-io-v1beta1-machine
+      port: 443
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: default.machine.machine.openshift.io
+  namespaceSelector: {}
+  objectSelector: {}
+  reinvocationPolicy: Never
+  rules:
+  - apiGroups:
+    - machine.openshift.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    resources:
+    - machines
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURVVENDQWptZ0F3SUJBZ0lJUEV0Z1BEWFlRejB3RFFZSktvWklodmNOQVFFTEJRQXdOakUwTURJR0ExVUUKQXd3cmIzQmxibk5vYVdaMExYTmxjblpwWTJVdGMyVnlkbWx1WnkxemFXZHVaWEpBTVRjM01qSXhOVGs0TXpBZQpGdzB5TmpBeU1qY3hPREV6TURKYUZ3MHlPREEwTWpjeE9ERXpNRE5hTURZeE5EQXlCZ05WQkFNTUsyOXdaVzV6CmFHbG1kQzF6WlhKMmFXTmxMWE5sY25acGJtY3RjMmxuYm1WeVFERTNOekl5TVRVNU9ETXdnZ0VpTUEwR0NTcUcKU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRRFJKejBkb3lvbFJzMUI0MDVNeHVxVHpNaUdjcWJBWDhyNwprbWFFblB1aVg1ODB0VlJpQWpoY1F5Tkk3R0VVMTFSeFBaVUhMdkd6SXV0NGhlS0JuczJFV0xhZ0pyOGhmU25HCnBmZlhNVHlIOEplV1hEZnU1NC9ER1MwWkFxaUNzZnl2UEkvT3ppN2Q4MDYvbHdlMFJYbTBxS1hDeExNRS84WlIKd0w1N0R2UkhIOE8va0d4cHpud05xNzVCU0wzWWNVWGp6THJ4Vkd2NXhuVy9jcEtFWXZBelZSYTNnYzBaVlhtaApoSVVmbWR3aWN6a0xUemhqUElOcC9vMVBKR1l4UkQybU1teVhzMHpnMnJUTHQ0QW80cDJZeHR6ZDF3WGFCUjZBCkY4MW4vaXdxNmFZcWJqQllVSnFVd3VqM2s5SDJjVE5XK1BON2dHNXdXNWlMS3VqT25MZFZBZ01CQUFHall6QmgKTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVdCQlRGMjY5TApidXdRTmErUGtMZCtNYk4rZEd1bHBEQWZCZ05WSFNNRUdEQVdnQlRGMjY5TGJ1d1FOYStQa0xkK01iTitkR3VsCnBEQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFJK1Qrb3dsbC9YeFhiNGVEU1BuY3FhKzhxYi9jUHQ5RG1tYWwKbFh4NFBvdk9oV0R2NGdiZjg3RGdHRWtpL0hLWUsvVHdsa0krUTVRZnkvL0xqNzBTWGJUSFZvaWxWcWxpRkVCbQpjZEx0NnNOMjVKYk9qRFpOL3RaVlc0MzgwTW5Ka1pTVnBlMWZCMEhWTWJqaUZROVVPTklrVUZFZmlIa1JvRFdVClk5d01vSjhyY0szaE5DWUNrTDhGaU1ZWnQvckpqM29vQWVuMWtWeTd6OXJQdURJWk5MS3pZSGVmVXVqKzMraksKRmFVZThaOEJycm5nVzd4dGp4aGRkODVPUk5OVzdrbW4zUWM0M1FCdDM3RzdqYkE0MDdpNWY1WHM3aUhVa3ZLUQpMVHlhUThuR1F1ZmJXbGh2a3JTZG5NWTJlRUtWT1JQcWFWYWVFWGFBY2FNeGpYMUhHZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    service:
+      name: machine-api-operator-webhook
+      namespace: openshift-machine-api
+      path: /mutate-machine-openshift-io-v1beta1-machineset
+      port: 443
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: default.machineset.machine.openshift.io
+  namespaceSelector: {}
+  objectSelector: {}
+  reinvocationPolicy: Never
+  rules:
+  - apiGroups:
+    - machine.openshift.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    resources:
+    - machinesets
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get mutatingwebhookconfigurations
 oc get validatingwebhookconfigurations
-```
-
-👉 I will give **exact patch commands per webhook (copy-paste ready)**
-(no trial/error, direct fix)
-
-[1]: https://docs.okd.io/4.20/updating/preparing_for_updates/updating-cluster-prepare.html?utm_source=chatgpt.com "Preparing to update a cluster - OKD 4.20"
-[2]: https://docs.redhat.com/es/documentation/openshift_container_platform/4.20/html/updating_clusters/preparing-to-update-a-cluster?utm_source=chatgpt.com "Chapter 2. Preparing to update a cluster"
-[3]: https://access.redhat.com/articles/6955985?utm_source=chatgpt.com "Navigating Kubernetes API deprecations and removals"
+NAME                                      WEBHOOKS   AGE
+catalogd-mutating-webhook-configuration   1          27d
+csv.odf.openshift.io                      1          46h
+machine-api                               2          27d
+machine-api-metal3-remediation            2          27d
+mbackup.cnpg.io-cvqgj                     1          40h
+mcluster.cnpg.io-hkcbp                    1          40h
+mdatabase.cnpg.io-n7zz6                   1          40h
+mscheduledbackup.cnpg.io-8jnb9            1          40h
+network-resources-injector-config         1          26d
+nmstate                                   5          26d
+sriov-operator-webhook-config             1          26d
+NAME                                                  WEBHOOKS   AGE
+admissionwebhook.noobaa.io-vqkx5                      1          40h
+alertmanagerconfigs.openshift.io                      1          27d
+autoscaling.openshift.io                              2          27d
+baremetal-operator-validating-webhook-configuration   2          27d
+cluster-baremetal-validating-webhook-configuration    1          27d
+controlplanemachineset.machine.openshift.io           1          27d
+machine-api                                           2          27d
+machine-api-metal3-remediation                        2          27d
+monitoringconfigmaps.openshift.io                     1          27d
+multus.openshift.io                                   1          27d
+network-node-identity.openshift.io                    2          27d
+performance-addon-operator                            1          27d
+prometheusrules.openshift.io                          1          27d
+sriov-operator-webhook-config                         1          26d
+subscription.ocs.openshift.io                         1          40h
+vbackup.cnpg.io-k6wqx                                 1          40h
+vcluster.cnpg.io-qjrlt                                1          40h
+vdatabase.cnpg.io-8xldt                               1          40h
+vpooler.cnpg.io-75jfp                                 1          40h
+vptpconfig.kb.io-wl58w                                1          40h
+vptpoperatorconfig.kb.io-jtrz7                        1          40h
+vscheduledbackup.cnpg.io-btss4                        1          40h
+srib@ocp-haproxy-1:~/ocp_4_20$
