@@ -1,195 +1,165 @@
-Excellent — now we have **exact smoking gun** 🔥
-
----
-
-# 🚨 ROOT CAUSE (100% confirmed)
-
-From your YAML:
-
-```yaml
-rules:
-  apiVersions:
-  - v1beta1   ❌
-```
-
-👉 Specifically:
-
-### ❌ Problematic webhook:
-
-* `machine-api`
-* `machine-api-metal3-remediation` (also similar)
-
-👉 These are using:
-
-```text
-machine.openshift.io/v1beta1
-```
-
----
-
-# ⚠️ Why upgrade is blocked
-
-Even though:
-
-* admin-ack ✅
-* signatures ✅
-
-👉 **CVO detects this:**
-
-> ❌ Webhooks still referencing removed API (v1beta1)
-
-So upgrade is **intentionally blocked**
-
----
-
-# ✅ SOLUTION (based on Red Hat guidance)
-
-We must **remove v1beta1 usage from webhooks**
-
----
-
-# 🚀 FIX — EXACT COMMANDS (copy-paste)
-
-## 🔥 STEP 1 — FIX `machine-api` webhook
-
-Run:
-
-```bash
-oc patch mutatingwebhookconfiguration machine-api \
+srib@ocp-haproxy-1:~/ocp_4_20$ oc patch mutatingwebhookconfiguration machine-api \
 --type='json' \
 -p='[
 {"op":"replace","path":"/webhooks/0/rules/0/apiVersions","value":["v1"]},
 {"op":"replace","path":"/webhooks/1/rules/0/apiVersions","value":["v1"]}
 ]'
-```
-
----
-
-## 🔥 STEP 2 — FIX `machine-api-metal3-remediation`
-
-```bash
-oc patch mutatingwebhookconfiguration machine-api-metal3-remediation \
+mutatingwebhookconfiguration.admissionregistration.k8s.io/machine-api patched
+srib@ocp-haproxy-1:~/ocp_4_20$ oc patch mutatingwebhookconfiguration machine-api-metal3-remediation \
 --type='json' \
 -p='[
 {"op":"replace","path":"/webhooks/0/rules/0/apiVersions","value":["v1"]},
 {"op":"replace","path":"/webhooks/1/rules/0/apiVersions","value":["v1"]}
 ]'
-```
-
----
-
-## 🔥 STEP 3 — FIX validating webhooks too
-
-```bash
-oc patch validatingwebhookconfiguration machine-api \
+mutatingwebhookconfiguration.admissionregistration.k8s.io/machine-api-metal3-remediation patched
+srib@ocp-haproxy-1:~/ocp_4_20$ oc patch validatingwebhookconfiguration machine-api \
 --type='json' \
 -p='[
 {"op":"replace","path":"/webhooks/0/rules/0/apiVersions","value":["v1"]},
 {"op":"replace","path":"/webhooks/1/rules/0/apiVersions","value":["v1"]}
 ]'
-```
-
----
-
-```bash
-oc patch validatingwebhookconfiguration machine-api-metal3-remediation \
+validatingwebhookconfiguration.admissionregistration.k8s.io/machine-api patched
+srib@ocp-haproxy-1:~/ocp_4_20$ oc patch validatingwebhookconfiguration machine-api-metal3-remediation \
 --type='json' \
 -p='[
 {"op":"replace","path":"/webhooks/0/rules/0/apiVersions","value":["v1"]},
 {"op":"replace","path":"/webhooks/1/rules/0/apiVersions","value":["v1"]}
 ]'
-```
-
----
-
-# 🧠 WHY THIS WORKS
-
-From Red Hat article:
-
-> You must migrate API usage to supported versions
-
-👉 We are doing exactly that:
-
-* `v1beta1` ❌ → `v1` ✅
-
----
-
-# 🔁 STEP 4 — Restart CVO
-
-```bash
-oc delete pod -n openshift-cluster-version -l app=cluster-version-operator
-```
-
----
-
-# 🔍 STEP 5 — Verify
-
-```bash
-oc describe clusterversion
-```
-
-👉 Check:
-
-```text
-Upgradeable: True  ✅
-ReleaseAccepted: True ✅
-```
-
----
-
-# 🚀 STEP 6 — Trigger upgrade
-
-```bash
-oc adm upgrade \
---allow-explicit-upgrade \
---allow-upgrade-with-warnings \
---to-image=bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
-```
-
----
-
-# ⚠️ IMPORTANT WARNING
-
-👉 This is **safe workaround**, but:
-
-* These webhooks are managed by operators
-* They may revert later
-
-💡 Proper fix (later):
-
-* Upgrade Machine API / Metal3 operators
-
----
-
-# 🏁 FINAL RESULT
-
-After fix:
-
-```bash
-oc get clusterversion
-```
-
-You should see:
-
-```text
-Progressing=True  🚀
-```
-
----
-
-# 🚀 If still blocked
-
-Then next suspects:
-
-* validating webhooks (ODF / Ceph)
-* CNPG webhooks (you have many)
-
-👉 I can guide next layer also
-
----
-
-# 💬 Do this now
-
-Run the 4 patch commands → paste result
-
-I’ll confirm **upgrade will start or next fix** ✅
+validatingwebhookconfiguration.admissionregistration.k8s.io/machine-api-metal3-remediation patched
+srib@ocp-haproxy-1:~/ocp_4_20$ oc delete pod -n openshift-cluster-version -l app=cluster-version-operator
+No resources found
+srib@ocp-haproxy-1:~/ocp_4_20$ oc describe clusterversion
+Name:         version
+Namespace:
+Labels:       <none>
+Annotations:  <none>
+API Version:  config.openshift.io/v1
+Kind:         ClusterVersion
+Metadata:
+  Creation Timestamp:  2026-02-27T17:50:06Z
+  Generation:          10
+  Resource Version:    15126708
+  UID:                 ed02d0f1-f2bf-44d8-ba4d-1d48cd16647a
+Spec:
+  Capabilities:
+    Additional Enabled Capabilities:
+    Baseline Capability Set:  None
+  Channel:                    stable-4.20
+  Cluster ID:                 63837200-ea8f-437a-834a-49f8d7d36dac
+  Desired Update:
+    Architecture:
+    Force:         false
+    Image:         bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+    Version:
+Status:
+  Available Updates:  <nil>
+  Capabilities:
+    Enabled Capabilities:
+      Build
+      CSISnapshot
+      CloudControllerManager
+      CloudCredential
+      Console
+      DeploymentConfig
+      ImageRegistry
+      Ingress
+      Insights
+      MachineAPI
+      NodeTuning
+      OperatorLifecycleManager
+      OperatorLifecycleManagerV1
+      Storage
+      baremetal
+      marketplace
+      openshift-samples
+    Known Capabilities:
+      Build
+      CSISnapshot
+      CloudControllerManager
+      CloudCredential
+      Console
+      DeploymentConfig
+      ImageRegistry
+      Ingress
+      Insights
+      MachineAPI
+      NodeTuning
+      OperatorLifecycleManager
+      OperatorLifecycleManagerV1
+      Storage
+      baremetal
+      marketplace
+      openshift-samples
+  Conditions:
+    Last Transition Time:  2026-03-25T05:33:20Z
+    Message:               The following capabilities could not be disabled: Build, CSISnapshot, CloudControllerManager, CloudCredential, Console, DeploymentConfig, ImageRegistry, Ingress, Insights, MachineAPI, NodeTuning, OperatorLifecycleManager, OperatorLifecycleManagerV1, Storage, baremetal, marketplace, openshift-samples
+    Reason:                CapabilitiesImplicitlyEnabled
+    Status:                True
+    Type:                  ImplicitlyEnabledCapabilities
+    Last Transition Time:  2026-03-27T03:56:38Z
+    Message:               Payload loaded version="4.20.14" image="bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566" architecture="amd64"
+    Reason:                PayloadLoaded
+    Status:                True
+    Type:                  ReleaseAccepted
+    Last Transition Time:  2026-02-27T18:38:28Z
+    Message:               Done applying 4.19.23
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  2026-03-27T03:56:38Z
+    Status:                False
+    Type:                  Failing
+    Last Transition Time:  2026-03-27T03:56:38Z
+    Message:               Working towards 4.20.14: 142 of 959 done (14% complete), waiting on kube-scheduler
+    Reason:                ClusterOperatorUpdating
+    Status:                True
+    Type:                  Progressing
+    Last Transition Time:  2026-02-27T17:50:26Z
+    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.20&id=63837200-ea8f-437a-834a-49f8d7d36dac&version=4.20.14": dial tcp 98.88.147.59:443: connect: connection timed out
+    Reason:                RemoteFailed
+    Status:                False
+    Type:                  RetrievedUpdates
+    Last Transition Time:  2026-03-27T03:56:38Z
+    Message:               Cluster should not be upgraded between minor versions for multiple reasons: KubeletMinorVersion_KubeletMinorVersionUnsupportedNextUpgrade,UpdateInProgress
+* Cluster operator kube-apiserver should not be upgraded between minor versions: KubeletMinorVersionUpgradeable: Kubelet minor versions on nodes ocp-cp-1.lab1.srib-lab-ocp.lan, ocp-cp-2.lab1.srib-lab-ocp.lan, and ocp-cp-3.lab1.srib-lab-ocp.lan will not be supported in the next OpenShift minor version upgrade.
+* An update is already in progress and the details are in the Progressing condition
+    Reason:                MultipleReasons
+    Status:                False
+    Type:                  Upgradeable
+    Last Transition Time:  2026-03-27T03:59:18Z
+    Message:               Cluster operator kube-apiserver should not be upgraded between minor versions: KubeletMinorVersionUpgradeable: Kubelet minor versions on nodes ocp-cp-1.lab1.srib-lab-ocp.lan, ocp-cp-2.lab1.srib-lab-ocp.lan, and ocp-cp-3.lab1.srib-lab-ocp.lan will not be supported in the next OpenShift minor version upgrade.
+    Reason:                KubeletMinorVersion_KubeletMinorVersionUnsupportedNextUpgrade
+    Status:                False
+    Type:                  UpgradeableClusterOperators
+    Last Transition Time:  2026-03-27T03:59:18Z
+    Message:               An update is already in progress and the details are in the Progressing condition
+    Reason:                UpdateInProgress
+    Status:                True
+    Type:                  UpgradeableUpgradeInProgress
+  Desired:
+    Image:    bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+    URL:      https://access.redhat.com/errata/RHSA-2026:2119
+    Version:  4.20.14
+  History:
+    Accepted Risks:     Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.19.23 to 4.20.14 is unknown.
+    Completion Time:    <nil>
+    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+    Started Time:       2026-03-27T03:56:38Z
+    State:              Partial
+    Verified:           true
+    Version:            4.20.14
+    Completion Time:    2026-03-24T17:53:56Z
+    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
+    Started Time:       2026-03-24T10:37:10Z
+    State:              Completed
+    Verified:           true
+    Version:            4.19.23
+    Completion Time:    2026-02-27T18:38:28Z
+    Image:              quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+    Started Time:       2026-02-27T17:50:26Z
+    State:              Completed
+    Verified:           false
+    Version:            4.18.23
+  Observed Generation:  10
+  Version Hash:         gHTwjSvYZs8=
+Events:                 <none>
+srib@ocp-haproxy-1:~/ocp_4_20$
