@@ -1,239 +1,132 @@
-Good — now I clearly see your **real concern 👍**
-
-👉 **ODF is NOT upgrading to 4.20**, even though:
-
-* You switched catalog ✅
-* Pods are running ✅
-* Cluster upgraded partially ❗
-
----
-
-# 🎯 Root Cause (from your data)
-
-From your `oc get csv`:
-
-```text
-odf-operator.v4.19.12-rhodf
-ocs-operator.v4.19.12-rhodf
-mcg-operator.v4.19.12-rhodf
-```
-
-👉 Still **4.19 (rhodf)** → NOT upgraded
-
----
-
-# 🔥 Why ODF is NOT upgrading
-
-👉 **Because Subscription is not pointing correctly OR channel mismatch**
-
-You only patched:
-
-```bash
-odf-operator ✅
-```
-
-But ODF stack includes multiple components:
-
-### ⚠️ Important
-
-ODF upgrade depends on **Subscription**, not CSV
-
----
-
-# 🔍 Step 1 — Check subscriptions
-
-Run:
-
-```bash
-oc get sub -n openshift-storage
-```
-
-👉 You will likely see:
-
-* odf-operator
-* (maybe) ocs-client
-* BUT **NOT separate mcg / ocs subs**
-
----
-
-# 💥 Key Understanding
-
-👉 In newer ODF:
-
-| Component        | Controlled by      |
-| ---------------- | ------------------ |
-| odf-operator     | Subscription       |
-| mcg / ocs / rook | Managed internally |
-
-❗ So you **DON'T patch mcg/ocs separately**
-
----
-
-# 🚨 Your Issue
-
-Even though you patched:
-
-```bash
-oc patch sub odf-operator ...
-```
-
-👉 It shows:
-
-```text
-patched (no change)
-```
-
-Meaning:
-
-> ⚠️ Already pointing to correct catalog
-> BUT still not upgrading
-
----
-
-# 🔥 REAL ROOT CAUSE
-
-👉 Your ODF is stuck because:
-
-```text
-channel is still 4.19
-```
-
----
-
-# 🔍 Step 2 — Verify channel
-
-Run:
-
-```bash
-oc get sub odf-operator -n openshift-storage -o yaml
-```
-
-Check:
-
-```yaml
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get sub -n openshift-storage
+NAME                                                                                       PACKAGE                   SOURCE                           CHANNEL
+cephcsi-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace          cephcsi-operator          cs-redhat-operator-index-v4-19   stable-4.19
+mcg-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace              mcg-operator              cs-redhat-operator-index-v4-19   stable-4.19
+ocs-client-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace       ocs-client-operator       cs-redhat-operator-index-v4-19   stable-4.19
+ocs-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace              ocs-operator              cs-redhat-operator-index-v4-19   stable-4.19
+odf-csi-addons-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace   odf-csi-addons-operator   cs-redhat-operator-index-v4-19   stable-4.19
+odf-dependencies                                                                           odf-dependencies          cs-redhat-operator-index-v4-19   stable-4.19
+odf-operator                                                                               odf-operator              cs-redhat-operator-index-v4-20   stable-4.19
+odf-prometheus-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace   odf-prometheus-operator   cs-redhat-operator-index-v4-19   stable-4.19
+recipe-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace                    recipe                    cs-redhat-operator-index-v4-19   stable-4.19
+rook-ceph-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace        rook-ceph-operator        cs-redhat-operator-index-v4-19   stable-4.19
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get sub odf-operator -n openshift-storage -o yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"operators.coreos.com/v1alpha1","kind":"Subscription","metadata":{"annotations":{},"name":"odf-operator","namespace":"openshift-storage"},"spec":{"channel":"stable-4.19","installPlanApproval":"Automatic","name":"odf-operator","source":"cs-redhat-operator-index-v4-19","sourceNamespace":"openshift-marketplace"}}
+  creationTimestamp: "2026-03-25T11:36:12Z"
+  generation: 2
+  labels:
+    operators.coreos.com/odf-operator.openshift-storage: ""
+  name: odf-operator
+  namespace: openshift-storage
+  resourceVersion: "15291044"
+  uid: 093202a8-8ed2-4e12-b82b-47f755d0751a
 spec:
-  channel: ?
-```
-
----
-
-# ❗ If you see:
-
-```yaml
-channel: stable-4.19
-```
-
-👉 THIS is the problem
-
----
-
-# ✅ Fix (IMPORTANT)
-
-Patch channel to 4.20:
-
-```bash
-oc patch sub odf-operator -n openshift-storage \
---type=merge -p '{"spec":{"channel":"stable-4.20"}}'
-```
-
----
-
-# 🔄 Then watch upgrade
-
-```bash
-oc get csv -n openshift-storage -w
-```
-
-👉 You should see:
-
-```text
-odf-operator.v4.20.x
-```
-
----
-
-# ⚠️ Important checks
-
-## 1️⃣ Catalog source must be correct
-
-```bash
-oc get catalogsource -n openshift-marketplace
-```
-
-Ensure:
-
-```text
-cs-redhat-operator-index-v4-20 → READY
-```
-
----
-
-## 2️⃣ InstallPlan approval
-
-Check:
-
-```bash
-oc get installplan -n openshift-storage
-```
-
-If:
-
-```text
-APPROVAL: Manual
-```
-
-👉 Approve:
-
-```bash
-oc patch installplan <name> -n openshift-storage \
---type=merge -p '{"spec":{"approved":true}}'
-```
-
----
-
-# 💥 Why your ImagePull issue happened earlier
-
-Because:
-
-```text
-odf-cloudnative-pg-rhel9-operator
-```
-
-👉 Missing in mirror ❗
-
-Now:
-
-* You fixed mirror partially ✅
-* Pod is running now ✅
-
-So upgrade can proceed now
-
----
-
-# 🧠 Final Summary
-
-| Issue                 | Status      |
-| --------------------- | ----------- |
-| Mirror missing images | ✅ fixed     |
-| Pods failing          | ✅ fixed     |
-| Subscription source   | ✅ fixed     |
-| ❗ Channel still 4.19  | 🔴 BLOCKING |
-
----
-
-# 🚀 Next action (do this now)
-
-```bash
-oc patch sub odf-operator -n openshift-storage \
---type=merge -p '{"spec":{"channel":"stable-4.20"}}'
-```
-
----
-
-If you want, send me:
-
-```bash
-oc get sub -n openshift-storage -o yaml
-```
-
-👉 I’ll verify 100% and guide final step.
+  channel: stable-4.19
+  installPlanApproval: Automatic
+  name: odf-operator
+  source: cs-redhat-operator-index-v4-20
+  sourceNamespace: openshift-marketplace
+status:
+  catalogHealth:
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: cs-redhat-operator-index-v4-19
+      namespace: openshift-marketplace
+      resourceVersion: "14822589"
+      uid: f8d96148-6fbe-45d6-aecf-832139a314af
+    healthy: true
+    lastUpdated: "2026-03-26T14:08:31Z"
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: cs-redhat-operator-index-v4-20
+      namespace: openshift-marketplace
+      resourceVersion: "14786589"
+      uid: 8c7af676-b52b-4142-b568-674b9cea5e04
+    healthy: true
+    lastUpdated: "2026-03-26T14:08:31Z"
+  conditions:
+  - lastTransitionTime: "2026-03-26T14:08:31Z"
+    message: all available catalogsources are healthy
+    reason: AllCatalogSourcesHealthy
+    status: "False"
+    type: CatalogSourcesUnhealthy
+  - message: 'constraints not satisfiable: no operators found in channel stable-4.19
+      of package odf-operator in the catalog referenced by subscription odf-operator,
+      subscription odf-operator exists'
+    reason: ConstraintsNotSatisfiable
+    status: "True"
+    type: ResolutionFailed
+  currentCSV: odf-operator.v4.19.12-rhodf
+  installPlanGeneration: 1
+  installPlanRef:
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: install-txt68
+    namespace: openshift-storage
+    resourceVersion: "14159582"
+    uid: d4465006-adc0-4463-971e-28beca41fba0
+  installedCSV: odf-operator.v4.19.12-rhodf
+  installplan:
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: install-txt68
+    uuid: d4465006-adc0-4463-971e-28beca41fba0
+  lastUpdated: "2026-03-27T06:37:10Z"
+  state: AtLatestKnown
+srib@ocp-haproxy-1:~/ocp_4_20$ oc patch sub odf-operator -n openshift-storage \
+> --type=merge -p '{"spec":{"channel":"stable-4.20"}}'
+subscription.operators.coreos.com/odf-operator patched
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.19.12-rhodf          CephCSI operator                   4.19.12-rhodf   cephcsi-operator.v4.19.11-rhodf          Succeeded
+mcg-operator.v4.19.12-rhodf              NooBaa Operator                    4.19.12-rhodf   mcg-operator.v4.19.11-rhodf              Succeeded
+ocs-client-operator.v4.19.12-rhodf       OpenShift Data Foundation Client   4.19.12-rhodf   ocs-client-operator.v4.19.11-rhodf       Succeeded
+ocs-operator.v4.19.12-rhodf              OpenShift Container Storage        4.19.12-rhodf   ocs-operator.v4.19.11-rhodf              Succeeded
+odf-csi-addons-operator.v4.19.12-rhodf   CSI Addons                         4.19.12-rhodf   odf-csi-addons-operator.v4.19.11-rhodf   Succeeded
+odf-dependencies.v4.19.12-rhodf          Data Foundation Dependencies       4.19.12-rhodf   odf-dependencies.v4.19.11-rhodf          Succeeded
+odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.19.11-rhodf              Replacing
+odf-operator.v4.20.7-rhodf               OpenShift Data Foundation          4.20.7-rhodf    odf-operator.v4.19.12-rhodf              Installing
+odf-prometheus-operator.v4.19.12-rhodf   Prometheus Operator                4.19.12-rhodf   odf-prometheus-operator.v4.19.11-rhodf   Succeeded
+recipe.v4.19.12-rhodf                    Recipe                             4.19.12-rhodf   recipe.v4.19.11-rhodf                    Succeeded
+rook-ceph-operator.v4.19.12-rhodf        Rook-Ceph                          4.19.12-rhodf   rook-ceph-operator.v4.19.11-rhodf        Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -w
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.19.12-rhodf          CephCSI operator                   4.19.12-rhodf   cephcsi-operator.v4.19.11-rhodf          Succeeded
+mcg-operator.v4.19.12-rhodf              NooBaa Operator                    4.19.12-rhodf   mcg-operator.v4.19.11-rhodf              Succeeded
+ocs-client-operator.v4.19.12-rhodf       OpenShift Data Foundation Client   4.19.12-rhodf   ocs-client-operator.v4.19.11-rhodf       Succeeded
+ocs-operator.v4.19.12-rhodf              OpenShift Container Storage        4.19.12-rhodf   ocs-operator.v4.19.11-rhodf              Succeeded
+odf-csi-addons-operator.v4.19.12-rhodf   CSI Addons                         4.19.12-rhodf   odf-csi-addons-operator.v4.19.11-rhodf   Succeeded
+odf-dependencies.v4.19.12-rhodf          Data Foundation Dependencies       4.19.12-rhodf   odf-dependencies.v4.19.11-rhodf          Succeeded
+odf-operator.v4.20.7-rhodf               OpenShift Data Foundation          4.20.7-rhodf    odf-operator.v4.19.12-rhodf              Succeeded
+odf-prometheus-operator.v4.19.12-rhodf   Prometheus Operator                4.19.12-rhodf   odf-prometheus-operator.v4.19.11-rhodf   Succeeded
+recipe.v4.19.12-rhodf                    Recipe                             4.19.12-rhodf   recipe.v4.19.11-rhodf                    Succeeded
+rook-ceph-operator.v4.19.12-rhodf        Rook-Ceph                          4.19.12-rhodf   rook-ceph-operator.v4.19.11-rhodf        Succeeded
+^Csrib@ocp-haproxy-1:~/ocp_4_20$ oc get catalogsource -n openshift-marketplace
+NAME                             DISPLAY   TYPE   PUBLISHER   AGE
+cs-redhat-operator-index-v4-19             grpc               19h
+cs-redhat-operator-index-v4-20             grpc               20h
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get installplan -n openshift-storage
+NAME            CSV                           APPROVAL    APPROVED
+install-hgwfn   recipe.v4.19.12-rhodf         Automatic   true
+install-txt68   odf-operator.v4.19.12-rhodf   Automatic   true
+install-v52lf   odf-operator.v4.20.7-rhodf    Automatic   true
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.19.12-rhodf          CephCSI operator                   4.19.12-rhodf   cephcsi-operator.v4.19.11-rhodf          Succeeded
+mcg-operator.v4.19.12-rhodf              NooBaa Operator                    4.19.12-rhodf   mcg-operator.v4.19.11-rhodf              Succeeded
+ocs-client-operator.v4.19.12-rhodf       OpenShift Data Foundation Client   4.19.12-rhodf   ocs-client-operator.v4.19.11-rhodf       Succeeded
+ocs-operator.v4.19.12-rhodf              OpenShift Container Storage        4.19.12-rhodf   ocs-operator.v4.19.11-rhodf              Succeeded
+odf-csi-addons-operator.v4.19.12-rhodf   CSI Addons                         4.19.12-rhodf   odf-csi-addons-operator.v4.19.11-rhodf   Succeeded
+odf-dependencies.v4.19.12-rhodf          Data Foundation Dependencies       4.19.12-rhodf   odf-dependencies.v4.19.11-rhodf          Succeeded
+odf-operator.v4.20.7-rhodf               OpenShift Data Foundation          4.20.7-rhodf    odf-operator.v4.19.12-rhodf              Succeeded
+odf-prometheus-operator.v4.19.12-rhodf   Prometheus Operator                4.19.12-rhodf   odf-prometheus-operator.v4.19.11-rhodf   Succeeded
+recipe.v4.19.12-rhodf                    Recipe                             4.19.12-rhodf   recipe.v4.19.11-rhodf                    Succeeded
+rook-ceph-operator.v4.19.12-rhodf        Rook-Ceph                          4.19.12-rhodf   rook-ceph-operator.v4.19.11-rhodf        Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$
