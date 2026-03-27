@@ -1,14 +1,66 @@
-drwxr-xr-x. 4 root root          44 Mar 27 18:14 quay-install
--rwxr-xr-x. 1 root root 14234419200 Mar 27 16:59 rhel-8.10-x86_64-dvd.iso
-[root@mirror1 ~]# export OCP_RELEASE="4.18.23"
-[root@mirror1 ~]# export LOCAL_REGISTRY="mirror1.cl2-mno1-rvt.lan:8443"
-[root@mirror1 ~]# export LOCAL_REPOSITORY="ocp4/openshift4"
-[root@mirror1 ~]# export PRODUCT_REPO="openshift-release-dev"
-[root@mirror1 ~]# export LOCAL_SECRET_JSON="./pull_secret.json"
-[root@mirror1 ~]# export RELEASE_NAME="ocp-release"
-[root@mirror1 ~]# export ARCHITECTURE="x86_64"
-[root@mirror1 ~]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-oc: /lib64/libc.so.6: version `GLIBC_2.33' not found (required by oc)
-oc: /lib64/libc.so.6: version `GLIBC_2.34' not found (required by oc)
-oc: /lib64/libc.so.6: version `GLIBC_2.32' not found (required by oc)
-[root@mirror1 ~]#
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v1alpha2
+mirror:
+  platform:
+    channels:
+    - name: stable-4.18
+      minVersion: 4.18.23
+      maxVersion: 4.18.23
+    graph: true
+  operators:
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.18
+    packages:
+    - name: odf-dependencies
+      channels:
+      - name: stable-4.18
+    - name: cephcsi-operator
+      channels:
+      - name: stable-4.18
+    - name: ocs-client-operator
+      channels:
+      - name: stable-4.18
+    - name: rook-ceph-operator
+      channels:
+      - name: stable-4.18
+    - name: odf-prometheus-operator
+      channels:
+      - name: stable-4.18
+    - name: odr-cluster-operator
+      channels:
+      - name: stable-4.18
+    - name: odr-hub-operator
+      channels:
+      - name: stable-4.18
+    - name: recipe
+      channels:
+      - name: stable-4.18
+    - name: sriov-network-operator
+      channels:
+      - name: stable
+    - name: odf-operator
+      channels:
+      - name: stable-4.18
+    - name: odf-csi-addons-operator
+      channels:
+      - name: stable-4.18
+    - name: ocs-operator
+      channels:
+      - name: stable-4.18
+    - name: ptp-operator
+      channels:
+      - name: stable
+    - name: local-storage-operator
+      channels:
+      - name: stable
+    - name: mcg-operator
+      channels:
+      - name: stable-4.18
+    - name: lvms-operator
+      channels:
+      - name: stable-4.18
+    - name: kubernetes-nmstate-operator
+      channels:
+      - name: stable
+    - name: cluster-logging
+      channels:
+      - name: stable-6.4
