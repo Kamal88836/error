@@ -1,224 +1,31 @@
-Got it — and this is a **very important turning point ⚠️**
-
-👉 What just happened:
-
-```text
-StorageCluster → DELETED ❗
-CephCluster → already gone ❗
-```
-
-So your system is now in this state:
-
----
-
-# 🧠 Current Reality
-
-| Component      | Status                       |
-| -------------- | ---------------------------- |
-| StorageCluster | ❌ deleted                    |
-| CephCluster    | ❌ deleted                    |
-| ODF Operator   | ✅ 4.20                       |
-| ODF pods       | ⚠️ still running (leftovers) |
-| CSVs           | ⚠️ mixed (4.19 + 4.20)       |
-
----
-
-# ❗ Key Conclusion
-
-👉 **Recovery is no longer possible**
-
-Because:
-
-```text
-StorageCluster CR = source of truth ❌ gone
-```
-
-Without it:
-
-* ODF cannot reconcile
-* Upgrade cannot continue
-* Cluster is in orphaned state
-
----
-
-# 🔥 What you must do now
-
-👉 **We switch strategy → Clean RECREATE (not reinstall fully)**
-
-Good news:
-
-* Your data likely still exists (OSDs running earlier)
-* We can **re-attach cluster**
-
----
-
-# 🚀 STEP 1 — Clean leftover broken operators
-
-Remove old 4.19 CSVs (they block reconciliation):
-
-```bash
-oc delete csv -n openshift-storage \
-cephcsi-operator.v4.19.12-rhodf \
-mcg-operator.v4.19.12-rhodf \
-ocs-client-operator.v4.19.12-rhodf \
-ocs-operator.v4.19.12-rhodf \
-odf-csi-addons-operator.v4.19.12-rhodf \
-odf-dependencies.v4.19.12-rhodf \
-odf-prometheus-operator.v4.19.12-rhodf \
-rook-ceph-operator.v4.19.12-rhodf \
-recipe.v4.19.12-rhodf
-```
-
----
-
-# 🚀 STEP 2 — Keep only ODF operator (important)
-
-Check:
-
-```bash
-oc get csv -n openshift-storage
-```
-
-👉 Only this should remain:
-
-```text
-odf-operator.v4.20.x
-```
-
----
-
-# 🚀 STEP 3 — Recreate StorageCluster (CRITICAL)
-
-Now we recreate **same cluster**.
-
-👉 Minimal working YAML (based on your setup):
-
-```yaml
-apiVersion: ocs.openshift.io/v1
-kind: StorageCluster
-metadata:
-  name: ocs-storagecluster
-  namespace: openshift-storage
-spec:
-  manageNodes: false
-  monDataDirHostPath: /var/lib/rook
-  storageDeviceSets:
-  - name: ocs-deviceset
-    count: 1
-    replica: 3
-    portable: false
-    dataPVCTemplate:
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1000Gi
-        storageClassName: localblock
-        volumeMode: Block
-```
-
----
-
-# 🚀 Apply it:
-
-```bash
-oc apply -f storagecluster.yaml
-```
-
----
-
-# 🔥 What will happen now
-
-ODF operator will:
-
-1. Detect existing disks / OSDs
-2. Recreate CephCluster
-3. Reconcile cluster
-4. Upgrade everything to 4.20
-
----
-
-# 🔍 STEP 4 — Watch recovery
-
-```bash
-oc get storagecluster -n openshift-storage -w
-```
-
-👉 Expected:
-
-```text
-PHASE → Progressing → Ready ✅
-```
-
----
-
-# 🔍 STEP 5 — Watch operators upgrade
-
-```bash
-oc get csv -n openshift-storage -w
-```
-
-👉 You should now see:
-
-```text
-mcg → 4.20
-ocs → 4.20
-rook → 4.20
-```
-
----
-
-# ⚠️ IMPORTANT NOTES
-
-### 1. If disks reused
-
-* ODF will auto-detect OSDs
-* Data should remain intact
-
----
-
-### 2. If cluster comes fresh
-
-* Then previous delete cleaned storage
-* New cluster will be empty
-
----
-
-# 💥 Why this happened
-
-You accidentally triggered:
-
-```text
-StorageCluster deletion → irreversible control-plane loss
-```
-
-👉 After that:
-
-* Upgrade path = broken
-* Only recovery = recreate CR
-
----
-
-# 🧠 Final Summary
-
-| Stage          | Status             |
-| -------------- | ------------------ |
-| Upgrade        | ❌ interrupted      |
-| StorageCluster | ❌ deleted          |
-| Recovery       | ❌ not possible     |
-| Recreate       | ✅ correct solution |
-
----
-
-# 🚀 Next step
-
-👉 Apply the StorageCluster YAML
-
-If you want, I can:
-
-* Customize YAML exactly for your infra (rack, multus, etc.)
-* Help verify data recovery after recreate
-
-Just say: **“tune yaml”** 👍
-
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv
+NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
+odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$ vi storagecluster.yaml
+srib@ocp-haproxy-1:~/ocp_4_20$ oc apply -f storagecluster.yaml
+storagecluster.ocs.openshift.io/ocs-storagecluster created
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get storagecluster -n openshift-storage -w
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   12m                      2026-03-27T10:13:13Z
+^Csrib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv
+NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
+odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get pods -n openshift-storage
+NAME                                                       READY   STATUS      RESTARTS   AGE
+cluster-cleanup-job-ocp-cp-1.lab1.srib-lab-ocp.lan-7dx6c   0/1     Completed   0          23m
+cluster-cleanup-job-ocp-cp-2.lab1.srib-lab-ocp.lan-mn522   0/1     Completed   0          23m
+cluster-cleanup-job-ocp-cp-3.lab1.srib-lab-ocp.lan-r5hz2   0/1     Completed   0          23m
+odf-console-7f97dc7cc5-6m67s                               1/1     Running     0          75m
+odf-operator-controller-manager-546bb96c7d-cnpll           1/1     Running     0          75m
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get pods -n openshift-storage
+NAME                                                       READY   STATUS      RESTARTS   AGE
+cluster-cleanup-job-ocp-cp-1.lab1.srib-lab-ocp.lan-7dx6c   0/1     Completed   0          24m
+cluster-cleanup-job-ocp-cp-2.lab1.srib-lab-ocp.lan-mn522   0/1     Completed   0          24m
+cluster-cleanup-job-ocp-cp-3.lab1.srib-lab-ocp.lan-r5hz2   0/1     Completed   0          24m
+odf-console-7f97dc7cc5-6m67s                               1/1     Running     0          75m
+odf-operator-controller-manager-546bb96c7d-cnpll           1/1     Running     0          75m
+srib@ocp-haproxy-1:~/ocp_4_20$
