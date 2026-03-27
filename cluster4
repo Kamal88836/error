@@ -1,26 +1,219 @@
+Nice 👍 — you’re doing the **right thing now (operator alignment)**.
+Let me explain your current state clearly and what to do next.
 
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -A
-NAMESPACE                              NAME                                              DISPLAY                            VERSION               REPLACES                                          PHASE
-openshift-local-storage                local-storage-operator.v4.20.0-202603030647       Local Storage                      4.20.0-202603030647   local-storage-operator.v4.19.0-202602262001       Succeeded
-openshift-nmstate                      kubernetes-nmstate-operator.4.20.0-202602261925   Kubernetes NMState Operator        4.20.0-202602261925   kubernetes-nmstate-operator.4.19.0-202602262001   Succeeded
-openshift-operator-lifecycle-manager   packageserver                                     Package Server                     0.0.1-snapshot                                                          Succeeded
-openshift-ptp                          ptp-operator.v4.20.0-202603160950                 PTP Operator                       4.20.0-202603160950   ptp-operator.v4.19.0-202603031419                 Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.20.0-202602261925       SR-IOV Network Operator            4.20.0-202602261925   sriov-network-operator.v4.19.0-202603100922       Succeeded
-openshift-storage                      cephcsi-operator.v4.19.12-rhodf                   CephCSI operator                   4.19.12-rhodf         cephcsi-operator.v4.19.11-rhodf                   Succeeded
-openshift-storage                      mcg-operator.v4.19.12-rhodf                       NooBaa Operator                    4.19.12-rhodf         mcg-operator.v4.19.11-rhodf                       Installing
-openshift-storage                      ocs-client-operator.v4.19.12-rhodf                OpenShift Data Foundation Client   4.19.12-rhodf         ocs-client-operator.v4.19.11-rhodf                Succeeded
-openshift-storage                      ocs-operator.v4.19.12-rhodf                       OpenShift Container Storage        4.19.12-rhodf         ocs-operator.v4.19.11-rhodf                       Succeeded
-openshift-storage                      odf-csi-addons-operator.v4.19.12-rhodf            CSI Addons                         4.19.12-rhodf         odf-csi-addons-operator.v4.19.11-rhodf            Succeeded
-openshift-storage                      odf-dependencies.v4.19.12-rhodf                   Data Foundation Dependencies       4.19.12-rhodf         odf-dependencies.v4.19.11-rhodf                   Succeeded
-openshift-storage                      odf-operator.v4.19.12-rhodf                       OpenShift Data Foundation          4.19.12-rhodf         odf-operator.v4.19.11-rhodf                       Succeeded
-openshift-storage                      odf-prometheus-operator.v4.19.12-rhodf            Prometheus Operator                4.19.12-rhodf         odf-prometheus-operator.v4.19.11-rhodf            Succeeded
-openshift-storage                      recipe.v4.19.12-rhodf                             Recipe                             4.19.12-rhodf         recipe.v4.19.11-rhodf                             Succeeded
-openshift-storage                      rook-ceph-operator.v4.19.12-rhodf                 Rook-Ceph                          4.19.12-rhodf         rook-ceph-operator.v4.19.11-rhodf                 Succeeded
-srib@ocp-haproxy-1:~/ocp_4_20$
+---
 
-srib@ocp-haproxy-1:~/ocp_4_20$ oc patch sub local-storage-operator -n openshift-local-storage  --type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
-subscription.operators.coreos.com/local-storage-operator patched
-srib@ocp-haproxy-1:~/ocp_4_20$ oc patch sub sriov-network-operator-subscription -n openshift-sriov-network-operator --type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
-subscription.operators.coreos.com/sriov-network-operator-subscription patched
-srib@ocp-haproxy-1:~/ocp_4_20$ oc patch sub kubernetes-nmstate-operator -n openshift-nmstate  --type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
-subscription.operators.coreos.com/kubernetes-nmstate-operator patched
+# ✅ Current Situation
+
+### ✔ Upgrade already started
+
+From earlier:
+
+```text
+Working towards 4.20.14
+```
+
+### ✔ You fixed:
+
+* API deprecation (v1beta1 → v1) ✅
+* AdminAck ✅
+* Upgrade trigger ✅
+
+---
+
+# ⚠️ Current risk area
+
+From your latest output:
+
+```text
+mcg-operator.v4.19.12-rhodf → Installing
+ODF operators still on 4.19
+```
+
+👉 This is **important**
+
+Even though upgrade started, **ODF is not yet aligned to 4.20**
+
+---
+
+# 🧠 Why this matters
+
+OpenShift upgrade flow:
+
+1. CVO upgrades platform
+2. OLM upgrades operators
+3. Some operators (like ODF) can:
+
+   * Block progress
+   * Cause degraded/slow upgrade
+
+---
+
+# 🔥 What you did (GOOD)
+
+You patched operator sources to:
+
+```text
+cs-redhat-operator-index-v4-20
+```
+
+👉 Correct for disconnected upgrade 👍
+
+---
+
+# 🚨 What is still missing
+
+### ❗ ODF subscriptions are NOT updated
+
+From your output:
+
+```text
+openshift-storage → still using 4.19 operators
+```
+
+---
+
+# ✅ Fix ODF (CRITICAL STEP)
+
+Run:
+
+```bash
+oc get sub -n openshift-storage
+```
+
+Then patch ALL subscriptions:
+
+```bash
+oc patch sub odf-operator -n openshift-storage \
+--type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
+
+oc patch sub ocs-operator -n openshift-storage \
+--type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
+
+oc patch sub mcg-operator -n openshift-storage \
+--type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
+```
+
+---
+
+# 🔍 Then verify upgrade
+
+```bash
+oc get csv -n openshift-storage
+```
+
+👉 You should start seeing:
+
+```text
+v4.20.x-rhodf
+```
+
+---
+
+# ⚠️ Important: That Installing status
+
+```text
+mcg-operator → Installing
+```
+
+👉 This can block upgrade
+
+Check:
+
+```bash
+oc describe csv mcg-operator.v4.19.12-rhodf -n openshift-storage
+```
+
+Look for:
+
+* missing image
+* dependency issue
+* CRD problem
+
+---
+
+# 🔥 Parallel issue: ingress
+
+Earlier you had:
+
+```text
+Cluster operator ingress is not available
+```
+
+👉 Still VERY important
+
+Check again:
+
+```bash
+oc get co ingress
+```
+
+---
+
+# 🎯 Final checklist (DO THIS NOW)
+
+### 1️⃣ Fix ODF subscriptions
+
+✔ patch all subs to v4.20
+
+---
+
+### 2️⃣ Check ODF upgrade progress
+
+```bash
+oc get csv -n openshift-storage
+```
+
+---
+
+### 3️⃣ Check ingress
+
+```bash
+oc get co ingress
+```
+
+---
+
+### 4️⃣ Monitor upgrade
+
+```bash
+watch oc get clusterversion
+```
+
+---
+
+# 🧠 Key insight (very important)
+
+You are now in:
+
+👉 **Phase 2 of upgrade: Operator reconciliation**
+
+Not:
+❌ API issue (already solved)
+Not:
+❌ Upgrade trigger problem
+
+---
+
+# 🚀 Expected outcome
+
+After:
+
+* ingress healthy
+* ODF aligned
+
+👉 Upgrade will continue automatically to 100%
+
+---
+
+# 👉 If still stuck
+
+Send me:
+
+```bash
+oc get co ingress
+oc get pods -n openshift-ingress -o wide
+oc get csv -n openshift-storage
+```
+
+I’ll pinpoint the exact blocker instantly.
