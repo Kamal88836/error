@@ -1,31 +1,262 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc project
-Using project "openshift-storage" on server "https://api.lab1.srib-lab-ocp.lan:6443".
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get po
-NAME                                                              READY   STATUS    RESTARTS   AGE
-ceph-csi-controller-manager-68b75b644c-9875g                      1/1     Running   0          3h36m
-cnpg-controller-manager-685cc9f96d-jk82p                          1/1     Running   0          134m
-csi-addons-controller-manager-c4595ff8-mlhc5                      1/1     Running   0          3h19m
-noobaa-operator-6bbc774cbd-7jfjs                                  1/1     Running   0          3h36m
-ocs-client-operator-console-5b5654dc78-dfvdg                      1/1     Running   0          3h36m
-ocs-client-operator-controller-manager-65fd65bfd5-59l2q           1/1     Running   0          3h36m
-ocs-metrics-exporter-74c467b6c7-n9cz5                             3/3     Running   0          3h36m
-ocs-operator-67bff898bc-8pddx                                     1/1     Running   0          3h36m
-odf-console-69695b478d-92n65                                      1/1     Running   0          3h36m
-odf-operator-controller-manager-79cdcbd66f-mj7nm                  1/1     Running   0          3h36m
-rook-ceph-crashcollector-ocp-cp-1.lab1.srib-lab-ocp.lan-66fl9s8   1/1     Running   0          3h21m
-rook-ceph-crashcollector-ocp-cp-2.lab1.srib-lab-ocp.lan-579lgcg   1/1     Running   0          3h4m
-rook-ceph-crashcollector-ocp-cp-3.lab1.srib-lab-ocp.lan-74v9d9w   1/1     Running   0          3h36m
-rook-ceph-exporter-ocp-cp-1.lab1.srib-lab-ocp.lan-7f699586kprc7   1/1     Running   0          3h21m
-rook-ceph-exporter-ocp-cp-2.lab1.srib-lab-ocp.lan-67f96bc48zlp6   1/1     Running   0          3h4m
-rook-ceph-exporter-ocp-cp-3.lab1.srib-lab-ocp.lan-6956678c2qjjv   1/1     Running   0          3h36m
-rook-ceph-mgr-a-55958fc9f-8jhtq                                   4/4     Running   0          3h36m
-rook-ceph-mgr-b-5d45688954-fzf5g                                  4/4     Running   0          3h20m
-rook-ceph-mon-b-75cf66c988-tx4s2                                  2/2     Running   0          3h36m
-rook-ceph-mon-d-5786d97596-c72rx                                  2/2     Running   0          3h50m
-rook-ceph-mon-e-864b4dcddd-bkljv                                  2/2     Running   0          3h19m
-rook-ceph-operator-54dcddb5db-2vn2k                               1/1     Running   0          3h36m
-rook-ceph-osd-0-75d85658c7-n5xg6                                  2/2     Running   0          3h20m
-rook-ceph-osd-1-b944c5b94-mb5rj                                   2/2     Running   0          3h50m
-rook-ceph-osd-2-698df4db65-6wzs9                                  2/2     Running   0          3h36m
-ux-backend-server-6d495b4947-d6hps                                2/2     Running   0          3h36m
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get po -A
+NAMESPACE                                          NAME                                                              READY   STATUS      RESTARTS        AGE
+openshift-apiserver-operator                       openshift-apiserver-operator-7d6d98ddf6-6knfh                     1/1     Running     0               3h21m
+openshift-apiserver                                apiserver-576449bb5-r4l6r                                         2/2     Running     0               3h51m
+openshift-apiserver                                apiserver-576449bb5-vl4qz                                         2/2     Running     0               3h37m
+openshift-apiserver                                apiserver-576449bb5-xm4x9                                         2/2     Running     0               3h21m
+openshift-authentication-operator                  authentication-operator-6cdd578c77-bd6c7                          1/1     Running     0               3h21m
+openshift-authentication                           oauth-openshift-f88b94999-6nrk6                                   1/1     Running     0               3h51m
+openshift-authentication                           oauth-openshift-f88b94999-vkzpk                                   1/1     Running     0               3h37m
+openshift-authentication                           oauth-openshift-f88b94999-zgqh5                                   1/1     Running     0               3h21m
+openshift-catalogd                                 catalogd-controller-manager-59b9695f95-7l5rf                      1/1     Running     0               3h37m
+openshift-cloud-controller-manager-operator        cluster-cloud-controller-manager-operator-69f47b9995-q2j22        3/3     Running     0               3h21m
+openshift-cloud-credential-operator                cloud-credential-operator-77b5445c88-bhzct                        2/2     Running     0               3h37m
+openshift-cluster-machine-approver                 machine-approver-8686d8b5f-88hkq                                  2/2     Running     0               3h22m
+openshift-cluster-node-tuning-operator             cluster-node-tuning-operator-78d6c876d7-gbvhl                     1/1     Running     0               3h22m
+openshift-cluster-node-tuning-operator             tuned-7jx6k                                                       1/1     Running     2               4h41m
+openshift-cluster-node-tuning-operator             tuned-vpglc                                                       1/1     Running     2               4h41m
+openshift-cluster-node-tuning-operator             tuned-zz566                                                       1/1     Running     2               4h41m
+openshift-cluster-olm-operator                     cluster-olm-operator-74bcd78845-j6rjd                             1/1     Running     0               3h37m
+openshift-cluster-samples-operator                 cluster-samples-operator-947896b5d-qgk29                          2/2     Running     0               3h21m
+openshift-cluster-storage-operator                 cluster-storage-operator-5bff446d54-gtkfv                         1/1     Running     0               3h21m
+openshift-cluster-storage-operator                 csi-snapshot-controller-6cf5c7b4d8-7xt5f                          1/1     Running     0               3h21m
+openshift-cluster-storage-operator                 csi-snapshot-controller-6cf5c7b4d8-f5rrt                          1/1     Running     0               3h37m
+openshift-cluster-storage-operator                 csi-snapshot-controller-operator-545ff49c5-67qjp                  1/1     Running     0               3h21m
+openshift-cluster-storage-operator                 volume-data-source-validator-66854c4db8-j6hnc                     1/1     Running     0               3h22m
+openshift-cluster-version                          cluster-version-operator-fd7fb4fbd-fq8lb                          1/1     Running     0               3h21m
+openshift-config-operator                          openshift-config-operator-7fc6786dc9-xgz55                        1/1     Running     0               3h21m
+openshift-console-operator                         console-operator-69748746ff-g9869                                 1/1     Running     0               3h21m
+openshift-console                                  console-dfc844b67-sln8x                                           1/1     Running     0               3h21m
+openshift-console                                  console-dfc844b67-twft8                                           1/1     Running     0               3h37m
+openshift-console                                  downloads-5cc799bd64-7n52p                                        1/1     Running     0               3h37m
+openshift-console                                  downloads-5cc799bd64-958x7                                        1/1     Running     0               3h21m
+openshift-controller-manager-operator              openshift-controller-manager-operator-68cdbd4bd9-7bstb            1/1     Running     0               3h21m
+openshift-controller-manager                       controller-manager-6f447dff85-p6jtj                               1/1     Running     0               3h21m
+openshift-controller-manager                       controller-manager-6f447dff85-vkw4c                               1/1     Running     0               3h51m
+openshift-controller-manager                       controller-manager-6f447dff85-vlczn                               1/1     Running     0               3h37m
+openshift-dns-operator                             dns-operator-66dd5d6468-s5vkk                                     2/2     Running     0               3h21m
+openshift-dns                                      dns-default-8mnbx                                                 2/2     Running     2               4h4m
+openshift-dns                                      dns-default-tp6zs                                                 2/2     Running     2               3h55m
+openshift-dns                                      dns-default-wrdtm                                                 2/2     Running     2               4h4m
+openshift-dns                                      node-resolver-2d9cz                                               1/1     Running     1               4h4m
+openshift-dns                                      node-resolver-g6tjc                                               1/1     Running     1               4h4m
+openshift-dns                                      node-resolver-tp7mx                                               1/1     Running     1               4h4m
+openshift-etcd-operator                            etcd-operator-959d55bf5-4mskx                                     1/1     Running     0               3h21m
+openshift-etcd                                     etcd-guard-ocp-cp-1.lab1.srib-lab-ocp.lan                         1/1     Running     0               3h22m
+openshift-etcd                                     etcd-guard-ocp-cp-2.lab1.srib-lab-ocp.lan                         1/1     Running     0               3h6m
+openshift-etcd                                     etcd-guard-ocp-cp-3.lab1.srib-lab-ocp.lan                         1/1     Running     0               3h38m
+openshift-etcd                                     etcd-ocp-cp-1.lab1.srib-lab-ocp.lan                               5/5     Running     0               3h23m
+openshift-etcd                                     etcd-ocp-cp-2.lab1.srib-lab-ocp.lan                               5/5     Running     0               3h6m
+openshift-etcd                                     etcd-ocp-cp-3.lab1.srib-lab-ocp.lan                               5/5     Running     0               3h38m
+openshift-etcd                                     revision-pruner-12-ocp-cp-1.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h31m
+openshift-etcd                                     revision-pruner-12-ocp-cp-2.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h13m
+openshift-etcd                                     revision-pruner-12-ocp-cp-3.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h44m
+openshift-image-registry                           cluster-image-registry-operator-756646986d-vdt48                  1/1     Running     0               3h21m
+openshift-image-registry                           node-ca-7bddq                                                     1/1     Running     2               4h42m
+openshift-image-registry                           node-ca-cs2pl                                                     1/1     Running     2               4h42m
+openshift-image-registry                           node-ca-wnn49                                                     1/1     Running     2               4h42m
+openshift-ingress-canary                           ingress-canary-gjbtj                                              1/1     Running     2               4h42m
+openshift-ingress-canary                           ingress-canary-pb9nn                                              1/1     Running     2               4h42m
+openshift-ingress-canary                           ingress-canary-vpz8t                                              1/1     Running     2               4h42m
+openshift-ingress-operator                         ingress-operator-5c7dc98886-rjntr                                 2/2     Running     0               3h21m
+openshift-ingress                                  router-default-86f6b9f65c-j9hk2                                   1/1     Running     1 (3h21m ago)   3h37m
+openshift-ingress                                  router-default-86f6b9f65c-lfbm6                                   1/1     Running     0               3h21m
+openshift-ingress                                  router-default-86f6b9f65c-vsbb4                                   1/1     Running     0               3h51m
+openshift-insights                                 insights-operator-df46cb6bc-flnld                                 1/1     Running     0               3h21m
+openshift-insights                                 insights-runtime-extractor-m6ws8                                  3/3     Running     6               4h42m
+openshift-insights                                 insights-runtime-extractor-msdxd                                  3/3     Running     6               4h42m
+openshift-insights                                 insights-runtime-extractor-w9lsd                                  3/3     Running     6               4h42m
+openshift-kni-infra                                coredns-ocp-cp-1.lab1.srib-lab-ocp.lan                            2/2     Running     0               3h23m
+openshift-kni-infra                                coredns-ocp-cp-2.lab1.srib-lab-ocp.lan                            2/2     Running     0               3h6m
+openshift-kni-infra                                coredns-ocp-cp-3.lab1.srib-lab-ocp.lan                            2/2     Running     0               3h38m
+openshift-kni-infra                                haproxy-ocp-cp-1.lab1.srib-lab-ocp.lan                            2/2     Running     0               3h23m
+openshift-kni-infra                                haproxy-ocp-cp-2.lab1.srib-lab-ocp.lan                            2/2     Running     0               3h6m
+openshift-kni-infra                                haproxy-ocp-cp-3.lab1.srib-lab-ocp.lan                            2/2     Running     0               3h38m
+openshift-kni-infra                                keepalived-ocp-cp-1.lab1.srib-lab-ocp.lan                         2/2     Running     0               3h23m
+openshift-kni-infra                                keepalived-ocp-cp-2.lab1.srib-lab-ocp.lan                         2/2     Running     0               3h6m
+openshift-kni-infra                                keepalived-ocp-cp-3.lab1.srib-lab-ocp.lan                         2/2     Running     0               3h38m
+openshift-kube-apiserver-operator                  kube-apiserver-operator-575798778c-7l9j9                          1/1     Running     0               3h21m
+openshift-kube-apiserver                           kube-apiserver-guard-ocp-cp-1.lab1.srib-lab-ocp.lan               1/1     Running     0               3h22m
+openshift-kube-apiserver                           kube-apiserver-guard-ocp-cp-2.lab1.srib-lab-ocp.lan               1/1     Running     0               3h6m
+openshift-kube-apiserver                           kube-apiserver-guard-ocp-cp-3.lab1.srib-lab-ocp.lan               1/1     Running     0               3h38m
+openshift-kube-apiserver                           kube-apiserver-ocp-cp-1.lab1.srib-lab-ocp.lan                     5/5     Running     0               3h23m
+openshift-kube-apiserver                           kube-apiserver-ocp-cp-2.lab1.srib-lab-ocp.lan                     5/5     Running     0               3h6m
+openshift-kube-apiserver                           kube-apiserver-ocp-cp-3.lab1.srib-lab-ocp.lan                     5/5     Running     0               3h38m
+openshift-kube-apiserver                           revision-pruner-17-ocp-cp-1.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h31m
+openshift-kube-apiserver                           revision-pruner-17-ocp-cp-2.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h13m
+openshift-kube-apiserver                           revision-pruner-17-ocp-cp-3.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h44m
+openshift-kube-controller-manager-operator         kube-controller-manager-operator-5df97765f6-l6h6b                 1/1     Running     0               3h21m
+openshift-kube-controller-manager                  kube-controller-manager-guard-ocp-cp-1.lab1.srib-lab-ocp.lan      1/1     Running     0               3h22m
+openshift-kube-controller-manager                  kube-controller-manager-guard-ocp-cp-2.lab1.srib-lab-ocp.lan      1/1     Running     0               3h6m
+openshift-kube-controller-manager                  kube-controller-manager-guard-ocp-cp-3.lab1.srib-lab-ocp.lan      1/1     Running     0               3h38m
+openshift-kube-controller-manager                  kube-controller-manager-ocp-cp-1.lab1.srib-lab-ocp.lan            4/4     Running     0               3h22m
+openshift-kube-controller-manager                  kube-controller-manager-ocp-cp-2.lab1.srib-lab-ocp.lan            4/4     Running     0               3h6m
+openshift-kube-controller-manager                  kube-controller-manager-ocp-cp-3.lab1.srib-lab-ocp.lan            4/4     Running     0               3h38m
+openshift-kube-controller-manager                  revision-pruner-13-ocp-cp-1.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h31m
+openshift-kube-controller-manager                  revision-pruner-13-ocp-cp-2.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h13m
+openshift-kube-controller-manager                  revision-pruner-13-ocp-cp-3.lab1.srib-lab-ocp.lan                 0/1     Completed   0               3h44m
+openshift-kube-scheduler-operator                  openshift-kube-scheduler-operator-7654d949c-zgs4x                 1/1     Running     0               3h21m
+openshift-kube-scheduler                           openshift-kube-scheduler-guard-ocp-cp-1.lab1.srib-lab-ocp.lan     1/1     Running     0               3h22m
+openshift-kube-scheduler                           openshift-kube-scheduler-guard-ocp-cp-2.lab1.srib-lab-ocp.lan     1/1     Running     0               3h6m
+openshift-kube-scheduler                           openshift-kube-scheduler-guard-ocp-cp-3.lab1.srib-lab-ocp.lan     1/1     Running     0               3h38m
+openshift-kube-scheduler                           openshift-kube-scheduler-ocp-cp-1.lab1.srib-lab-ocp.lan           3/3     Running     0               3h23m
+openshift-kube-scheduler                           openshift-kube-scheduler-ocp-cp-2.lab1.srib-lab-ocp.lan           3/3     Running     0               3h6m
+openshift-kube-scheduler                           openshift-kube-scheduler-ocp-cp-3.lab1.srib-lab-ocp.lan           3/3     Running     0               3h38m
+openshift-kube-scheduler                           revision-pruner-8-ocp-cp-1.lab1.srib-lab-ocp.lan                  0/1     Completed   0               3h31m
+openshift-kube-scheduler                           revision-pruner-8-ocp-cp-2.lab1.srib-lab-ocp.lan                  0/1     Completed   0               3h14m
+openshift-kube-scheduler                           revision-pruner-8-ocp-cp-3.lab1.srib-lab-ocp.lan                  0/1     Completed   0               3h44m
+openshift-kube-storage-version-migrator-operator   kube-storage-version-migrator-operator-5964dbc77d-7r87c           1/1     Running     0               3h21m
+openshift-kube-storage-version-migrator            migrator-99b75564f-6jxn8                                          2/2     Running     0               3h21m
+openshift-local-storage                            diskmaker-discovery-4fzf5                                         2/2     Running     0               163m
+openshift-local-storage                            diskmaker-discovery-9hjc5                                         2/2     Running     0               163m
+openshift-local-storage                            diskmaker-discovery-pg4pk                                         2/2     Running     0               163m
+openshift-local-storage                            diskmaker-manager-h828c                                           2/2     Running     0               163m
+openshift-local-storage                            diskmaker-manager-n5wnp                                           2/2     Running     0               163m
+openshift-local-storage                            diskmaker-manager-ppqqx                                           2/2     Running     0               163m
+openshift-local-storage                            local-storage-operator-664ccdf5-867ms                             1/1     Running     0               166m
+openshift-machine-api                              cluster-autoscaler-operator-794cbb6fb-cjgx7                       2/2     Running     0               3h22m
+openshift-machine-api                              cluster-baremetal-operator-5d44678794-gkqfg                       2/2     Running     0               3h22m
+openshift-machine-api                              control-plane-machine-set-operator-675b5f7b45-4lcb2               1/1     Running     0               3h21m
+openshift-machine-api                              ironic-proxy-6bfpb                                                1/1     Running     0               3h37m
+openshift-machine-api                              ironic-proxy-pvd2l                                                1/1     Running     1               3h37m
+openshift-machine-api                              ironic-proxy-sb27p                                                1/1     Running     1               3h37m
+openshift-machine-api                              machine-api-controllers-7558c6b9cf-5wnv2                          7/7     Running     0               3h37m
+openshift-machine-api                              machine-api-operator-bc77b9d7b-xxn8w                              2/2     Running     0               3h37m
+openshift-machine-api                              metal3-6f9699d594-p9dft                                           3/3     Running     0               3h37m
+openshift-machine-api                              metal3-baremetal-operator-f4584fdf-h6wq2                          1/1     Running     0               3h37m
+openshift-machine-api                              metal3-image-customization-7c568749bb-p6mbj                       1/1     Running     0               3h37m
+openshift-machine-config-operator                  kube-rbac-proxy-crio-ocp-cp-1.lab1.srib-lab-ocp.lan               1/1     Running     0               3h23m
+openshift-machine-config-operator                  kube-rbac-proxy-crio-ocp-cp-2.lab1.srib-lab-ocp.lan               1/1     Running     0               3h6m
+openshift-machine-config-operator                  kube-rbac-proxy-crio-ocp-cp-3.lab1.srib-lab-ocp.lan               1/1     Running     0               3h38m
+openshift-machine-config-operator                  machine-config-controller-7446c49888-4s5gx                        2/2     Running     0               3h22m
+openshift-machine-config-operator                  machine-config-daemon-jjxgc                                       2/2     Running     2               3h53m
+openshift-machine-config-operator                  machine-config-daemon-m74tq                                       2/2     Running     2               3h53m
+openshift-machine-config-operator                  machine-config-daemon-nxdwl                                       2/2     Running     2               3h53m
+openshift-machine-config-operator                  machine-config-operator-95758c788-pthps                           2/2     Running     0               3h21m
+openshift-machine-config-operator                  machine-config-server-cz487                                       1/1     Running     1               3h52m
+openshift-machine-config-operator                  machine-config-server-l5wqg                                       1/1     Running     1               3h52m
+openshift-machine-config-operator                  machine-config-server-qknc2                                       1/1     Running     1               3h52m
+openshift-marketplace                              136443adf7dee9260efeb8b1dc8d3054651c9dcd5ee4da89aa6c989bb0bqxhk   0/1     Completed   0               167m
+openshift-marketplace                              6640147ca42b9b3b996efec74a89afb23f1043bf967441b5604ccca16cs7q4c   0/1     Completed   0               168m
+openshift-marketplace                              6931c1971234fe46d795d1cb7090043f7a8f4cf47773b0026b83b44c51hjpvf   0/1     Completed   0               166m
+openshift-marketplace                              cs-redhat-operator-index-v4-19-2gl9x                              1/1     Running     0               3h37m
+openshift-marketplace                              cs-redhat-operator-index-v4-20-4lqlc                              1/1     Running     0               3h37m
+openshift-marketplace                              d1f2cf7c6f4ecb15e69cc0ed07a53b6f169b7a9d46d563b1a9827dff83cbkzh   0/1     Completed   0               167m
+openshift-marketplace                              marketplace-operator-549866c6d4-lkjpn                             1/1     Running     0               3h22m
+openshift-monitoring                               alertmanager-main-0                                               6/6     Running     0               3h37m
+openshift-monitoring                               alertmanager-main-1                                               6/6     Running     0               3h22m
+openshift-monitoring                               cluster-monitoring-operator-6c6868dfb4-jggz4                      1/1     Running     0               3h21m
+openshift-monitoring                               kube-state-metrics-7f8c4fdf85-jbb8x                               3/3     Running     0               3h21m
+openshift-monitoring                               metrics-server-678566bb5-x8kzm                                    1/1     Running     0               3h37m
+openshift-monitoring                               metrics-server-678566bb5-zwsqx                                    1/1     Running     0               3h21m
+openshift-monitoring                               monitoring-plugin-7bb79cfcb7-bks2n                                1/1     Running     0               3h21m
+openshift-monitoring                               monitoring-plugin-7bb79cfcb7-tt57q                                1/1     Running     0               3h37m
+openshift-monitoring                               node-exporter-4nl96                                               2/2     Running     4               4h41m
+openshift-monitoring                               node-exporter-gnhgq                                               2/2     Running     4               4h41m
+openshift-monitoring                               node-exporter-jdgf4                                               2/2     Running     4               4h42m
+openshift-monitoring                               openshift-state-metrics-6f56b78dff-rcllg                          3/3     Running     0               3h21m
+openshift-monitoring                               prometheus-k8s-0                                                  6/6     Running     0               3h37m
+openshift-monitoring                               prometheus-k8s-1                                                  6/6     Running     0               3h21m
+openshift-monitoring                               prometheus-operator-7df8b45f89-8fbkd                              2/2     Running     0               3h21m
+openshift-monitoring                               prometheus-operator-admission-webhook-8fd5569c4-lfsnj             1/1     Running     0               3h37m
+openshift-monitoring                               prometheus-operator-admission-webhook-8fd5569c4-npcfm             1/1     Running     0               3h21m
+openshift-monitoring                               telemeter-client-65b77486f8-qjb2d                                 3/3     Running     0               3h21m
+openshift-monitoring                               thanos-querier-6cf47b4fdc-fp7fx                                   6/6     Running     0               3h21m
+openshift-monitoring                               thanos-querier-6cf47b4fdc-xgwz7                                   6/6     Running     0               3h37m
+openshift-multus                                   multus-7lmc6                                                      1/1     Running     2               4h5m
+openshift-multus                                   multus-8c24c                                                      1/1     Running     2               4h5m
+openshift-multus                                   multus-additional-cni-plugins-5tddp                               1/1     Running     1               4h5m
+openshift-multus                                   multus-additional-cni-plugins-7c7j8                               1/1     Running     1               4h5m
+openshift-multus                                   multus-additional-cni-plugins-phdw8                               1/1     Running     1               4h4m
+openshift-multus                                   multus-admission-controller-64bdc84787-ldp46                      2/2     Running     0               3h37m
+openshift-multus                                   multus-admission-controller-64bdc84787-x8bkr                      2/2     Running     0               3h21m
+openshift-multus                                   multus-lknlf                                                      1/1     Running     2               4h5m
+openshift-multus                                   network-metrics-daemon-6pznl                                      2/2     Running     2               4h4m
+openshift-multus                                   network-metrics-daemon-8q6lq                                      2/2     Running     2               4h4m
+openshift-multus                                   network-metrics-daemon-k9h2t                                      2/2     Running     2               4h5m
+openshift-network-console                          networking-console-plugin-79bc67f648-lg7kk                        1/1     Running     0               3h37m
+openshift-network-console                          networking-console-plugin-79bc67f648-mllt6                        1/1     Running     0               3h21m
+openshift-network-diagnostics                      network-check-source-db7487d7-c47wl                               1/1     Running     0               3h21m
+openshift-network-diagnostics                      network-check-target-f4xfv                                        1/1     Running     1               4h3m
+openshift-network-diagnostics                      network-check-target-m8rmj                                        1/1     Running     1               4h5m
+openshift-network-diagnostics                      network-check-target-s97vs                                        1/1     Running     1               4h3m
+openshift-network-node-identity                    network-node-identity-6wr9f                                       2/2     Running     2               4h5m
+openshift-network-node-identity                    network-node-identity-8bldm                                       2/2     Running     2               4h5m
+openshift-network-node-identity                    network-node-identity-nxnr9                                       2/2     Running     2               4h5m
+openshift-network-operator                         iptables-alerter-nj2dw                                            1/1     Running     1               4h5m
+openshift-network-operator                         iptables-alerter-rm48p                                            1/1     Running     1               4h5m
+openshift-network-operator                         iptables-alerter-s4f66                                            1/1     Running     1               4h5m
+openshift-network-operator                         network-operator-6bd55744b9-lqtpm                                 1/1     Running     0               3h21m
+openshift-nmstate                                  nmstate-console-plugin-74686bb6b4-b9lgw                           1/1     Running     0               166m
+openshift-nmstate                                  nmstate-handler-ctqv2                                             1/1     Running     0               166m
+openshift-nmstate                                  nmstate-handler-f9s99                                             1/1     Running     0               166m
+openshift-nmstate                                  nmstate-handler-w2sdb                                             1/1     Running     0               166m
+openshift-nmstate                                  nmstate-metrics-7f888697b-jzf4l                                   2/2     Running     0               166m
+openshift-nmstate                                  nmstate-operator-6b95cd6cd9-bsx4v                                 1/1     Running     0               166m
+openshift-nmstate                                  nmstate-webhook-78fdd78d8b-s28sq                                  1/1     Running     0               166m
+openshift-oauth-apiserver                          apiserver-596d8c7f59-mqnhz                                        1/1     Running     0               3h51m
+openshift-oauth-apiserver                          apiserver-596d8c7f59-qv5mc                                        1/1     Running     0               3h21m
+openshift-oauth-apiserver                          apiserver-596d8c7f59-s9bgp                                        1/1     Running     0               3h37m
+openshift-operator-controller                      operator-controller-controller-manager-69cc465b-gf8l9             1/1     Running     0               3h37m
+openshift-operator-lifecycle-manager               catalog-operator-9f5694d96-slx2v                                  1/1     Running     0               3h21m
+openshift-operator-lifecycle-manager               collect-profiles-29576670-p78fn                                   0/1     Completed   0               35m
+openshift-operator-lifecycle-manager               collect-profiles-29576685-fv5n7                                   0/1     Completed   0               20m
+openshift-operator-lifecycle-manager               collect-profiles-29576700-dhsmw                                   0/1     Completed   0               5m18s
+openshift-operator-lifecycle-manager               olm-operator-5fd9687785-28xqx                                     1/1     Running     0               3h21m
+openshift-operator-lifecycle-manager               package-server-manager-755b7cd8db-z98ps                           2/2     Running     0               3h21m
+openshift-operator-lifecycle-manager               packageserver-66bc4b46f7-4qn4g                                    1/1     Running     0               3h37m
+openshift-operator-lifecycle-manager               packageserver-66bc4b46f7-98vww                                    1/1     Running     0               3h22m
+openshift-ovn-kubernetes                           ovnkube-control-plane-7fbcdd5477-f8krs                            2/2     Running     0               3h37m
+openshift-ovn-kubernetes                           ovnkube-control-plane-7fbcdd5477-t6dzb                            2/2     Running     0               3h21m
+openshift-ovn-kubernetes                           ovnkube-node-fv2cc                                                8/8     Running     8               4h2m
+openshift-ovn-kubernetes                           ovnkube-node-rn4d5                                                8/8     Running     8               4h1m
+openshift-ovn-kubernetes                           ovnkube-node-vjrdq                                                8/8     Running     8               4h2m
+openshift-ptp                                      linuxptp-daemon-4zt4h                                             2/2     Running     0               168m
+openshift-ptp                                      linuxptp-daemon-c6bj6                                             2/2     Running     0               168m
+openshift-ptp                                      linuxptp-daemon-l2mmv                                             2/2     Running     0               168m
+openshift-ptp                                      ptp-operator-7577df744c-jjsxp                                     1/1     Running     0               168m
+openshift-route-controller-manager                 route-controller-manager-56f7867b49-6tpbg                         1/1     Running     0               3h21m
+openshift-route-controller-manager                 route-controller-manager-56f7867b49-k24cn                         1/1     Running     0               3h51m
+openshift-route-controller-manager                 route-controller-manager-56f7867b49-nlk6k                         1/1     Running     0               3h37m
+openshift-service-ca-operator                      service-ca-operator-5bdc6f5c87-h2hls                              1/1     Running     0               3h21m
+openshift-service-ca                               service-ca-695cfff67b-bcdz8                                       1/1     Running     0               3h21m
+openshift-sriov-network-operator                   network-resources-injector-6gm5g                                  1/1     Running     0               166m
+openshift-sriov-network-operator                   network-resources-injector-6jp7j                                  1/1     Running     0               166m
+openshift-sriov-network-operator                   network-resources-injector-q2shg                                  1/1     Running     0               167m
+openshift-sriov-network-operator                   operator-webhook-5n6sw                                            1/1     Running     0               166m
+openshift-sriov-network-operator                   operator-webhook-hwk55                                            1/1     Running     0               166m
+openshift-sriov-network-operator                   operator-webhook-vxvxf                                            1/1     Running     0               167m
+openshift-sriov-network-operator                   sriov-device-plugin-th8pg                                         1/1     Running     0               166m
+openshift-sriov-network-operator                   sriov-device-plugin-vrrt2                                         1/1     Running     0               166m
+openshift-sriov-network-operator                   sriov-device-plugin-xntmz                                         1/1     Running     0               166m
+openshift-sriov-network-operator                   sriov-network-config-daemon-b5wkr                                 1/1     Running     0               166m
+openshift-sriov-network-operator                   sriov-network-config-daemon-nz5qg                                 1/1     Running     0               166m
+openshift-sriov-network-operator                   sriov-network-config-daemon-r5lfx                                 1/1     Running     0               167m
+openshift-sriov-network-operator                   sriov-network-operator-7854bcbdd5-9dnw8                           1/1     Running     0               167m
+openshift-storage                                  ceph-csi-controller-manager-68b75b644c-9875g                      1/1     Running     0               3h37m
+openshift-storage                                  cnpg-controller-manager-685cc9f96d-jk82p                          1/1     Running     0               136m
+openshift-storage                                  csi-addons-controller-manager-c4595ff8-mlhc5                      1/1     Running     0               3h21m
+openshift-storage                                  noobaa-operator-6bbc774cbd-7jfjs                                  1/1     Running     0               3h37m
+openshift-storage                                  ocs-client-operator-console-5b5654dc78-dfvdg                      1/1     Running     0               3h37m
+openshift-storage                                  ocs-client-operator-controller-manager-65fd65bfd5-59l2q           1/1     Running     0               3h37m
+openshift-storage                                  ocs-metrics-exporter-74c467b6c7-n9cz5                             3/3     Running     0               3h37m
+openshift-storage                                  ocs-operator-67bff898bc-8pddx                                     1/1     Running     0               3h37m
+openshift-storage                                  odf-console-69695b478d-92n65                                      1/1     Running     0               3h37m
+openshift-storage                                  odf-operator-controller-manager-79cdcbd66f-mj7nm                  1/1     Running     0               3h37m
+openshift-storage                                  rook-ceph-crashcollector-ocp-cp-1.lab1.srib-lab-ocp.lan-66fl9s8   1/1     Running     0               3h22m
+openshift-storage                                  rook-ceph-crashcollector-ocp-cp-2.lab1.srib-lab-ocp.lan-579lgcg   1/1     Running     0               3h6m
+openshift-storage                                  rook-ceph-crashcollector-ocp-cp-3.lab1.srib-lab-ocp.lan-74v9d9w   1/1     Running     0               3h38m
+openshift-storage                                  rook-ceph-exporter-ocp-cp-1.lab1.srib-lab-ocp.lan-7f699586kprc7   1/1     Running     0               3h22m
+openshift-storage                                  rook-ceph-exporter-ocp-cp-2.lab1.srib-lab-ocp.lan-67f96bc48zlp6   1/1     Running     0               3h6m
+openshift-storage                                  rook-ceph-exporter-ocp-cp-3.lab1.srib-lab-ocp.lan-6956678c2qjjv   1/1     Running     0               3h38m
+openshift-storage                                  rook-ceph-mgr-a-55958fc9f-8jhtq                                   4/4     Running     0               3h37m
+openshift-storage                                  rook-ceph-mgr-b-5d45688954-fzf5g                                  4/4     Running     0               3h22m
+openshift-storage                                  rook-ceph-mon-b-75cf66c988-tx4s2                                  2/2     Running     0               3h37m
+openshift-storage                                  rook-ceph-mon-d-5786d97596-c72rx                                  2/2     Running     0               3h51m
+openshift-storage                                  rook-ceph-mon-e-864b4dcddd-bkljv                                  2/2     Running     0               3h21m
+openshift-storage                                  rook-ceph-operator-54dcddb5db-2vn2k                               1/1     Running     0               3h37m
+openshift-storage                                  rook-ceph-osd-0-75d85658c7-n5xg6                                  2/2     Running     0               3h22m
+openshift-storage                                  rook-ceph-osd-1-b944c5b94-mb5rj                                   2/2     Running     0               3h51m
+openshift-storage                                  rook-ceph-osd-2-698df4db65-6wzs9                                  2/2     Running     0               3h37m
+openshift-storage                                  ux-backend-server-6d495b4947-d6hps                                2/2     Running     0               3h37m
 srib@ocp-haproxy-1:~/ocp_4_20$
