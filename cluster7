@@ -1,31 +1,13 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv
-NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
-odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
-srib@ocp-haproxy-1:~/ocp_4_20$ vi storagecluster.yaml
-srib@ocp-haproxy-1:~/ocp_4_20$ oc apply -f storagecluster.yaml
-storagecluster.ocs.openshift.io/ocs-storagecluster created
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get storagecluster -n openshift-storage -w
-NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
-ocs-storagecluster   12m                      2026-03-27T10:13:13Z
-^Csrib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv
-NAME                         DISPLAY                     VERSION        REPLACES                      PHASE
-odf-operator.v4.20.7-rhodf   OpenShift Data Foundation   4.20.7-rhodf   odf-operator.v4.19.12-rhodf   Succeeded
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get pods -n openshift-storage
-NAME                                                       READY   STATUS      RESTARTS   AGE
-cluster-cleanup-job-ocp-cp-1.lab1.srib-lab-ocp.lan-7dx6c   0/1     Completed   0          23m
-cluster-cleanup-job-ocp-cp-2.lab1.srib-lab-ocp.lan-mn522   0/1     Completed   0          23m
-cluster-cleanup-job-ocp-cp-3.lab1.srib-lab-ocp.lan-r5hz2   0/1     Completed   0          23m
-odf-console-7f97dc7cc5-6m67s                               1/1     Running     0          75m
-odf-operator-controller-manager-546bb96c7d-cnpll           1/1     Running     0          75m
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get pods -n openshift-storage
-NAME                                                       READY   STATUS      RESTARTS   AGE
-cluster-cleanup-job-ocp-cp-1.lab1.srib-lab-ocp.lan-7dx6c   0/1     Completed   0          24m
-cluster-cleanup-job-ocp-cp-2.lab1.srib-lab-ocp.lan-mn522   0/1     Completed   0          24m
-cluster-cleanup-job-ocp-cp-3.lab1.srib-lab-ocp.lan-r5hz2   0/1     Completed   0          24m
-odf-console-7f97dc7cc5-6m67s                               1/1     Running     0          75m
-odf-operator-controller-manager-546bb96c7d-cnpll           1/1     Running     0          75m
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get sub
+NAME                                                                                       PACKAGE                   SOURCE                           CHANNEL
+cephcsi-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace          cephcsi-operator          cs-redhat-operator-index-v4-19   stable-4.20
+mcg-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace              mcg-operator              cs-redhat-operator-index-v4-19   stable-4.20
+ocs-client-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace       ocs-client-operator       cs-redhat-operator-index-v4-19   stable-4.20
+ocs-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace              ocs-operator              cs-redhat-operator-index-v4-19   stable-4.20
+odf-csi-addons-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace   odf-csi-addons-operator   cs-redhat-operator-index-v4-19   stable-4.20
+odf-dependencies                                                                           odf-dependencies          cs-redhat-operator-index-v4-19   stable-4.20
+odf-operator                                                                               odf-operator              cs-redhat-operator-index-v4-20   stable-4.20
+odf-prometheus-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace   odf-prometheus-operator   cs-redhat-operator-index-v4-19   stable-4.20
+recipe-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace                    recipe                    cs-redhat-operator-index-v4-19   stable-4.20
+rook-ceph-operator-stable-4.19-cs-redhat-operator-index-v4-19-openshift-marketplace        rook-ceph-operator        cs-redhat-operator-index-v4-19   stable-4.20
 srib@ocp-haproxy-1:~/ocp_4_20$
