@@ -1,194 +1,116 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc project openshift-storage
-Now using project "openshift-storage" on server "https://api.lab1.srib-lab-ocp.lan:6443".
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get po
-NAME                                                              READY   STATUS             RESTARTS   AGE
-ceph-csi-controller-manager-68b75b644c-9875g                      1/1     Running            0          77m
-cnpg-controller-manager-685cc9f96d-g5stf                          0/1     ImagePullBackOff   0          77m
-csi-addons-controller-manager-c4595ff8-mlhc5                      1/1     Running            0          61m
-noobaa-operator-6bbc774cbd-7jfjs                                  1/1     Running            0          77m
-ocs-client-operator-console-5b5654dc78-dfvdg                      1/1     Running            0          77m
-ocs-client-operator-controller-manager-65fd65bfd5-59l2q           1/1     Running            0          77m
-ocs-metrics-exporter-74c467b6c7-n9cz5                             3/3     Running            0          77m
-ocs-operator-67bff898bc-8pddx                                     1/1     Running            0          77m
-odf-console-69695b478d-92n65                                      1/1     Running            0          77m
-odf-operator-controller-manager-79cdcbd66f-mj7nm                  1/1     Running            0          77m
-rook-ceph-crashcollector-ocp-cp-1.lab1.srib-lab-ocp.lan-66fl9s8   1/1     Running            0          62m
-rook-ceph-crashcollector-ocp-cp-2.lab1.srib-lab-ocp.lan-579lgcg   1/1     Running            0          45m
-rook-ceph-crashcollector-ocp-cp-3.lab1.srib-lab-ocp.lan-74v9d9w   1/1     Running            0          77m
-rook-ceph-exporter-ocp-cp-1.lab1.srib-lab-ocp.lan-7f699586kprc7   1/1     Running            0          62m
-rook-ceph-exporter-ocp-cp-2.lab1.srib-lab-ocp.lan-67f96bc48zlp6   1/1     Running            0          45m
-rook-ceph-exporter-ocp-cp-3.lab1.srib-lab-ocp.lan-6956678c2qjjv   1/1     Running            0          77m
-rook-ceph-mgr-a-55958fc9f-8jhtq                                   4/4     Running            0          77m
-rook-ceph-mgr-b-5d45688954-fzf5g                                  4/4     Running            0          62m
-rook-ceph-mon-b-75cf66c988-tx4s2                                  2/2     Running            0          77m
-rook-ceph-mon-d-5786d97596-c72rx                                  2/2     Running            0          91m
-rook-ceph-mon-e-864b4dcddd-bkljv                                  2/2     Running            0          61m
-rook-ceph-operator-54dcddb5db-2vn2k                               1/1     Running            0          77m
-rook-ceph-osd-0-75d85658c7-n5xg6                                  2/2     Running            0          62m
-rook-ceph-osd-1-b944c5b94-mb5rj                                   2/2     Running            0          91m
-rook-ceph-osd-2-698df4db65-6wzs9                                  2/2     Running            0          77m
-ux-backend-server-6d495b4947-d6hps                                2/2     Running            0          77m
-srib@ocp-haproxy-1:~/ocp_4_20$ oc describe po cnpg-controller-manager-685cc9f96d-g5stf
-Name:             cnpg-controller-manager-685cc9f96d-g5stf
-Namespace:        openshift-storage
-Priority:         0
-Service Account:  cnpg-manager
-Node:             ocp-cp-3.lab1.srib-lab-ocp.lan/71.1.1.229
-Start Time:       Fri, 27 Mar 2026 10:57:32 +0530
-Labels:           app=noobaa
-                  app.kubernetes.io/name=cloudnative-pg
-                  pod-template-hash=685cc9f96d
-Annotations:      alm-examples:
-                    [{"kind":"NooBaa","apiVersion":"noobaa.io/v1alpha1","metadata":{"name":"noobaa","creationTimestamp":null},"spec":{"cleanupPolicy":{},"secu...
-                  capabilities: Seamless Upgrades
-                  categories: Storage,Big Data
-                  certified: false
-                  containerImage: registry.redhat.io/odf4/mcg-rhel9-operator@sha256:3d5253b3ee9db1a372ff11586082386a59f68a502a3823353a60b8d29bce8581
-                  createdAt: 2019-07-08T13:10:20.940Z
-                  description: NooBaa is an object data service for hybrid and multi cloud environments.
-                  features.operators.openshift.io/cnf: false
-                  features.operators.openshift.io/cni: false
-                  features.operators.openshift.io/csi: true
-                  features.operators.openshift.io/disconnected: true
-                  features.operators.openshift.io/fips-compliant: true
-                  features.operators.openshift.io/proxy-aware: true
-                  features.operators.openshift.io/tls-profiles: false
-                  features.operators.openshift.io/token-auth-aws: true
-                  features.operators.openshift.io/token-auth-azure: false
-                  features.operators.openshift.io/token-auth-gcp: false
-                  k8s.ovn.org/pod-networks:
-                    {"default":{"ip_addresses":["10.129.0.45/23","fd01:0:0:2::2d/64"],"mac_address":"0a:58:0a:81:00:2d","gateway_ips":["10.129.0.1","fd01:0:0:...
-                  k8s.v1.cni.cncf.io/network-status:
-                    [{
-                        "name": "ovn-kubernetes",
-                        "interface": "eth0",
-                        "ips": [
-                            "10.129.0.45",
-                            "fd01:0:0:2::2d"
-                        ],
-                        "mac": "0a:58:0a:81:00:2d",
-                        "default": true,
-                        "dns": {}
-                    }]
-                  olm.operatorGroup: openshift-storage-operatorgroup
-                  olm.operatorNamespace: openshift-storage
-                  olm.skipRange: >=4.2.0 <4.19.12-rhodf
-                  olm.targetNamespaces: openshift-storage
-                  olmcahash: 5273b14ad81157686d842d4af87d1df08fdb4dc2ec06191fe5459ad1e2eabdc8
-                  openshift.io/scc: restricted-v2
-                  operatorframework.io/properties:
-                    {"properties":[{"type":"olm.gvk","value":{"group":"noobaa.io","kind":"BackingStore","version":"v1alpha1"}},{"type":"olm.gvk","value":{"gro...
-                  operators.openshift.io/infrastructure-features: ֿ'["disconnected"]'
-                  operators.openshift.io/valid-subscription:
-                    ["OpenShift Platform Plus","OpenShift Data Foundation Essentials","OpenShift Data Foundation Advanced"]
-                  operators.operatorframework.io/operator-type: non-standalone
-                  repository: https://github.com/noobaa/noobaa-operator
-                  seccomp.security.alpha.kubernetes.io/pod: runtime/default
-                  security.openshift.io/validated-scc-subject-type: user
-                  support: Red Hat
-Status:           Pending
-SeccompProfile:   RuntimeDefault
-IP:               10.129.0.45
-IPs:
-  IP:           10.129.0.45
-  IP:           fd01:0:0:2::2d
-Controlled By:  ReplicaSet/cnpg-controller-manager-685cc9f96d
-Containers:
-  manager:
-    Container ID:
-    Image:           registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7
-    Image ID:
-    Ports:           8080/TCP, 9443/TCP
-    Host Ports:      0/TCP, 0/TCP
-    SeccompProfile:  RuntimeDefault
-    Command:
-      /manager
-    Args:
-      controller
-      --leader-elect
-      --max-concurrent-reconciles=10
-      --config-map-name=cnpg-controller-manager-config
-      --secret-name=cnpg-controller-manager-config
-      --webhook-port=9443
-    State:          Waiting
-      Reason:       ImagePullBackOff
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:     100m
-      memory:  200Mi
-    Requests:
-      cpu:      100m
-      memory:   100Mi
-    Liveness:   http-get https://:9443/readyz delay=0s timeout=1s period=10s #success=1 #failure=3
-    Readiness:  http-get https://:9443/readyz delay=0s timeout=1s period=10s #success=1 #failure=3
-    Startup:    http-get https://:9443/readyz delay=0s timeout=1s period=5s #success=1 #failure=6
-    Environment:
-      OPERATOR_IMAGE_NAME:           registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7
-      OPERATOR_NAMESPACE:            openshift-storage (v1:metadata.namespace)
-      MONITORING_QUERIES_CONFIGMAP:  cnpg-default-monitoring
-      WATCH_NAMESPACE:               openshift-storage (v1:metadata.namespace)
-      WEBHOOK_CERT_DIR:              /apiserver.local.config/certificates
-      OPERATOR_CONDITION_NAME:       mcg-operator.v4.19.12-rhodf
-    Mounts:
-      /apiserver.local.config/certificates from apiservice-cert (rw)
-      /controller from scratch-data (rw)
-      /run/secrets/cnpg.io/webhook from webhook-certificates (rw)
-      /tmp/k8s-webhook-server/serving-certs from webhook-cert (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-zfs87 (ro)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   True
-  Initialized                 True
-  Ready                       False
-  ContainersReady             False
-  PodScheduled                True
-Volumes:
-  scratch-data:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:
-    SizeLimit:  <unset>
-  webhook-certificates:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  cnpg-webhook-cert
-    Optional:    true
-  apiservice-cert:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  cnpg-controller-manager-service-cert
-    Optional:    false
-  webhook-cert:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  cnpg-controller-manager-service-cert
-    Optional:    false
-  kube-api-access-zfs87:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-QoS Class:                   Burstable
-Node-Selectors:              <none>
-Tolerations:                 node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-                             node.ocs.openshift.io/storage=true:NoSchedule
 Events:
-  Type     Reason          Age                    From               Message
-  ----     ------          ----                   ----               -------
-  Normal   Scheduled       77m                    default-scheduler  Successfully assigned openshift-storage/cnpg-controller-manager-685cc9f96d-g5stf to ocp-cp-3.lab1.srib-lab-ocp.lan
-  Normal   AddedInterface  77m                    multus             Add eth0 [10.129.0.45/23 fd01:0:0:2::2d/64] from ovn-kubernetes
-  Warning  Failed          76m                    kubelet            Failed to pull image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7": rpc error: code = DeadlineExceeded desc = unable to pull image or OCI artifact: pull image err: initializing source docker://registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 3.234.77.102:443: i/o timeout; artifact err: get manifest: build image source: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 34.238.32.80:443: i/o timeout
-  Warning  Failed          75m                    kubelet            Failed to pull image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7": rpc error: code = DeadlineExceeded desc = unable to pull image or OCI artifact: pull image err: initializing source docker://registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 35.170.224.42:443: i/o timeout; artifact err: get manifest: build image source: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 52.55.77.80:443: i/o timeout
-  Warning  Failed          74m                    kubelet            Failed to pull image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7": rpc error: code = DeadlineExceeded desc = unable to pull image or OCI artifact: pull image err: initializing source docker://registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 3.234.77.102:443: i/o timeout; artifact err: get manifest: build image source: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 3.234.77.102:443: i/o timeout
-  Warning  Failed          72m                    kubelet            Failed to pull image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7": rpc error: code = DeadlineExceeded desc = unable to pull image or OCI artifact: pull image err: initializing source docker://registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 44.216.237.41:443: i/o timeout; artifact err: get manifest: build image source: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 34.238.32.80:443: i/o timeout
-  Warning  Failed          69m (x5 over 76m)      kubelet            Error: ErrImagePull
-  Warning  Failed          66m (x2 over 69m)      kubelet            Failed to pull image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7": rpc error: code = DeadlineExceeded desc = unable to pull image or OCI artifact: pull image err: initializing source docker://registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 44.216.237.41:443: i/o timeout; artifact err: get manifest: build image source: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 44.213.233.244:443: i/o timeout
-  Normal   Pulling         42m (x10 over 77m)     kubelet            Pulling image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7"
-  Warning  Failed          11m (x6 over 41m)      kubelet            (combined from similar events): Failed to pull image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7": rpc error: code = DeadlineExceeded desc = unable to pull image or OCI artifact: pull image err: initializing source docker://registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 52.55.77.80:443: i/o timeout; artifact err: get manifest: build image source: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 52.55.77.80:443: i/o timeout
-  Normal   BackOff         2m53s (x257 over 76m)  kubelet            Back-off pulling image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7"
-  Warning  Failed          116s (x260 over 76m)   kubelet            Error: ImagePullBackOff
+  Type     Reason          Age                      From               Message
+  ----     ------          ----                     ----               -------
+  Normal   Scheduled       68s                      default-scheduler  Successfully assigned openshift-storage/cnpg-controller-manager-685cc9f96d-jk82p to ocp-cp-2.lab1.srib-lab-ocp.lan
+  Normal   AddedInterface  66s                      multus             Add eth0 [10.128.0.43/23 fd01:0:0:1::2b/64] from ovn-kubernetes
+  Warning  Failed          5s                       kubelet            Failed to pull image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7": rpc error: code = DeadlineExceeded desc = unable to pull image or OCI artifact: pull image err: initializing source docker://registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 34.238.32.80:443: i/o timeout; artifact err: get manifest: build image source: (Mirrors also failed: [bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: reading manifest sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7 in bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/odf4/odf-cloudnative-pg-rhel9-operator: manifest unknown]): registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7: pinging container registry registry.redhat.io: Get "https://registry.redhat.io/v2/": dial tcp 3.234.77.102:443: i/o timeout
+  Warning  Failed          5s                       kubelet            Error: ErrImagePull
+  Normal   BackOff         5s                       kubelet            Back-off pulling image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7"
+  Warning  Failed          5s                       kubelet            Error: ImagePullBackOff
+  Normal   Pulling         <invalid> (x2 over 66s)  kubelet            Pulling image "registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7"
 srib@ocp-haproxy-1:~/ocp_4_20$
+
+[root@bastion mirror_4_20_14]# cat imageset-config_4_20_14.yaml
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+
+archiveSize: 4
+
+mirror:
+  platform:
+    graph: true
+    channels:
+      - name: stable-4.20
+        minVersion: 4.20.14
+        maxVersion: 4.20.14
+
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.20
+      packages:
+
+        # ODF FULL STACK
+        - name: odf-operator
+          channels:
+            - name: stable-4.20
+
+        - name: ocs-operator
+          channels:
+            - name: stable-4.20
+
+        - name: ocs-client-operator
+          channels:
+            - name: stable-4.20
+
+        - name: mcg-operator
+          channels:
+            - name: stable-4.20
+
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.20
+
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.20
+
+        - name: recipe
+          channels:
+            - name: stable-4.20
+
+        #  STORAGE / INFRA
+        - name: lvms-operator
+          channels:
+            - name: stable-4.20
+
+        - name: local-storage-operator
+          channels:
+            - name: stable
+
+        #  NETWORK / NODE
+        - name: kubernetes-nmstate-operator
+          channels:
+            - name: stable
+
+        - name: sriov-network-operator
+          channels:
+            - name: stable
+
+        - name: ptp-operator
+          channels:
+            - name: stable
+
+
+        #  SECURITY
+        - name: openshift-cert-manager-operator
+
+        #  OPTIONAL (safe)
+        - name: cluster-observability-operator
+
+        - name: kubernetes-image-registry-operator
+
+  additionalImages:
+    # CORE RELEASE
+    - name: quay.io/openshift-release-dev/ocp-release:4.20.14-x86_64
+
+    # ASE IMAGES
+    - name: registry.redhat.io/ubi9/ubi:latest
+    - name: registry.redhat.io/ubi9/ubi-minimal:latest
+    - name: registry.redhat.io/ubi9/ubi-init:latest
+
+    # SUPPORT
+    - name: registry.redhat.io/rhel9/support-tools:latest
+
+
+  helm: {}
