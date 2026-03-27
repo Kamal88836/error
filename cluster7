@@ -1,183 +1,97 @@
-Perfect 👍 — this is actually **exactly where you should be**.
 
-👉 Clean slate = best place to fix disconnected issues properly.
-
----
-
-# 🚨 Current State (GOOD)
-
-```text
-No CSV
-No Subscriptions
-No ODF components
-```
-
-✅ This is correct
-❌ But cluster cannot proceed yet
-
----
-
-# 🔥 What is STILL missing
-
-👉 Your cluster **still does NOT have snapshotter operator in catalog**
-
-Because you have NOT:
-
-```text
-❌ Re-run mirror with corrected YAML
-❌ Reloaded catalog
-```
-
----
-
-# ⚠️ Important (don’t skip this logic)
-
-Right now:
-
-```text
-CatalogSource = OLD (without snapshotter)
-```
-
-So even if you create subscription:
-
-👉 It will FAIL again
-
----
-
-# 🚀 EXACT NEXT STEPS (follow strictly)
-
----
-
-## ✅ Step 1 — Re-run mirror (MANDATORY)
-
-Use corrected YAML (with snapshotter):
-
-```bash
-oc mirror -c imageset-config.yaml file:///root/mirror --v2
-```
-
-Then:
-
-```bash
-oc mirror --from file:///root/mirror docker://bastion... --v2
-```
-
----
-
-## ✅ Step 2 — Refresh catalog (VERY IMPORTANT)
-
-```bash
-oc delete catalogsource cs-redhat-operator-index-v4-20 -n openshift-marketplace
-oc apply -f cs-redhat-operator-index-v4-20.yaml
-```
-
----
-
-## ✅ Step 3 — Verify snapshotter exists
-
-```bash
-oc get packagemanifest -n openshift-marketplace | grep snapshotter
-```
-
-👉 MUST show:
-
-```text
-odf-external-snapshotter-operator
-```
-
----
-
-## 🚀 Step 4 — Create ONLY odf-operator
-
-```yaml
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: odf-operator
-  namespace: openshift-storage
-spec:
-  channel: stable-4.20
-  name: odf-operator
-  source: cs-redhat-operator-index-v4-20
-  sourceNamespace: openshift-marketplace
-```
-
-Apply:
-
-```bash
-oc apply -f odf-sub.yaml
-```
-
----
-
-## 🔍 Step 5 — Watch install
-
-```bash
-oc get csv -n openshift-storage -w
-```
-
----
-
-# 🎯 Expected (THIS TIME it will work)
-
-```text
-odf-external-snapshotter-operator.v4.20.x   Installing ✅
-ocs-client-operator.v4.20.x                 Installing ✅
-rook-ceph-operator.v4.20.x                  Installing ✅
-```
-
----
-
-# 🚀 Then
-
-```bash
-oc get pods -n openshift-storage
-```
-
-👉 You’ll see:
-
-* rook-ceph-mon
-* rook-ceph-osd
-* noobaa
-* csi
-
----
-
-# 🧠 Key Insight (very important)
-
-👉 Deleting subscriptions/CSV was correct
-👉 But **mirror + catalog must also be corrected**
-
-Otherwise:
-
-```text
-Clean cluster + wrong catalog = same failure again ❌
-```
-
----
-
-# ⚡ Quick sanity check before proceeding
-
-After Step 2, run:
-
-```bash
-oc get catalogsource -n openshift-marketplace
-```
-
-👉 Ensure:
-
-```text
-cs-redhat-operator-index-v4-20 → READY
-```
-
----
-
-# 💬 If you want
-
-After Step 3, paste:
-
-```bash
-oc get packagemanifest | grep odf
-```
-
-I’ll confirm 100% before you proceed 👍
+srib@ocp-haproxy-1:~/ocp_4_20$ oc delete sub -n openshift-storage --all
+subscription.operators.coreos.com "cephcsi-operator" deleted
+subscription.operators.coreos.com "mcg-operator" deleted
+subscription.operators.coreos.com "ocs-client-operator" deleted
+subscription.operators.coreos.com "ocs-operator" deleted
+subscription.operators.coreos.com "odf-dependencies" deleted
+subscription.operators.coreos.com "odf-operator" deleted
+subscription.operators.coreos.com "rook-ceph-operator" deleted
+srib@ocp-haproxy-1:~/ocp_4_20$ oc delete csv -n openshift-storage --all
+clusterserviceversion.operators.coreos.com "odf-operator.v4.20.7-rhodf" deleted
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -n openshift-storage -w
+^Csrib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -n openshift-storage
+No resources found in openshift-storage namespace.
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get packagemanifest -n openshift-marketplace | grep snapshotter
+srib@ocp-haproxy-1:~/ocp_4_20$ oc apply -f subscriptions.yaml
+subscription.operators.coreos.com/ocs-operator created
+subscription.operators.coreos.com/mcg-operator created
+subscription.operators.coreos.com/cephcsi-operator created
+subscription.operators.coreos.com/rook-ceph-operator created
+subscription.operators.coreos.com/ocs-client-operator created
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get packagemanifest -n openshift-marketplace | grep snapshotter
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get sub
+NAME                  PACKAGE               SOURCE                           CHANNEL
+cephcsi-operator      cephcsi-operator      cs-redhat-operator-index-v4-20   stable-4.20
+mcg-operator          mcg-operator          cs-redhat-operator-index-v4-20   stable-4.20
+ocs-client-operator   ocs-client-operator   cs-redhat-operator-index-v4-20   stable-4.20
+ocs-operator          ocs-operator          cs-redhat-operator-index-v4-20   stable-4.20
+rook-ceph-operator    rook-ceph-operator    cs-redhat-operator-index-v4-20   stable-4.20
+srib@ocp-haproxy-1:~/ocp_4_20$ oc describe sub odf-operator
+Error from server (NotFound): subscriptions.operators.coreos.com "odf-operator" not found
+srib@ocp-haproxy-1:~/ocp_4_20$ vi  subscriptions.yaml
+srib@ocp-haproxy-1:~/ocp_4_20$ oc apply -f subscriptions.yaml
+subscription.operators.coreos.com/odf-operator created
+subscription.operators.coreos.com/ocs-operator unchanged
+subscription.operators.coreos.com/mcg-operator unchanged
+subscription.operators.coreos.com/cephcsi-operator unchanged
+subscription.operators.coreos.com/rook-ceph-operator unchanged
+subscription.operators.coreos.com/ocs-client-operator unchanged
+srib@ocp-haproxy-1:~/ocp_4_20$ oc describe sub odf-operator
+Name:         odf-operator
+Namespace:    openshift-storage
+Labels:       operators.coreos.com/odf-operator.openshift-storage=
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         Subscription
+Metadata:
+  Creation Timestamp:  2026-03-27T11:22:13Z
+  Generation:          1
+  Resource Version:    15415186
+  UID:                 e42de650-a73b-4c56-9f75-c5a5edd098f3
+Spec:
+  Channel:           stable-4.20
+  Name:              odf-operator
+  Source:            cs-redhat-operator-index-v4-20
+  Source Namespace:  openshift-marketplace
+Status:
+  Catalog Health:
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              cs-redhat-operator-index-v4-19
+      Namespace:         openshift-marketplace
+      Resource Version:  15412994
+      UID:               f8d96148-6fbe-45d6-aecf-832139a314af
+    Healthy:             true
+    Last Updated:        2026-03-27T11:22:14Z
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              cs-redhat-operator-index-v4-20
+      Namespace:         openshift-marketplace
+      Resource Version:  15412998
+      UID:               8c7af676-b52b-4142-b568-674b9cea5e04
+    Healthy:             true
+    Last Updated:        2026-03-27T11:22:14Z
+  Conditions:
+    Last Transition Time:  2026-03-27T11:22:14Z
+    Message:               all available catalogsources are healthy
+    Reason:                AllCatalogSourcesHealthy
+    Status:                False
+    Type:                  CatalogSourcesUnhealthy
+    Message:               constraints not satisfiable: bundle ocs-client-operator.v4.20.7-rhodf requires an operator with package: odf-external-snapshotter-operator and with version in range: 4.20.7-rhodf, subscription ocs-client-operator exists, subscription ocs-client-operator requires cs-redhat-operator-index-v4-20/openshift-marketplace/stable-4.20/ocs-client-operator.v4.20.7-rhodf
+    Reason:                ConstraintsNotSatisfiable
+    Status:                True
+    Type:                  ResolutionFailed
+  Last Updated:            2026-03-27T11:22:14Z
+Events:                    <none>
+srib@ocp-haproxy-1:~/ocp_4_20$
