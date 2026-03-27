@@ -1,0 +1,187 @@
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get storagecluster -n openshift-storage
+NAME                 AGE   PHASE      EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   26d   Deleting              2026-02-28T10:39:16Z   4.19.12
+srib@ocp-haproxy-1:~/ocp_4_20$ oc describe storagecluster -n openshift-storage
+Name:         ocs-storagecluster
+Namespace:    openshift-storage
+Labels:       <none>
+Annotations:  uninstall.ocs.openshift.io/cleanup-policy: delete
+              uninstall.ocs.openshift.io/mode: graceful
+API Version:  ocs.openshift.io/v1
+Kind:         StorageCluster
+Metadata:
+  Creation Timestamp:             2026-02-28T10:39:16Z
+  Deletion Grace Period Seconds:  0
+  Deletion Timestamp:             2026-03-25T11:11:45Z
+  Finalizers:
+    storagecluster.ocs.openshift.io
+  Generation:        3
+  Resource Version:  14163365
+  UID:               e04de005-4638-4f5e-9128-609950bf95f5
+Spec:
+  Arbiter:
+  Encryption:
+    Key Rotation:
+      Schedule:  @weekly
+    Kms:
+  External Storage:
+  Managed Resources:
+    Ceph Block Pools:
+    Ceph Cluster:
+    Ceph Config:
+    Ceph Dashboard:
+    Ceph Filesystems:
+      Data Pool Spec:
+        Application:
+        Erasure Coded:
+          Coding Chunks:  0
+          Data Chunks:    0
+        Mirroring:
+        Quotas:
+        Replicated:
+          Size:  0
+        Status Check:
+          Mirror:
+    Ceph Non Resilient Pools:
+      Count:  1
+      Resources:
+      Volume Claim Template:
+        Metadata:
+        Spec:
+          Resources:
+        Status:
+    Ceph Object Store Users:
+    Ceph Object Stores:
+    Ceph RBD Mirror:
+      Daemon Count:  1
+    Ceph Toolbox:
+  Mon Data Dir Host Path:  /var/lib/rook
+  Network:
+    Multi Cluster Service:
+    Provider:  multus
+    Selectors:
+      Public:  ocs-public-cluster
+  Resources:
+    Mds:
+      Limits:
+        Cpu:     2
+        Memory:  8Gi
+      Requests:
+        Cpu:     2
+        Memory:  8Gi
+  Storage Device Sets:
+    Config:
+    Count:  1
+    Data PVC Template:
+      Metadata:
+      Spec:
+        Access Modes:
+          ReadWriteOnce
+        Resources:
+          Requests:
+            Storage:         1000Gi
+        Storage Class Name:  localblock
+        Volume Mode:         Block
+      Status:
+    Name:  ocs-deviceset
+    Placement:
+    Prepare Placement:
+    Replica:  3
+    Resources:
+      Limits:
+        Cpu:     2
+        Memory:  5Gi
+      Requests:
+        Cpu:     2
+        Memory:  5Gi
+Status:
+  Conditions:
+    Last Heartbeat Time:      2026-02-28T10:39:17Z
+    Last Transition Time:     2026-02-28T10:39:17Z
+    Message:                  Version check successful
+    Reason:                   VersionMatched
+    Status:                   False
+    Type:                     VersionMismatch
+    Last Heartbeat Time:      2026-03-25T09:35:22Z
+    Last Transition Time:     2026-03-24T14:51:46Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     ReconcileComplete
+    Last Heartbeat Time:      2026-03-25T09:35:22Z
+    Last Transition Time:     2026-02-28T10:47:47Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     Available
+    Last Heartbeat Time:      2026-03-25T09:35:22Z
+    Last Transition Time:     2026-03-24T17:49:36Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   False
+    Type:                     Progressing
+    Last Heartbeat Time:      2026-03-25T09:35:22Z
+    Last Transition Time:     2026-02-28T10:39:17Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   False
+    Type:                     Degraded
+    Last Heartbeat Time:      2026-03-25T09:35:22Z
+    Last Transition Time:     2026-03-24T17:49:36Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     Upgradeable
+  Current Mon Count:          3
+  Default Ceph Device Class:  ssd
+  Failure Domain:             rack
+  Failure Domain Key:         topology.rook.io/rack
+  Failure Domain Values:
+    rack0
+    rack1
+    rack2
+  Images:
+    Ceph:
+      Actual Image:   registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:18dcebef13476420597458155ce97d12ab426a5a014e7fd816f7a531d5ee4b92
+      Desired Image:  registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
+    Noobaa Core:
+      Actual Image:   registry.redhat.io/odf4/mcg-core-rhel9@sha256:aa3df8c2436cf6ba0611976ae24a518e5d12cc6b40960ac02ffa1d719dc78090
+      Desired Image:  registry.redhat.io/odf4/mcg-core-rhel9@sha256:f25d6da9e0fa9bfaddd2b3b873a2ca8e3be48172bf6eb6990546d23a82a89ade
+    Noobaa DB:
+      Actual Image:   registry.redhat.io/rhel9/postgresql-15@sha256:8da4d3837db7dc4baaa1cc2612fe8e13b7507a4690f1ff5e5e97a26a157aa9e5
+      Desired Image:  registry.redhat.io/rhel9/postgresql-16@sha256:78e014dd47864339739812eab817948c83e7ab7315bc41efd9e18363b418cf41
+  Kms Server Connection:
+  Node Topologies:
+    Labels:
+      kubernetes.io/hostname:
+        ocp-cp-1.lab1.srib-lab-ocp.lan
+        ocp-cp-2.lab1.srib-lab-ocp.lan
+        ocp-cp-3.lab1.srib-lab-ocp.lan
+      topology.rook.io/rack:
+        rack0
+        rack1
+        rack2
+  Phase:  Deleting
+  Related Objects:
+    API Version:       ceph.rook.io/v1
+    Kind:              CephCluster
+    Name:              ocs-storagecluster-cephcluster
+    Namespace:         openshift-storage
+    Resource Version:  14122736
+    UID:               e863311c-19a2-4d70-9ba1-e00fe97f82a4
+    API Version:       noobaa.io/v1alpha1
+    Kind:              NooBaa
+    Name:              noobaa
+    Namespace:         openshift-storage
+    Resource Version:  14122674
+    UID:               dd612621-b7c3-4398-94b3-a1d13e585c20
+  Version:             4.19.12
+Events:
+  Type     Reason            Age                  From                       Message
+  ----     ------            ----                 ----                       -------
+  Warning  UninstallPending  28m (x5 over 4h27m)  controller_storagecluster  uninstall: Waiting for CephCluster to be deleted
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get cephcluster -n openshift-storage
+NAME                             DATADIRHOSTPATH   MONCOUNT   AGE   PHASE      MESSAGE                    HEALTH        EXTERNAL   FSID
+ocs-storagecluster-cephcluster   /var/lib/rook     3          26d   Deleting   Deleting the CephCluster   HEALTH_WARN              06e4958b-e790-42e2-baad-82569c965b0a
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get cephcluster -n openshift-storage -o jsonpath='{.items[*].status.ceph.health}'
+HEALTH_WARNsrib@ocp-haproxy-1:~/ocp_4_20$
