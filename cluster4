@@ -1,30 +1,31 @@
-srib@ocp-haproxy-1:~/ocp_4_20$ oc patch sub odf-operator -n openshift-storage \
-> --type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
-subscription.operators.coreos.com/odf-operator patched (no change)
-srib@ocp-haproxy-1:~/ocp_4_20$ oc patch sub ocs-operator -n openshift-storage \
-> --type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
-Error from server (NotFound): subscriptions.operators.coreos.com "ocs-operator" not found
-srib@ocp-haproxy-1:~/ocp_4_20$ oc patch sub mcg-operator -n openshift-storage \
-> --type=merge -p '{"spec":{"source":"cs-redhat-operator-index-v4-20"}}'
-Error from server (NotFound): subscriptions.operators.coreos.com "mcg-operator" not found
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get csv -A
-NAMESPACE                              NAME                                              DISPLAY                            VERSION               REPLACES                                          PHASE
-openshift-local-storage                local-storage-operator.v4.20.0-202603030647       Local Storage                      4.20.0-202603030647   local-storage-operator.v4.19.0-202602262001       Succeeded
-openshift-nmstate                      kubernetes-nmstate-operator.4.20.0-202602261925   Kubernetes NMState Operator        4.20.0-202602261925   kubernetes-nmstate-operator.4.19.0-202602262001   Succeeded
-openshift-operator-lifecycle-manager   packageserver                                     Package Server                     0.0.1-snapshot                                                          Succeeded
-openshift-ptp                          ptp-operator.v4.20.0-202603160950                 PTP Operator                       4.20.0-202603160950   ptp-operator.v4.19.0-202603031419                 Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.20.0-202602261925       SR-IOV Network Operator            4.20.0-202602261925   sriov-network-operator.v4.19.0-202603100922       Succeeded
-openshift-storage                      cephcsi-operator.v4.19.12-rhodf                   CephCSI operator                   4.19.12-rhodf         cephcsi-operator.v4.19.11-rhodf                   Succeeded
-openshift-storage                      mcg-operator.v4.19.12-rhodf                       NooBaa Operator                    4.19.12-rhodf         mcg-operator.v4.19.11-rhodf                       Succeeded
-openshift-storage                      ocs-client-operator.v4.19.12-rhodf                OpenShift Data Foundation Client   4.19.12-rhodf         ocs-client-operator.v4.19.11-rhodf                Succeeded
-openshift-storage                      ocs-operator.v4.19.12-rhodf                       OpenShift Container Storage        4.19.12-rhodf         ocs-operator.v4.19.11-rhodf                       Succeeded
-openshift-storage                      odf-csi-addons-operator.v4.19.12-rhodf            CSI Addons                         4.19.12-rhodf         odf-csi-addons-operator.v4.19.11-rhodf            Succeeded
-openshift-storage                      odf-dependencies.v4.19.12-rhodf                   Data Foundation Dependencies       4.19.12-rhodf         odf-dependencies.v4.19.11-rhodf                   Succeeded
-openshift-storage                      odf-operator.v4.19.12-rhodf                       OpenShift Data Foundation          4.19.12-rhodf         odf-operator.v4.19.11-rhodf                       Succeeded
-openshift-storage                      odf-prometheus-operator.v4.19.12-rhodf            Prometheus Operator                4.19.12-rhodf         odf-prometheus-operator.v4.19.11-rhodf            Succeeded
-openshift-storage                      recipe.v4.19.12-rhodf                             Recipe                             4.19.12-rhodf         recipe.v4.19.11-rhodf                             Succeeded
-openshift-storage                      rook-ceph-operator.v4.19.12-rhodf                 Rook-Ceph                          4.19.12-rhodf         rook-ceph-operator.v4.19.11-rhodf                 Succeeded
+srib@ocp-haproxy-1:~/ocp_4_20$ oc project
+Using project "openshift-storage" on server "https://api.lab1.srib-lab-ocp.lan:6443".
+srib@ocp-haproxy-1:~/ocp_4_20$ oc get po
+NAME                                                              READY   STATUS    RESTARTS   AGE
+ceph-csi-controller-manager-68b75b644c-9875g                      1/1     Running   0          3h36m
+cnpg-controller-manager-685cc9f96d-jk82p                          1/1     Running   0          134m
+csi-addons-controller-manager-c4595ff8-mlhc5                      1/1     Running   0          3h19m
+noobaa-operator-6bbc774cbd-7jfjs                                  1/1     Running   0          3h36m
+ocs-client-operator-console-5b5654dc78-dfvdg                      1/1     Running   0          3h36m
+ocs-client-operator-controller-manager-65fd65bfd5-59l2q           1/1     Running   0          3h36m
+ocs-metrics-exporter-74c467b6c7-n9cz5                             3/3     Running   0          3h36m
+ocs-operator-67bff898bc-8pddx                                     1/1     Running   0          3h36m
+odf-console-69695b478d-92n65                                      1/1     Running   0          3h36m
+odf-operator-controller-manager-79cdcbd66f-mj7nm                  1/1     Running   0          3h36m
+rook-ceph-crashcollector-ocp-cp-1.lab1.srib-lab-ocp.lan-66fl9s8   1/1     Running   0          3h21m
+rook-ceph-crashcollector-ocp-cp-2.lab1.srib-lab-ocp.lan-579lgcg   1/1     Running   0          3h4m
+rook-ceph-crashcollector-ocp-cp-3.lab1.srib-lab-ocp.lan-74v9d9w   1/1     Running   0          3h36m
+rook-ceph-exporter-ocp-cp-1.lab1.srib-lab-ocp.lan-7f699586kprc7   1/1     Running   0          3h21m
+rook-ceph-exporter-ocp-cp-2.lab1.srib-lab-ocp.lan-67f96bc48zlp6   1/1     Running   0          3h4m
+rook-ceph-exporter-ocp-cp-3.lab1.srib-lab-ocp.lan-6956678c2qjjv   1/1     Running   0          3h36m
+rook-ceph-mgr-a-55958fc9f-8jhtq                                   4/4     Running   0          3h36m
+rook-ceph-mgr-b-5d45688954-fzf5g                                  4/4     Running   0          3h20m
+rook-ceph-mon-b-75cf66c988-tx4s2                                  2/2     Running   0          3h36m
+rook-ceph-mon-d-5786d97596-c72rx                                  2/2     Running   0          3h50m
+rook-ceph-mon-e-864b4dcddd-bkljv                                  2/2     Running   0          3h19m
+rook-ceph-operator-54dcddb5db-2vn2k                               1/1     Running   0          3h36m
+rook-ceph-osd-0-75d85658c7-n5xg6                                  2/2     Running   0          3h20m
+rook-ceph-osd-1-b944c5b94-mb5rj                                   2/2     Running   0          3h50m
+rook-ceph-osd-2-698df4db65-6wzs9                                  2/2     Running   0          3h36m
+ux-backend-server-6d495b4947-d6hps                                2/2     Running   0          3h36m
 srib@ocp-haproxy-1:~/ocp_4_20$
