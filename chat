@@ -1,47 +1,10 @@
-srib@ocp-haproxy-1:~/kamal$ oc exec -n bscf bscf125-bpp0-5bb84c8c88-bvj8g -- which tar
-Defaulted container "bpp" out of: bpp, install (init)
-/usr/bin/tar
-srib@ocp-haproxy-1:~/kamal$ oc exec -n bscf bscf125-bpp0-5bb84c8c88-bvj8g -- tar --version
-Defaulted container "bpp" out of: bpp, install (init)
-tar (GNU tar) 1.30
-Copyright (C) 2017 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-
-Written by John Gilmore and Jay Fenlason.
-srib@ocp-haproxy-1:~/kamal$ oc exec -n bscf bscf125-bpp0-5bb84c8c88-bvj8g -- cat /root/vpms_noti.pcap > vpms_noti.pcap
-Defaulted container "bpp" out of: bpp, install (init)
-cat: /root/vpms_noti.pcap: No such file or directory
-command terminated with exit code 1
-srib@ocp-haproxy-1:~/kamal$ ll
-total 258780
-drwxrwxr-x  5 srib srib      4096 Apr  1 12:41 ./
-drwxr-xr-x 45 srib srib      4096 Apr  1 12:37 ../
-drwxr-xr-x  2 srib srib      4096 Mar 23 13:06 backup/
--rw-r--r--  1 srib srib       442 Mar 23 12:55 cc-redhat-operator-index-v4-19.yaml
--rw-rw-r--  1 srib srib      3506 Mar 23 14:28 combined-ca.crt
--rw-rw-r--  1 srib srib       444 Mar 23 12:55 cs-redhat-operator-index-v4-19.yaml
--rw-------  1 root root 223377920 Feb 24 15:39 etcd.tar
--rw-rw-r--  1 srib srib      9992 Mar 23 14:48 harbor_backup.yaml
--rw-rw-r--  1 srib srib      1589 Mar 23 12:55 idms-oc-mirror.yaml
--rw-rw-r--  1 srib srib       987 Mar 23 12:55 itms-oc-mirror.yaml
-drwxr-xr-x  2 srib srib      4096 Mar 26 14:21 kamal/
--rw-rw-r--  1 srib srib       911 Mar 23 15:21 quay.csr
--rw-rw-r--  1 srib srib      2620 Mar 23 14:53 quay-fullchain.crt
--rw-------  1 srib srib      1704 Mar 23 15:21 quay.key
--rw-r--r--  1 srib srib      1608 Mar 23 12:55 signature-configmap.yaml
-drwx------ 15 srib srib      4096 Mar 16 10:18 sosreport-ocp-cp-3-04298973-2026-01-29-phrpmnh/
--rw-------  1 srib srib  41531460 Mar 16 10:14 sosreport-ocp-cp-3-04298973-2026-01-29-phrpmnh.tar.xz
--rw-rw-r--  1 srib srib      2122 Mar 23 11:27 sribharbor.sec.samsung.net.crt
--rw-rw-r--  1 srib srib         0 Apr  1 12:41 vpms_noti.pcap
-srib@ocp-haproxy-1:~/kamal$ cat vpms_noti.pcap
-srib@ocp-haproxy-1:~/kamal$ oc exec -n bscf bscf125-bpp0-5bb84c8c88-bvj8g -- base64 /root/vpms_noti.pcap | base64 -d > vpms_noti.pcap
-Defaulted container "bpp" out of: bpp, install (init)
-base64: /root/vpms_noti.pcap: No such file or directory
-command terminated with exit code 1
-srib@ocp-haproxy-1:~/kamal$ oc exec -n bscf bscf125-bpp0-5bb84c8c88-bvj8g -- ls -l /root/vpms_noti.pcap
-Defaulted container "bpp" out of: bpp, install (init)
-ls: cannot access '/root/vpms_noti.pcap': No such file or directory
-command terminated with exit code 2
-srib@ocp-haproxy-1:~/kamal$
+[root@mirror1 ocp-install]# openshift-install agent create cluster-manifests
+WARNING imageContentSources is deprecated, please use ImageDigestSources
+INFO Configuration has 3 master replicas and 0 worker replicas
+FATAL failed to fetch Agent Manifests: failed to fetch dependency of "Agent Manifests": failed to generate asset "NMState Config": staticNetwork configuration is not valid: 3 errors occurred:
+FATAL   * failed to validate network yaml for host 0, install nmstate package, exec: "nmstatectl": executable file not found in $PATH
+FATAL   * failed to validate network yaml for host 1, install nmstate package, exec: "nmstatectl": executable file not found in $PATH
+FATAL   * failed to validate network yaml for host 2, install nmstate package, exec: "nmstatectl": executable file not found in $PATH
+FATAL
+FATAL
+[root@mirror1 ocp-install]#
