@@ -1,76 +1,45 @@
-Your command is almost correct, but the issue is with the destination path 👇
-
-
----
-
-❌ Problem
-
-You used:
-
-oc cp bscf/bscf125-bpp0-5bb84c8c88-bvj8g:/root/vpms_noti.pcap ./home/srib/kamal/
-
-👉 ./home/srib/kamal/ is treated as a relative path, not the actual /home/srib/kamal/
-
-So it tried to copy into:
-
-~/kamal/home/srib/kamal/
-
-(which doesn’t exist → file not copied)
-
-
----
-
-✅ Fix (correct command)
-
-Use absolute path:
-
-oc cp bscf/bscf125-bpp0-5bb84c8c88-bvj8g:/root/vpms_noti.pcap /home/srib/kamal/
-
-
----
-
-🔍 Or simply copy to current directory
-
-You are already inside ~/kamal, so just run:
-
-oc cp bscf/bscf125-bpp0-5bb84c8c88-bvj8g:/root/vpms_noti.pcap .
-
-
----
-
-🔎 Verify file exists
-
-After running:
-
-ll vpms_noti.pcap
-
-
----
-
-⚠️ Note about container message
-
+srib@ocp-haproxy-1:~/kamal$ oc cp bscf/bscf125-bpp0-5bb84c8c88-bvj8g:/root/vpms_noti.pcap /home/srib/kamal/
 Defaulted container "bpp" out of: bpp, install (init)
-
-👉 This is not an error, just informational
-(Your pod has multiple containers, and it picked bpp)
-
-
----
-
-🧠 If still not working
-
-Try explicit container:
-
-oc cp -c bpp bscf/bscf125-bpp0-5bb84c8c88-bvj8g:/root/vpms_noti.pcap .
-
-
----
-
-If it still doesn’t show up, tell me:
-
-Output of echo $?
-
-Try ls /home/srib/kamal/
-
-
-I’ll debug deeper 👍
+srib@ocp-haproxy-1:~/kamal$ ll
+total 258780
+drwxrwxr-x  5 srib srib      4096 Mar 26 14:21 ./
+drwxr-xr-x 45 srib srib      4096 Apr  1 12:29 ../
+drwxr-xr-x  2 srib srib      4096 Mar 23 13:06 backup/
+-rw-r--r--  1 srib srib       442 Mar 23 12:55 cc-redhat-operator-index-v4-19.yaml
+-rw-rw-r--  1 srib srib      3506 Mar 23 14:28 combined-ca.crt
+-rw-rw-r--  1 srib srib       444 Mar 23 12:55 cs-redhat-operator-index-v4-19.yaml
+-rw-------  1 root root 223377920 Feb 24 15:39 etcd.tar
+-rw-rw-r--  1 srib srib      9992 Mar 23 14:48 harbor_backup.yaml
+-rw-rw-r--  1 srib srib      1589 Mar 23 12:55 idms-oc-mirror.yaml
+-rw-rw-r--  1 srib srib       987 Mar 23 12:55 itms-oc-mirror.yaml
+drwxr-xr-x  2 srib srib      4096 Mar 26 14:21 kamal/
+-rw-rw-r--  1 srib srib       911 Mar 23 15:21 quay.csr
+-rw-rw-r--  1 srib srib      2620 Mar 23 14:53 quay-fullchain.crt
+-rw-------  1 srib srib      1704 Mar 23 15:21 quay.key
+-rw-r--r--  1 srib srib      1608 Mar 23 12:55 signature-configmap.yaml
+drwx------ 15 srib srib      4096 Mar 16 10:18 sosreport-ocp-cp-3-04298973-2026-01-29-phrpmnh/
+-rw-------  1 srib srib  41531460 Mar 16 10:14 sosreport-ocp-cp-3-04298973-2026-01-29-phrpmnh.tar.xz
+-rw-rw-r--  1 srib srib      2122 Mar 23 11:27 sribharbor.sec.samsung.net.crt
+srib@ocp-haproxy-1:~/kamal$ oc cp bscf/bscf125-bpp0-5bb84c8c88-bvj8g:/root/vpms_noti.pcap .
+Defaulted container "bpp" out of: bpp, install (init)
+srib@ocp-haproxy-1:~/kamal$ ll
+total 258780
+drwxrwxr-x  5 srib srib      4096 Mar 26 14:21 ./
+drwxr-xr-x 45 srib srib      4096 Apr  1 12:29 ../
+drwxr-xr-x  2 srib srib      4096 Mar 23 13:06 backup/
+-rw-r--r--  1 srib srib       442 Mar 23 12:55 cc-redhat-operator-index-v4-19.yaml
+-rw-rw-r--  1 srib srib      3506 Mar 23 14:28 combined-ca.crt
+-rw-rw-r--  1 srib srib       444 Mar 23 12:55 cs-redhat-operator-index-v4-19.yaml
+-rw-------  1 root root 223377920 Feb 24 15:39 etcd.tar
+-rw-rw-r--  1 srib srib      9992 Mar 23 14:48 harbor_backup.yaml
+-rw-rw-r--  1 srib srib      1589 Mar 23 12:55 idms-oc-mirror.yaml
+-rw-rw-r--  1 srib srib       987 Mar 23 12:55 itms-oc-mirror.yaml
+drwxr-xr-x  2 srib srib      4096 Mar 26 14:21 kamal/
+-rw-rw-r--  1 srib srib       911 Mar 23 15:21 quay.csr
+-rw-rw-r--  1 srib srib      2620 Mar 23 14:53 quay-fullchain.crt
+-rw-------  1 srib srib      1704 Mar 23 15:21 quay.key
+-rw-r--r--  1 srib srib      1608 Mar 23 12:55 signature-configmap.yaml
+drwx------ 15 srib srib      4096 Mar 16 10:18 sosreport-ocp-cp-3-04298973-2026-01-29-phrpmnh/
+-rw-------  1 srib srib  41531460 Mar 16 10:14 sosreport-ocp-cp-3-04298973-2026-01-29-phrpmnh.tar.xz
+-rw-rw-r--  1 srib srib      2122 Mar 23 11:27 sribharbor.sec.samsung.net.crt
+srib@ocp-haproxy-1:~/kamal$ 
