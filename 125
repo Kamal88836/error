@@ -1,0 +1,220 @@
+[root@mirror1 backup]# cat agent-config.yaml
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: cl2-mno1    # name should be same as mentioned in install-config
+hosts:
+  - hostname: bscmaster1.cl2-mno1-rvt.lan.
+    role: master
+    interfaces:
+    - name: ens1f0
+      macAddress: "50:7C:6F:24:3B:18"
+    rootDeviceHints:
+      deviceName: /dev/sda   #'vda' for VM, 'sda/sdb' for physical server
+    networkConfig:
+      interfaces:
+      - name: ens1f0
+        type: ethernet
+        state: up
+        mtu: 8500    # if MTU is set as 8500, add network config file in cluster manifests
+        mac-address: "50:7C:6F:24:3B:18"
+        ipv4:
+          address:
+          - ip: 72.2.0.13
+            prefix-length: 22
+          enabled: true
+          dhcp: false
+        ipv6:
+          address:
+          - ip: 2405:100:200:172::13
+            prefix-length: 64
+          enabled: true
+          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          - 72.2.0.34
+          - 2405:100:200:172::34
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 72.2.0.1
+            next-hop-interface: ens1f0
+          - destination: ::/0
+            next-hop-address: 2405:100:200:172::1
+            next-hop-interface: ens1f0
+  - hostname: bscmaster2.cl2-mno1-rvt.lan.
+    role: master
+    interfaces:
+    - name: ens1f0
+      macAddress: "50:7c:6f:14:39:2c"
+    rootDeviceHints:
+      deviceName: /dev/sda
+    networkConfig:
+      interfaces:
+      - name: ens1f0
+        type: ethernet
+        state: up
+        mtu: 8500
+        mac-address: "50:7c:6f:14:39:2c"
+        ipv4:
+          address:
+          - ip: 72.2.0.15
+            prefix-length: 22
+          enabled: true
+          dhcp: false
+        ipv6:
+          address:
+          - ip: 2405:100:200:172::15
+            prefix-length: 64
+          enabled: true
+          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          - 72.2.0.34
+          - 2405:100:200:172::34
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 72.2.0.1
+            next-hop-interface: ens1f0
+          - destination: ::/0
+            next-hop-address: 2405:100:200:172::1
+            next-hop-interface: ens1f0
+  - hostname: bscmaster3.cl2-mno1-rvt.lan.
+    role: master
+    interfaces:
+    - name: ens1f0
+      macAddress: "50:7c:6f:24:39:cc"
+    rootDeviceHints:
+      deviceName: /dev/sda
+    networkConfig:
+      interfaces:
+      - name: ens1f0
+        type: ethernet
+        state: up
+        mtu: 8500
+        mac-address: "50:7c:6f:24:39:cc"
+        ipv4:
+          address:
+          - ip: 72.2.0.17
+            prefix-length: 22
+          enabled: true
+          dhcp: false
+        ipv6:
+          address:
+          - ip: 2405:100:200:172::17
+            prefix-length: 64
+          enabled: true
+          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          - 72.2.0.34
+          - 2405:100:200:172::34
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 72.2.0.1
+            next-hop-interface: ens1f0
+          - destination: ::/0
+            next-hop-address: 2405:100:200:172::1
+            next-hop-interface: ens1f0
+[root@mirror1 backup]#
+
+
+[root@mirror1 backup]# cat install-config.yaml
+apiVersion: v1
+baseDomain: rvt.lan    #Main Domain in DNS Server
+cpuPartitioningMode: AllNodes   #To run ocp pods on a reserved set of CPUs
+imageContentSources:
+- mirrors:
+  - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/openshift/release-images
+  source: quay.io/openshift-release-dev/ocp-release
+- mirrors:
+  - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+compute:
+  - hyperthreading: Enabled
+    name: worker
+    replicas: 0 # Must be set to 0 for User Provisioned Installation as worker nodes will be manually deployed.
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: cl2-mno1 # Cluster name
+networking:
+  networkType: OVNKubernetes
+  clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+    - cidr: fd01::/48
+      hostPrefix: 64
+  serviceNetwork:
+    - 172.30.0.0/16
+    - fd02::/112
+  machineNetwork:
+    - cidr: 72.2.0.0/22
+    - cidr: 2405:100:200:172::/64
+platform:
+  baremetal:
+    apiVIPs:
+    - 72.2.0.87
+    ingressVIPs:
+    - 72.2.0.88
+
+fips: false
+pullSecret: '{
+    "auths": {
+        "mirror1.cl2-mno1-rvt.lan:8443": {
+            "auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="
+        },
+        "cloud.openshift.com": {
+            "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfYWQzNmNmNTM5ZDM3NGM2N2FjYjNmODg1NWZjZDFjNDQ6WlM1UjBKRlVERTg1VTdXOTlNMzBGM0pDTTNGTlFYNkMyUkdNUENTME5QMk1DM1RKRzRWWVQxOTM0S1M5WTlGVA==",
+            "email": "sriblicense@samsung.com"
+        },
+        "quay.io": {
+            "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfYWQzNmNmNTM5ZDM3NGM2N2FjYjNmODg1NWZjZDFjNDQ6WlM1UjBKRlVERTg1VTdXOTlNMzBGM0pDTTNGTlFYNkMyUkdNUENTME5QMk1DM1RKRzRWWVQxOTM0S1M5WTlGVA==",
+            "email": "sriblicense@samsung.com"
+        },
+        "registry.connect.redhat.com": {
+            "auth": "fHVoYy1wb29sLWFlYjMwNjkwLTkwNjEtNDc0Yy1iNjFlLTI4Y2NlMGQxNDYxYzpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTROV1F4TmpBMFptRmpNR0kwTm1SaU9XRXlNR1kyTWpJMll6VXdZalEzTmlKOS5MeUFZTVVkM3BnX1MyNFgwUkNkOVdCd0twWnhNZXBzcTBrMHY5OEp3SExaU3pLYkNYRUhwVVplRU04d01sVWUxLTF6X0lZcDAzQVVyY3VsYzNTY0p0UzQ0Tmo1a2RZTzhPbXcyMUZpTkpsYXpIcTZqRktnT3VNd3pGdkdrLWRSUHRXdnViR2pISl9DbXZEWF9lUEY5RHgtTTZpWWw5ODBXZnZiNkR5b0F3aWVBX25ldlZBVUhqRnEzdDdZb3dFS0xXZU1GY00tS3VPOWJjWWRsUU11ZXVRaVdHaTQ3SWZveklwU1VjWS1GV0VLMUNNd1JrRGQzcVU3UWEyUVRKdmptYUxmUHJjYk1UdEZNaHZYbV9hQW4yQjNPNERRMWpRTEdWMTVZZ3k3cThMYzNDc0IyMlFqMjZMX3ptdGZncDIyMmw3Q1dLTXliY19UbkNYb191M1lvWVhPV2hxM3RZSEoyNEF5OEs0NG9VMGNqVGdmdFQ2WVZOYlFOVFFxeXZPQVBXWV9kUVVtNENETERNVlFsVEh4OEZRYXFqc05fcVZNVHF6UnJFNmtsSW9QWGFhWWZYdmwzT1Z3eklzWkwzZW40SEV1ZElIUXh4b2l3RmQ4dXFXcFF0NERKT295UDBtVXNaMGZRaFg0aU8yaHZPYUpkdlg3M2diUnFKM3FKOGh6QWIyRTVHWnFBSTM0S2txN2xpTjcxeEVfMS10OUk3WnBWQ2daNHluVWpPMV9zS3g0T2FFUjVkc2E0Vi11RUVWX2Vqeng0X0E4aUJNdVZIV3l6TllxZ2hneHpZd1JIX0N5bzlXTm9qdmVDcVo4RnVROWRFVlJ5djJHeVdDNW15Zk9OZ2VVMkVfc2RPcnhLay1lVlN1Z1VBRE5XTmlnVGt3SWp1M2dXSTh3VDZSOA==",
+            "email": "sriblicense@samsung.com"
+        },
+        "registry.redhat.io": {
+            "auth": "fHVoYy1wb29sLWFlYjMwNjkwLTkwNjEtNDc0Yy1iNjFlLTI4Y2NlMGQxNDYxYzpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTROV1F4TmpBMFptRmpNR0kwTm1SaU9XRXlNR1kyTWpJMll6VXdZalEzTmlKOS5MeUFZTVVkM3BnX1MyNFgwUkNkOVdCd0twWnhNZXBzcTBrMHY5OEp3SExaU3pLYkNYRUhwVVplRU04d01sVWUxLTF6X0lZcDAzQVVyY3VsYzNTY0p0UzQ0Tmo1a2RZTzhPbXcyMUZpTkpsYXpIcTZqRktnT3VNd3pGdkdrLWRSUHRXdnViR2pISl9DbXZEWF9lUEY5RHgtTTZpWWw5ODBXZnZiNkR5b0F3aWVBX25ldlZBVUhqRnEzdDdZb3dFS0xXZU1GY00tS3VPOWJjWWRsUU11ZXVRaVdHaTQ3SWZveklwU1VjWS1GV0VLMUNNd1JrRGQzcVU3UWEyUVRKdmptYUxmUHJjYk1UdEZNaHZYbV9hQW4yQjNPNERRMWpRTEdWMTVZZ3k3cThMYzNDc0IyMlFqMjZMX3ptdGZncDIyMmw3Q1dLTXliY19UbkNYb191M1lvWVhPV2hxM3RZSEoyNEF5OEs0NG9VMGNqVGdmdFQ2WVZOYlFOVFFxeXZPQVBXWV9kUVVtNENETERNVlFsVEh4OEZRYXFqc05fcVZNVHF6UnJFNmtsSW9QWGFhWWZYdmwzT1Z3eklzWkwzZW40SEV1ZElIUXh4b2l3RmQ4dXFXcFF0NERKT295UDBtVXNaMGZRaFg0aU8yaHZPYUpkdlg3M2diUnFKM3FKOGh6QWIyRTVHWnFBSTM0S2txN2xpTjcxeEVfMS10OUk3WnBWQ2daNHluVWpPMV9zS3g0T2FFUjVkc2E0Vi11RUVWX2Vqeng0X0E4aUJNdVZIV3l6TllxZ2hneHpZd1JIX0N5bzlXTm9qdmVDcVo4RnVROWRFVlJ5djJHeVdDNW15Zk9OZ2VVMkVfc2RPcnhLay1lVlN1Z1VBRE5XTmlnVGt3SWp1M2dXSTh3VDZSOA==",
+            "email": "sriblicense@samsung.com"
+        }
+    }
+}'
+
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGbH2nrLS8wuuEuXAuIsbQgn50sf/wVifmUe8wbJ/dI5TLD94OopQBGwbh62C38LBS2UtU5thkUZjlLXxCBk10lLK7p1gO154Fqq9mEQQn2xwF9jCFxAvWVb1u7Gr512KFIFx23Ct4sGiQcH9eXxeDLvRRz8d4QqFPIQ2pNbdz8Ef7UtqQIeBlzgDSHBqiylhQYQtthqHOWby8Phdoz51gxqwQRo91fJW5Kxhm2O1fSRR6tgLAx2+REzMQhFDtrZr6VexiTzrBuZcY0tl6QWMioIhjlmGwpeOH5Q0jIiXi9Egg+FIOw7R9ytFSXZCcOpZmoL5WGxvnd0eOoHD9t8kdb5oSxT5ypY3Q+jAU6IyuED/9i9BtI36vIYRmZKO9buMTxgQ4TVsJZe2K1stv6ENnpZvTqIoJPar7Syi7uov9QUSPuccc9ver0jpNfO8M4OSFCepKNXxIQ7/QyCIgx+is3AukBip55TiSOHCu9vlSHRo93P1kOjsAzxF7ujkLDes= root@mirror1.cl2-mno1-rvt.lan'
+# Get root ca cert from Mirror Registry Server and keep proper indentation while pasting here (cat /root/quay-install/quay-rootCA/rootCA.pem)
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIDzzCCAregAwIBAgIULa2zzlajZthJOdzD+yZ/1MTWPGEwDQYJKoZIhvcNAQEL
+  BQAwcjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+  azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xITAfBgNVBAMMGG1p
+  cnJvcjEuY2wyLW1ubzEtcnZ0LmxhbjAeFw0yNjAzMjcxMjQ0MDNaFw0yOTAxMTQx
+  MjQ0MDNaMHIxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJWQTERMA8GA1UEBwwITmV3
+  IFlvcmsxDTALBgNVBAoMBFF1YXkxETAPBgNVBAsMCERpdmlzaW9uMSEwHwYDVQQD
+  DBhtaXJyb3IxLmNsMi1tbm8xLXJ2dC5sYW4wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+  DwAwggEKAoIBAQDVPN6T03acSoGAPKF+bVRQchnB6MM5a/CNu1t8JjiFqkm2/gKY
+  Ci4IhgbcxerX9FXR0yrRI69Hoa/RcxR7x0mCbxMzSPt5B7qf+ICkM7jGzaBrTcdk
+  61+mtLcPDLnP4HUknKXjPxZFU7VY1Kc2LIMMzSc6iHGeOb37nHxmUCPga1MFz8SJ
+  d5VmJNaEV7wH5vODXAgrve1k0L2/BCkUHjTXz4vQnMSzab9Mwe+138bKnJoJfr7y
+  cI3hTJKja2U8b0fYQpoJOChk83nWR01yOhp9R34yYq13r/l9oxUnHr2qrY7o3PYP
+  Ub9YuVXLj/oeUCvXO2UNOSWX27R0QSuk7+PvAgMBAAGjXTBbMAsGA1UdDwQEAwIC
+  5DATBgNVHSUEDDAKBggrBgEFBQcDATAjBgNVHREEHDAaghhtaXJyb3IxLmNsMi1t
+  bm8xLXJ2dC5sYW4wEgYDVR0TAQH/BAgwBgEB/wIBATANBgkqhkiG9w0BAQsFAAOC
+  AQEAm7mhHScYA5AYUeAnZSE/pChQv3mS71DXKlFbdiwpM+7znX/lELsJkadKPAjO
+  sUyGgRGXvmtgucqMOu0GObDkLoeAZbZMmhizJ/GAeuavK6cI+dWWrRdrHDV38tlZ
+  szMeb67H1rq9wrwX36rzYsLuGB57Ukp67JtqwavKZf+oMsH+cXVrDmQuGzv+46+o
+  zGxbZrEM6zHqS+ag/VlR1SFFzIg7U3brPW7J9MvdZAGXX90Sy93d9xXfeD3LyoL8
+  xhkKRLAR0UjnrAMeimxnAl+P7FWgm5FnHaA0JFNuCVuGZglzPKm+wFLLWzk1gs5k
+  ZHonEux4Oocq0FZ2IQqd3CWLaA==
+  -----END CERTIFICATE-----
+[root@mirror1 backup]#
+
