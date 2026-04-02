@@ -1,10 +1,202 @@
-[root@mirror1 ~]# ip link show
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
-    link/ether 52:54:00:ce:ee:1a brd ff:ff:ff:ff:ff:ff
-3: cni-podman0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether da:84:9b:b8:31:d3 brd ff:ff:ff:ff:ff:ff
-4: veth335c36ae@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni-podman0 state UP mode DEFAULT group default
-    link/ether 6a:a0:78:a8:dc:29 brd ff:ff:ff:ff:ff:ff link-netns netns-88a0dda0-c3d9-8e33-a2b0-e1c4a87d565f
+[root@mirror1 ~]# cd /etc/named.conf
+-bash: cd: /etc/named.conf: Not a directory
+[root@mirror1 ~]# cat /etc/named.conf
+//
+// named.conf
+//
+// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
+// server as a caching only nameserver (as a localhost DNS resolver only).
+//
+// See /usr/share/doc/bind*/sample/ for example named configuration files.
+//
+
+options {
+        listen-on port 53 { 127.0.0.1; 72.2.0.0/22; };
+        listen-on-v6 port 53 { ::1; 2405:100:200:172::/64; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        secroots-file   "/var/named/data/named.secroots";
+        recursing-file  "/var/named/data/named.recursing";
+        allow-query     { localhost;72.2.0.0/22;2405:100:200:172::/64; };
+
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
+
+        dnssec-enable yes;
+        dnssec-validation yes;
+
+        /* Path to ISC DLV key */
+        bindkeys-file "/etc/named.root.key";
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+
+        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
+        include "/etc/crypto-policies/back-ends/bind.config";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+# Include ocp zones
+
+zone "cl2-mno1-rvt.lan" {
+    type master;
+    file "/etc/named/zones/db.ocp.lan"; # zone file path
+};
+
+zone "0.2.72.in-addr.arpa" {
+    type master;
+    file "/etc/named/zones/db.reverse";  # 72.2.0.0/22 subnet
+};
+
+zone "0.0.2.0.0.0.1.0.5.0.4.2.ip6.arpa" {
+    type master;
+    file "/etc/named/zones/db.reverse.ipv6";  # File for reverse DNS for IPv6
+};
+
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+[root@mirror1 ~]# cat /etc/named/zones/db.ocp.lan
+$TTL    604800
+@       IN      SOA     cl2-mno1-rvt.lan contact.rvt.lan (
+             202506031     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+        IN      NS      cl2-mno1-rvt.lan.
+        IN      AAAA    2405:100:200:172::1
+
+
+;Mirror FQDN
+mirror1.cl2-mno1-rvt.lan.          IN      A       72.2.0.34
+;hitesh
+mirror1.cl2-mno1-rvt.lan.          IN      AAAA    2405:100:200:172::34
+
+;DNS
+cl2-mno1-rvt.lan. IN A 72.2.0.34
+
+
+
+
+; Control Plane Nodes - BSC Cluster
+
+bscmaster1.cl2-mno1-rvt.lan.         IN      A      72.2.0.13
+bscmaster2.cl2-mno1-rvt.lan.         IN      A      72.2.0.15
+bscmaster3.cl2-mno1-rvt.lan.         IN      A      72.2.0.17
+
+; OpenShift Internal - Load balancer/HAProxy - MNO1-BSC (input haproxy ip and fqdn )
+
+api.cl2-mno1-rvt.lan.        IN    A    72.2.0.87
+api-int.cl2-mno1-rvt.lan.    IN    A    72.2.0.87
+*.apps.cl2-mno1-rvt.lan.     IN    A    72.2.0.88
+
+
+oauth-openshift.apps.cl2-mno1-rvt.lan.               IN     A     72.2.0.88
+console-openshift-console.apps.cl2-mno1-rvt.lan.     IN     A     72.2.0.88
+
+;==============================
+;===== IPV6 Configuration =====
+;==============================
+
+localhost IN AAAA ::1
+
+;Mirror Registory
+mirror1.cl2-mno1-rvt.lan.          IN      AAAA    2405:100:200:172::34
+cl2-mno1-rvt.lan.          IN      AAAA    2405:100:200:172::34
+
+;Temp Bootstrap Node
+
+
+;Control Plane Nodes - BSC Cluster
+
+bscmaster1.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::13
+bscmaster2.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::15
+bscmaster3.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::17
+
+; OpenShift Internal - Load balancer/HAProxy - MNO1-BSC (input haproxy ip and fqdn )
+
+api.cl2-mno1-rvt.lan.        IN    AAAA 2405:100:200:172::87
+api-int.cl2-mno1-rvt.lan.    IN    AAAA 2405:100:200:172::87
+*.apps.cl2-mno1-rvt.lan.     IN    AAAA 2405:100:200:172::88
+
+
+oauth-openshift.apps.cl2-mno1-rvt.lan.               IN     AAAA  2405:100:200:172::88
+console-openshift-console.apps.cl2-mno1-rvt.lan.     IN     AAAA  2405:100:200:172::88
+[root@mirror1 ~]# cat /etc/named/zones/db.reverse
+$TTL    604800
+@       IN      SOA     cl2-mno1-rvt.lan. contact.rvt.lan (
+             202506032     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+
+  IN      NS      cl2-mno1-rvt.lan.
+  IN      NS      mirror1.cl2-mno1-rvt.lan.
+
+
+;Mirror Registry FQDN
+
+34     IN    PTR    mirror1.cl2-mno1-rvt.lan.
+34     IN    PTR    cl2-mno1-rvt.lan.
+
+; MNO CLUSTER 1
+87    IN    PTR    api.cl2-mno1-rvt.lan.
+87   IN    PTR    api-int.cl2-mno1-rvt.lan.
+13    IN    PTR    bscmaster1.cl2-mno1-rvt.lan.
+15    IN    PTR    bscmaster2.cl2-mno1-rvt.lan.
+17    IN    PTR    bscmaster3.cl2-mno1-rvt.lan.
+[root@mirror1 ~]# cat /etc/named/zones/db.reverse.ipv6
+$TTL    604800
+@       IN      SOA     cl2-mno1-rvt.lan. contact.rvt.lan (
+             2026033123  ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+
+  IN      NS      cl2-mno1-rvt.lan.
+  IN      NS      mirror1.cl2-mno1-rvt.lan.
+
+
+;Mirror Registry FQDN
+4.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0     IN    PTR    mirror1.cl2-mno1-rvt.lan.
+4.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0     IN    PTR    cl2-mno1-rvt.lan.
+
+
+; MNO CLUSTER 1
+7.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    api.cl2-mno1-rvt.lan.
+7.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    api-int.cl2-mno1-rvt.lan.
+3.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster1.cl2-mno1-rvt.lan.
+5.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster2.cl2-mno1-rvt.lan.
+7.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster3.cl2-mno1-rvt.lan.
 [root@mirror1 ~]#
