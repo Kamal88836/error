@@ -1,23 +1,23 @@
-[root@mirror1 ocp_4_18_23]#  podman login -u sysadmin -p samsung123 mirror1.cl2-mno1-rvt.lan:8443
-Login Succeeded!
-[root@mirror1 ocp_4_18_23]# export OCP_RELEASE="4.18.23"
-[root@mirror1 ocp_4_18_23]# export LOCAL_REGISTRY="mirror1.cl2-mno1-rvt.lan:8443"
-[root@mirror1 ocp_4_18_23]# export LOCAL_REPOSITORY="ocp4/openshift4"
-[root@mirror1 ocp_4_18_23]# export PRODUCT_REPO="openshift-release-dev"
-[root@mirror1 ocp_4_18_23]# export LOCAL_SECRET_JSON="./pull_secret.json"
-[root@mirror1 ocp_4_18_23]# export RELEASE_NAME="ocp-release"
-[root@mirror1 ocp_4_18_23]# export ARCHITECTURE="x86_64"
-[root@mirror1 ocp_4_18_23]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
-error: unable to retrieve release image info: unable to load --registry-config: stat ./pull_secret.json: no such file or directory
-[root@mirror1 ocp_4_18_23]# ll
-total 41925368
--rw-r--r--.  1 root root        1519 Mar 27 21:20 imageset-config.yaml
--rw-r--r--.  1 root root 42931566080 Mar 27 21:21 mirror_000001.tar
--rw-r--r--.  1 root root        3097 Apr  2 13:33 pull-secret.json
-drwxr-xr-x. 11 root root         174 Mar 27 21:25 working-dir
-[root@mirror1 ocp_4_18_23]# export LOCAL_SECRET_JSON="/root/ocp_4_18_23/pull_secret.json"
-[root@mirror1 ocp_4_18_23]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
-error: unable to retrieve release image info: unable to load --registry-config: stat /root/ocp_4_18_23/pull_secret.json: no such file or directory
-[root@mirror1 ocp_4_18_23]#
+phase 0:
+  mirror1.cl2-mno1-rvt.lan:8443 ocp4/openshift4 blobs=435 mounts=0 manifests=189 shared=4
+
+info: Planning completed in 39.97s
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:6a371ab6bb1dfa64e6bfde25d2a9c028a3aa95f574c1c359d288e5f22c3ef31e 1.239GiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:00a34d9cb6468674492c9b9d36dfe5ba69ce35fb1f926d17618e682d58262544 20.33MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:3debbb03899248d9d9d8eb911597fa5e62c2b0dd6e05ee0e1e413f7670095878 64.78MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:9f401fa3746666eeea7c33468dfa0e8114a7c365007c6021fbe7c901215c447e 42.08MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:b0dbc4a5715d56b8692fb3178d4cd13c4e30341eeaf55d46bcc69e08a09debf6 49.57MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:7547aff2563702d665eb7daaacbfbcd000a6b9d7c83a956a98ecf65773d690f8 57.93MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:3da4a90f8badee09eeb7abb842ea43a4d1568994c5c53ba2ec097e39838ce954 1.581GiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:84c6a96d44ec77b1ddb1260c826df526ec3f41ee74294120015f192f09fb9b2a 14.79MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:ace98514d82308a4fef94078bdb6569f944185af2dabeb1b7a0c32371e825a89 43.75MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:6596540cf6b063a8e42bbc8a793b22f503e2a2848d6a2367b5f86ea78f6758bc 31.96MiB
+
+
+
+
+
+error: unable to copy layer sha256:6a371ab6bb1dfa64e6bfde25d2a9c028a3aa95f574c1c359d288e5f22c3ef31e to mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4: Patch "https://mirror1.cl2-mno1-rvt.lan:8443/v2/ocp4/openshift4/blobs/uploads/f96656f2-e847-424f-8f4f-2fdb06ca037e": unexpected EOF
+error: unable to copy layer sha256:3da4a90f8badee09eeb7abb842ea43a4d1568994c5c53ba2ec097e39838ce954 to mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4: Patch "https://mirror1.cl2-mno1-rvt.lan:8443/v2/ocp4/openshift4/blobs/uploads/47b6829b-cac3-4be0-aa9f-efa99bbdd95e": unexpected EOF
+info: Mirroring completed in 22m47.19s (249.4kB/s)
+error: one or more errors occurred while uploading images
