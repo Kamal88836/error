@@ -1,183 +1,24 @@
-Good question 👍 — since your mirror got partially uploaded (EOF errors), the safest approach is:
-
-> 🔥 Clean registry + re-import mirror tar cleanly
-
-
-
-I’ll give you a safe, step-by-step reset + recreate process.
-
-
----
-
-🚨 ⚠️ Before you start
-
-This will:
-
-❌ Delete all mirrored images
-
-❌ Remove partial/corrupted layers
-
-✅ Fix your current issue cleanly
-
-
-
----
-
-✅ STEP 1: Stop registry
-
-If using Podman (Quay or registry container):
-
-podman ps
-
-Then:
-
-podman stop <registry-container>
-
-
----
-
-✅ STEP 2: Delete registry storage (IMPORTANT)
-
-👉 Depends on your setup
-
-✔️ If using Quay (common case)
-
-rm -rf /var/lib/containers/storage/*
-rm -rf /var/lib/quay/*
-
-
----
-
-✔️ If using simple registry (podman registry)
-
-rm -rf /var/lib/registry/*
-
-
----
-
-👉 If unsure, check mount:
-
-podman inspect <container> | grep -i mount -A 10
-
-
----
-
-✅ STEP 3: Start registry again
-
-podman start <registry-container>
-
-
----
-
-✅ STEP 4: Verify registry is empty
-
-curl -k https://mirror1.cl2-mno1-rvt.lan:8443/v2/_catalog
-
-Expected:
-
-{}
-
-
----
-
-✅ STEP 5: Re-import mirror tar (CORRECT WAY)
-
-👉 Use oc-mirror v2 (your case)
-
-export GOMAXPROCS=2
-export GODEBUG=http2client=0
-
-oc mirror \
---from=mirror_000001.tar \
-docker://mirror1.cl2-mno1-rvt.lan:8443
-
-
----
-
-🔥 Why these env vars?
-
-Variable	Purpose
-
-GOMAXPROCS=2	reduces CPU/network pressure
-GODEBUG=http2client=0	avoids HTTP2 upload bugs
-
-
-👉 These directly fix your EOF issue
-
-
----
-
-✅ STEP 6: Verify mirror success
-
-oc adm release info mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4:4.18.23-x86_64
-
-
----
-
-🚨 If still fails (rare but important)
-
-Add retry:
-
-oc mirror \
---from=mirror_000001.tar \
-docker://mirror1.cl2-mno1-rvt.lan:8443 \
---max-per-registry=2
-
-
----
-
-🎯 FULL CLEAN SUMMARY
-
-Step	Action
-
-1	Stop registry
-2	Delete storage
-3	Start registry
-4	Verify empty
-5	Re-run oc mirror
-6	Validate release
-
-
-
----
-
-💬 Pro Tip (very important)
-
-👉 Never mix:
-
-oc mirror ✅
-
-oc adm release mirror ❌
-
-
-
----
-
-🚀 After this
-
-Once mirror is clean:
-
-👉 Your install will:
-
-NOT fail on image pull ✅
-
-NOT fallback to quay.io ❌
-
-Work fully disconnected ✅
-
-
-
----
-
-💬 If you want next
-
-I can:
-
-✅ Validate your mirror content
-
-✅ Check release image completeness
-
-✅ Guide final cluster bring-up (bootstrap → ready)
-
-
-Just tell 👍
+[root@mirror1 ocp_4_18_23]# podman ps -a
+CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+[root@mirror1 ocp_4_18_23]# rm -rf /var/lib/containers/storage/*
+rm: cannot remove '/var/lib/containers/storage/overlay-containers/b37abb58a2f62dc2d17956d0228579f6fe95ddd9ede9e211072fcf082cae7ee4/userdata/shm': Device or resource busy
+[root@mirror1 ocp_4_18_23]# rm -rf /var/lib/registry/*
+[root@mirror1 ocp_4_18_23]# podman ps -a
+CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+[root@mirror1 ocp_4_18_23]# rm -rf /var/lib/containers/storage/*
+rm: cannot remove '/var/lib/containers/storage/overlay-containers/b37abb58a2f62dc2d17956d0228579f6fe95ddd9ede9e211072fcf082cae7ee4/userdata/shm': Device or resource busy
+[root@mirror1 ocp_4_18_23]#
+[root@mirror1 ocp_4_18_23]#
+[root@mirror1 ocp_4_18_23]#
+[root@mirror1 ocp_4_18_23]# df -Th
+Filesystem            Type      Size  Used Avail Use% Mounted on
+devtmpfs              devtmpfs   17G     0   17G   0% /dev
+tmpfs                 tmpfs      17G   84K   17G   1% /dev/shm
+tmpfs                 tmpfs      17G  1.1G   16G   7% /run
+tmpfs                 tmpfs      17G     0   17G   0% /sys/fs/cgroup
+/dev/mapper/rhel-root xfs       499G  112G  388G  23% /
+/dev/vda1             xfs      1014M  229M  786M  23% /boot
+tmpfs                 tmpfs     3.4G  4.0K  3.4G   1% /run/user/0
+/dev/loop0            iso9660    14G   14G     0 100% /media/osdvd
+shm                   tmpfs      63M  336K   63M   1% /var/lib/containers/storage/overlay-containers/b37abb58a2f62dc2d17956d0228579f6fe95ddd9ede9e211072fcf082cae7ee4/userdata/shm
+[root@mirror1 ocp_4_18_23]#
