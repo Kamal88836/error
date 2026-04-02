@@ -1,202 +1,183 @@
-[root@mirror1 ~]# cd /etc/named.conf
--bash: cd: /etc/named.conf: Not a directory
-[root@mirror1 ~]# cat /etc/named.conf
-//
-// named.conf
-//
-// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
-// server as a caching only nameserver (as a localhost DNS resolver only).
-//
-// See /usr/share/doc/bind*/sample/ for example named configuration files.
-//
+Good question 👍 — since your mirror got partially uploaded (EOF errors), the safest approach is:
 
-options {
-        listen-on port 53 { 127.0.0.1; 72.2.0.0/22; };
-        listen-on-v6 port 53 { ::1; 2405:100:200:172::/64; };
-        directory       "/var/named";
-        dump-file       "/var/named/data/cache_dump.db";
-        statistics-file "/var/named/data/named_stats.txt";
-        memstatistics-file "/var/named/data/named_mem_stats.txt";
-        secroots-file   "/var/named/data/named.secroots";
-        recursing-file  "/var/named/data/named.recursing";
-        allow-query     { localhost;72.2.0.0/22;2405:100:200:172::/64; };
-
-        /*
-         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
-         - If you are building a RECURSIVE (caching) DNS server, you need to enable
-           recursion.
-         - If your recursive DNS server has a public IP address, you MUST enable access
-           control to limit queries to your legitimate users. Failing to do so will
-           cause your server to become part of large scale DNS amplification
-           attacks. Implementing BCP38 within your network would greatly
-           reduce such attack surface
-        */
-        recursion yes;
-
-        dnssec-enable yes;
-        dnssec-validation yes;
-
-        /* Path to ISC DLV key */
-        bindkeys-file "/etc/named.root.key";
-
-        managed-keys-directory "/var/named/dynamic";
-
-        pid-file "/run/named/named.pid";
-        session-keyfile "/run/named/session.key";
-
-        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
-        include "/etc/crypto-policies/back-ends/bind.config";
-};
-
-logging {
-        channel default_debug {
-                file "data/named.run";
-                severity dynamic;
-        };
-};
-
-zone "." IN {
-        type hint;
-        file "named.ca";
-};
-
-# Include ocp zones
-
-zone "cl2-mno1-rvt.lan" {
-    type master;
-    file "/etc/named/zones/db.ocp.lan"; # zone file path
-};
-
-zone "0.2.72.in-addr.arpa" {
-    type master;
-    file "/etc/named/zones/db.reverse";  # 72.2.0.0/22 subnet
-};
-
-zone "0.0.2.0.0.0.1.0.5.0.4.2.ip6.arpa" {
-    type master;
-    file "/etc/named/zones/db.reverse.ipv6";  # File for reverse DNS for IPv6
-};
-
-
-include "/etc/named.rfc1912.zones";
-include "/etc/named.root.key";
-
-[root@mirror1 ~]# cat /etc/named/zones/db.ocp.lan
-$TTL    604800
-@       IN      SOA     cl2-mno1-rvt.lan contact.rvt.lan (
-             202506031     ; Serial
-             604800     ; Refresh
-              86400     ; Retry
-            2419200     ; Expire
-             604800     ; Minimum
-)
-        IN      NS      cl2-mno1-rvt.lan.
-        IN      AAAA    2405:100:200:172::1
-
-
-;Mirror FQDN
-mirror1.cl2-mno1-rvt.lan.          IN      A       72.2.0.34
-;hitesh
-mirror1.cl2-mno1-rvt.lan.          IN      AAAA    2405:100:200:172::34
-
-;DNS
-cl2-mno1-rvt.lan. IN A 72.2.0.34
+> 🔥 Clean registry + re-import mirror tar cleanly
 
 
 
-
-; Control Plane Nodes - BSC Cluster
-
-bscmaster1.cl2-mno1-rvt.lan.         IN      A      72.2.0.13
-bscmaster2.cl2-mno1-rvt.lan.         IN      A      72.2.0.15
-bscmaster3.cl2-mno1-rvt.lan.         IN      A      72.2.0.17
-
-; OpenShift Internal - Load balancer/HAProxy - MNO1-BSC (input haproxy ip and fqdn )
-
-api.cl2-mno1-rvt.lan.        IN    A    72.2.0.87
-api-int.cl2-mno1-rvt.lan.    IN    A    72.2.0.87
-*.apps.cl2-mno1-rvt.lan.     IN    A    72.2.0.88
+I’ll give you a safe, step-by-step reset + recreate process.
 
 
-oauth-openshift.apps.cl2-mno1-rvt.lan.               IN     A     72.2.0.88
-console-openshift-console.apps.cl2-mno1-rvt.lan.     IN     A     72.2.0.88
+---
 
-;==============================
-;===== IPV6 Configuration =====
-;==============================
+🚨 ⚠️ Before you start
 
-localhost IN AAAA ::1
+This will:
 
-;Mirror Registory
-mirror1.cl2-mno1-rvt.lan.          IN      AAAA    2405:100:200:172::34
-cl2-mno1-rvt.lan.          IN      AAAA    2405:100:200:172::34
+❌ Delete all mirrored images
 
-;Temp Bootstrap Node
+❌ Remove partial/corrupted layers
+
+✅ Fix your current issue cleanly
 
 
-;Control Plane Nodes - BSC Cluster
 
-bscmaster1.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::13
-bscmaster2.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::15
-bscmaster3.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::17
+---
 
-; OpenShift Internal - Load balancer/HAProxy - MNO1-BSC (input haproxy ip and fqdn )
+✅ STEP 1: Stop registry
 
-api.cl2-mno1-rvt.lan.        IN    AAAA 2405:100:200:172::87
-api-int.cl2-mno1-rvt.lan.    IN    AAAA 2405:100:200:172::87
-*.apps.cl2-mno1-rvt.lan.     IN    AAAA 2405:100:200:172::88
+If using Podman (Quay or registry container):
 
+podman ps
 
-oauth-openshift.apps.cl2-mno1-rvt.lan.               IN     AAAA  2405:100:200:172::88
-console-openshift-console.apps.cl2-mno1-rvt.lan.     IN     AAAA  2405:100:200:172::88
-[root@mirror1 ~]# cat /etc/named/zones/db.reverse
-$TTL    604800
-@       IN      SOA     cl2-mno1-rvt.lan. contact.rvt.lan (
-             202506032     ; Serial
-             604800     ; Refresh
-              86400     ; Retry
-            2419200     ; Expire
-             604800     ; Minimum
-)
+Then:
 
-  IN      NS      cl2-mno1-rvt.lan.
-  IN      NS      mirror1.cl2-mno1-rvt.lan.
+podman stop <registry-container>
 
 
-;Mirror Registry FQDN
+---
 
-34     IN    PTR    mirror1.cl2-mno1-rvt.lan.
-34     IN    PTR    cl2-mno1-rvt.lan.
+✅ STEP 2: Delete registry storage (IMPORTANT)
 
-; MNO CLUSTER 1
-87    IN    PTR    api.cl2-mno1-rvt.lan.
-87   IN    PTR    api-int.cl2-mno1-rvt.lan.
-13    IN    PTR    bscmaster1.cl2-mno1-rvt.lan.
-15    IN    PTR    bscmaster2.cl2-mno1-rvt.lan.
-17    IN    PTR    bscmaster3.cl2-mno1-rvt.lan.
-[root@mirror1 ~]# cat /etc/named/zones/db.reverse.ipv6
-$TTL    604800
-@       IN      SOA     cl2-mno1-rvt.lan. contact.rvt.lan (
-             2026033123  ; Serial
-             604800     ; Refresh
-              86400     ; Retry
-            2419200     ; Expire
-             604800     ; Minimum
-)
+👉 Depends on your setup
 
-  IN      NS      cl2-mno1-rvt.lan.
-  IN      NS      mirror1.cl2-mno1-rvt.lan.
+✔️ If using Quay (common case)
+
+rm -rf /var/lib/containers/storage/*
+rm -rf /var/lib/quay/*
 
 
-;Mirror Registry FQDN
-4.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0     IN    PTR    mirror1.cl2-mno1-rvt.lan.
-4.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0     IN    PTR    cl2-mno1-rvt.lan.
+---
+
+✔️ If using simple registry (podman registry)
+
+rm -rf /var/lib/registry/*
 
 
-; MNO CLUSTER 1
-7.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    api.cl2-mno1-rvt.lan.
-7.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    api-int.cl2-mno1-rvt.lan.
-3.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster1.cl2-mno1-rvt.lan.
-5.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster2.cl2-mno1-rvt.lan.
-7.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster3.cl2-mno1-rvt.lan.
-[root@mirror1 ~]#
+---
+
+👉 If unsure, check mount:
+
+podman inspect <container> | grep -i mount -A 10
+
+
+---
+
+✅ STEP 3: Start registry again
+
+podman start <registry-container>
+
+
+---
+
+✅ STEP 4: Verify registry is empty
+
+curl -k https://mirror1.cl2-mno1-rvt.lan:8443/v2/_catalog
+
+Expected:
+
+{}
+
+
+---
+
+✅ STEP 5: Re-import mirror tar (CORRECT WAY)
+
+👉 Use oc-mirror v2 (your case)
+
+export GOMAXPROCS=2
+export GODEBUG=http2client=0
+
+oc mirror \
+--from=mirror_000001.tar \
+docker://mirror1.cl2-mno1-rvt.lan:8443
+
+
+---
+
+🔥 Why these env vars?
+
+Variable	Purpose
+
+GOMAXPROCS=2	reduces CPU/network pressure
+GODEBUG=http2client=0	avoids HTTP2 upload bugs
+
+
+👉 These directly fix your EOF issue
+
+
+---
+
+✅ STEP 6: Verify mirror success
+
+oc adm release info mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4:4.18.23-x86_64
+
+
+---
+
+🚨 If still fails (rare but important)
+
+Add retry:
+
+oc mirror \
+--from=mirror_000001.tar \
+docker://mirror1.cl2-mno1-rvt.lan:8443 \
+--max-per-registry=2
+
+
+---
+
+🎯 FULL CLEAN SUMMARY
+
+Step	Action
+
+1	Stop registry
+2	Delete storage
+3	Start registry
+4	Verify empty
+5	Re-run oc mirror
+6	Validate release
+
+
+
+---
+
+💬 Pro Tip (very important)
+
+👉 Never mix:
+
+oc mirror ✅
+
+oc adm release mirror ❌
+
+
+
+---
+
+🚀 After this
+
+Once mirror is clean:
+
+👉 Your install will:
+
+NOT fail on image pull ✅
+
+NOT fallback to quay.io ❌
+
+Work fully disconnected ✅
+
+
+
+---
+
+💬 If you want next
+
+I can:
+
+✅ Validate your mirror content
+
+✅ Check release image completeness
+
+✅ Guide final cluster bring-up (bootstrap → ready)
+
+
+Just tell 👍
