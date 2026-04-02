@@ -1,91 +1,208 @@
-[root@mirror1 cluster-resources]# cat idms-oc-mirror.yaml
+Perfect 👍 — your mirror config looks correct and complete.
+You already have:
+
+✅ ImageDigestMirrorSet (IDMS)
+
+✅ ImageTagMirrorSet (ITMS)
+
+✅ CatalogSource
+
+✅ Signature ConfigMap
+
+
+So the mirror itself is NOT the problem.
+
+
 ---
-apiVersion: config.openshift.io/v1
-kind: ImageDigestMirrorSet
-metadata:
-  annotations:
-    createdAt: Friday, 27-Mar-26 16:16:31 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.21.0-202603181245.p2.g12f1b06.assembly.stream.el9-12f1b06
-  name: idms-release-0
-spec:
-  imageDigestMirrors:
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/openshift/release
-    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/openshift/release-images
-    source: quay.io/openshift-release-dev/ocp-release
+
+🔥 Then why is installer still hitting quay.io?
+
+From your screenshot error:
+
+lookup quay.io on [2405:100:200:172::34]:53
+
+👉 This proves:
+
+> ❗ Agent ISO is still trying to validate external registry (quay.io)
+❗ Your disconnected setup is NOT fully enforced during boot
+
+
+
+
 ---
-apiVersion: config.openshift.io/v1
-kind: ImageDigestMirrorSet
-metadata:
-  annotations:
-    createdAt: Friday, 27-Mar-26 16:16:31 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.21.0-202603181245.p2.g12f1b06.assembly.stream.el9-12f1b06
-  name: idms-operator-0
-spec:
-  imageDigestMirrors:
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/odf4
-    source: registry.redhat.io/odf4
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/rhel8
-    source: registry.redhat.io/rhel8
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/rhel9
-    source: registry.redhat.io/rhel9
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/lvms4
-    source: registry.redhat.io/lvms4
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/rhceph
-    source: registry.redhat.io/rhceph
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/openshift4
-    source: registry.redhat.io/openshift4
-[root@mirror1 cluster-resources]# cat itms-oc-mirror.yaml
+
+🧠 Key Insight (IMPORTANT)
+
+👉 IDMS / ITMS is applied only AFTER cluster starts
+
+But your failure is happening during:
+
+Agent installer network boot setup
+
+So:
+
+> 🚨 Installer stage does NOT use IDMS/ITMS
+
+
+
+
 ---
-apiVersion: config.openshift.io/v1
-kind: ImageTagMirrorSet
-metadata:
-  annotations:
-    createdAt: Friday, 27-Mar-26 16:16:31 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.21.0-202603181245.p2.g12f1b06.assembly.stream.el9-12f1b06
-  name: itms-release-0
-spec:
-  imageTagMirrors:
-  - mirrors:
-    - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/openshift/release-images
-    source: quay.io/openshift-release-dev/ocp-release
-[root@mirror1 cluster-resources]# cat cs-redhat-operator-index-v4-18.yaml
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  annotations:
-    createdAt: Friday, 27-Mar-26 16:16:31 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.21.0-202603181245.p2.g12f1b06.assembly.stream.el9-12f1b06
-  name: cs-redhat-operator-index-v4-18
-  namespace: openshift-marketplace
-spec:
-  image: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.18
-  sourceType: grpc
-status: {}
-[root@mirror1 cluster-resources]# cat signature-configmap.yaml
-apiVersion: v1
-binaryData:
-  sha256-0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38-1: owGbwMvMwMEoOU9/4l9n2UDG0wf6khgyNjz+Ua2UXJRZkpmcmKNkpVCtlJmbmJ4KZqXkJ2enFunmJuZlpqUWl+imZKYDKaCUUnFGopGpmZVBUppRqkWyYWpKmqFZSqq5oXmysbFBkqVJioVpmlmKiZlxsrmRgYWlqVmSQaKpiWlyUpJxWnKauaFpqqFJsrGFUq2OglJJZQHIOqXEkvzczGSF5Py8ksTMvNQiheLM9LzEktKiVCWgqsyU1LySzJJKZIcVpaalFqXmJYO1F5YmVupl5uvnF6TmFWdkppUApXNSE4tTdVNSy/TzkwtgfCsTPUMLPSNj3QoLs3gzE6VakCPyC0oy8/OgIZBclAp0TBHI1KDUFAWPxBIFf6CpwSBTFYKBrsrMS1dwLC3JyAeGW6WCgZ6BniHQmE4mGRYGRg4GNlYmULAycHEKwAL78l7+/w53XyelpG35PlHC4s+pD4m3rjatvKH+N1uxYmpCx4relJCWJJubn3bEHthZNbO+W2T+U+sntaY/F//mvNDacOBrfUbYd0XFvwqvLkx+yvRoks7kl3+PHNb7u8GpptL0HPsOo8u6c/Km9720cjWcFLPnz3MmIZbTIqefKF9p+3Use1vKOq7iCfUFp/hvc0ZtjNzfs5zx6o6VSyKYrlf8+Wza5VNQrTvnqbr3+cb+NB6BHyYd2qEiD87+We+uOMn/+BFdifc2C2Wdby8+cdV3yzHpR3Kr93gv7OB+c1qSVXjF1r19UxWmHZh7ZLvH24XPdws+74+JOWl/7vTaDuetrY4aJz8uDz656tusVUvk5p8Iy7pWsWpV9XsVMcNTPibyvsqCfFeK88SMXnXueK0TPeHrRHnLsBkHgv+0r7z20/3FnmXSwllvJ584bnHIU/oj0/X+zMnx4bt1X/RP3KZqmFzud41Nq/DLt/uKb35nzolp/ie9pM/hc9Fze4MD50LnnAhK/35YYbltSw7XexGHm3pv9PxYutqEClR0JPsjXh9MqLgX/+Nxnsy+L6v3b5woFBIv4/L+7abnoqpph1ZH2XpPd9Lbv+fDzLgL8abJnW4W3YHpvdJt9urVvo7XN/9M+89+2v3EUeNZyXdrpWeF5+84V2zjdn8S999jx0s3N+0uNEu8oi57NGZz6Ls1V/fsvyQnUV+g5LiOlaVu238HAA==
-kind: ConfigMap
-metadata:
-  annotations:
-    createdAt: Friday, 27-Mar-26 16:16:31 UTC
-    createdBy: oc-mirror v2
-    oc-mirror_version: 4.21.0-202603181245.p2.g12f1b06.assembly.stream.el9-12f1b06
-  labels:
-    release.openshift.io/verification-signatures: ""
-  name: mirrored-release-signatures
-  namespace: openshift-config-managed
-[root@mirror1 cluster-resources]#
+
+✅ Real Fix (What you must do)
+
+✔️ 1. Embed mirror config into ISO (CRITICAL)
+
+When creating agent ISO, you MUST include:
+
+openshift-install agent create image \
+  --dir <install-dir>
+
+👉 This uses install-config.yaml
+
+
+---
+
+✔️ 2. Ensure install-config.yaml uses mirror (NOT deprecated field)
+
+You are using:
+
+imageContentSources:
+
+❌ Deprecated → may be ignored partially
+
+👉 Replace with:
+
+imageDigestSources:
+- mirrors:
+  - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/openshift/release-images
+  source: quay.io/openshift-release-dev/ocp-release
+- mirrors:
+  - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+
+
+---
+
+✔️ 3. VERY IMPORTANT → Set releaseImage explicitly
+
+This avoids quay.io lookup completely:
+
+Add in install-config.yaml:
+
+releaseImage: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4:4.19.23-x86_64
+
+👉 This is the most important fix 🔥
+
+
+---
+
+✔️ 4. Verify mirror registry is reachable from node
+
+From agent shell (Ctrl+Alt+F2):
+
+curl -k https://mirror1.cl2-mno1-rvt.lan:8443/v2/
+
+If this fails → installer falls back to quay.io ❌
+
+
+---
+
+✔️ 5. Disable IPv6 (highly recommended in your case)
+
+Your error clearly shows IPv6 DNS failure.
+
+👉 Update ALL hosts in agent-config.yaml:
+
+ipv6:
+  enabled: false
+
+
+---
+
+✔️ 6. DNS should resolve ONLY internal
+
+Test:
+
+dig mirror1.cl2-mno1-rvt.lan
+
+👉 If DNS fails → installer tries internet → FAIL
+
+
+---
+
+🚀 Final Correct Flow (Disconnected)
+
+1. Mirror images ✅ (you did)
+
+
+2. Update install-config.yaml:
+
+✅ releaseImage
+
+✅ imageDigestSources
+
+
+
+3. Recreate ISO:
+
+openshift-install agent create image
+
+
+4. Boot nodes
+
+
+5. Ensure:
+
+Mirror registry reachable
+
+DNS working
+
+No IPv6 issues
+
+
+
+
+
+---
+
+⚡ Why your current setup fails
+
+Even though mirror configs exist:
+
+Stage	Uses mirror?
+
+Agent boot	❌ NO
+Cluster install	✅ YES
+
+
+👉 You are failing at stage 1
+
+
+---
+
+💬 If you want quick validation
+
+Share this:
+
+oc adm release info mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4:4.19.23-x86_64
+
+If this works → we confirm 100% it's installer config issue (not mirror)
+
+
+---
+
+🎯 Summary
+
+👉 Your mirror is fine
+👉 Your issue is installer still pointing to quay.io
+
+✅ Fix in one line:
+
+> Add releaseImage + switch to imageDigestSources + recreate ISO
+
+
+
+
+---
+
+If you want, I can generate a corrected install-config.yaml for your exact setup 👍
