@@ -1,203 +1,244 @@
-Good question — since your environment got partially corrupted, you need a full clean removal before reinstalling mirror registry.
+[root@mirror1 mirror]# ./mirror-registry install \
+>   --initUser sysadmin \
+>   --initPassword samsung123
 
-I’ll give you a safe + complete cleanup procedure (tested approach for disconnected OCP mirror setups).
+   __   __
+  /  \ /  \     ______   _    _     __   __   __
+ / /\ / /\ \   /  __  \ | |  | |   /  \  \ \ / /
+/ /  / /  \ \  | |  | | | |  | |  / /\ \  \   /
+\ \  \ \  / /  | |__| | | |__| | / ____ \  | |
+ \ \/ \ \/ /   \_  ___/  \____/ /_/    \_\ |_|
+  \__/ \__/      \ \__
+                  \___\ by Red Hat
+ Build, Store, and Distribute your Containers
 
+INFO[2026-04-03 17:00:54] Install has begun
+INFO[2026-04-03 17:00:54] Found execution environment at /root/mirror/execution-environment.tar
+INFO[2026-04-03 17:00:54] Loading execution environment from execution-environment.tar
+INFO[2026-04-03 17:00:59] Detected an installation to localhost
+INFO[2026-04-03 17:00:59] Found SSH key at /root/.ssh/quay_installer
+INFO[2026-04-03 17:00:59] Attempting to set SELinux rules on /root/.ssh/quay_installer
+INFO[2026-04-03 17:00:59] Found image archive at /root/mirror/image-archive.tar
+INFO[2026-04-03 17:00:59] Detected an installation to localhost
+INFO[2026-04-03 17:00:59] Unpacking image archive from /root/mirror/image-archive.tar
+INFO[2026-04-03 17:01:01] Loading pause image archive from pause.tar
+INFO[2026-04-03 17:01:04] Loading redis image archive from redis.tar
+INFO[2026-04-03 17:01:11] Loading Quay image archive from quay.tar
+INFO[2026-04-03 17:01:41] Attempting to set SELinux rules on image archive
+INFO[2026-04-03 17:01:41] Running install playbook. This may take some time. To see playbook output run the installer with -v (verbose) flag.
+INFO[2026-04-03 17:01:41] Detected an installation to localhost
 
----
+PLAY [Install Mirror Appliance] ******************************************************************************************************************************************************************************
 
-🚨 FULL MIRROR REGISTRY CLEANUP (COMPLETE RESET)
+TASK [Gathering Facts] ***************************************************************************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔴 1. Stop all mirror-related services
+TASK [mirror_appliance : Expand variables] *******************************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/expand-vars.yaml for root@mirror1.cl2-mno1-rvt.lan
 
-systemctl stop quay-app
-systemctl stop quay-pod
-systemctl stop redis
+TASK [mirror_appliance : Expand quay_root] *******************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-Also disable:
+TASK [mirror_appliance : Expand quay_storage] ****************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-systemctl disable quay-app quay-pod redis
+TASK [mirror_appliance : Expand sqlite_storage] **************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Set expanded variables] *************************************************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan]
 
----
+TASK [mirror_appliance : Create secret vars] *****************************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/secret-vars.yaml for root@mirror1.cl2-mno1-rvt.lan
 
-🔴 2. Remove systemd service files
+TASK [mirror_appliance : Generate secrets for Quay config.yaml] **********************************************************************************************************************************************
+[WARNING]: Collection community.general does not support Ansible version 2.15.12
+ok: [root@mirror1.cl2-mno1-rvt.lan]
 
-rm -f /etc/systemd/system/quay-app.service
-rm -f /etc/systemd/system/quay-pod.service
-rm -f /etc/systemd/system/redis.service
+TASK [mirror_appliance : Install Dependencies] ***************************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/install-deps.yaml for root@mirror1.cl2-mno1-rvt.lan
 
-systemctl daemon-reload
+TASK [mirror_appliance : Create user service directory] ******************************************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Set SELinux Rules] ******************************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/set-selinux-rules.yaml for root@mirror1.cl2-mno1-rvt.lan
 
----
+TASK [mirror_appliance : Set container_manage_cgroup flag on and keep it persistent across reboots] **********************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔴 3. Remove all podman containers / pods
+TASK [mirror_appliance : Autodetect Image Archive] ***********************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/autodetect-image-archive.yaml for root@mirror1.cl2-mno1-rvt.lan
 
-podman ps -a
-podman rm -f $(podman ps -aq) 2>/dev/null
+TASK [mirror_appliance : Checking for Image Archive] *********************************************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan -> localhost]
 
-podman pod rm -f $(podman pod ps -aq) 2>/dev/null
+TASK [mirror_appliance : Create install directory for image-archive.tar dest] ********************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Copy Images if /runner/image-archive.tar exists] ************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
----
+TASK [mirror_appliance : Unpack Images if /runner/image-archive.tar exists] **********************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔴 4. Reset podman completely (VERY IMPORTANT)
+TASK [mirror_appliance : Loading Pause if pause.tar exists] **************************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-podman system reset -f
+TASK [mirror_appliance : Loading Redis if redis.tar exists] **************************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-👉 This fixes your earlier issue (overlay corruption)
+TASK [mirror_appliance : Loading Quay if quay.tar exists] ****************************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Install Quay Pod Service] ***********************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/install-pod-service.yaml for root@mirror1.cl2-mno1-rvt.lan
 
----
+TASK [mirror_appliance : Copy Quay Pod systemd service file] *************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔴 5. Clean container storage (if still needed)
+TASK [mirror_appliance : Check if pod pause image is loaded] *************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-umount -l /var/lib/containers/storage/overlay-containers/*/userdata/shm 2>/dev/null
+TASK [mirror_appliance : Pull Infra image] *******************************************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-rm -rf /var/lib/containers/storage
-rm -rf /run/containers/storage
+TASK [mirror_appliance : Start Quay Pod service] *************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Install Redis Service] **************************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/install-redis-service.yaml for root@mirror1.cl2-mno1-rvt.lan
 
----
+TASK [mirror_appliance : Copy Redis systemd service file] ****************************************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔴 6. Remove Quay data directories
+TASK [mirror_appliance : Check if Redis image is loaded] *****************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-rm -rf /root/quay-install
-rm -rf /root/quay-rootCA
-rm -rf /var/lib/registry
+TASK [mirror_appliance : Pull Redis image] *******************************************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Create Redis Password Secret] *******************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
----
+TASK [mirror_appliance : Start Redis service] ****************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔴 7. Remove mirror registry installation directory
+TASK [mirror_appliance : Install Quay Service] ***************************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/install-quay-service.yaml for root@mirror1.cl2-mno1-rvt.lan
 
-rm -rf ~/mirror
+TASK [mirror_appliance : Create necessary directory for Quay local storage] **********************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-(or wherever you extracted mirror-registry)
+TASK [mirror_appliance : Set permissions on local storage directory] *****************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Create necessary directory for sqlite storage] **************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
----
+TASK [mirror_appliance : Set permissions on sqlite storage directory] ****************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔴 8. Remove podman volumes
+TASK [mirror_appliance : Create necessary directory for Quay config bundle] **********************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-podman volume rm -f $(podman volume ls -q)
+TASK [mirror_appliance : Copy Quay config.yaml file] *********************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Check if SSL Cert exists] ***********************************************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan -> localhost]
 
----
+TASK [mirror_appliance : Check if SSL Key exists] ************************************************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan -> localhost]
 
-🔴 9. Clean SELinux labels (optional but recommended)
+TASK [mirror_appliance : Create necessary directory for Quay rootCA files] ***********************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-restorecon -Rv /root
+TASK [mirror_appliance : Create OpenSSL Config] **************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Create root CA key] *****************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
----
+TASK [mirror_appliance : Create root CA pem] *****************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔴 10. Verify CLEAN state
+TASK [mirror_appliance : Create ssl key] *********************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-Run:
+TASK [mirror_appliance : Create CSR] *************************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-podman ps -a
-podman images
-podman volume ls
+TASK [mirror_appliance : Create self-signed cert] ************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-👉 All should be empty
+TASK [mirror_appliance : Create chain cert] ******************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Replace ssl cert with chain cert] ***************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
----
+TASK [mirror_appliance : Copy SSL certificate] ***************************************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-✅ NOW REINSTALL CLEANLY
+TASK [mirror_appliance : Copy SSL key] ***********************************************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔵 1. Extract mirror-registry again
+TASK [mirror_appliance : Set permissions for key] ************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-tar -xvf mirror-registry.tar.gz
-cd mirror
+TASK [mirror_appliance : Set permissions for cert] ***********************************************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan]
 
+TASK [mirror_appliance : Copy Quay systemd service file] *****************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
----
+TASK [mirror_appliance : Check if Quay image is loaded] ******************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔵 2. Ensure required files exist
+TASK [mirror_appliance : Pull Quay image] ********************************************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-ls
+TASK [mirror_appliance : Create Quay Storage named volume] ***************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-Must have:
+TASK [mirror_appliance : Create Sqlite Storage named volume] *************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-execution-environment.tar
+TASK [mirror_appliance : Start Quay service] *****************************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
 
-image-archive.tar
+TASK [mirror_appliance : Wait for Quay] **********************************************************************************************************************************************************************
+included: /runner/project/roles/mirror_appliance/tasks/wait-for-quay.yaml for root@mirror1.cl2-mno1-rvt.lan
 
+TASK [mirror_appliance : Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance] **************************************************************************
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (10 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (9 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (8 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (7 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (6 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (5 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (4 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (3 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (2 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (1 retries left).
+fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"attempts": 10, "changed": false, "elapsed": 0, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [Errno 111] Connection refused>", "redirected": false, "status": -1, "url": "https://mirror1.cl2-mno1-rvt.lan:8443/health/instance"}
 
+TASK [mirror_appliance : Print debug logs for quay-app container on failure] *********************************************************************************************************************************
+ok: [root@mirror1.cl2-mno1-rvt.lan]
 
----
+TASK [mirror_appliance : Display logs if the container exists] ***********************************************************************************************************************************************
+skipping: [root@mirror1.cl2-mno1-rvt.lan]
 
-🔵 3. (Optional but recommended) Disable SELinux temporarily
+TASK [mirror_appliance : Show quay-app.service status] *******************************************************************************************************************************************************
+fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"changed": true, "cmd": ["systemctl", "--system", "status", "quay-app.service"], "delta": "0:00:00.010400", "end": "2026-04-03 17:07:38.906614", "msg": "non-zero return code", "rc": 3, "start": "2026-04-03 17:07:38.896214", "stderr": "", "stderr_lines": [], "stdout": "● quay-app.service - Quay Container\n   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)\n   Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-03 17:07:38 IST; 651ms ago\n  Process: 70081 ExecStopPost=/bin/sh -c if [ \"$EXIT_STATUS\" -eq 0  ]; then /usr/bin/podman rm --ignore -f --cidfile /run/quay-app.service-cid; fi (code=exited, status=0/SUCCESS)\n  Process: 69710 ExecStart=/usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry (code=exited, status=126)\n  Process: 69704 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)\n Main PID: 69710 (code=exited, status=126)\n    Tasks: 1 (limit: 221444)\n   Memory: 16.0M\n   CGroup: /system.slice/quay-app.service\n           └─1861 /usr/bin/conmon --api-version 1 -c b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -u b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata -p /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/pidfile -n 356baafab20b-infra --exit-dir /run/libpod/exits --full-attach -s -l k8s-file:/var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/ctr.log --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/oci-log --conmon-pidfile /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/conmon.pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e", "stdout_lines": ["● quay-app.service - Quay Container", "   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)", "   Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-03 17:07:38 IST; 651ms ago", "  Process: 70081 ExecStopPost=/bin/sh -c if [ \"$EXIT_STATUS\" -eq 0  ]; then /usr/bin/podman rm --ignore -f --cidfile /run/quay-app.service-cid; fi (code=exited, status=0/SUCCESS)", "  Process: 69710 ExecStart=/usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry (code=exited, status=126)", "  Process: 69704 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)", " Main PID: 69710 (code=exited, status=126)", "    Tasks: 1 (limit: 221444)", "   Memory: 16.0M", "   CGroup: /system.slice/quay-app.service", "           └─1861 /usr/bin/conmon --api-version 1 -c b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -u b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata -p /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/pidfile -n 356baafab20b-infra --exit-dir /run/libpod/exits --full-attach -s -l k8s-file:/var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/ctr.log --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/oci-log --conmon-pidfile /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/conmon.pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e"]}
+...ignoring
 
-setenforce 0
+TASK [mirror_appliance : Fail the playbook since Quay failed to startup] *************************************************************************************************************************************
+fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"changed": false, "msg": "Quay did not become alive, see systemctl status output: ['● quay-app.service - Quay Container', '   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)', '   Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-03 17:07:38 IST; 651ms ago', '  Process: 70081 ExecStopPost=/bin/sh -c if [ \"$EXIT_STATUS\" -eq 0  ]; then /usr/bin/podman rm --ignore -f --cidfile /run/quay-app.service-cid; fi (code=exited, status=0/SUCCESS)', '  Process: 69710 ExecStart=/usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry (code=exited, status=126)', '  Process: 69704 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)', ' Main PID: 69710 (code=exited, status=126)', '    Tasks: 1 (limit: 221444)', '   Memory: 16.0M', '   CGroup: /system.slice/quay-app.service', '           └─1861 /usr/bin/conmon --api-version 1 -c b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -u b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata -p /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/pidfile -n 356baafab20b-infra --exit-dir /run/libpod/exits --full-attach -s -l k8s-file:/var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/ctr.log --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/oci-log --conmon-pidfile /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/conmon.pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e']"}
 
+PLAY RECAP ***************************************************************************************************************************************************************************************************
+root@mirror1.cl2-mno1-rvt.lan : ok=47   changed=28   unreachable=0    failed=1    skipped=16   rescued=1    ignored=1
 
----
-
-🔵 4. Install mirror registry
-
-./mirror-registry install \
-  --initUser sysadmin \
-  --initPassword samsung123 \
-  --quayHostname mirror1.cl2-mno1-rvt.lan
-
-
----
-
-🚀 AFTER INSTALL VERIFY
-
-podman ps
-
-You should see:
-
-quay-app
-
-redis
-
-quay-pod
-
-
-
----
-
-Then test:
-
-curl -k https://mirror1.cl2-mno1-rvt.lan:8443/health/instance
-
-
----
-
-💥 COMMON MISTAKES (YOU HIT BEFORE)
-
-❌ Deleting /var/lib/containers/storage manually
-❌ Not loading image archive
-❌ SELinux blocking mounts
-❌ Partial reinstall without cleanup
-
-
----
-
-🎯 PRO TIP (for disconnected env)
-
-After reinstall:
-
-podman login mirror1.cl2-mno1-rvt.lan:8443
-
-Then retry:
-
-oc adm release mirror ...
-
-
----
-
-💬 If still fails
-
-Send me:
-
-podman images
-podman ps -a
-journalctl -u quay-app -n 50
-
-I’ll fix it in one shot 👍
+ERRO[2026-04-03 17:07:39] An error occurred: exit status 2
+[root@mirror1 mirror]#
