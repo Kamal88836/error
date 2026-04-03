@@ -1,229 +1,155 @@
-root@bastion ~]# cd mirror-reg
-[root@bastion mirror-reg]#
-[root@bastion mirror-reg]# podman login -u sysadmin -p samsung123 bastion.srib-lab-ocp.lan:8443
-Login Succeeded!
-[root@bastion mirror-reg]#
-
-export OCP_RELEASE="4.20.14"
-export LOCAL_REGISTRY="bastion.srib-lab-ocp.lan:8443"
-export LOCAL_REPOSITORY="ocp4/openshift4"
-export PRODUCT_REPO="openshift-release-dev"
-export LOCAL_SECRET_JSON="./pull_secret.json"
-export RELEASE_NAME="ocp-release"
-export ARCHITECTURE="x86_64"
+Running an Ansible playbook using Podman is a common approach in containerized or disconnected environments (like your OpenShift setups). I’ll walk you through the simplest and most practical ways.
 
 
-[root@bastion mirror-reg]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
-I1105 08:38:04.638092 3515006 client_mirrored.go:174] Attempting to connect to quay.io/openshift-release-dev/ocp-release
+---
 
-...
+✅ 1. Use a Prebuilt Ansible Container Image
 
-info: Mirroring completed in 41m54.59s (8.066MB/s)
+You don’t need to install Ansible locally—just run it inside a container.
 
-Success
-Update image: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.20.14-x86_64
-Mirror prefix: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
-Mirror prefix: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.20.14-x86_64
-I1105 09:21:11.571208 3515006 workqueue.go:54] worker 4 stopping
-I1105 09:21:11.571216 3515006 workqueue.go:54] worker 2 stopping
-I1105 09:21:11.571217 3515006 workqueue.go:54] worker 3 stopping
-I1105 09:21:11.571222 3515006 workqueue.go:54] worker 3 stopping
-I1105 09:21:11.571228 3515006 workqueue.go:54] worker 5 stopping
-I1105 09:21:11.571236 3515006 workqueue.go:54] worker 1 stopping
-I1105 09:21:11.571240 3515006 workqueue.go:54] worker 0 stopping
-I1105 09:21:11.571247 3515006 workqueue.go:54] worker 2 stopping
-I1105 09:21:11.571240 3515006 workqueue.go:54] worker 0 stopping
-I1105 09:21:11.571251 3515006 workqueue.go:60] work queue exiting
-I1105 09:21:11.571255 3515006 workqueue.go:54] worker 1 stopping
-I1105 09:21:11.571334 3515006 workqueue.go:60] work queue exiting
+Example (quick run)
 
-To use the new mirrored repository to install, add the following section to the install-config.yaml:
+podman run --rm -it \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  docker.io/ansible/ansible-runner \
+  ansible-playbook playbook.yml
 
-imageContentSources:
-- mirrors:
-- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
-source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-- mirrors:
-- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
-source: quay.io/openshift-release-dev/ocp-release
+🔹 Explanation:
 
+--rm → remove container after execution
 
-To use the new mirrored repository for upgrades, use the following to create an ImageContentSourcePolicy:
+-it → interactive terminal
 
-apiVersion: operator.openshift.io/v1alpha1
-kind: ImageContentSourcePolicy
-metadata:
-name: example
-spec:
-repositoryDigestMirrors:
-- mirrors:
-- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
-source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-- mirrors:
-- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
-source: quay.io/openshift-release-dev/ocp-release
-[root@bastion mirror-reg]#
+-v $(pwd):/workspace → mount your current directory
 
+-w /workspace → set working directory
 
-# check if new release images have been mirrored in local registry
-[root@bastion ~]# skopeo list-tags docker://bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
-{
-    "Repository": "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4",
-    "Tags": [
-        "4.20.14-x86_64",
-        "4.20.143-x86_64-agent-installer-api-server",
-        ...
-        "4.20.14-x86_64",                                  # new image tags
-        "4.20.14-x86_64-agent-installer-api-server",
-        ...
-    ]
-}
+ansible-playbook playbook.yml → runs your script
 
 
 
+---
 
-method 2 
+✅ 2. Pass Inventory File
 
+If you have an inventory file:
 
-imageset-config.yaml 4.20.14
-
-
-apiVersion: mirror.openshift.io/v2alpha1
-kind: ImageSetConfiguration
-
-archiveSize: 4
-
-mirror:
-  platform:
-    graph: true
-    channels:
-      - name: stable-4.20
-        minVersion: 4.20.14
-        maxVersion: 4.20.14
-
-  operators:
-    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.20
-      packages:
-
-        # ODF FULL STACK
-        - name: odf-operator
-          channels:
-            - name: stable-4.20
-
-        - name: ocs-operator
-          channels:
-            - name: stable-4.20
-
-        - name: ocs-client-operator
-          channels:
-            - name: stable-4.20
-
-        - name: mcg-operator
-          channels:
-            - name: stable-4.20
-
-        - name: rook-ceph-operator
-          channels:
-            - name: stable-4.20
-
-        - name: cephcsi-operator
-          channels:
-            - name: stable-4.20
-
-        - name: odf-csi-addons-operator
-          channels:
-            - name: stable-4.20
-
-        - name: odf-prometheus-operator
-          channels:
-            - name: stable-4.20
-
-        - name: odf-dependencies
-          channels:
-            - name: stable-4.20
-
-        - name: recipe
-          channels:
-            - name: stable-4.20
-
-        - name: odf-external-snapshotter-operator
-          channels:
-            - name: stable-4.20
-        # STORAGE
-        - name: lvms-operator
-          channels:
-            - name: stable-4.20
-
-        - name: local-storage-operator
-          channels:
-            - name: stable
-
-        # NETWORK
-        - name: kubernetes-nmstate-operator
-          channels:
-            - name: stable
-
-        - name: sriov-network-operator
-          channels:
-            - name: stable
-
-        - name: ptp-operator
-          channels:
-            - name: stable
-
-        # SECURITY / OPTIONAL
-        - name: openshift-cert-manager-operator
-        - name: cluster-observability-operator
-        - name: kubernetes-image-registry-operator
-
-  additionalImages:
-    # CORE RELEASE
-    - name: quay.io/openshift-release-dev/ocp-release:4.20.14-x86_64
-
-    #  CRITICAL FIX (digest instead of latest)
-    - name: registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7
-
-    # BASE IMAGES
-    - name: registry.redhat.io/ubi9/ubi:latest
-    - name: registry.redhat.io/ubi9/ubi-minimal:latest
-    - name: registry.redhat.io/ubi9/ubi-init:latest
-
-    # SUPPORT
-    - name: registry.redhat.io/rhel9/support-tools:latest
-
-  helm: {}
+podman run --rm -it \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  docker.io/ansible/ansible-runner \
+  ansible-playbook -i inventory.ini playbook.yml
 
 
-Download images to local disk
+---
+
+✅ 3. SSH Keys / Credentials (Important ⚠️)
+
+If your playbook connects to remote hosts:
+
+podman run --rm -it \
+  -v $(pwd):/workspace \
+  -v ~/.ssh:/root/.ssh:Z \
+  -w /workspace \
+  docker.io/ansible/ansible-runner \
+  ansible-playbook -i inventory.ini playbook.yml
+
+👉 :Z is important for SELinux systems (like RHEL/OpenShift nodes).
 
 
-[root@bastion ~]# mkdir ocp-update-version
-[root@bastion ~]# cd ocp-update-version/
-[root@bastion ocp-update-version]# ls
-imageset-config.yaml
+---
+
+✅ 4. Using Custom Ansible Image (Recommended for OCP)
+
+You can build your own container with required collections:
+
+Dockerfile (Podman works with it)
+
+FROM quay.io/ansible/ansible-runner
+
+RUN ansible-galaxy collection install community.general
+
+Build image
+
+podman build -t my-ansible .
+
+Run it
+
+podman run --rm -it \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  my-ansible \
+  ansible-playbook playbook.yml
 
 
-# OC mirror V2 is the default version now
-[root@bastion ocp-update-version]# oc mirror -c imageset-confignew.yaml file://registry --v2 --parallel-images 20 --retry-times 10 --image-timeout 20m
-2025/02/14 07:39:37  [WARN]   : ⚠️  --v2 flag identified, flow redirected to the oc-mirror v2 version. This is Tech Preview, it is still under development and it is not production ready.
-2025/02/14 07:39:37  [INFO]   : 👋 Hello, welcome to oc-mirror
-2025/02/14 07:39:37  [INFO]   : ⚙️  setting up the environment for you...
-2025/02/14 07:39:37  [INFO]   : 🔀 workflow mode: mirrorToDisk
-2025/02/14 07:39:37  [INFO]   : 🕵️  going to discover the necessary images...
-2025/02/14 07:39:37  [INFO]   : 🔍 collecting release images...
-2025/02/14 07:40:09  [INFO]   : 🔍 collecting operator images...
-2025/02/14 07:46:59  [INFO]   : 🔍 collecting additional images...
-2025/02/14 07:46:59  [INFO]   : 🚀 Start copying the images...
-2025/02/14 07:46:59  [INFO]   : images to copy 440
-......
-2025/02/14 12:31:37  [INFO]   : === Results ===
-2025/02/14 12:31:37  [INFO]   : ✅ 440 / 440 release images mirrored successfully
-2025/02/14 12:31:37  [INFO]   : ✅ 60 / 60 operator images mirrored successfully
-2025/02/14 12:31:37  [INFO]   : 📦 Preparing the tarball archive...
-2025/02/14 12:31:46  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+---
 
-# retry pulling images from QUAY/REDHAT.IO to local repo until all images and operators have been downloaded.
+✅ 5. Passing Extra Variables
 
-[root@bastion ocp-update-version]# ls
-imageset-config.yaml  registry
+ansible-playbook playbook.yml -e "env=prod"
+
+Inside Podman:
+
+podman run --rm -it \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  docker.io/ansible/ansible-runner \
+  ansible-playbook playbook.yml -e "env=prod"
+
+
+---
+
+✅ 6. Environment Variables (Proxy / Registry / OCP cases)
+
+podman run --rm -it \
+  -e HTTP_PROXY=http://proxy:8080 \
+  -e HTTPS_PROXY=http://proxy:8080 \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  docker.io/ansible/ansible-runner \
+  ansible-playbook playbook.yml
+
+
+---
+
+✅ 7. Debug Mode
+
+ansible-playbook -vvv playbook.yml
+
+
+---
+
+🔥 Pro Tips (Based on Your OCP Work)
+
+Since you're working with disconnected OpenShift:
+
+Use a local registry image instead of Docker Hub
+
+Pre-load collections inside container
+
+Mount kubeconfig if needed:
+
+
+-v ~/.kube:/root/.kube:Z
+
+
+---
+
+🚀 Summary
+
+You basically need:
+
+podman run \
+  -v <your-code>:/workspace \
+  <ansible-image> \
+  ansible-playbook <playbook>
+
+
+---
+
+If you want, I can:
+
+Create a ready-to-use Ansible container for OpenShift automation
+
+Or help you run Ansible for cluster install / mirror registry setup 👍
