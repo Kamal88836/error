@@ -1,34 +1,173 @@
-TASK [mirror_appliance : Wait for Quay] **********************************************************************************************************************************************************************
-included: /runner/project/roles/mirror_appliance/tasks/wait-for-quay.yaml for root@mirror1.cl2-mno1-rvt.lan
+Perfect — now we have clear diagnosis 🔥
 
-TASK [mirror_appliance : Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance] **************************************************************************
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (10 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (9 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (8 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (7 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (6 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (5 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (4 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (3 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (2 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (1 retries left).
-fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"attempts": 10, "changed": false, "elapsed": 0, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error [Errno 111] Connection refused>", "redirected": false, "status": -1, "url": "https://mirror1.cl2-mno1-rvt.lan:8443/health/instance"}
 
-TASK [mirror_appliance : Print debug logs for quay-app container on failure] *********************************************************************************************************************************
-ok: [root@mirror1.cl2-mno1-rvt.lan]
+---
 
-TASK [mirror_appliance : Display logs if the container exists] ***********************************************************************************************************************************************
-skipping: [root@mirror1.cl2-mno1-rvt.lan]
+🚨 Root Cause (Confirmed)
 
-TASK [mirror_appliance : Show quay-app.service status] *******************************************************************************************************************************************************
-fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"changed": true, "cmd": ["systemctl", "--system", "status", "quay-app.service"], "delta": "0:00:00.016227", "end": "2026-04-03 16:37:25.358981", "msg": "non-zero return code", "rc": 3, "start": "2026-04-03 16:37:25.342754", "stderr": "", "stderr_lines": [], "stdout": "● quay-app.service - Quay Container\n   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)\n   Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-03 16:37:24 IST; 635ms ago\n  Process: 23350 ExecStopPost=/bin/sh -c if [ \"$EXIT_STATUS\" -eq 0  ]; then /usr/bin/podman rm --ignore -f --cidfile /run/quay-app.service-cid; fi (code=exited, status=0/SUCCESS)\n  Process: 22996 ExecStart=/usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry (code=exited, status=126)\n  Process: 22994 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)\n Main PID: 22996 (code=exited, status=126)\n    Tasks: 1 (limit: 221444)\n   Memory: 16.3M\n   CGroup: /system.slice/quay-app.service\n           └─1861 /usr/bin/conmon --api-version 1 -c b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -u b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata -p /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/pidfile -n 356baafab20b-infra --exit-dir /run/libpod/exits --full-attach -s -l k8s-file:/var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/ctr.log --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/oci-log --conmon-pidfile /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/conmon.pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e", "stdout_lines": ["● quay-app.service - Quay Container", "   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)", "   Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-03 16:37:24 IST; 635ms ago", "  Process: 23350 ExecStopPost=/bin/sh -c if [ \"$EXIT_STATUS\" -eq 0  ]; then /usr/bin/podman rm --ignore -f --cidfile /run/quay-app.service-cid; fi (code=exited, status=0/SUCCESS)", "  Process: 22996 ExecStart=/usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry (code=exited, status=126)", "  Process: 22994 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)", " Main PID: 22996 (code=exited, status=126)", "    Tasks: 1 (limit: 221444)", "   Memory: 16.3M", "   CGroup: /system.slice/quay-app.service", "           └─1861 /usr/bin/conmon --api-version 1 -c b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -u b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata -p /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/pidfile -n 356baafab20b-infra --exit-dir /run/libpod/exits --full-attach -s -l k8s-file:/var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/ctr.log --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/oci-log --conmon-pidfile /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/conmon.pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e"]}
-...ignoring
+This line is the key:
 
-TASK [mirror_appliance : Fail the playbook since Quay failed to startup] *************************************************************************************************************************************
-fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"changed": false, "msg": "Quay did not become alive, see systemctl status output: ['● quay-app.service - Quay Container', '   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)', '   Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-03 16:37:24 IST; 635ms ago', '  Process: 23350 ExecStopPost=/bin/sh -c if [ \"$EXIT_STATUS\" -eq 0  ]; then /usr/bin/podman rm --ignore -f --cidfile /run/quay-app.service-cid; fi (code=exited, status=0/SUCCESS)', '  Process: 22996 ExecStart=/usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry (code=exited, status=126)', '  Process: 22994 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)', ' Main PID: 22996 (code=exited, status=126)', '    Tasks: 1 (limit: 221444)', '   Memory: 16.3M', '   CGroup: /system.slice/quay-app.service', '           └─1861 /usr/bin/conmon --api-version 1 -c b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -u b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata -p /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/pidfile -n 356baafab20b-infra --exit-dir /run/libpod/exits --full-attach -s -l k8s-file:/var/lib/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/ctr.log --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/oci-log --conmon-pidfile /run/containers/storage/overlay-containers/b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e/userdata/conmon.pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg b52f6fb9417d6714ecb2e021d86624dfb081362ee94943a77397cd86e675858e']"}
+status=126
 
-PLAY RECAP ***************************************************************************************************************************************************************************************************
-root@mirror1.cl2-mno1-rvt.lan : ok=47   changed=26   unreachable=0    failed=1    skipped=16   rescued=1    ignored=1
+👉 In Podman/containers:
 
-ERRO[2026-04-03 16:37:25] An error occurred: exit status 2
-[root@mirror1 mirror]#
+> 126 = permission denied / cannot execute container entrypoint
+
+
+
+
+---
+
+🎯 In your setup, this is caused by:
+
+✅ 1. SELinux blocking volumes (:Z)
+
+✅ 2. Corrupted / partially loaded Quay image
+
+✅ 3. Podman storage inconsistency after manual cleanup
+
+
+---
+
+🚨 Also important clue
+
+skipping: Loading Quay image archive
+
+👉 Means:
+
+> ❌ quay image NOT properly loaded from bundle
+
+
+
+
+---
+
+✅ FINAL FIX (DO THIS CLEAN — NO SHORTCUTS)
+
+
+---
+
+🔥 STEP 1: FULL RESET (clean everything)
+
+systemctl stop quay-app quay-pod redis
+podman system reset -f
+
+rm -rf /root/quay-install
+rm -rf /var/lib/containers/storage/*
+rm -rf /var/lib/containers/cache/*
+rm -rf /var/lib/registry/*
+
+
+---
+
+🔥 STEP 2: Fix SELinux (CRITICAL)
+
+setenforce 0
+
+👉 If this fixes → later we’ll make permanent rule
+
+
+---
+
+🔥 STEP 3: Verify bundle files (VERY IMPORTANT)
+
+ls -lh ~/mirror
+
+You MUST see:
+
+execution-environment.tar
+image-archive.tar
+
+👉 If image-archive.tar is missing or corrupt → reinstall will fail
+
+
+---
+
+🔥 STEP 4: Manually load images (to avoid skip issue)
+
+cd ~/mirror
+
+tar -xf image-archive.tar
+
+podman load -i quay.tar
+podman load -i redis.tar
+podman load -i pause.tar
+
+
+---
+
+🔥 STEP 5: Verify images loaded
+
+podman images | grep quay
+
+You should see:
+
+registry.redhat.io/quay/quay-rhel8:v3.12.x
+
+
+---
+
+🔥 STEP 6: Reinstall mirror registry
+
+./mirror-registry install \
+  --initUser sysadmin \
+  --initPassword samsung123 \
+  --quayHostname mirror1.cl2-mno1-rvt.lan
+
+
+---
+
+🚨 If still fails (VERY IMPORTANT DEBUG)
+
+Run immediately:
+
+podman logs quay-app
+
+OR:
+
+journalctl -u quay-app -xe
+
+
+---
+
+🎯 Expected Success
+
+INFO Quay is ready at:
+https://mirror1.cl2-mno1-rvt.lan:8443
+
+
+---
+
+🔥 If SELinux was the issue
+
+After success, re-enable properly:
+
+setenforce 1
+
+Then fix labels:
+
+semanage fcontext -a -t container_file_t "/root/quay-install(/.*)?"
+restorecon -Rv /root/quay-install
+
+
+---
+
+💬 Summary (your exact problem)
+
+Issue	Status
+
+Quay container exit 126	❌
+Image not loaded	❌
+SELinux blocking	❌
+Clean reinstall	✅ (needed)
+
+
+
+---
+
+You’re very close — this is the last blocker before full disconnected install works 🚀
+
+
+---
+
+👉 If it still fails, paste podman logs quay-app — I’ll pinpoint instantly.
