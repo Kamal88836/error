@@ -1,176 +1,229 @@
-Good, this log clearly shows the real root cause now 👍
+root@bastion ~]# cd mirror-reg
+[root@bastion mirror-reg]#
+[root@bastion mirror-reg]# podman login -u sysadmin -p samsung123 bastion.srib-lab-ocp.lan:8443
+Login Succeeded!
+[root@bastion mirror-reg]#
+
+export OCP_RELEASE="4.20.14"
+export LOCAL_REGISTRY="bastion.srib-lab-ocp.lan:8443"
+export LOCAL_REPOSITORY="ocp4/openshift4"
+export PRODUCT_REPO="openshift-release-dev"
+export LOCAL_SECRET_JSON="./pull_secret.json"
+export RELEASE_NAME="ocp-release"
+export ARCHITECTURE="x86_64"
+
+
+[root@bastion mirror-reg]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
+Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
+I1105 08:38:04.638092 3515006 client_mirrored.go:174] Attempting to connect to quay.io/openshift-release-dev/ocp-release
+
+...
+
+info: Mirroring completed in 41m54.59s (8.066MB/s)
+
+Success
+Update image: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.20.14-x86_64
+Mirror prefix: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+Mirror prefix: bastion.srib-lab-ocp.lan:8443/ocp4/openshift4:4.20.14-x86_64
+I1105 09:21:11.571208 3515006 workqueue.go:54] worker 4 stopping
+I1105 09:21:11.571216 3515006 workqueue.go:54] worker 2 stopping
+I1105 09:21:11.571217 3515006 workqueue.go:54] worker 3 stopping
+I1105 09:21:11.571222 3515006 workqueue.go:54] worker 3 stopping
+I1105 09:21:11.571228 3515006 workqueue.go:54] worker 5 stopping
+I1105 09:21:11.571236 3515006 workqueue.go:54] worker 1 stopping
+I1105 09:21:11.571240 3515006 workqueue.go:54] worker 0 stopping
+I1105 09:21:11.571247 3515006 workqueue.go:54] worker 2 stopping
+I1105 09:21:11.571240 3515006 workqueue.go:54] worker 0 stopping
+I1105 09:21:11.571251 3515006 workqueue.go:60] work queue exiting
+I1105 09:21:11.571255 3515006 workqueue.go:54] worker 1 stopping
+I1105 09:21:11.571334 3515006 workqueue.go:60] work queue exiting
+
+To use the new mirrored repository to install, add the following section to the install-config.yaml:
+
+imageContentSources:
+- mirrors:
+- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+source: quay.io/openshift-release-dev/ocp-release
+
+
+To use the new mirrored repository for upgrades, use the following to create an ImageContentSourcePolicy:
+
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+name: example
+spec:
+repositoryDigestMirrors:
+- mirrors:
+- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+- bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+source: quay.io/openshift-release-dev/ocp-release
+[root@bastion mirror-reg]#
+
+
+# check if new release images have been mirrored in local registry
+[root@bastion ~]# skopeo list-tags docker://bastion.srib-lab-ocp.lan:8443/ocp4/openshift4
+{
+    "Repository": "bastion.srib-lab-ocp.lan:8443/ocp4/openshift4",
+    "Tags": [
+        "4.20.14-x86_64",
+        "4.20.143-x86_64-agent-installer-api-server",
+        ...
+        "4.20.14-x86_64",                                  # new image tags
+        "4.20.14-x86_64-agent-installer-api-server",
+        ...
+    ]
+}
+
+
+
+
+method 2 
+
+
+imageset-config.yaml 4.20.14
+
+
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+
+archiveSize: 4
+
+mirror:
+  platform:
+    graph: true
+    channels:
+      - name: stable-4.20
+        minVersion: 4.20.14
+        maxVersion: 4.20.14
 
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.20
+      packages:
 
----
+        # ODF FULL STACK
+        - name: odf-operator
+          channels:
+            - name: stable-4.20
 
-🚨 Problem Identified
-
-From your output:
-
-ExecStart=... podman run ... registry.redhat.io/quay/quay-rhel8:v3.12.14
-(code=exited, status=126)
-
-👉 Exit code 126 = permission / execution failure
-
-AND:
-
-connection refused https://mirror1...:8443
-
-👉 Quay container is not starting at all
-
-
----
-
-🎯 Most Common Causes (in your case)
-
-Based on your setup (disconnected + fresh reset), this is 99% one of these:
-
-❌ 1. Podman storage corruption (leftover from earlier cleanup)
-
-❌ 2. SELinux blocking container
-
-❌ 3. Missing / broken image (quay image not loaded properly)
-
-❌ 4. Volume permission issue (:Z mounts failing)
-
-
----
-
-✅ FIX STEP-BY-STEP (Do EXACTLY this)
-
-
----
-
-🔥 STEP 1: Reset Podman clean (MANDATORY)
-
-podman system reset -f
-
-
----
-
-🔥 STEP 2: Clean Quay install completely
-
-rm -rf /root/quay-install
-rm -rf /var/lib/containers/storage/*
-rm -rf /var/lib/containers/cache/*
-rm -rf /var/lib/registry/*
-
-
----
-
-🔥 STEP 3: Fix SELinux (VERY IMPORTANT)
-
-setenforce 0
-
-👉 (Temporary disable to confirm issue)
-
-
----
-
-🔥 STEP 4: Reload systemd
-
-systemctl daemon-reexec
-systemctl daemon-reload
-
-
----
-
-🔥 STEP 5: Reinstall mirror registry (clean)
-
-cd ~/mirror
-
-./mirror-registry install \
-  --initUser sysadmin \
-  --initPassword samsung123 \
-  --quayHostname mirror1.cl2-mno1-rvt.lan
-
-
----
-
-🚨 If still fails → DEBUG (IMPORTANT)
-
-Run:
-
-podman ps -a
-
-Then:
-
-podman logs quay-app
-
-👉 This will show actual crash reason
-
-
----
-
-🔥 QUICK CHECK (before reinstall)
-
-Verify image exists:
-
-podman images | grep quay
-
-If NOT present:
-
-podman load -i quay.tar
-
-
----
-
-🚨 VERY IMPORTANT (Your Environment)
-
-You are:
-
-✅ Disconnected
-✅ Using mirror-registry bundle
-
-👉 So ensure these files exist:
-
-ls -lh ~/mirror
-
-Must have:
-
-execution-environment.tar ✅
-
-image-archive.tar ✅
-
-quay.tar ✅
-
-redis.tar ✅
-
-pause.tar ✅
-
-
-
----
-
-🎯 Why your failure happened
-
-From your logs:
-
-skipping: Loading Quay image archive
-
-👉 Means:
-
-> ❌ Quay image NOT properly loaded → container fails → exit 126
-
-
-
-
----
-
-✅ FINAL EXPECTED SUCCESS
-
-After fix:
-
-Quay is available at:
-https://mirror1.cl2-mno1-rvt.lan:8443
-
-
----
-
-💬 If still stuck
-
-Send me:
-
-podman logs quay-app
-
-That will give exact root cause in 1 shot 🔥
+        - name: ocs-operator
+          channels:
+            - name: stable-4.20
+
+        - name: ocs-client-operator
+          channels:
+            - name: stable-4.20
+
+        - name: mcg-operator
+          channels:
+            - name: stable-4.20
+
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.20
+
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.20
+
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.20
+
+        - name: recipe
+          channels:
+            - name: stable-4.20
+
+        - name: odf-external-snapshotter-operator
+          channels:
+            - name: stable-4.20
+        # STORAGE
+        - name: lvms-operator
+          channels:
+            - name: stable-4.20
+
+        - name: local-storage-operator
+          channels:
+            - name: stable
+
+        # NETWORK
+        - name: kubernetes-nmstate-operator
+          channels:
+            - name: stable
+
+        - name: sriov-network-operator
+          channels:
+            - name: stable
+
+        - name: ptp-operator
+          channels:
+            - name: stable
+
+        # SECURITY / OPTIONAL
+        - name: openshift-cert-manager-operator
+        - name: cluster-observability-operator
+        - name: kubernetes-image-registry-operator
+
+  additionalImages:
+    # CORE RELEASE
+    - name: quay.io/openshift-release-dev/ocp-release:4.20.14-x86_64
+
+    #  CRITICAL FIX (digest instead of latest)
+    - name: registry.redhat.io/odf4/odf-cloudnative-pg-rhel9-operator@sha256:3c8677b5d1adcd8ff300dce224c63745eab2397254a74940359f6ac14a81ddc7
+
+    # BASE IMAGES
+    - name: registry.redhat.io/ubi9/ubi:latest
+    - name: registry.redhat.io/ubi9/ubi-minimal:latest
+    - name: registry.redhat.io/ubi9/ubi-init:latest
+
+    # SUPPORT
+    - name: registry.redhat.io/rhel9/support-tools:latest
+
+  helm: {}
+
+
+Download images to local disk
+
+
+[root@bastion ~]# mkdir ocp-update-version
+[root@bastion ~]# cd ocp-update-version/
+[root@bastion ocp-update-version]# ls
+imageset-config.yaml
+
+
+# OC mirror V2 is the default version now
+[root@bastion ocp-update-version]# oc mirror -c imageset-confignew.yaml file://registry --v2 --parallel-images 20 --retry-times 10 --image-timeout 20m
+2025/02/14 07:39:37  [WARN]   : ⚠️  --v2 flag identified, flow redirected to the oc-mirror v2 version. This is Tech Preview, it is still under development and it is not production ready.
+2025/02/14 07:39:37  [INFO]   : 👋 Hello, welcome to oc-mirror
+2025/02/14 07:39:37  [INFO]   : ⚙️  setting up the environment for you...
+2025/02/14 07:39:37  [INFO]   : 🔀 workflow mode: mirrorToDisk
+2025/02/14 07:39:37  [INFO]   : 🕵️  going to discover the necessary images...
+2025/02/14 07:39:37  [INFO]   : 🔍 collecting release images...
+2025/02/14 07:40:09  [INFO]   : 🔍 collecting operator images...
+2025/02/14 07:46:59  [INFO]   : 🔍 collecting additional images...
+2025/02/14 07:46:59  [INFO]   : 🚀 Start copying the images...
+2025/02/14 07:46:59  [INFO]   : images to copy 440
+......
+2025/02/14 12:31:37  [INFO]   : === Results ===
+2025/02/14 12:31:37  [INFO]   : ✅ 440 / 440 release images mirrored successfully
+2025/02/14 12:31:37  [INFO]   : ✅ 60 / 60 operator images mirrored successfully
+2025/02/14 12:31:37  [INFO]   : 📦 Preparing the tarball archive...
+2025/02/14 12:31:46  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+
+# retry pulling images from QUAY/REDHAT.IO to local repo until all images and operators have been downloaded.
+
+[root@bastion ocp-update-version]# ls
+imageset-config.yaml  registry
