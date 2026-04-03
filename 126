@@ -1,172 +1,134 @@
-Your install is actually mostly successful, but the failure is very specific:
-
-👉 quay-app.service is crashing immediately (exit code 126)
-👉 That’s why the health check on port 8443 fails (connection refused)
-
-
----
-
-🔴 Root Cause (Most Likely)
-
-Exit code 126 in Podman usually means:
-
-> ❌ Permission / SELinux / execution issue inside container
-
-
-
-In mirror-registry setups, this is almost always one of these:
-
-1. SELinux blocking container access
-
-
-2. Wrong permissions on mounted directories
-
-
-3. Missing execute permission inside container runtime
-
-
-4. Podman / runc mismatch
-
-
-
-
----
-
-✅ Step-by-Step Fix (Do this exactly)
-
-1. Check real container error
-
-Run this first — this gives the actual failure reason:
-
-journalctl -u quay-app.service -n 100 -f
-
-AND:
-
-podman logs quay-app
-
-👉 Paste output if still stuck.
-
-
----
-
-2. Fix SELinux (VERY COMMON ISSUE)
-
-Run:
-
-setenforce 0
-
-Then restart:
-
-systemctl restart quay-app
-
-👉 If it works → SELinux is the problem
-
-Permanent fix:
-
-setsebool -P container_manage_cgroup on
-restorecon -Rv /root/quay-install
-
-
----
-
-3. Fix permissions on volumes
-
-Your mount paths:
-
-/root/quay-install/quay-config
-
-volumes: quay-storage, sqlite-storage
-
-
-Run:
-
-chmod -R 777 /root/quay-install
-
-Then:
-
-podman volume inspect quay-storage
-podman volume inspect sqlite-storage
-
-If needed recreate:
-
-podman volume rm quay-storage sqlite-storage
-podman volume create quay-storage
-podman volume create sqlite-storage
-
-
----
-
-4. Verify pod is running
-
-podman pod ps
-podman ps -a
-
-If container keeps restarting:
-
-podman inspect quay-app | grep -i error
-
-
----
-
-5. Check image execution issue
-
-Exit 126 can also mean binary issue. Try manual run:
-
-podman run --rm registry.redhat.io/quay/quay-rhel8:v3.12.14 /bin/bash
-
-If this fails → issue with container runtime / permissions.
-
-
----
-
-6. Quick clean reinstall (if needed)
-
-If things look messy, clean fully and reinstall:
-
-systemctl stop quay-app quay-pod redis
-podman rm -f quay-app
-podman pod rm -f quay-pod
-podman volume rm quay-storage sqlite-storage
-
-rm -rf /root/quay-install
-rm -rf ~/.quay
-
-Then reinstall again.
-
-
----
-
-⚡ Most Probable Fix (Based on your logs)
-
-👉 80% chance this will fix:
-
-setenforce 0
-systemctl restart quay-app
-
-
----
-
-📌 Why this happened
-
-Mirror registry uses:
-
-Podman + systemd
-
-mounted volumes with :Z
-
-SELinux contexts
-
-
-If contexts are wrong → container fails instantly (exit 126)
-
-
----
-
-👍 Next Step
-
-Run these 2 commands and share output if still failing:
-
-podman logs quay-app
-journalctl -u quay-app.service -n 50
-
-I’ll pinpoint exact issue in one shot.
+[root@mirror1 mirror]# journalctl -u quay-app.service -n 100 -f
+-- Logs begin at Fri 2026-04-03 16:13:47 IST. --
+Apr 03 17:07:07 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Main process exited, code=exited, status=126/n/a
+Apr 03 17:07:07 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Failed with result 'exit-code'.
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Service RestartSec=30s expired, scheduling restart.
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Scheduled restart job, restart counter is at 10.
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: Stopped Quay Container.
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: Starting Quay Container...
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:07:37 mirror1.cl2-mno1-rvt.lan systemd[1]: Started Quay Container.
+Apr 03 17:07:38 mirror1.cl2-mno1-rvt.lan podman[69710]: time="2026-04-03T17:07:38+05:30" level=error msg="Starting some container dependencies"
+Apr 03 17:07:38 mirror1.cl2-mno1-rvt.lan podman[69710]: time="2026-04-03T17:07:38+05:30" level=error msg="\"cannot listen on the TCP port: listen tcp4 :8443: bind: address already in use\""
+Apr 03 17:07:38 mirror1.cl2-mno1-rvt.lan podman[69710]: Error: starting some containers: internal libpod error
+Apr 03 17:07:38 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Main process exited, code=exited, status=126/n/a
+Apr 03 17:07:38 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Failed with result 'exit-code'.
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Service RestartSec=30s expired, scheduling restart.
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Scheduled restart job, restart counter is at 11.
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: Stopped Quay Container.
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: Starting Quay Container...
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:08:08 mirror1.cl2-mno1-rvt.lan systemd[1]: Started Quay Container.
+Apr 03 17:08:09 mirror1.cl2-mno1-rvt.lan podman[70529]: time="2026-04-03T17:08:09+05:30" level=error msg="Starting some container dependencies"
+Apr 03 17:08:09 mirror1.cl2-mno1-rvt.lan podman[70529]: time="2026-04-03T17:08:09+05:30" level=error msg="\"cannot listen on the TCP port: listen tcp4 :8443: bind: address already in use\""
+Apr 03 17:08:09 mirror1.cl2-mno1-rvt.lan podman[70529]: Error: starting some containers: internal libpod error
+Apr 03 17:08:09 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Main process exited, code=exited, status=126/n/a
+Apr 03 17:08:09 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Failed with result 'exit-code'.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Service RestartSec=30s expired, scheduling restart.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Scheduled restart job, restart counter is at 12.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: Stopped Quay Container.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: Starting Quay Container...
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: Started Quay Container.
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan podman[71129]: time="2026-04-03T17:08:39+05:30" level=error msg="Starting some container dependencies"
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan podman[71129]: time="2026-04-03T17:08:39+05:30" level=error msg="\"cannot listen on the TCP port: listen tcp4 :8443: bind: address already in use\""
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan podman[71129]: Error: starting some containers: internal libpod error
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Main process exited, code=exited, status=126/n/a
+Apr 03 17:08:39 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Failed with result 'exit-code'.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Service RestartSec=30s expired, scheduling restart.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Scheduled restart job, restart counter is at 13.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: Stopped Quay Container.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: Starting Quay Container...
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: Started Quay Container.
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan podman[71674]: time="2026-04-03T17:09:10+05:30" level=error msg="Starting some container dependencies"
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan podman[71674]: time="2026-04-03T17:09:10+05:30" level=error msg="\"cannot listen on the TCP port: listen tcp4 :8443: bind: address already in use\""
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan podman[71674]: Error: starting some containers: internal libpod error
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Main process exited, code=exited, status=126/n/a
+Apr 03 17:09:10 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Failed with result 'exit-code'.
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Service RestartSec=30s expired, scheduling restart.
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Scheduled restart job, restart counter is at 14.
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: Stopped Quay Container.
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: Starting Quay Container...
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:09:40 mirror1.cl2-mno1-rvt.lan systemd[1]: Started Quay Container.
+Apr 03 17:09:41 mirror1.cl2-mno1-rvt.lan podman[72211]: time="2026-04-03T17:09:41+05:30" level=error msg="Starting some container dependencies"
+Apr 03 17:09:41 mirror1.cl2-mno1-rvt.lan podman[72211]: time="2026-04-03T17:09:41+05:30" level=error msg="\"cannot listen on the TCP port: listen tcp4 :8443: bind: address already in use\""
+Apr 03 17:09:41 mirror1.cl2-mno1-rvt.lan podman[72211]: Error: starting some containers: internal libpod error
+Apr 03 17:09:41 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Main process exited, code=exited, status=126/n/a
+Apr 03 17:09:41 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Failed with result 'exit-code'.
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Service RestartSec=30s expired, scheduling restart.
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Scheduled restart job, restart counter is at 15.
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: Stopped Quay Container.
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: Starting Quay Container...
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:10:11 mirror1.cl2-mno1-rvt.lan systemd[1]: Started Quay Container.
+Apr 03 17:10:12 mirror1.cl2-mno1-rvt.lan podman[72748]: time="2026-04-03T17:10:12+05:30" level=error msg="Starting some container dependencies"
+Apr 03 17:10:12 mirror1.cl2-mno1-rvt.lan podman[72748]: time="2026-04-03T17:10:12+05:30" level=error msg="\"cannot listen on the TCP port: listen tcp4 :8443: bind: address already in use\""
+Apr 03 17:10:12 mirror1.cl2-mno1-rvt.lan podman[72748]: Error: starting some containers: internal libpod error
+Apr 03 17:10:12 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Main process exited, code=exited, status=126/n/a
+Apr 03 17:10:12 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Failed with result 'exit-code'.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Service RestartSec=30s expired, scheduling restart.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Scheduled restart job, restart counter is at 16.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: Stopped Quay Container.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: Starting Quay Container...
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Found left-over process 1861 (conmon) in control group while starting unit. Ignoring.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: Started Quay Container.
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan podman[73294]: time="2026-04-03T17:10:42+05:30" level=error msg="Starting some container dependencies"
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan podman[73294]: time="2026-04-03T17:10:42+05:30" level=error msg="\"cannot listen on the TCP port: listen tcp4 :8443: bind: address already in use\""
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan podman[73294]: Error: starting some containers: internal libpod error
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Main process exited, code=exited, status=126/n/a
+Apr 03 17:10:42 mirror1.cl2-mno1-rvt.lan systemd[1]: quay-app.service: Failed with result 'exit-code'.
+^C
+[root@mirror1 mirror]# podman logs quay-app
+[root@mirror1 mirror]# podman ps -a
+CONTAINER ID  IMAGE                                         COMMAND     CREATED         STATUS      PORTS                   NAMES
+e22e93c2455a  registry.access.redhat.com/ubi8/pause:8.10-5  infinity    9 minutes ago   Created     0.0.0.0:8443->8443/tcp  ec7e38e7bf34-infra
+b7855ac58b42  registry.redhat.io/quay/quay-rhel8:v3.12.14   registry    15 seconds ago  Created     0.0.0.0:8443->8443/tcp  quay-app
+[root@mirror1 mirror]# podman logs quay-app
+[root@mirror1 mirror]# setenforce 0
+setenforce: SELinux is disabled
+[root@mirror1 mirror]# systemctl restart quay-app
+[root@mirror1 mirror]# podman volume rm quay-storage sqlite-storage
+Error: volume quay-storage is being used by the following container(s): 936609a20d42c89f5b0ddb106136720d30cc9876b30b2c99b04120115551accd: volume is being used
+Error: volume sqlite-storage is being used by the following container(s): 936609a20d42c89f5b0ddb106136720d30cc9876b30b2c99b04120115551accd: volume is being used
+[root@mirror1 mirror]# podman pod ps
+POD ID        NAME        STATUS      CREATED         INFRA ID      # OF CONTAINERS
+ec7e38e7bf34  quay-pod    Created     11 minutes ago  e22e93c2455a  2
+[root@mirror1 mirror]# podman ps -a
+CONTAINER ID  IMAGE                                         COMMAND     CREATED         STATUS      PORTS                   NAMES
+e22e93c2455a  registry.access.redhat.com/ubi8/pause:8.10-5  infinity    11 minutes ago  Created     0.0.0.0:8443->8443/tcp  ec7e38e7bf34-infra
+936609a20d42  registry.redhat.io/quay/quay-rhel8:v3.12.14   registry    28 seconds ago  Created     0.0.0.0:8443->8443/tcp  quay-app
+[root@mirror1 mirror]# podman pod ps
+POD ID        NAME        STATUS      CREATED         INFRA ID      # OF CONTAINERS
+ec7e38e7bf34  quay-pod    Created     13 minutes ago  e22e93c2455a  2
+[root@mirror1 mirror]# podman ps -a
+CONTAINER ID  IMAGE                                         COMMAND     CREATED         STATUS      PORTS                   NAMES
+e22e93c2455a  registry.access.redhat.com/ubi8/pause:8.10-5  infinity    13 minutes ago  Created     0.0.0.0:8443->8443/tcp  ec7e38e7bf34-infra
+6ddf22b5a0c9  registry.redhat.io/quay/quay-rhel8:v3.12.14   registry    14 seconds ago  Created     0.0.0.0:8443->8443/tcp  quay-app
+[root@mirror1 mirror]#
+[root@mirror1 mirror]#
+[root@mirror1 mirror]#
+[root@mirror1 mirror]#
+[root@mirror1 mirror]#
