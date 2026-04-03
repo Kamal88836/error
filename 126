@@ -1,44 +1,12 @@
-TASK [mirror_appliance : Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance] **************************************************************************
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (10 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (9 retries left).
-FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (8 retries left).
-^C [ERROR]: User interrupted execution
-ERRO[2026-04-03 17:20:39] An error occurred: exit status 99
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]# systemctl stop quay-app
-[root@mirror1 mirror]# systemctl stop quay-pod
-[root@mirror1 mirror]# podman pod rm -f quay-pod
-[root@mirror1 mirror]# podman rm -f $(podman ps -aq)
-Error: you must provide at least one name or id
-[root@mirror1 mirror]# ss -lntp | grep 8443
-LISTEN 0      2048                  0.0.0.0:8443      0.0.0.0:*    users:(("conmon",pid=1861,fd=5))
-[root@mirror1 mirror]# ss -lntp | grep 8443^C
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]# podman system prune -a -f
-Deleted Images
-4f8fcf81a660f668bf9e04ceeed2316b4b8a7374d406b8132c8d28734bb56a23
-869abeb3cbe60a3135f653f60cf000b1411652a5625ae840595830f352d2cac1
-80e8357467ff38fde1638fbf51c9d0207ad290d9c22b8904a2f66f89c65582df
-d43ee5028c0ef5afe199da5ab548ab2db4d146fcc3a97388d69787845769d5c8
-09c50ff34f47f96a01210e94167227ca7667e8273f99b3055c8eec7c14703e52
-e80be5506bfb752b09bcf580e2ed2a2b0d258f85d7ad3c796752f06d9e5dc03f
-f299ec10b776324b8336f764c1258e732eb62d81a95b04225c5db0f2b56dd238
-badd15d0e43748dc14c71606c2b3282dfdedea572ddc5b88356479737f9c0a7a
-Total reclaimed space: 5.755GB
-[root@mirror1 mirror]# ss -lntp | grep 8443
-LISTEN 0      2048                  0.0.0.0:8443      0.0.0.0:*    users:(("conmon",pid=1861,fd=5))
-[root@mirror1 mirror]# curl -k https://mirror1.cl2-mno1-rvt.lan:8443/health/instance
-curl: (7) Failed to connect to mirror1.cl2-mno1-rvt.lan port 8443: Connection refused
-[root@mirror1 mirror]# podman ps -a
-CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
-[root@mirror1 mirror]# podman ps -a
-CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
-[root@mirror1 mirror]# ss -lntp | grep 8443
-LISTEN 0      2048                  0.0.0.0:8443      0.0.0.0:*    users:(("conmon",pid=1861,fd=5))
-[root@mirror1 mirror]# podman pod ps
-POD ID      NAME        STATUS      CREATED     INFRA ID    # OF CONTAINERS
+
+TASK [mirror_appliance : Show quay-app.service status] *******************************************************************************************************************************************************
+changed: [root@mirror1.cl2-mno1-rvt.lan]
+
+TASK [mirror_appliance : Fail the playbook since Quay failed to startup] *************************************************************************************************************************************
+fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"changed": false, "msg": "Quay did not become alive, see systemctl status output: ['● quay-app.service - Quay Container', '   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)', '   Active: active (running) since Fri 2026-04-03 17:26:29 IST; 5min ago', '  Process: 96247 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)', ' Main PID: 96249 (podman)', '    Tasks: 18 (limit: 221444)', '   Memory: 38.8M', '   CGroup: /system.slice/quay-app.service', '           ├─96249 /usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry', '           └─96289 /usr/bin/conmon --api-version 1 -c f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd -u f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd/userdata -p /run/containers/storage/overlay-containers/f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd/userdata/pidfile -n quay-app --exit-dir /run/libpod/exits --full-attach -s -l journald --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd/userdata/oci-log --conmon-pidfile /run/quay-app.service-pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd', '', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan podman[96249]: exportactionlogsworker stdout | 2026-04-03 12:01:34,751 [68] [INFO] [apscheduler.executors.default] Job \"QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-03 12:02:34 UTC)\" executed successfully', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan quay-app[96289]: exportactionlogsworker stdout | 2026-04-03 12:01:34,751 [68] [INFO] [apscheduler.executors.default] Job \"QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-03 12:02:34 UTC)\" executed successfully', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan quay-app[96289]: notificationworker stdout | 2026-04-03 12:01:34,796 [80] [INFO] [apscheduler.executors.default] Running job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-03 12:01:44 UTC)\" (scheduled at 2026-04-03 12:01:34.795555+00:00)', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan podman[96249]: notificationworker stdout | 2026-04-03 12:01:34,796 [80] [INFO] [apscheduler.executors.default] Running job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-03 12:01:44 UTC)\" (scheduled at 2026-04-03 12:01:34.795555+00:00)', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan quay-app[96289]: notificationworker stdout | 2026-04-03 12:01:34,805 [80] [INFO] [apscheduler.executors.default] Job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-03 12:01:44 UTC)\" executed successfully', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan podman[96249]: notificationworker stdout | 2026-04-03 12:01:34,805 [80] [INFO] [apscheduler.executors.default] Job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-03 12:01:44 UTC)\" executed successfully', 'Apr 03 17:31:37 mirror1.cl2-mno1-rvt.lan quay-app[96289]: gcworker stdout | 2026-04-03 12:01:37,648 [69] [INFO] [apscheduler.executors.default] Running job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-03 12:02:07 UTC)\" (scheduled at 2026-04-03 12:01:37.648168+00:00)', 'Apr 03 17:31:37 mirror1.cl2-mno1-rvt.lan podman[96249]: gcworker stdout | 2026-04-03 12:01:37,648 [69] [INFO] [apscheduler.executors.default] Running job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-03 12:02:07 UTC)\" (scheduled at 2026-04-03 12:01:37.648168+00:00)', 'Apr 03 17:31:37 mirror1.cl2-mno1-rvt.lan podman[96249]: gcworker stdout | 2026-04-03 12:01:37,649 [69] [INFO] [apscheduler.executors.default] Job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-03 12:02:07 UTC)\" executed successfully', 'Apr 03 17:31:37 mirror1.cl2-mno1-rvt.lan quay-app[96289]: gcworker stdout | 2026-04-03 12:01:37,649 [69] [INFO] [apscheduler.executors.default] Job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-03 12:02:07 UTC)\" executed successfully']"}
+
+PLAY RECAP ***************************************************************************************************************************************************************************************************
+root@mirror1.cl2-mno1-rvt.lan : ok=48   changed=23   unreachable=0    failed=1    skipped=15   rescued=1    ignored=0
+
+ERRO[2026-04-03 17:31:38] An error occurred: exit status 2
 [root@mirror1 mirror]#
