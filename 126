@@ -1,35 +1,19 @@
-TASK [mirror_appliance : Show quay-app.service status] *******************************************************************************************************************************************************
-changed: [root@mirror1.cl2-mno1-rvt.lan]
-
-TASK [mirror_appliance : Fail the playbook since Quay failed to startup] *************************************************************************************************************************************
-fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"changed": false, "msg": "Quay did not become alive, see systemctl status output: ['● quay-app.service - Quay Container', '   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)', '   Active: active (running) since Fri 2026-04-03 17:26:29 IST; 5min ago', '  Process: 96247 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)', ' Main PID: 96249 (podman)', '    Tasks: 18 (limit: 221444)', '   Memory: 38.8M', '   CGroup: /system.slice/quay-app.service', '           ├─96249 /usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry', '           └─96289 /usr/bin/conmon --api-version 1 -c f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd -u f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd/userdata -p /run/containers/storage/overlay-containers/f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd/userdata/pidfile -n quay-app --exit-dir /run/libpod/exits --full-attach -s -l journald --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd/userdata/oci-log --conmon-pidfile /run/quay-app.service-pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg f94769f5575ecf49bb521d0b151fbe95d576a95e64584407ce9bc838dce353dd', '', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan podman[96249]: exportactionlogsworker stdout | 2026-04-03 12:01:34,751 [68] [INFO] [apscheduler.executors.default] Job \"QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-03 12:02:34 UTC)\" executed successfully', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan quay-app[96289]: exportactionlogsworker stdout | 2026-04-03 12:01:34,751 [68] [INFO] [apscheduler.executors.default] Job \"QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-03 12:02:34 UTC)\" executed successfully', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan quay-app[96289]: notificationworker stdout | 2026-04-03 12:01:34,796 [80] [INFO] [apscheduler.executors.default] Running job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-03 12:01:44 UTC)\" (scheduled at 2026-04-03 12:01:34.795555+00:00)', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan podman[96249]: notificationworker stdout | 2026-04-03 12:01:34,796 [80] [INFO] [apscheduler.executors.default] Running job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-03 12:01:44 UTC)\" (scheduled at 2026-04-03 12:01:34.795555+00:00)', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan quay-app[96289]: notificationworker stdout | 2026-04-03 12:01:34,805 [80] [INFO] [apscheduler.executors.default] Job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-03 12:01:44 UTC)\" executed successfully', 'Apr 03 17:31:34 mirror1.cl2-mno1-rvt.lan podman[96249]: notificationworker stdout | 2026-04-03 12:01:34,805 [80] [INFO] [apscheduler.executors.default] Job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-03 12:01:44 UTC)\" executed successfully', 'Apr 03 17:31:37 mirror1.cl2-mno1-rvt.lan quay-app[96289]: gcworker stdout | 2026-04-03 12:01:37,648 [69] [INFO] [apscheduler.executors.default] Running job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-03 12:02:07 UTC)\" (scheduled at 2026-04-03 12:01:37.648168+00:00)', 'Apr 03 17:31:37 mirror1.cl2-mno1-rvt.lan podman[96249]: gcworker stdout | 2026-04-03 12:01:37,648 [69] [INFO] [apscheduler.executors.default] Running job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-03 12:02:07 UTC)\" (scheduled at 2026-04-03 12:01:37.648168+00:00)', 'Apr 03 17:31:37 mirror1.cl2-mno1-rvt.lan podman[96249]: gcworker stdout | 2026-04-03 12:01:37,649 [69] [INFO] [apscheduler.executors.default] Job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-03 12:02:07 UTC)\" executed successfully', 'Apr 03 17:31:37 mirror1.cl2-mno1-rvt.lan quay-app[96289]: gcworker stdout | 2026-04-03 12:01:37,649 [69] [INFO] [apscheduler.executors.default] Job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-03 12:02:07 UTC)\" executed successfully']"}
-
-PLAY RECAP ***************************************************************************************************************************************************************************************************
-root@mirror1.cl2-mno1-rvt.lan : ok=48   changed=23   unreachable=0    failed=1    skipped=15   rescued=1    ignored=0
-
-ERRO[2026-04-03 17:31:38] An error occurred: exit status 2
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]# hostname
-mirror1.cl2-mno1-rvt.lan
-[root@mirror1 mirror]# nslookup
-> mirror1.cl2-mno1-rvt.lan
-Server:         72.2.0.34
-Address:        72.2.0.34#53
-
-Name:   mirror1.cl2-mno1-rvt.lan
-Address: 72.2.0.34
-Name:   mirror1.cl2-mno1-rvt.lan
-Address: 2405:100:200:172::34
-> systemctl ^C[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]# systemctl status firewalld
-● firewalld.service - firewalld - dynamic firewall daemon
-   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
-   Active: inactive (dead)
-     Docs: man:firewalld(1)
+[root@mirror1 mirror]# ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=117 time=7.65 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=117 time=7.65 ms
+^C
+--- 8.8.8.8 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 7.645/7.646/7.648/0.087 ms
+[root@mirror1 mirror]# ping mirror1.cl2-mno1-rvt.lan
+PING mirror1.cl2-mno1-rvt.lan(mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34)) 56 data bytes
+64 bytes from mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34): icmp_seq=1 ttl=64 time=0.039 ms
+64 bytes from mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34): icmp_seq=2 ttl=64 time=0.051 ms
+64 bytes from mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34): icmp_seq=3 ttl=64 time=0.039 ms
+64 bytes from mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34): icmp_seq=4 ttl=64 time=0.037 ms
+^C
+--- mirror1.cl2-mno1-rvt.lan ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3055ms
+rtt min/avg/max/mdev = 0.037/0.041/0.051/0.008 ms
 [root@mirror1 mirror]#
