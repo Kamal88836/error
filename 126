@@ -1,128 +1,44 @@
-Good — now we have the real root cause, and it’s NOT SELinux 👍
-
-
----
-
-🔴 Actual Problem
-
-From your logs:
-
-cannot listen on the TCP port: listen tcp4 :8443: bind: address already in use
-
-👉 Port 8443 is already occupied 👉 So Quay cannot start → exits with 126
-
-
----
-
-🔍 Why this is happening
-
-Your output shows:
-
-0.0.0.0:8443->8443/tcp
-
-And the pod is stuck in Created state with leftover infra container.
-
-👉 This means:
-
-A previous failed pod/container is still holding port 8443
-
-Systemd keeps retrying → conflict continues
-
-
-
----
-
-✅ Fix (Clean and Resolve Port Conflict)
-
-Step 1: Stop everything cleanly
-
-systemctl stop quay-app
-systemctl stop quay-pod
-
-
----
-
-Step 2: Remove stuck pod + containers (IMPORTANT)
-
-podman pod rm -f quay-pod
-podman rm -f $(podman ps -aq)
-
-
----
-
-Step 3: Verify port 8443 is free
-
-ss -lntp | grep 8443
-
-👉 If you still see something, kill it:
-
-fuser -k 8443/tcp
-
-
----
-
-Step 4: Restart installation cleanly
-
-./mirror-registry install \
-  --initUser sysadmin \
-  --initPassword samsung123
-
-
----
-
-⚡ Optional (Safer cleanup if still issues)
-
-If problem persists:
-
-podman system prune -a -f
-
-
----
-
-🔥 Why your install failed earlier
-
-First attempt partially created pod
-
-Pod reserved port 8443
-
-New container couldn’t bind → crash loop
-
-
-👉 This is a very common mirror-registry issue
-
-
----
-
-✅ Expected result after fix
-
-podman ps → shows running containers
-
-https://mirror1:8443 accessible
-
-Health check passes
-
-
-
----
-
-👍 Quick validation after reinstall
-
-Run:
-
-curl -k https://mirror1.cl2-mno1-rvt.lan:8443/health/instance
-
-You should get:
-
-OK
-
-
----
-
-🚀 If still stuck
-
-Send me output of:
-
-ss -lntp | grep 8443
-podman pod ps
-
-I’ll pinpoint instantly.
+TASK [mirror_appliance : Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance] **************************************************************************
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (10 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (9 retries left).
+FAILED - RETRYING: [root@mirror1.cl2-mno1-rvt.lan]: Waiting up to 3 minutes for Quay to become alive at https://mirror1.cl2-mno1-rvt.lan:8443/health/instance (8 retries left).
+^C [ERROR]: User interrupted execution
+ERRO[2026-04-03 17:20:39] An error occurred: exit status 99
+[root@mirror1 mirror]#
+[root@mirror1 mirror]#
+[root@mirror1 mirror]#
+[root@mirror1 mirror]# systemctl stop quay-app
+[root@mirror1 mirror]# systemctl stop quay-pod
+[root@mirror1 mirror]# podman pod rm -f quay-pod
+[root@mirror1 mirror]# podman rm -f $(podman ps -aq)
+Error: you must provide at least one name or id
+[root@mirror1 mirror]# ss -lntp | grep 8443
+LISTEN 0      2048                  0.0.0.0:8443      0.0.0.0:*    users:(("conmon",pid=1861,fd=5))
+[root@mirror1 mirror]# ss -lntp | grep 8443^C
+[root@mirror1 mirror]#
+[root@mirror1 mirror]#
+[root@mirror1 mirror]#
+[root@mirror1 mirror]# podman system prune -a -f
+Deleted Images
+4f8fcf81a660f668bf9e04ceeed2316b4b8a7374d406b8132c8d28734bb56a23
+869abeb3cbe60a3135f653f60cf000b1411652a5625ae840595830f352d2cac1
+80e8357467ff38fde1638fbf51c9d0207ad290d9c22b8904a2f66f89c65582df
+d43ee5028c0ef5afe199da5ab548ab2db4d146fcc3a97388d69787845769d5c8
+09c50ff34f47f96a01210e94167227ca7667e8273f99b3055c8eec7c14703e52
+e80be5506bfb752b09bcf580e2ed2a2b0d258f85d7ad3c796752f06d9e5dc03f
+f299ec10b776324b8336f764c1258e732eb62d81a95b04225c5db0f2b56dd238
+badd15d0e43748dc14c71606c2b3282dfdedea572ddc5b88356479737f9c0a7a
+Total reclaimed space: 5.755GB
+[root@mirror1 mirror]# ss -lntp | grep 8443
+LISTEN 0      2048                  0.0.0.0:8443      0.0.0.0:*    users:(("conmon",pid=1861,fd=5))
+[root@mirror1 mirror]# curl -k https://mirror1.cl2-mno1-rvt.lan:8443/health/instance
+curl: (7) Failed to connect to mirror1.cl2-mno1-rvt.lan port 8443: Connection refused
+[root@mirror1 mirror]# podman ps -a
+CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+[root@mirror1 mirror]# podman ps -a
+CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
+[root@mirror1 mirror]# ss -lntp | grep 8443
+LISTEN 0      2048                  0.0.0.0:8443      0.0.0.0:*    users:(("conmon",pid=1861,fd=5))
+[root@mirror1 mirror]# podman pod ps
+POD ID      NAME        STATUS      CREATED     INFRA ID    # OF CONTAINERS
+[root@mirror1 mirror]#
