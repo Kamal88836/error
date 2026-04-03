@@ -1,138 +1,644 @@
-Good — now your DNS is actually fine 👍
-You have both:
-
-✅ IPv4 → 72.2.0.34 (this is what OCP will use)
-
-⚠️ IPv6 → can be ignored (not blocking)
-
-
-👉 So DNS is NOT your problem anymore
-
-
----
-
-🚨 Real Issue (Still the Same)
-
-This line is the smoking gun:
-
-Using internal constant for release image quay.io/openshift-release-dev
-
-👉 Which means:
-
-❌ Installer is STILL using internet
-❌ Your mirror is NOT being used
-❌ Your ISO will FAIL in disconnected env
-
-
----
-
-🧠 Why This Keeps Happening
-
-Because you are running:
-
-openshift-install agent create image
-
-👉 WITHOUT telling installer to use your mirror
-
-
----
-
-✅ FINAL FIX (Do EXACTLY this)
-
-🔴 Run this command (don’t skip)
-
-openshift-install agent create image \
-  --dir=. \
-  --log-level debug \
-  --release-image=mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4:4.18.23-x86_64
-
-
----
-
-⚠️ Important: Why your current run fails
-
-Even though:
-
-Mirror exists ✅
-
-DNS works ✅
-
-
-👉 Installer default behavior:
-
-Always uses quay unless overridden
-
-
----
-
-✅ After Running Correct Command
-
-You should see:
-
-Using release image mirror1.cl2-mno1-rvt.lan:8443
-
-👉 NOT quay.io
-
-
----
-
-🔍 If It STILL Shows quay (then check this)
-
-1. Image exists?
-
-skopeo list-tags docker://mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 | grep 4.18.23
-
-
----
-
-2. Login works?
-
-podman login mirror1.cl2-mno1-rvt.lan:8443
-
-
----
-
-3. Pull secret includes mirror?
-
-Check:
-
-cat install-config.yaml
-
-Must contain:
-
-"mirror1.cl2-mno1-rvt.lan:8443"
-
-
----
-
-4. Registry cert trusted?
-
-If self-signed:
-
-additionalTrustBundle: |
-  -----BEGIN CERTIFICATE-----
-
-
----
-
-🏆 Final Answer
-
-👉 Your setup is correct now (DNS + mirror)
-👉 Only missing piece:
-
-✔ You must pass --release-image
-
-Without that: 👉 Installer will ALWAYS go to quay ❌
-
-
----
-
-👍 Next Step (if you want)
-
-I can give you:
-
-✅ Fully working install-config.yaml (agent + disconnected)
-✅ Validation checklist before booting nodes
-✅ Troubleshooting after ISO boot
-
-Just say 👍
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]# openshift-install agent create image --log-level debug
+DEBUG OpenShift Installer 4.18.23
+DEBUG Built from commit 53d25898f4a68451e9e1478336e1991fd5ded04f
+DEBUG Fetching Agent Installer ISO...
+DEBUG Loading Agent Installer ISO...
+DEBUG   Loading Agent Workflow...
+DEBUG   Loading Agent Installer ClusterInfo...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading AddNodes Config...
+DEBUG   Loading Agent Installer Artifacts...
+DEBUG     Loading Agent Installer Ignition...
+DEBUG       Loading Agent Workflow...
+DEBUG       Loading Agent Installer ClusterInfo...
+DEBUG       Loading AddNodes Config...
+DEBUG       Loading Additional import cluster config...
+DEBUG         Loading Agent Workflow...
+DEBUG         Loading Agent Installer ClusterInfo...
+DEBUG       Loading Agent Manifests...
+DEBUG         Loading Agent PullSecret...
+DEBUG           Loading Agent Workflow...
+DEBUG           Loading Agent Installer ClusterInfo...
+DEBUG           Loading Install Config...
+DEBUG Using internal constant for release image quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+DEBUG Release Image arch is: amd64
+DEBUG Supported architecture amd64 found for the release image: quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+INFO Configuration has 3 master replicas and 0 worker replicas
+DEBUG           Using Install Config loaded from target directory
+DEBUG         Loading InfraEnv Config...
+DEBUG           Loading Agent Workflow...
+DEBUG           Loading Agent Installer ClusterInfo...
+DEBUG           Loading Install Config...
+DEBUG           Loading Agent Config...
+DEBUG           Using Agent Config loaded from target directory
+DEBUG         Loading NMState Config...
+DEBUG           Loading Agent Workflow...
+DEBUG           Loading Agent Installer ClusterInfo...
+DEBUG           Loading Agent Hosts...
+DEBUG             Loading Agent Workflow...
+DEBUG             Loading AddNodes Config...
+DEBUG             Loading Install Config...
+DEBUG             Loading Agent Config...
+DEBUG           Loading Install Config...
+DEBUG         Loading AgentClusterInstall Config...
+DEBUG           Loading Agent Workflow...
+DEBUG           Loading Install Config...
+DEBUG           Loading Agent Hosts...
+DEBUG           Loading Agent Config...
+DEBUG         Loading ClusterDeployment Config...
+DEBUG           Loading Agent Workflow...
+DEBUG           Loading Install Config...
+DEBUG         Loading ClusterImageSet Config...
+DEBUG           Loading Agent Workflow...
+DEBUG           Loading Agent Installer ClusterInfo...
+DEBUG           Loading Release Image Pull Spec...
+DEBUG           Loading Install Config...
+DEBUG       Loading Extra Manifests...
+DEBUG       Loading Certificate (kube-apiserver-lb-signer)...
+DEBUG       Loading Certificate (kube-apiserver-localhost-signer)...
+DEBUG       Loading Certificate (kube-apiserver-service-network-signer)...
+DEBUG       Loading Certificate (admin-kubeconfig-signer)...
+DEBUG       Loading Kubeadmin Password...
+DEBUG       Loading Agent Config...
+DEBUG       Loading Agent Hosts...
+DEBUG       Loading Mirror Registries Config...
+DEBUG         Loading Agent Workflow...
+DEBUG         Loading Agent Installer ClusterInfo...
+DEBUG         Loading Install Config...
+DEBUG         Loading Release Image Pull Spec...
+DEBUG Using internal constant for release image quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+DEBUG       Loading Mirror Registries Certificate File...
+DEBUG         Loading Agent Workflow...
+DEBUG         Loading Agent Installer ClusterInfo...
+DEBUG         Loading Install Config...
+DEBUG       Loading Agent Installer API Auth Config...
+DEBUG         Loading Agent Workflow...
+DEBUG         Loading AddNodes Config...
+DEBUG       Loading Agent Installer InfraEnv ID...
+DEBUG     Loading Agent ISO/PXE files Kernel Arguments...
+DEBUG       Loading Agent Workflow...
+DEBUG       Loading Agent Installer ClusterInfo...
+DEBUG       Loading AgentClusterInstall Config...
+DEBUG     Loading BaseIso Image...
+DEBUG       Loading Agent Workflow...
+DEBUG       Loading Agent Installer ClusterInfo...
+DEBUG       Loading Agent Manifests...
+DEBUG       Loading Install Config...
+DEBUG       Loading Mirror Registries Config...
+DEBUG     Loading Agent Manifests...
+DEBUG     Loading AgentClusterInstall Config...
+DEBUG     Loading Mirror Registries Config...
+DEBUG     Loading Agent Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG   Loading Agent Manifests...
+DEBUG   Loading BaseIso Image...
+DEBUG   Loading Agent Installer API Auth Config...
+DEBUG   Fetching Agent Workflow...
+DEBUG   Generating Agent Workflow...
+DEBUG   Fetching Agent Installer ClusterInfo...
+DEBUG     Fetching Agent Workflow...
+DEBUG     Reusing previously-fetched Agent Workflow
+DEBUG     Fetching AddNodes Config...
+DEBUG     Generating AddNodes Config...
+DEBUG   Generating Agent Installer ClusterInfo...
+DEBUG   Fetching Agent Installer Artifacts...
+DEBUG     Fetching Agent Installer Ignition...
+DEBUG       Fetching Agent Workflow...
+DEBUG       Reusing previously-fetched Agent Workflow
+DEBUG       Fetching Agent Installer ClusterInfo...
+DEBUG       Reusing previously-fetched Agent Installer ClusterInfo
+DEBUG       Fetching AddNodes Config...
+DEBUG       Reusing previously-fetched AddNodes Config
+DEBUG       Fetching Additional import cluster config...
+DEBUG         Fetching Agent Workflow...
+DEBUG         Reusing previously-fetched Agent Workflow
+DEBUG         Fetching Agent Installer ClusterInfo...
+DEBUG         Reusing previously-fetched Agent Installer ClusterInfo
+DEBUG       Generating Additional import cluster config...
+DEBUG       Fetching Agent Manifests...
+DEBUG         Fetching Agent PullSecret...
+DEBUG           Fetching Agent Workflow...
+DEBUG           Reusing previously-fetched Agent Workflow
+DEBUG           Fetching Agent Installer ClusterInfo...
+DEBUG           Reusing previously-fetched Agent Installer ClusterInfo
+DEBUG           Fetching Install Config...
+DEBUG           Reusing previously-fetched Install Config
+DEBUG         Generating Agent PullSecret...
+DEBUG         Fetching InfraEnv Config...
+DEBUG           Fetching Agent Workflow...
+DEBUG           Reusing previously-fetched Agent Workflow
+DEBUG           Fetching Agent Installer ClusterInfo...
+DEBUG           Reusing previously-fetched Agent Installer ClusterInfo
+DEBUG           Fetching Install Config...
+DEBUG           Reusing previously-fetched Install Config
+DEBUG           Fetching Agent Config...
+DEBUG           Reusing previously-fetched Agent Config
+DEBUG         Generating InfraEnv Config...
+DEBUG         Fetching NMState Config...
+DEBUG           Fetching Agent Workflow...
+DEBUG           Reusing previously-fetched Agent Workflow
+DEBUG           Fetching Agent Installer ClusterInfo...
+DEBUG           Reusing previously-fetched Agent Installer ClusterInfo
+DEBUG           Fetching Agent Hosts...
+DEBUG             Fetching Agent Workflow...
+DEBUG             Reusing previously-fetched Agent Workflow
+DEBUG             Fetching AddNodes Config...
+DEBUG             Reusing previously-fetched AddNodes Config
+DEBUG             Fetching Install Config...
+DEBUG             Reusing previously-fetched Install Config
+DEBUG             Fetching Agent Config...
+DEBUG             Reusing previously-fetched Agent Config
+DEBUG           Generating Agent Hosts...
+DEBUG Using hosts from agent-config.yaml
+DEBUG           Fetching Install Config...
+DEBUG           Reusing previously-fetched Install Config
+DEBUG         Generating NMState Config...
+DEBUG adding MAC interface map to host static network config - Name: ens1f0 MacAddress:50:7C:6F:24:3B:18
+DEBUG adding MAC interface map to host static network config - Name: ens1f0 MacAddress:50:7c:6f:14:39:2c
+DEBUG adding MAC interface map to host static network config - Name: ens1f0 MacAddress:50:7c:6f:24:39:cc
+DEBUG         Fetching AgentClusterInstall Config...
+DEBUG           Fetching Agent Workflow...
+DEBUG           Reusing previously-fetched Agent Workflow
+DEBUG           Fetching Install Config...
+DEBUG           Reusing previously-fetched Install Config
+DEBUG           Fetching Agent Hosts...
+DEBUG           Reusing previously-fetched Agent Hosts
+DEBUG           Fetching Agent Config...
+DEBUG           Reusing previously-fetched Agent Config
+DEBUG         Generating AgentClusterInstall Config...
+DEBUG         Fetching ClusterDeployment Config...
+DEBUG           Fetching Agent Workflow...
+DEBUG           Reusing previously-fetched Agent Workflow
+DEBUG           Fetching Install Config...
+DEBUG           Reusing previously-fetched Install Config
+DEBUG         Generating ClusterDeployment Config...
+DEBUG         Fetching ClusterImageSet Config...
+DEBUG           Fetching Agent Workflow...
+DEBUG           Reusing previously-fetched Agent Workflow
+DEBUG           Fetching Agent Installer ClusterInfo...
+DEBUG           Reusing previously-fetched Agent Installer ClusterInfo
+DEBUG           Fetching Release Image Pull Spec...
+DEBUG           Generating Release Image Pull Spec...
+DEBUG Using internal constant for release image quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+DEBUG           Fetching Install Config...
+DEBUG           Reusing previously-fetched Install Config
+DEBUG         Generating ClusterImageSet Config...
+DEBUG Using internal constant for release image quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+DEBUG       Generating Agent Manifests...
+DEBUG       Fetching Extra Manifests...
+DEBUG       Generating Extra Manifests...
+DEBUG       Fetching Certificate (kube-apiserver-lb-signer)...
+DEBUG       Generating Certificate (kube-apiserver-lb-signer)...
+DEBUG       Fetching Certificate (kube-apiserver-localhost-signer)...
+DEBUG       Generating Certificate (kube-apiserver-localhost-signer)...
+DEBUG       Fetching Certificate (kube-apiserver-service-network-signer)...
+DEBUG       Generating Certificate (kube-apiserver-service-network-signer)...
+DEBUG       Fetching Certificate (admin-kubeconfig-signer)...
+DEBUG       Generating Certificate (admin-kubeconfig-signer)...
+DEBUG       Fetching Kubeadmin Password...
+DEBUG       Generating Kubeadmin Password...
+DEBUG       Fetching Agent Config...
+DEBUG       Reusing previously-fetched Agent Config
+DEBUG       Fetching Agent Hosts...
+DEBUG       Reusing previously-fetched Agent Hosts
+DEBUG       Fetching Mirror Registries Config...
+DEBUG         Fetching Agent Workflow...
+DEBUG         Reusing previously-fetched Agent Workflow
+DEBUG         Fetching Agent Installer ClusterInfo...
+DEBUG         Reusing previously-fetched Agent Installer ClusterInfo
+DEBUG         Fetching Install Config...
+DEBUG         Reusing previously-fetched Install Config
+DEBUG         Fetching Release Image Pull Spec...
+DEBUG         Reusing previously-fetched Release Image Pull Spec
+DEBUG       Generating Mirror Registries Config...
+DEBUG       Fetching Mirror Registries Certificate File...
+DEBUG         Fetching Agent Workflow...
+DEBUG         Reusing previously-fetched Agent Workflow
+DEBUG         Fetching Agent Installer ClusterInfo...
+DEBUG         Reusing previously-fetched Agent Installer ClusterInfo
+DEBUG         Fetching Install Config...
+DEBUG         Reusing previously-fetched Install Config
+DEBUG       Generating Mirror Registries Certificate File...
+DEBUG       Fetching Agent Installer API Auth Config...
+DEBUG         Fetching Agent Workflow...
+DEBUG         Reusing previously-fetched Agent Workflow
+DEBUG         Fetching AddNodes Config...
+DEBUG         Reusing previously-fetched AddNodes Config
+DEBUG       Generating Agent Installer API Auth Config...
+DEBUG       Fetching Agent Installer InfraEnv ID...
+DEBUG       Generating Agent Installer InfraEnv ID...
+DEBUG     Generating Agent Installer Ignition...
+DEBUG RendezvousIP from the NMStateConfig 72.2.0.13
+INFO The rendezvous host IP (node0 IP) is 72.2.0.13
+^CWARNING Received interrupt signal
+[root@mirror1 ocp-agentMNO]# ll
+total 12
+-rw-r--r--. 1 root root 3222 Apr  2 16:24 agent-config.yaml
+-rw-r--r--  1 root root 5978 Apr  3 11:46 install-config.yaml
+[root@mirror1 ocp-agentMNO]# ls -ltra
+total 40
+-rw-r--r--.  1 root root  3222 Apr  2 16:24 agent-config.yaml
+dr-xr-x---. 14 root root  4096 Apr  2 17:08 ..
+-rw-r--r--   1 root root  5978 Apr  3 11:46 install-config.yaml
+drwxr-xr-x.  2 root root    88 Apr  3 12:02 .
+-rw-r--r--   1 root root 22661 Apr  3 12:02 .openshift_install.log
+[root@mirror1 ocp-agentMNO]# rm -rf .openshift_install.log
+[root@mirror1 ocp-agentMNO]# openshift-install agent create image \
+>   --dir=. \
+>   --log-level debug \
+>   --release-image=mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4:4.18.23-x86_64
+FATA[0000] Error executing openshift-install: unknown flag: --release-image
+[root@mirror1 ocp-agentMNO]# openshift-install agent create image   --log-level debug   --release-image=mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4:4.18.23-x86_64
+FATA[0000] Error executing openshift-install: unknown flag: --release-image
+[root@mirror1 ocp-agentMNO]# openshift-install agent create image   --log-level debug   --release-image=mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4:4.18.23-x86_64 --help
+FATA[0000] Error executing openshift-install: unknown flag: --release-image
+[root@mirror1 ocp-agentMNO]# openshift-install agent create image   --log-level debug   --help
+Generates a bootable image containing all the information needed to deploy a cluster
+
+Usage:
+  openshift-install agent create image [flags]
+
+Flags:
+  -h, --help   help for image
+
+Global Flags:
+      --dir string         assets directory (default ".")
+      --log-level string   log level (e.g. "debug | info | warn | error") (default "info")
+[root@mirror1 ocp-agentMNO]# skopeo list-tags docker://mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 | grep 4.18.23
+-bash: skopeo: command not found
+[root@mirror1 ocp-agentMNO]# yum install skopeo
+Updating Subscription Management repositories.
+Repository InstallMediaBaseOS is listed more than once in the configuration
+Repository InstallMediaAppStream is listed more than once in the configuration
+Last metadata expiration check: 19:19:52 ago on Thu 02 Apr 2026 04:48:30 PM IST.
+Dependencies resolved.
+==============================================================================================================================================================================================================
+ Package                             Architecture                        Version                                                                     Repository                                          Size
+==============================================================================================================================================================================================================
+Installing:
+ skopeo                              x86_64                              2:1.14.3-0.1.module+el8.10.0+21251+62b7388c                                 InstallMediaAppStream                              8.8 M
+
+Transaction Summary
+==============================================================================================================================================================================================================
+Install  1 Package
+
+Total download size: 8.8 M
+Installed size: 31 M
+Is this ok [y/N]: y
+Downloading Packages:
+Error opening /media/osdvd/AppStream/Packages/skopeo-1.14.3-0.1.module+el8.10.0+21251+62b7388c.x86_64.rpm: No such file or directory
+Package "skopeo-2:1.14.3-0.1.module+el8.10.0+21251+62b7388c.x86_64" from local repository "InstallMediaAppStream" has incorrect checksum
+Error: Some packages from local repository have incorrect checksum
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]# !mount
+mount
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+devtmpfs on /dev type devtmpfs (rw,nosuid,size=17715580k,nr_inodes=4428895,mode=755)
+securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,mode=755)
+tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,mode=755)
+cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd)
+pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
+bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+cgroup on /sys/fs/cgroup/rdma type cgroup (rw,nosuid,nodev,noexec,relatime,rdma)
+cgroup on /sys/fs/cgroup/pids type cgroup (rw,nosuid,nodev,noexec,relatime,pids)
+cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)
+cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,hugetlb)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)
+cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,net_cls,net_prio)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,nosuid,nodev,noexec,relatime,freezer)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,perf_event)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,nosuid,nodev,noexec,relatime,devices)
+none on /sys/kernel/tracing type tracefs (rw,relatime)
+configfs on /sys/kernel/config type configfs (rw,relatime)
+/dev/mapper/rhel-root on / type xfs (rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=27,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=20143)
+hugetlbfs on /dev/hugepages type hugetlbfs (rw,relatime,pagesize=2M)
+mqueue on /dev/mqueue type mqueue (rw,relatime)
+debugfs on /sys/kernel/debug type debugfs (rw,relatime)
+fusectl on /sys/fs/fuse/connections type fusectl (rw,relatime)
+/dev/vda1 on /boot type xfs (rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota)
+tmpfs on /run/user/0 type tmpfs (rw,nosuid,nodev,relatime,size=3547148k,mode=700)
+tmpfs on /run/netns type tmpfs (rw,nosuid,nodev,mode=755)
+/dev/mapper/rhel-root on /var/lib/containers/storage/overlay type xfs (rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota)
+shm on /var/lib/containers/storage/overlay-containers/1c96e7d6f0d2b3950a1a1ca59300168ca0cc58a5533751e71365f3c4b7089432/userdata/shm type tmpfs (rw,nosuid,nodev,noexec,relatime,size=64000k)
+overlay on /var/lib/containers/storage/overlay/3801e182ab69f1a50b81d68c5503380c7bfd39a297e75c824f9502e9a2a1cf46/merged type overlay (rw,nodev,relatime,lowerdir=/var/lib/containers/storage/overlay/l/GX5JJEHG33BUH7FQMAXBKFBEGP,upperdir=/var/lib/containers/storage/overlay/3801e182ab69f1a50b81d68c5503380c7bfd39a297e75c824f9502e9a2a1cf46/diff,workdir=/var/lib/containers/storage/overlay/3801e182ab69f1a50b81d68c5503380c7bfd39a297e75c824f9502e9a2a1cf46/work,metacopy=on)
+nsfs on /run/netns/netns-0aded434-3680-19f4-a7f7-24fc19612927 type nsfs (rw)
+nsfs on /run/netns/netns-0aded434-3680-19f4-a7f7-24fc19612927 type nsfs (rw)
+overlay on /var/lib/containers/storage/overlay/1da6d22801817ca8f1f517979544178773dfe39dcb6412ec29431b21db3a0ec2/merged type overlay (rw,nodev,relatime,lowerdir=/var/lib/containers/storage/overlay/l/OGB6AZEGHSS3HXPCXAE755OUD6,upperdir=/var/lib/containers/storage/overlay/1da6d22801817ca8f1f517979544178773dfe39dcb6412ec29431b21db3a0ec2/diff,workdir=/var/lib/containers/storage/overlay/1da6d22801817ca8f1f517979544178773dfe39dcb6412ec29431b21db3a0ec2/work,metacopy=on)
+overlay on /var/lib/containers/storage/overlay/99a0ad8c5edd573bf1477c4daf037af239b8153bc42ecf79c333af006c54f8a0/merged type overlay (rw,nodev,relatime,lowerdir=/var/lib/containers/storage/overlay/l/CLSJ3JEEB2A7REE5QE7MKEFIY2,upperdir=/var/lib/containers/storage/overlay/99a0ad8c5edd573bf1477c4daf037af239b8153bc42ecf79c333af006c54f8a0/diff,workdir=/var/lib/containers/storage/overlay/99a0ad8c5edd573bf1477c4daf037af239b8153bc42ecf79c333af006c54f8a0/work,metacopy=on)
+[root@mirror1 ocp-agentMNO]# mount -o loop /root/rhel-8.10-x86_64-dvd.iso  /media/osdvd/
+mount: /media/osdvd: WARNING: device write-protected, mounted read-only.
+[root@mirror1 ocp-agentMNO]# yum install skopeo
+Updating Subscription Management repositories.
+Repository InstallMediaBaseOS is listed more than once in the configuration
+Repository InstallMediaAppStream is listed more than once in the configuration
+Last metadata expiration check: 19:22:56 ago on Thu 02 Apr 2026 04:48:30 PM IST.
+Dependencies resolved.
+==============================================================================================================================================================================================================
+ Package                             Architecture                        Version                                                                     Repository                                          Size
+==============================================================================================================================================================================================================
+Installing:
+ skopeo                              x86_64                              2:1.14.3-0.1.module+el8.10.0+21251+62b7388c                                 InstallMediaAppStream                              8.8 M
+
+Transaction Summary
+==============================================================================================================================================================================================================
+Install  1 Package
+
+Total size: 8.8 M
+Installed size: 31 M
+Is this ok [y/N]: y
+Downloading Packages:
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                                                                                                                                                      1/1
+  Installing       : skopeo-2:1.14.3-0.1.module+el8.10.0+21251+62b7388c.x86_64                                                                                                                            1/1
+  Running scriptlet: skopeo-2:1.14.3-0.1.module+el8.10.0+21251+62b7388c.x86_64                                                                                                                            1/1
+  Verifying        : skopeo-2:1.14.3-0.1.module+el8.10.0+21251+62b7388c.x86_64                                                                                                                            1/1
+Installed products updated.
+
+Installed:
+  skopeo-2:1.14.3-0.1.module+el8.10.0+21251+62b7388c.x86_64
+
+Complete!
+[root@mirror1 ocp-agentMNO]# skopeo list-tags docker://mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 | grep 4.18.23
+        "4.18.23-x86_64",
+        "4.18.23-x86_64-agent-installer-api-server",
+        "4.18.23-x86_64-agent-installer-csr-approver",
+        "4.18.23-x86_64-agent-installer-node-agent",
+        "4.18.23-x86_64-agent-installer-orchestrator",
+        "4.18.23-x86_64-agent-installer-utils",
+        "4.18.23-x86_64-apiserver-network-proxy",
+        "4.18.23-x86_64-aws-cloud-controller-manager",
+        "4.18.23-x86_64-aws-cluster-api-controllers",
+        "4.18.23-x86_64-aws-ebs-csi-driver",
+        "4.18.23-x86_64-aws-ebs-csi-driver-operator",
+        "4.18.23-x86_64-aws-kms-encryption-provider",
+        "4.18.23-x86_64-aws-machine-controllers",
+        "4.18.23-x86_64-aws-pod-identity-webhook",
+        "4.18.23-x86_64-azure-cloud-controller-manager",
+        "4.18.23-x86_64-azure-cloud-node-manager",
+        "4.18.23-x86_64-azure-cluster-api-controllers",
+        "4.18.23-x86_64-azure-disk-csi-driver",
+        "4.18.23-x86_64-azure-disk-csi-driver-operator",
+        "4.18.23-x86_64-azure-file-csi-driver",
+        "4.18.23-x86_64-azure-file-csi-driver-operator",
+        "4.18.23-x86_64-azure-kms-encryption-provider",
+        "4.18.23-x86_64-azure-machine-controllers",
+        "4.18.23-x86_64-azure-workload-identity-webhook",
+        "4.18.23-x86_64-baremetal-cluster-api-controllers",
+        "4.18.23-x86_64-baremetal-installer",
+        "4.18.23-x86_64-baremetal-machine-controllers",
+        "4.18.23-x86_64-baremetal-operator",
+        "4.18.23-x86_64-baremetal-runtimecfg",
+        "4.18.23-x86_64-cli",
+        "4.18.23-x86_64-cli-artifacts",
+        "4.18.23-x86_64-cloud-credential-operator",
+        "4.18.23-x86_64-cloud-network-config-controller",
+        "4.18.23-x86_64-cluster-authentication-operator",
+        "4.18.23-x86_64-cluster-autoscaler",
+        "4.18.23-x86_64-cluster-autoscaler-operator",
+        "4.18.23-x86_64-cluster-baremetal-operator",
+        "4.18.23-x86_64-cluster-bootstrap",
+        "4.18.23-x86_64-cluster-capi-controllers",
+        "4.18.23-x86_64-cluster-capi-operator",
+        "4.18.23-x86_64-cluster-cloud-controller-manager-operator",
+        "4.18.23-x86_64-cluster-config-api",
+        "4.18.23-x86_64-cluster-config-operator",
+        "4.18.23-x86_64-cluster-control-plane-machine-set-operator",
+        "4.18.23-x86_64-cluster-csi-snapshot-controller-operator",
+        "4.18.23-x86_64-cluster-dns-operator",
+        "4.18.23-x86_64-cluster-etcd-operator",
+        "4.18.23-x86_64-cluster-image-registry-operator",
+        "4.18.23-x86_64-cluster-ingress-operator",
+        "4.18.23-x86_64-cluster-kube-apiserver-operator",
+        "4.18.23-x86_64-cluster-kube-cluster-api-operator",
+        "4.18.23-x86_64-cluster-kube-controller-manager-operator",
+        "4.18.23-x86_64-cluster-kube-scheduler-operator",
+        "4.18.23-x86_64-cluster-kube-storage-version-migrator-operator",
+        "4.18.23-x86_64-cluster-machine-approver",
+        "4.18.23-x86_64-cluster-monitoring-operator",
+        "4.18.23-x86_64-cluster-network-operator",
+        "4.18.23-x86_64-cluster-node-tuning-operator",
+        "4.18.23-x86_64-cluster-olm-operator",
+        "4.18.23-x86_64-cluster-openshift-apiserver-operator",
+        "4.18.23-x86_64-cluster-openshift-controller-manager-operator",
+        "4.18.23-x86_64-cluster-policy-controller",
+        "4.18.23-x86_64-cluster-samples-operator",
+        "4.18.23-x86_64-cluster-storage-operator",
+        "4.18.23-x86_64-cluster-update-keys",
+        "4.18.23-x86_64-cluster-version-operator",
+        "4.18.23-x86_64-configmap-reloader",
+        "4.18.23-x86_64-console",
+        "4.18.23-x86_64-console-operator",
+        "4.18.23-x86_64-container-networking-plugins",
+        "4.18.23-x86_64-containernetworking-plugins-microshift",
+        "4.18.23-x86_64-coredns",
+        "4.18.23-x86_64-csi-driver-manila",
+        "4.18.23-x86_64-csi-driver-manila-operator",
+        "4.18.23-x86_64-csi-driver-nfs",
+        "4.18.23-x86_64-csi-external-attacher",
+        "4.18.23-x86_64-csi-external-provisioner",
+        "4.18.23-x86_64-csi-external-resizer",
+        "4.18.23-x86_64-csi-external-snapshotter",
+        "4.18.23-x86_64-csi-livenessprobe",
+        "4.18.23-x86_64-csi-node-driver-registrar",
+        "4.18.23-x86_64-csi-snapshot-controller",
+        "4.18.23-x86_64-csi-snapshot-validation-webhook",
+        "4.18.23-x86_64-deployer",
+        "4.18.23-x86_64-docker-builder",
+        "4.18.23-x86_64-docker-registry",
+        "4.18.23-x86_64-driver-toolkit",
+        "4.18.23-x86_64-egress-router-cni",
+        "4.18.23-x86_64-etcd",
+        "4.18.23-x86_64-gcp-cloud-controller-manager",
+        "4.18.23-x86_64-gcp-cluster-api-controllers",
+        "4.18.23-x86_64-gcp-machine-controllers",
+        "4.18.23-x86_64-gcp-pd-csi-driver",
+        "4.18.23-x86_64-gcp-pd-csi-driver-operator",
+        "4.18.23-x86_64-gcp-workload-identity-federation-webhook",
+        "4.18.23-x86_64-haproxy-router",
+        "4.18.23-x86_64-hyperkube",
+        "4.18.23-x86_64-hypershift",
+        "4.18.23-x86_64-ibm-cloud-controller-manager",
+        "4.18.23-x86_64-ibm-vpc-block-csi-driver",
+        "4.18.23-x86_64-ibm-vpc-block-csi-driver-operator",
+        "4.18.23-x86_64-ibmcloud-cluster-api-controllers",
+        "4.18.23-x86_64-ibmcloud-machine-controllers",
+        "4.18.23-x86_64-insights-operator",
+        "4.18.23-x86_64-insights-runtime-exporter",
+        "4.18.23-x86_64-insights-runtime-extractor",
+        "4.18.23-x86_64-installer",
+        "4.18.23-x86_64-installer-altinfra",
+        "4.18.23-x86_64-installer-artifacts",
+        "4.18.23-x86_64-ironic",
+        "4.18.23-x86_64-ironic-agent",
+        "4.18.23-x86_64-ironic-machine-os-downloader",
+        "4.18.23-x86_64-ironic-static-ip-manager",
+        "4.18.23-x86_64-keepalived-ipfailover",
+        "4.18.23-x86_64-kube-metrics-server",
+        "4.18.23-x86_64-kube-proxy",
+        "4.18.23-x86_64-kube-rbac-proxy",
+        "4.18.23-x86_64-kube-state-metrics",
+        "4.18.23-x86_64-kube-storage-version-migrator",
+        "4.18.23-x86_64-kubevirt-cloud-controller-manager",
+        "4.18.23-x86_64-kubevirt-csi-driver",
+        "4.18.23-x86_64-libvirt-machine-controllers",
+        "4.18.23-x86_64-machine-api-operator",
+        "4.18.23-x86_64-machine-config-operator",
+        "4.18.23-x86_64-machine-image-customization-controller",
+        "4.18.23-x86_64-machine-os-images",
+        "4.18.23-x86_64-metallb-frr",
+        "4.18.23-x86_64-monitoring-plugin",
+        "4.18.23-x86_64-multus-admission-controller",
+        "4.18.23-x86_64-multus-cni",
+        "4.18.23-x86_64-multus-cni-microshift",
+        "4.18.23-x86_64-multus-networkpolicy",
+        "4.18.23-x86_64-multus-route-override-cni",
+        "4.18.23-x86_64-multus-whereabouts-ipam-cni",
+        "4.18.23-x86_64-must-gather",
+        "4.18.23-x86_64-network-interface-bond-cni",
+        "4.18.23-x86_64-network-metrics-daemon",
+        "4.18.23-x86_64-network-tools",
+        "4.18.23-x86_64-networking-console-plugin",
+        "4.18.23-x86_64-nutanix-cloud-controller-manager",
+        "4.18.23-x86_64-nutanix-machine-controllers",
+        "4.18.23-x86_64-oauth-apiserver",
+        "4.18.23-x86_64-oauth-proxy",
+        "4.18.23-x86_64-oauth-server",
+        "4.18.23-x86_64-oc-mirror",
+        "4.18.23-x86_64-olm-catalogd",
+        "4.18.23-x86_64-olm-operator-controller",
+        "4.18.23-x86_64-openshift-apiserver",
+        "4.18.23-x86_64-openshift-controller-manager",
+        "4.18.23-x86_64-openshift-state-metrics",
+        "4.18.23-x86_64-openstack-cinder-csi-driver",
+        "4.18.23-x86_64-openstack-cinder-csi-driver-operator",
+        "4.18.23-x86_64-openstack-cloud-controller-manager",
+        "4.18.23-x86_64-openstack-cluster-api-controllers",
+        "4.18.23-x86_64-openstack-machine-api-provider",
+        "4.18.23-x86_64-operator-framework-tools",
+        "4.18.23-x86_64-operator-lifecycle-manager",
+        "4.18.23-x86_64-operator-marketplace",
+        "4.18.23-x86_64-operator-registry",
+        "4.18.23-x86_64-ovirt-csi-driver",
+        "4.18.23-x86_64-ovirt-csi-driver-operator",
+        "4.18.23-x86_64-ovn-kubernetes",
+        "4.18.23-x86_64-ovn-kubernetes-microshift",
+        "4.18.23-x86_64-pod",
+        "4.18.23-x86_64-powervs-block-csi-driver",
+        "4.18.23-x86_64-powervs-block-csi-driver-operator",
+        "4.18.23-x86_64-powervs-cloud-controller-manager",
+        "4.18.23-x86_64-powervs-machine-controllers",
+        "4.18.23-x86_64-prom-label-proxy",
+        "4.18.23-x86_64-prometheus",
+        "4.18.23-x86_64-prometheus-alertmanager",
+        "4.18.23-x86_64-prometheus-config-reloader",
+        "4.18.23-x86_64-prometheus-node-exporter",
+        "4.18.23-x86_64-prometheus-operator",
+        "4.18.23-x86_64-prometheus-operator-admission-webhook",
+        "4.18.23-x86_64-rhel-coreos",
+        "4.18.23-x86_64-rhel-coreos-extensions",
+        "4.18.23-x86_64-route-controller-manager",
+        "4.18.23-x86_64-service-ca-operator",
+        "4.18.23-x86_64-telemeter",
+        "4.18.23-x86_64-tests",
+        "4.18.23-x86_64-thanos",
+        "4.18.23-x86_64-tools",
+        "4.18.23-x86_64-vsphere-cloud-controller-manager",
+        "4.18.23-x86_64-vsphere-cluster-api-controllers",
+        "4.18.23-x86_64-vsphere-csi-driver",
+        "4.18.23-x86_64-vsphere-csi-driver-operator",
+        "4.18.23-x86_64-vsphere-csi-driver-syncer",
+        "4.18.23-x86_64-vsphere-problem-detector"
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]# cd /r
+root/ run/
+[root@mirror1 ocp-agentMNO]# cd /root/quay-install/quay-
+quay-config/ quay-rootCA/
+[root@mirror1 ocp-agentMNO]# cat /root/quay-install/quay-rootCA/rootCA.pem
+-----BEGIN CERTIFICATE-----
+MIIDzzCCAregAwIBAgIUNqrYhwC4usErJsur+G5JlVx1t8IwDQYJKoZIhvcNAQEL
+BQAwcjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xITAfBgNVBAMMGG1p
+cnJvcjEuY2wyLW1ubzEtcnZ0LmxhbjAeFw0yNjA0MDIxMTM0NDdaFw0yOTAxMjAx
+MTM0NDdaMHIxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJWQTERMA8GA1UEBwwITmV3
+IFlvcmsxDTALBgNVBAoMBFF1YXkxETAPBgNVBAsMCERpdmlzaW9uMSEwHwYDVQQD
+DBhtaXJyb3IxLmNsMi1tbm8xLXJ2dC5sYW4wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQCwD8hHtrXEpgVrYqrLOmBW+WR1p2P94d/Pf3FDBKAF8UVMSiMz
+FzoX25orjZmVkMa0y+NGoekOko/LW9BAov5n4jhHKbOWJz8qfVonmp0bGBkImv1J
+6DPTCZu7H8lQTT51FrNq7thWjqMkIK/8H2K74TRX3FbVt/xshsaq+C4IDvax7t0h
+zPfnj+G/aIE9uTroxPsR/htAY3sQBYpbw3UGj1i13yRuUMw+wrbQVkaDLlUMcnr4
+p92eGnHYS7Oe2qLc7rxy5He8g2aKvk3qCZgzTIhQrDnmGNz5dLDrYgrDo0ZNfj+F
+NkLOaSeEf3sgJG+8Q+Wj18IEeDUW1n3cvPA9AgMBAAGjXTBbMAsGA1UdDwQEAwIC
+5DATBgNVHSUEDDAKBggrBgEFBQcDATAjBgNVHREEHDAaghhtaXJyb3IxLmNsMi1t
+bm8xLXJ2dC5sYW4wEgYDVR0TAQH/BAgwBgEB/wIBATANBgkqhkiG9w0BAQsFAAOC
+AQEAF5nonO6z97Jn3JV9p9TTMX09PJR0dzviypApxrVSL24h77grEpaqPZBowuZ2
+CZwWLq38kxsnBOyUQbsP6U/hC+7ihdo40mNFkpVGIzyrJ4YLAzSEdipYf8HFYCtP
+k+VK2AnMTc6t5DRmfLutire5OizA2w6Tzbjfbpqo15T2lG4SargoBjyGeUdQKoW1
+G+pgU5cGd6rHqp4Sq4yOIrve5qFLCcFjp1vBVbMhGWE0JHGBZQXiXS5MkflCk6Yn
+VZfgSvsQN1NivEQGNUUXcZzB83qSCr7DUxRHhrGhvdD1N0vWjVDnL/p4m6PakFs5
+muAvmkuy8e+idq0ovKuheqmazQ==
+-----END CERTIFICATE-----
+[root@mirror1 ocp-agentMNO]# cat /etc/pk
+pkcs11/ pki/
+[root@mirror1 ocp-agentMNO]# cat /etc/pk
+pkcs11/ pki/
+[root@mirror1 ocp-agentMNO]# cat /etc/pki/
+ca-trust/        consumer/        entitlement/     java/            product/         product-default/ rpm-gpg/         rsyslog/         swid/            tls/
+[root@mirror1 ocp-agentMNO]# cat /etc/pki/ca-trust/
+ca-legacy.conf  extracted/      README          source/
+[root@mirror1 ocp-agentMNO]# cat /etc/pki/ca-trust/source/
+anchors/              blacklist/            ca-bundle.legacy.crt  README
+[root@mirror1 ocp-agentMNO]# cat /etc/pki/ca-trust/source/anchors/rootCA.pem
+-----BEGIN CERTIFICATE-----
+MIIDzzCCAregAwIBAgIUNqrYhwC4usErJsur+G5JlVx1t8IwDQYJKoZIhvcNAQEL
+BQAwcjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xITAfBgNVBAMMGG1p
+cnJvcjEuY2wyLW1ubzEtcnZ0LmxhbjAeFw0yNjA0MDIxMTM0NDdaFw0yOTAxMjAx
+MTM0NDdaMHIxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJWQTERMA8GA1UEBwwITmV3
+IFlvcmsxDTALBgNVBAoMBFF1YXkxETAPBgNVBAsMCERpdmlzaW9uMSEwHwYDVQQD
+DBhtaXJyb3IxLmNsMi1tbm8xLXJ2dC5sYW4wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQCwD8hHtrXEpgVrYqrLOmBW+WR1p2P94d/Pf3FDBKAF8UVMSiMz
+FzoX25orjZmVkMa0y+NGoekOko/LW9BAov5n4jhHKbOWJz8qfVonmp0bGBkImv1J
+6DPTCZu7H8lQTT51FrNq7thWjqMkIK/8H2K74TRX3FbVt/xshsaq+C4IDvax7t0h
+zPfnj+G/aIE9uTroxPsR/htAY3sQBYpbw3UGj1i13yRuUMw+wrbQVkaDLlUMcnr4
+p92eGnHYS7Oe2qLc7rxy5He8g2aKvk3qCZgzTIhQrDnmGNz5dLDrYgrDo0ZNfj+F
+NkLOaSeEf3sgJG+8Q+Wj18IEeDUW1n3cvPA9AgMBAAGjXTBbMAsGA1UdDwQEAwIC
+5DATBgNVHSUEDDAKBggrBgEFBQcDATAjBgNVHREEHDAaghhtaXJyb3IxLmNsMi1t
+bm8xLXJ2dC5sYW4wEgYDVR0TAQH/BAgwBgEB/wIBATANBgkqhkiG9w0BAQsFAAOC
+AQEAF5nonO6z97Jn3JV9p9TTMX09PJR0dzviypApxrVSL24h77grEpaqPZBowuZ2
+CZwWLq38kxsnBOyUQbsP6U/hC+7ihdo40mNFkpVGIzyrJ4YLAzSEdipYf8HFYCtP
+k+VK2AnMTc6t5DRmfLutire5OizA2w6Tzbjfbpqo15T2lG4SargoBjyGeUdQKoW1
+G+pgU5cGd6rHqp4Sq4yOIrve5qFLCcFjp1vBVbMhGWE0JHGBZQXiXS5MkflCk6Yn
+VZfgSvsQN1NivEQGNUUXcZzB83qSCr7DUxRHhrGhvdD1N0vWjVDnL/p4m6PakFs5
+muAvmkuy8e+idq0ovKuheqmazQ==
+-----END CERTIFICATE-----
+[root@mirror1 ocp-agentMNO]# update-ca-trust
+[root@mirror1 ocp-agentMNO]# oc adm release extract -a ${LOCAL_SECRET_JSON} --command=openshift-install "${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}"
+^C
+[root@mirror1 ocp-agentMNO]# ^C
+[root@mirror1 ocp-agentMNO]# oc adm release extract -a ${LOCAL_SECRET_JSON} --command=openshift-install "${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}"
+[root@mirror1 ocp-agentMNO]# podman login mirror1.cl2-mno1-rvt.lan:8443
+Authenticating with existing credentials for mirror1.cl2-mno1-rvt.lan:8443
+Existing credentials are valid. Already logged in to mirror1.cl2-mno1-rvt.lan:8443
+[root@mirror1 ocp-agentMNO]#
