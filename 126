@@ -1,56 +1,216 @@
-Apr 03 08:56:16 bscmaster1.cl2-mno1-rvt.lan systemd[1]: Starting Assisted Service container...
-Apr 03 08:56:16 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Trying to pull quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c...
-Apr 03 08:56:16 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Pulling image //quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c inside syste>
-Apr 03 08:56:16 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Getting image source signatures
-Apr 03 08:56:16 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Copying blob sha256:695b09be4793668dc04830a1eb8223d79834340d302f2bd3dc05f2e2d00e9e83
-Apr 03 08:56:16 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Copying blob sha256:25c75c34b2e2b68ba9245d9cddeb6b8a0887371ed30744064f85241a75704d87
-Apr 03 08:56:16 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Copying blob sha256:ce93615a492f2dfee74067e43e4e8ddac3effab4787ed7505eec98c1d26fa629
-Apr 03 08:56:16 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Copying blob sha256:71f77f0cdb81c7ed29d5da602ea2b58372dbabb056581d5f94116618833f644c
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Copying config sha256:c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan podman[4137]: Writing manifest to image destination
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan podman[4137]: 2026-04-03 08:56:47.854174052 +0000 UTC m=+31.588982262 container create e3726b3251d9c55caf54659b7d29d2398942b2a04c7b262af70ad5b0f07458e0 (image=qu>
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan podman[4137]: 2026-04-03 08:56:47.782553721 +0000 UTC m=+31.517361904 image pull c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738 quay.io/openshi>
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan podman[4137]: 2026-04-03 08:56:47.896102962 +0000 UTC m=+31.630911190 container init e3726b3251d9c55caf54659b7d29d2398942b2a04c7b262af70ad5b0f07458e0 (image=quay>
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan podman[4137]: 2026-04-03 08:56:47.900721781 +0000 UTC m=+31.635530010 container start e3726b3251d9c55caf54659b7d29d2398942b2a04c7b262af70ad5b0f07458e0 (image=qua>
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan systemd[1]: Started Assisted Service container.
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan podman[4137]: e3726b3251d9c55caf54659b7d29d2398942b2a04c7b262af70ad5b0f07458e0
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:47Z" level=info msg="Setting log format: text" func=main.InitLogs file="/src/cmd/main.go:179"
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:47Z" level=info msg="Setting Log Level: debug" func=main.InitLogs file="/src/cmd/main.go:185"
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:47Z" level=info msg="Starting assisted-service version: 31b2ff596eefe2ae2f971a39f3f5cc67da9a5a4f" func=main.main file="/src>
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:47Z" level=info msg="Starting bm service" func=main.main file="/src/cmd/main.go:227"
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:47Z" level=info msg="Started service with OS Images [{\"openshift_version\":\"4.18.23\",\"cpu_architecture\":\"x86_64\",\"u>
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:47Z" level=info msg="Connecting to DB" func=main.setupDB file="/src/cmd/main.go:691"
-Apr 03 08:56:47 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:47Z" level=info msg="Failed to connect to DB, retrying" func=main.setupDB.func1 file="/src/cmd/main.go:698" error="failed t>
-Apr 03 08:56:49 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:49Z" level=info msg="Connected to DB" func=main.setupDB file="/src/cmd/main.go:715"
-Apr 03 08:56:49 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:49Z" level=info msg="Initializing event stream dummy writer" func=github.com/openshift/assisted-service/internal/stream.New>
-Apr 03 08:56:49 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:49Z" level=info msg="Created agent-installer-local authenticator" func=github.com/openshift/assisted-service/pkg/auth.NewAu>
-Apr 03 08:56:49 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:49Z" level=info msg="Configuring CNV Operator plugin" func=github.com/openshift/assisted-service/internal/operators/cnv.New>
-Apr 03 08:56:49 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:49Z" level=info msg="DeployTarget: onprem" func=main.main file="/src/cmd/main.go:353"
-Apr 03 08:56:49 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:49Z" level=info msg="Starting manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:771"
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Finished manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:777"
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Start automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:779"
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Finished automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:785"
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Starting manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:787"
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Finished manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:793"
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Started Cluster Events Uploader" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Star>
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Started Cluster State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start">
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Started Host State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fi>
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=debug msg="Truncating all release_images table. '0' records" func=github.com/openshift/assisted-service/internal>
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=debug msg="Inserting configuration release images to the DB. '1' records" func=github.com/openshift/assisted-ser>
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Started Deregister Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fil>
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Started Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file=>
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Started Orphan Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start>
-Apr 03 08:56:50 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:50Z" level=info msg="Starting http handler on :8090..."
-Apr 03 08:56:52 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:52Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
-Apr 03 08:56:52 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:52Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
-Apr 03 08:56:53 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:53Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters?with_hosts=false HTTP/1.1 1 1 map[Accept:[application>
-Apr 03 08:56:54 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:54Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
-Apr 03 08:56:56 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:56Z" level=debug msg="Request: {POST /api/assisted-install/v2/clusters HTTP/1.1 1 1 map[Accept:[application/json] Accept-En>
-Apr 03 08:56:56 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:56Z" level=info msg="Register cluster: cl2-mno1 with id ea23e44f-45cf-4355-8f65-51dbb77cd415 and params {\"api_vips\":[{\"i>
-Apr 03 08:56:56 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:56Z" level=info msg="Verifying cluster platform and user-managed-networking, got platform=baremetal and userManagedNetworki>
-Apr 03 08:56:56 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:56Z" level=info msg="Cluster high-availability-mode is set to Full, setting platform type to baremetal and user-managed-net>
-Apr 03 08:56:56 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:56Z" level=info msg="selected cluster release image: arch=x86_64, openshiftVersion=4.18.23, url=quay.io/openshift-release-d>
-Apr 03 08:56:56 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:56Z" level=debug msg="Baremetal Platform Integration feature is activated" func=github.com/openshift/assisted-service/inter>
-Apr 03 08:56:56 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:56Z" level=debug msg="Cluster Managed Networking feature is activated" func=github.com/openshift/assisted-service/internal/>
-Apr 03 08:56:56 bscmaster1.cl2-mno1-rvt.lan service[4568]: time="2026-04-03T08:56:56Z" level=debug msg="Dual-Stack feature is activated" func=github.com/openshift/assisted-service/internal/featuresupport.g>
-Apr 03 08:56:56 bsc
+[root@mirror1 ocp-agentMNO]# cat ../backup/install-config.yaml
+apiVersion: v1
+baseDomain: rvt.lan
+cpuPartitioningMode: AllNodes
+imageDigestSources:
+- mirrors:
+  - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-release
+- mirrors:
+  - mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+
+metadata:
+  name: cl2-mno1
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+networking:
+  networkType: OVNKubernetes
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  - cidr: fd01::/48
+    hostPrefix: 64
+  serviceNetwork:
+  - 172.30.0.0/16
+  - fd02::/112
+  machineNetwork:
+  - cidr: 72.2.0.0/22
+  - cidr: 2405:100:200:172::/64
+platform:
+  baremetal:
+    apiVIPs:
+    - 72.2.0.87
+    - 2405:100:200:172::87
+    ingressVIPs:
+    - 72.2.0.88
+    - 2405:100:200:172::88
+
+fips: false
+pullSecret: '{
+      "auths": {
+        "mirror1.cl2-mno1-rvt.lan:8443": {
+            "auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="
+        },
+        "cloud.openshift.com": {
+          "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
+        },
+        "quay.io": {
+          "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
+        },
+        "registry.connect.redhat.com": {
+          "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
+        },
+        "registry.redhat.io": {
+          "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
+        }
+      }
+    }'
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGbH2nrLS8wuuEuXAuIsbQgn50sf/wVifmUe8wbJ/dI5TLD94OopQBGwbh62C38LBS2UtU5thkUZjlLXxCBk10lLK7p1gO154Fqq9mEQQn2xwF9jCFxAvWVb1u7Gr512KFIFx23Ct4sGiQcH9eXxeDLvRRz8d4QqFPIQ2pNbdz8Ef7UtqQIeBlzgDSHBqiylhQYQtthqHOWby8Phdoz51gxqwQRo91fJW5Kxhm2O1fSRR6tgLAx2+REzMQhFDtrZr6VexiTzrBuZcY0tl6QWMioIhjlmGwpeOH5Q0jIiXi9Egg+FIOw7R9ytFSXZCcOpZmoL5WGxvnd0eOoHD9t8kdb5oSxT5ypY3Q+jAU6IyuED/9i9BtI36vIYRmZKO9buMTxgQ4TVsJZe2K1stv6ENnpZvTqIoJPar7Syi7uov9QUSPuccc9ver0jpNfO8M4OSFCepKNXxIQ7/QyCIgx+is3AukBip55TiSOHCu9vlSHRo93P1kOjsAzxF7ujkLDes= root@mirror1.cl2-mno1-rvt.lan'
+# Get root ca cert from Mirror Registry Server and keep proper indentation while pasting here (cat /root/quay-install/quay-rootCA/rootCA.pem)
+additionalTrustBundle: |
+ -----BEGIN CERTIFICATE-----
+ MIIDzzCCAregAwIBAgIUNqrYhwC4usErJsur+G5JlVx1t8IwDQYJKoZIhvcNAQEL
+ BQAwcjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+ azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xITAfBgNVBAMMGG1p
+ cnJvcjEuY2wyLW1ubzEtcnZ0LmxhbjAeFw0yNjA0MDIxMTM0NDdaFw0yOTAxMjAx
+ MTM0NDdaMHIxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJWQTERMA8GA1UEBwwITmV3
+ IFlvcmsxDTALBgNVBAoMBFF1YXkxETAPBgNVBAsMCERpdmlzaW9uMSEwHwYDVQQD
+ DBhtaXJyb3IxLmNsMi1tbm8xLXJ2dC5sYW4wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+ DwAwggEKAoIBAQCwD8hHtrXEpgVrYqrLOmBW+WR1p2P94d/Pf3FDBKAF8UVMSiMz
+ FzoX25orjZmVkMa0y+NGoekOko/LW9BAov5n4jhHKbOWJz8qfVonmp0bGBkImv1J
+ 6DPTCZu7H8lQTT51FrNq7thWjqMkIK/8H2K74TRX3FbVt/xshsaq+C4IDvax7t0h
+ zPfnj+G/aIE9uTroxPsR/htAY3sQBYpbw3UGj1i13yRuUMw+wrbQVkaDLlUMcnr4
+ p92eGnHYS7Oe2qLc7rxy5He8g2aKvk3qCZgzTIhQrDnmGNz5dLDrYgrDo0ZNfj+F
+ NkLOaSeEf3sgJG+8Q+Wj18IEeDUW1n3cvPA9AgMBAAGjXTBbMAsGA1UdDwQEAwIC
+ 5DATBgNVHSUEDDAKBggrBgEFBQcDATAjBgNVHREEHDAaghhtaXJyb3IxLmNsMi1t
+ bm8xLXJ2dC5sYW4wEgYDVR0TAQH/BAgwBgEB/wIBATANBgkqhkiG9w0BAQsFAAOC
+ AQEAF5nonO6z97Jn3JV9p9TTMX09PJR0dzviypApxrVSL24h77grEpaqPZBowuZ2
+ CZwWLq38kxsnBOyUQbsP6U/hC+7ihdo40mNFkpVGIzyrJ4YLAzSEdipYf8HFYCtP
+ k+VK2AnMTc6t5DRmfLutire5OizA2w6Tzbjfbpqo15T2lG4SargoBjyGeUdQKoW1
+ G+pgU5cGd6rHqp4Sq4yOIrve5qFLCcFjp1vBVbMhGWE0JHGBZQXiXS5MkflCk6Yn
+ VZfgSvsQN1NivEQGNUUXcZzB83qSCr7DUxRHhrGhvdD1N0vWjVDnL/p4m6PakFs5
+ muAvmkuy8e+idq0ovKuheqmazQ==
+ -----END CERTIFICATE-----
+[root@mirror1 ocp-agentMNO]# echo c3lzYWRtaW46c2Ftc3VuZzEyMw== | base64 -d
+sysadmin:samsung123[root@mirror1 ocp-agentMNO]#
+[root@mirror1 ocp-agentMNO]# cat ../backup/agent-config.yaml
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: cl2-mno1    # name should be same as mentioned in install-config
+hosts:
+  - hostname: bscmaster1.cl2-mno1-rvt.lan.
+    role: master
+    interfaces:
+    - name: ens1f0
+      macAddress: "50:7C:6F:24:3B:18"
+    rootDeviceHints:
+      deviceName: /dev/sda   #'vda' for VM, 'sda/sdb' for physical server
+    networkConfig:
+      interfaces:
+      - name: ens1f0
+        type: ethernet
+        state: up
+        mtu: 8500    # if MTU is set as 8500, add network config file in cluster manifests
+        mac-address: "50:7C:6F:24:3B:18"
+        ipv4:
+          address:
+          - ip: 72.2.0.13
+            prefix-length: 22
+          enabled: true
+          dhcp: false
+        ipv6:
+          address:
+          - ip: 2405:100:200:172::13
+            prefix-length: 64
+          enabled: true
+          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          - 72.2.0.34
+          - 2405:100:200:172::34
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 72.2.0.1
+            next-hop-interface: ens1f0
+          - destination: ::/0
+            next-hop-address: 2405:100:200:172::1
+            next-hop-interface: ens1f0
+  - hostname: bscmaster2.cl2-mno1-rvt.lan.
+    role: master
+    interfaces:
+    - name: ens1f0
+      macAddress: "50:7c:6f:14:39:2c"
+    rootDeviceHints:
+      deviceName: /dev/sda
+    networkConfig:
+      interfaces:
+      - name: ens1f0
+        type: ethernet
+        state: up
+        mtu: 8500
+        mac-address: "50:7c:6f:14:39:2c"
+        ipv4:
+          address:
+          - ip: 72.2.0.15
+            prefix-length: 22
+          enabled: true
+          dhcp: false
+        ipv6:
+          address:
+          - ip: 2405:100:200:172::15
+            prefix-length: 64
+          enabled: true
+          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          - 72.2.0.34
+          - 2405:100:200:172::34
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 72.2.0.1
+            next-hop-interface: ens1f0
+          - destination: ::/0
+            next-hop-address: 2405:100:200:172::1
+            next-hop-interface: ens1f0
+  - hostname: bscmaster3.cl2-mno1-rvt.lan.
+    role: master
+    interfaces:
+    - name: ens1f0
+      macAddress: "50:7c:6f:24:39:cc"
+    rootDeviceHints:
+      deviceName: /dev/sda
+    networkConfig:
+      interfaces:
+      - name: ens1f0
+        type: ethernet
+        state: up
+        mtu: 8500
+        mac-address: "50:7c:6f:24:39:cc"
+        ipv4:
+          address:
+          - ip: 72.2.0.17
+            prefix-length: 22
+          enabled: true
+          dhcp: false
+        ipv6:
+          address:
+          - ip: 2405:100:200:172::17
+            prefix-length: 64
+          enabled: true
+          dhcp: false
+      dns-resolver:
+        config:
+          server:
+          - 72.2.0.34
+          - 2405:100:200:172::34
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 72.2.0.1
+            next-hop-interface: ens1f0
+          - destination: ::/0
+            next-hop-address: 2405:100:200:172::1
+            next-hop-interface: ens1f0
+[root@mirror1 ocp-agentMNO]#
