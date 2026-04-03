@@ -1,98 +1,232 @@
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get mc | grep chrony
-50-masters-chrony-configuration                                                                3.1.0             34d
-50-workers-chrony-configuration                                                                3.1.0             34d
-disable-chronyd                                                                                3.2.0             34d
-srib@ocp-haproxy-1:~/ocp_4_20$ oc get mc
-NAME                                                GENERATEDBYCONTROLLER                      IGNITIONVERSION   AGE
-00-master                                           035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-00-override-master-generated-crio-default-ulimits                                              3.5.0             7d3h
-00-override-worker-generated-crio-default-ulimits                                              3.5.0             7d3h
-00-worker                                           035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-01-master-container-runtime                         035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-01-master-cpu-partitioning                                                                     3.2.0             34d
-01-master-kubelet                                   035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-01-worker-container-runtime                         035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-01-worker-cpu-partitioning                                                                     3.2.0             34d
-01-worker-kubelet                                   035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-50-master-auto-sizing-disabled                                                                 3.5.0             7d3h
-50-masters-chrony-configuration                                                                3.1.0             34d
-50-nto-master                                                                                                    34d
-50-performance-performance-master                                                              3.2.0             34d
-50-worker-auto-sizing-disabled                                                                 3.5.0             7d3h
-50-workers-chrony-configuration                                                                3.1.0             34d
-97-master-generated-kubelet                         035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             7d3h
-97-worker-generated-kubelet                         035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             7d3h
-98-master-generated-kubelet                         035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-98-worker-generated-kubelet                         035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-99-assisted-installer-master-ssh                                                               3.1.0             34d
-99-master-generated-kubelet                         035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-99-master-generated-registries                      035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-99-master-ssh                                                                                  3.2.0             34d
-99-worker-generated-registries                      035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             34d
-99-worker-ssh                                                                                  3.2.0             34d
-disable-chronyd                                                                                3.2.0             34d
-load-sctp-module                                                                               3.2.0             34d
-rendered-master-0818458652afc6ec48247ae7d2ccf625    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             15d
-rendered-master-0e41a7401614ad6250578b1988cc5a7c    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-2a4d215d92908710774e24523a662da1    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             15d
-rendered-master-2b93c940eda10a887de6d06925632bfd    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             32d
-rendered-master-2bb0dee3ff2d6559b5f4d32b9524c7cb    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             11d
-rendered-master-2c9f1ebb666ab1bca4cf510b53332af4    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-36a4c8972c8bc490ac69e1e1b6ccdb2f    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d18h
-rendered-master-3ee80e92f905731691af1e415fe97447    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-486b367a8d2684af2236f03825b83318    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-4bec46e5f306f36b6f43e1dfa2fc452d    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             34d
-rendered-master-4d6920d197ab40e7a17f19c5d5195b97    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             11d
-rendered-master-53489f1bfabe27945947889340a57af8    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             9d
-rendered-master-54232a3f7ceb661f33be3e20cf35123e    b405535023b88949e231be90778e5cf63e438c40   3.5.0             9d
-rendered-master-5aa728501f3b2c3069af70ab388744d4    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-5d5985ba455dd65abb1a0cd8ea7677ca    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-6c6cafccb1bc647eec441d6243f2eee5    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d16h
-rendered-master-6da0320a13956407dd815773ed82522e    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             10d
-rendered-master-8da15b3f827ecaf4bdcea78d6cc75bfc    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             11d
-rendered-master-90e0e60e03f1a6f7a9eff1ec0d3dd4e6    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d19h
-rendered-master-9f771dd1937389fc2f6babad45e44306    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-a22a7214fd353f47683b50f217422aa1    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-ae51444d95d7ddaf40623692e2385507    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d19h
-rendered-master-c37213669567d1e94d3be220d94f5910    035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             7d3h
-rendered-master-c41de4e177682d4e3fd8fd6afbe984b1    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             34d
-rendered-master-c65faf6a52d416453c211631a2d9af28    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d19h
-rendered-master-c9a1ed3d114e62373a2daf7b86ddf0ce    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             34d
-rendered-master-ca27c25ee1c96608c6f437b56ac1b162    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-d35098ce4a09041bd269cefa36ac3101    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             34d
-rendered-master-d51157f4764ae62ca7779e79331dfd39    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-dd8dc46a178b2414ddb071da5b373f4a    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-master-eabbd96a69e22330b9a1906d904a2ff3    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d4h
-rendered-master-f2f02650bc1c4fa97267ecdf5339054b    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             34d
-rendered-worker-09a0f31e0e257b53ea08b9611c5a3bae    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             15d
-rendered-worker-0d3f1bcb94ee3053fa3abac17af9cb7e    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-1e93ba471013ba798a50a45323a609ad    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             34d
-rendered-worker-2ab915b7b4811350e8577e4fa1c2559e    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             34d
-rendered-worker-2d73681b829a2b77912bf7cbb43da7ff    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d18h
-rendered-worker-351a9c96c65efb3abe63f0cc282d09b3    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-41029632470ef384d585b3c38e7805e1    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d19h
-rendered-worker-45118314bff86a8d0b49f2e514ee08aa    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-46ba91f025cddc2a3b8e985969766dd3    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d16h
-rendered-worker-4c4c44c2115c8d0a385fca38a440778a    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             10d
-rendered-worker-6ff685dc0f29153589f67ca326ef94b6    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d19h
-rendered-worker-73be8c206c0e9d1f05333eceaa9ad422    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-784cde244ab5f8b749515278884cd8f9    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             11d
-rendered-worker-82258cd86639620dcd4ac187fe6ceb63    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-883b7c5d3b827ed821eca1e8c74f4bd9    035a7f3c16e820ed0461b25ba82c263131ff6c3d   3.5.0             7d3h
-rendered-worker-88a5e69a02e1557bac1861d845253b97    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             15d
-rendered-worker-88e4f9dd17b611ddb4c9488b6d81fe30    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-89cff240e099cc0d77762a69adf42c3b    b405535023b88949e231be90778e5cf63e438c40   3.5.0             7d19h
-rendered-worker-91acc16979a7c22b0d75192880a98dd8    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-a82db1f909ba569c91d06d2fb24e876d    b405535023b88949e231be90778e5cf63e438c40   3.5.0             9d
-rendered-worker-b35e78bf109e6844c7f68710af3e8199    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-bc2946515b71a1f6ddc55175ebd446c1    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-e836219a147f0eeb7fd12b375882508e    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             32d
-rendered-worker-f32508f7c4546f2d7c384829d49e3a93    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             11d
-rendered-worker-f4b5b747d1730b8df9ff3a41e4244b5e    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-fb5750b5f1f8a73f11e9950fb92a1125    b405535023b88949e231be90778e5cf63e438c40   3.5.0             8d
-rendered-worker-fc3e20c814d2671a1c4790e2bca7d65c    6cabdc1467e3bcc9961544e148530a9c88789856   3.4.0             11d
-srib@ocp-haproxy-1:~/ocp_4_20$
+[root@mirror1 ocp-agentMNO]# openshift-install agent wait-for bootstrap-complete --log-level debug
+DEBUG OpenShift Installer 4.18.23
+DEBUG Built from commit 53d25898f4a68451e9e1478336e1991fd5ded04f
+DEBUG asset directory: .
+DEBUG Loading Agent Config...
+DEBUG Using Agent Config loaded from state file
+DEBUG Loading Agent Manifests...
+DEBUG   Loading Agent PullSecret...
+DEBUG     Loading Agent Workflow...
+DEBUG     Using Agent Workflow loaded from state file
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG       Loading Agent Workflow...
+DEBUG       Loading AddNodes Config...
+DEBUG       Using AddNodes Config loaded from state file
+DEBUG     Using Agent Installer ClusterInfo loaded from state file
+DEBUG     Loading Install Config...
+DEBUG     Using Install Config loaded from state file
+DEBUG   Using Agent PullSecret loaded from state file
+DEBUG   Loading InfraEnv Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG     Loading Install Config...
+DEBUG     Loading Agent Config...
+DEBUG   Using InfraEnv Config loaded from state file
+DEBUG   Loading NMState Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG     Loading Agent Hosts...
+DEBUG       Loading Agent Workflow...
+DEBUG       Loading AddNodes Config...
+DEBUG       Loading Install Config...
+DEBUG       Loading Agent Config...
+DEBUG     Using Agent Hosts loaded from state file
+DEBUG     Loading Install Config...
+DEBUG   Using NMState Config loaded from state file
+DEBUG   Loading AgentClusterInstall Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Install Config...
+DEBUG     Loading Agent Hosts...
+DEBUG     Loading Agent Config...
+DEBUG   Using AgentClusterInstall Config loaded from state file
+DEBUG   Loading ClusterDeployment Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Install Config...
+DEBUG   Using ClusterDeployment Config loaded from state file
+DEBUG   Loading ClusterImageSet Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG     Loading Release Image Pull Spec...
+DEBUG     Using Release Image Pull Spec loaded from state file
+DEBUG     Loading Install Config...
+DEBUG   Using ClusterImageSet Config loaded from state file
+DEBUG Using Agent Manifests loaded from state file
+DEBUG Loading Install Config...
+DEBUG   Loading SSH Key...
+DEBUG   Loading Base Domain...
+DEBUG     Loading Platform...
+DEBUG   Loading Cluster Name...
+DEBUG     Loading Base Domain...
+DEBUG     Loading Platform...
+DEBUG   Loading Pull Secret...
+DEBUG   Loading Platform...
+DEBUG Loading Agent Hosts...
+DEBUG RendezvousIP from the NMStateConfig 72.2.0.13
+DEBUG Loading Agent Installer API Auth Config...
+DEBUG   Loading Agent Workflow...
+DEBUG   Using Agent Workflow loaded from state file
+DEBUG   Loading AddNodes Config...
+DEBUG   Using AddNodes Config loaded from state file
+DEBUG Using Agent Installer API Auth Config loaded from state file
+DEBUG Agent Rest API Initialized
+INFO Cluster is not ready for install. Check validations
+DEBUG Cluster validation: Platform requirements satisfied
+DEBUG Cluster validation: The pull secret is set.
+DEBUG Cluster validation: All hosts in the cluster are ready to install.
+DEBUG Cluster validation: The cluster has the exact amount of dedicated control plane nodes.
+DEBUG Cluster validation: API virtual IPs are defined.
+DEBUG Cluster validation: api vips 72.2.0.87, 2405:100:200:172::87 belongs to the Machine CIDR and is not in use.
+DEBUG Cluster validation: The Cluster Network CIDR is defined.
+DEBUG Cluster validation: The base domain is defined.
+DEBUG Cluster validation: Ingress virtual IPs are defined.
+DEBUG Cluster validation: ingress vips 72.2.0.88, 2405:100:200:172::88 belongs to the Machine CIDR and is not in use.
+DEBUG Cluster validation: The Machine Network CIDR is defined.
+DEBUG Cluster validation: The Cluster Machine CIDR is equivalent to the calculated CIDR.
+DEBUG Cluster validation: The Cluster Network prefix is valid.
+DEBUG Cluster validation: The cluster has a valid network type
+DEBUG Cluster validation: Same address families for all networks.
+DEBUG Cluster validation: No CIDRS are overlapping.
+WARNING Cluster validation: Hosts' clocks are not synchronized (there's more than a 4 minutes gap between clocks), please configure an NTP server via DHCP or set clocks manually.
+DEBUG Cluster validation: The Service Network CIDR is defined.
+DEBUG Cluster validation: cnv is disabled
+DEBUG Cluster validation: lso is disabled
+DEBUG Cluster validation: lvm is disabled
+DEBUG Cluster validation: mce is disabled
+DEBUG Cluster validation: mtv is disabled
+DEBUG Cluster validation: node-feature-discovery is disabled
+DEBUG Cluster validation: nvidia-gpu is disabled
+DEBUG Cluster validation: odf is disabled
+DEBUG Cluster validation: openshift-ai is disabled
+DEBUG Cluster validation: pipelines is disabled
+DEBUG Cluster validation: serverless is disabled
+DEBUG Cluster validation: servicemesh is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Valid inventory exists for the host
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient CPU cores
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient minimum RAM
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient disk capacity
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient CPU cores for role master
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient RAM for role master
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Hostname bscmaster3.cl2-mno1-rvt.lan is unique in cluster
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Hostname bscmaster3.cl2-mno1-rvt.lan is allowed
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Speed of installation disk has not yet been measured
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host is compatible with cluster platform baremetal
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host agent is compatible with the service
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: No request to skip formatting of the installation disk
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: All disks that have skipped formatting are present in the host inventory
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host is connected
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Media device is connected
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Machine Network CIDR is defined
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host belongs to all machine network CIDRs
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Platform PowerEdge R740 is allowed
+WARNING Host bscmaster3.cl2-mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host clock is synchronized with service
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Network latency requirement has been satisfied.
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Packet loss requirement has been satisfied.
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host has been configured with at least one default route.
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Domain name resolution for the api.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Domain name resolution for the api-int.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: DNS wildcard check was successful
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host subnets are not overlapping
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: No IP collisions were detected by host 6cb01f00-14a2-56a6-c2df-250d0ccda483
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: cnv is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: lso is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: lvm is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: mce is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: mtv is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: node-feature-discovery is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: nvidia-gpu is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: odf is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: openshift-ai is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: pipelines is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: serverless is disabled
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: servicemesh is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Valid inventory exists for the host
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient CPU cores
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient minimum RAM
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient disk capacity
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient CPU cores for role master
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient RAM for role master
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Hostname bscmaster1.cl2-mno1-rvt.lan is unique in cluster
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Hostname bscmaster1.cl2-mno1-rvt.lan is allowed
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Speed of installation disk has not yet been measured
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host is compatible with cluster platform baremetal
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host agent is compatible with the service
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: No request to skip formatting of the installation disk
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: All disks that have skipped formatting are present in the host inventory
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host is connected
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Media device is connected
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Machine Network CIDR is defined
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host belongs to all machine network CIDRs
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Platform PowerEdge R740 is allowed
+WARNING Host bscmaster1.cl2-mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host clock is synchronized with service
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Network latency requirement has been satisfied.
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Packet loss requirement has been satisfied.
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host has been configured with at least one default route.
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Domain name resolution for the api.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Domain name resolution for the api-int.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: DNS wildcard check was successful
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host subnets are not overlapping
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: No IP collisions were detected by host 036a5fd0-52e7-8154-b156-ca6303aa84b9
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: cnv is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: lso is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: lvm is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: mce is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: mtv is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: node-feature-discovery is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: nvidia-gpu is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: odf is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: openshift-ai is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: pipelines is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: serverless is disabled
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: servicemesh is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Valid inventory exists for the host
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient CPU cores
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient minimum RAM
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient disk capacity
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient CPU cores for role master
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient RAM for role master
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Hostname bscmaster2.cl2-mno1-rvt.lan is unique in cluster
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Hostname bscmaster2.cl2-mno1-rvt.lan is allowed
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Speed of installation disk has not yet been measured
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host is compatible with cluster platform baremetal
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host agent is compatible with the service
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: No request to skip formatting of the installation disk
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: All disks that have skipped formatting are present in the host inventory
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host is connected
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Media device is connected
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Machine Network CIDR is defined
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host belongs to all machine network CIDRs
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Platform PowerEdge R740 is allowed
+WARNING Host bscmaster2.cl2-mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host clock is synchronized with service
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Network latency requirement has been satisfied.
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Packet loss requirement has been satisfied.
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host has been configured with at least one default route.
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Domain name resolution for the api.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Domain name resolution for the api-int.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2-mno1.rvt.lan domain was successful or not required
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: DNS wildcard check was successful
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host subnets are not overlapping
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: No IP collisions were detected by host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: cnv is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: lso is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: lvm is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: mce is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: mtv is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: node-feature-discovery is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: nvidia-gpu is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: odf is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: openshift-ai is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: pipelines is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: serverless is disabled
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: servicemesh is disabled
+INFO Host bscmaster3.cl2-mno1-rvt.lan: updated status from insufficient to known (Host is ready to be installed)
