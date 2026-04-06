@@ -1,9 +1,192 @@
+ 👇
 
-TASK [mirror_appliance : Fail the playbook since Quay failed to startup] *************************************************************************************************************************************
-fatal: [root@mirror1.cl2-mno1-rvt.lan]: FAILED! => {"changed": false, "msg": "Quay did not become alive, see systemctl status output: ['● quay-app.service - Quay Container', '   Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; vendor preset: disabled)', '   Active: active (running) since Mon 2026-04-06 10:45:45 IST; 5min ago', '  Process: 2262616 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)', ' Main PID: 2262618 (podman)', '    Tasks: 18 (limit: 221444)', '   Memory: 25.9M', '   CGroup: /system.slice/quay-app.service', '           ├─2262618 /usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v sqlite-storage:/sqlite:Z -v quay-storage:/datastorage:Z --image-volume=ignore --pod=quay-pod --conmon-pidfile /run/quay-app.service-pid --cidfile /run/quay-app.service-cid --cgroups=no-conmon --log-driver=journald --replace -e WORKER_COUNT_UNSUPPORTED_MINIMUM=1 -e WORKER_COUNT=1 -e PYTHONUSERBASE_SITE_PACKAGE=/opt/app-root/lib/python3.12/site-packages registry.redhat.io/quay/quay-rhel8:v3.12.14 registry', '           └─2262653 /usr/bin/conmon --api-version 1 -c 5258fad088f58d383d7d42c199ff723519a1008c7c8712f7964f9cd0a124e796 -u 5258fad088f58d383d7d42c199ff723519a1008c7c8712f7964f9cd0a124e796 -r /usr/bin/runc -b /var/lib/containers/storage/overlay-containers/5258fad088f58d383d7d42c199ff723519a1008c7c8712f7964f9cd0a124e796/userdata -p /run/containers/storage/overlay-containers/5258fad088f58d383d7d42c199ff723519a1008c7c8712f7964f9cd0a124e796/userdata/pidfile -n quay-app --exit-dir /run/libpod/exits --full-attach -s -l journald --log-level warning --syslog --runtime-arg --log-format=json --runtime-arg --log --runtime-arg=/run/containers/storage/overlay-containers/5258fad088f58d383d7d42c199ff723519a1008c7c8712f7964f9cd0a124e796/userdata/oci-log --conmon-pidfile /run/quay-app.service-pid --exit-command /usr/bin/podman --exit-command-arg --root --exit-command-arg /var/lib/containers/storage --exit-command-arg --runroot --exit-command-arg /run/containers/storage --exit-command-arg --log-level --exit-command-arg warning --exit-command-arg --cgroup-manager --exit-command-arg systemd --exit-command-arg --tmpdir --exit-command-arg /run/libpod --exit-command-arg --network-config-dir --exit-command-arg --exit-command-arg --network-backend --exit-command-arg cni --exit-command-arg --volumepath --exit-command-arg /var/lib/containers/storage/volumes --exit-command-arg --db-backend --exit-command-arg sqlite --exit-command-arg --transient-store=false --exit-command-arg --runtime --exit-command-arg runc --exit-command-arg --storage-driver --exit-command-arg overlay --exit-command-arg --storage-opt --exit-command-arg overlay.mountopt=nodev,metacopy=on --exit-command-arg --events-backend --exit-command-arg file --exit-command-arg container --exit-command-arg cleanup --exit-command-arg 5258fad088f58d383d7d42c199ff723519a1008c7c8712f7964f9cd0a124e796', '', 'Apr 06 10:50:47 mirror1.cl2-mno1-rvt.lan podman[2262618]: gcworker stdout | 2026-04-06 05:20:47,946 [71] [INFO] [apscheduler.executors.default] Running job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-06 05:21:17 UTC)\" (scheduled at 2026-04-06 05:20:47.945865+00:00)', 'Apr 06 10:50:47 mirror1.cl2-mno1-rvt.lan podman[2262618]: gcworker stdout | 2026-04-06 05:20:47,947 [71] [INFO] [apscheduler.executors.default] Job \"GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-04-06 05:21:17 UTC)\" executed successfully', 'Apr 06 10:50:48 mirror1.cl2-mno1-rvt.lan quay-app[2262653]: notificationworker stdout | 2026-04-06 05:20:48,704 [82] [INFO] [apscheduler.executors.default] Running job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-06 05:20:58 UTC)\" (scheduled at 2026-04-06 05:20:48.703663+00:00)', 'Apr 06 10:50:48 mirror1.cl2-mno1-rvt.lan podman[2262618]: notificationworker stdout | 2026-04-06 05:20:48,704 [82] [INFO] [apscheduler.executors.default] Running job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-06 05:20:58 UTC)\" (scheduled at 2026-04-06 05:20:48.703663+00:00)', 'Apr 06 10:50:48 mirror1.cl2-mno1-rvt.lan quay-app[2262653]: notificationworker stdout | 2026-04-06 05:20:48,713 [82] [INFO] [apscheduler.executors.default] Job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-06 05:20:58 UTC)\" executed successfully', 'Apr 06 10:50:48 mirror1.cl2-mno1-rvt.lan podman[2262618]: notificationworker stdout | 2026-04-06 05:20:48,713 [82] [INFO] [apscheduler.executors.default] Job \"QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-04-06 05:20:58 UTC)\" executed successfully', 'Apr 06 10:50:53 mirror1.cl2-mno1-rvt.lan quay-app[2262653]: gcworker stdout | 2026-04-06 05:20:53,947 [71] [INFO] [apscheduler.executors.default] Running job \"GarbageCollectionWorker._scan_notifications (trigger: interval[0:00:30], next run at: 2026-04-06 05:21:23 UTC)\" (scheduled at 2026-04-06 05:20:53.946471+00:00)', 'Apr 06 10:50:53 mirror1.cl2-mno1-rvt.lan podman[2262618]: gcworker stdout | 2026-04-06 05:20:53,947 [71] [INFO] [apscheduler.executors.default] Running job \"GarbageCollectionWorker._scan_notifications (trigger: interval[0:00:30], next run at: 2026-04-06 05:21:23 UTC)\" (scheduled at 2026-04-06 05:20:53.946471+00:00)', 'Apr 06 10:50:53 mirror1.cl2-mno1-rvt.lan quay-app[2262653]: gcworker stdout | 2026-04-06 05:20:53,955 [71] [INFO] [apscheduler.executors.default] Job \"GarbageCollectionWorker._scan_notifications (trigger: interval[0:00:30], next run at: 2026-04-06 05:21:23 UTC)\" executed successfully', 'Apr 06 10:50:53 mirror1.cl2-mno1-rvt.lan podman[2262618]: gcworker stdout | 2026-04-06 05:20:53,955 [71] [INFO] [apscheduler.executors.default] Job \"GarbageCollectionWorker._scan_notifications (trigger: interval[0:00:30], next run at: 2026-04-06 05:21:23 UTC)\" executed successfully']"}
 
-PLAY RECAP ***************************************************************************************************************************************************************************************************
-root@mirror1.cl2-mno1-rvt.lan : ok=48   changed=29   unreachable=0    failed=1    skipped=15   rescued=1    ignored=0
+---
 
-ERRO[2026-04-06 10:50:55] An error occurred: exit status 2
-[root@mirror1 mirror]#
+🔴 Final Root Cause (now 100% clear)
+
+👉 Quay is running fine 👉 DNS is correct 👉 Port 8443 is listening
+
+❌ BUT:
+
+Health endpoint is still not reachable → Ansible fails
+
+
+---
+
+🔥 What is actually wrong now
+
+From everything you shared:
+
+✔ Container running
+✔ Workers running
+✔ DB migrations done
+✔ Port listening
+
+👉 That leaves ONLY ONE real issue:
+
+> 🚨 Quay is not serving HTTPS traffic correctly (nginx inside container not ready / blocked)
+
+
+
+
+---
+
+✅ Let’s prove it (important)
+
+Run this:
+
+curl -vk https://localhost:8443
+
+Possible results:
+
+❌ Case 1: Connection refused
+
+→ Pod/network issue
+
+❌ Case 2: SSL handshake fail
+
+→ Cert issue
+
+❌ Case 3: Empty / timeout
+
+→ nginx not started properly
+
+
+---
+
+🔍 Based on your logs (very important clue)
+
+You have:
+
+Running init script '/quay-registry/conf/init/nginx_conf_create.sh'
+Running init script '/quay-registry/conf/init/runmigration.sh'
+...
+Running init script '/quay-registry/conf/init/zz_boot.sh'
+
+BUT ❗
+
+👉 I do NOT see confirmation that nginx is serving traffic
+
+
+---
+
+🚨 MOST LIKELY ISSUE
+
+🔥 Missing or wrong SSL cert configuration
+
+Quay requires:
+
+/conf/stack/ssl.cert
+
+/conf/stack/ssl.key
+
+
+If missing or invalid: 👉 nginx starts incorrectly → health endpoint fails
+
+
+---
+
+✅ Check this NOW
+
+ls -l /root/quay-install/quay-config/
+
+Look for:
+
+ssl.cert
+ssl.key
+
+
+---
+
+❌ If missing → FIX
+
+Generate self-signed cert:
+
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout ssl.key -x509 -days 365 -out ssl.cert \
+  -subj "/CN=mirror1.cl2-mno1-rvt.lan"
+
+Move:
+
+mv ssl.* /root/quay-install/quay-config/
+
+
+---
+
+🔁 Restart Quay
+
+systemctl restart quay-app
+
+
+---
+
+🧪 Test again
+
+curl -vk https://localhost:8443/health/instance
+
+
+---
+
+⚠️ ALSO CHECK (very important)
+
+Your config:
+
+SERVER_HOSTNAME: mirror1.cl2-mno1-rvt.lan:8443
+
+👉 Make sure cert CN matches:
+
+mirror1.cl2-mno1-rvt.lan
+
+
+---
+
+🧠 If still failing → check inside container
+
+podman exec -it quay-app bash
+
+Then:
+
+ps aux | grep nginx
+
+👉 If nginx not running → root cause confirmed
+
+
+---
+
+🚀 Quick Fix Summary
+
+Check	Action
+
+SSL cert	✅ Ensure exists
+nginx	✅ Running
+curl localhost	✅ Must work
+health endpoint	✅ Must return healthy
+
+
+
+---
+
+💡 Important insight
+
+👉 Your issue is NO LONGER:
+
+DNS ❌
+
+Pod ❌
+
+Port ❌
+
+
+👉 It is now purely inside Quay (SSL/nginx layer)
+
+
+---
+
+🚀 Next step (fastest way)
+
+Run and send me:
+
+curl -vk https://localhost:8443
+ls -l /root/quay-install/quay-config/
+
+I’ll give you exact fix in 1 step (no guessing).
