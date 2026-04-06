@@ -1,327 +1,173 @@
-mirror1.cl2-mno1-rvt.lan
-[root@mirror1 mirror]# https://mirror1.cl2-mno1-rvt.lan:8443/health/instance
--bash: https://mirror1.cl2-mno1-rvt.lan:8443/health/instance: No such file or directory
-[root@mirror1 mirror]# https://mirror1.cl2-mno1-rvt.lan:8443/health/instance
--bash: https://mirror1.cl2-mno1-rvt.lan:8443/health/instance: No such file or directory
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]# curl -k https://mirror1.cl2-mno1-rvt.lan:8443/health/instance
-curl: (7) Failed to connect to mirror1.cl2-mno1-rvt.lan port 8443: Connection refused
-[root@mirror1 mirror]#
-[root@mirror1 mirror]#
-[root@mirror1 mirror]# nslookup mirror1.cl2-mno1-rvt.lan
-Server:         72.2.0.34
-Address:        72.2.0.34#53
+[root@mirror1 mirror]# cat /etc/named.conf
+//
+// named.conf
+//
+// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
+// server as a caching only nameserver (as a localhost DNS resolver only).
+//
+// See /usr/share/doc/bind*/sample/ for example named configuration files.
+//
 
-Name:   mirror1.cl2-mno1-rvt.lan
-Address: 72.2.0.34
-Name:   mirror1.cl2-mno1-rvt.lan
-Address: 2405:100:200:172::34
+options {
+        listen-on port 53 { 127.0.0.1; 72.2.0.34; };
+        listen-on-v6 port 53 { ::1; 2405:100:200:172::/64; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        secroots-file   "/var/named/data/named.secroots";
+        recursing-file  "/var/named/data/named.recursing";
+        allow-query     { localhost; any; };
 
-[root@mirror1 mirror]# ping mirror1.cl2-mno1-rvt.lan
-PING mirror1.cl2-mno1-rvt.lan(mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34)) 56 data bytes
-64 bytes from mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34): icmp_seq=1 ttl=64 time=0.076 ms
-64 bytes from mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34): icmp_seq=2 ttl=64 time=0.047 ms
-64 bytes from mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34): icmp_seq=3 ttl=64 time=0.051 ms
-64 bytes from mirror1.cl2-mno1-rvt.lan (2405:100:200:172::34): icmp_seq=4 ttl=64 time=0.056 ms
-^C
---- mirror1.cl2-mno1-rvt.lan ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3077ms
-rtt min/avg/max/mdev = 0.047/0.057/0.076/0.013 ms
-[root@mirror1 mirror]# cat /root/quay-install/quay-config/config.yaml
-AUTHENTICATION_TYPE: Database
-BUILDLOGS_REDIS:
-  host: localhost
-  password: T95acnX4XGcoCjetSKun7qXc
-  port: 6379
-DATABASE_SECRET_KEY: ejVfV2YjeSxeRF58QStOYUQvTEwrNHoyWStaQTo/LjM8W0dWfUk9fmUpLSFZMGxj
-DB_URI: sqlite:////sqlite/quay_sqlite.db
-DEFAULT_TAG_EXPIRATION: 2w
-DISTRIBUTED_STORAGE_DEFAULT_LOCATIONS: []
-DISTRIBUTED_STORAGE_PREFERENCE:
-  - default
-DISTRIBUTED_STORAGE_CONFIG:
-  default:
-    - LocalStorage
-    - storage_path: /datastorage
-ENTERPRISE_LOGO_URL: /static/img/quay-horizontal-color.svg
-FEATURE_ACI_CONVERSION: false
-FEATURE_ANONYMOUS_ACCESS: true
-FEATURE_APP_REGISTRY: false
-FEATURE_APP_SPECIFIC_TOKENS: true
-FEATURE_BUILD_SUPPORT: false
-FEATURE_CHANGE_TAG_EXPIRATION: true
-FEATURE_DIRECT_LOGIN: true
-FEATURE_PARTIAL_USER_AUTOCOMPLETE: true
-FEATURE_REPO_MIRROR: true
-FEATURE_MAILING: false
-FEATURE_REQUIRE_TEAM_INVITE: true
-FEATURE_RESTRICTED_V1_PUSH: true
-FEATURE_SECURITY_NOTIFICATIONS: true
-FEATURE_SECURITY_SCANNER: false
-FEATURE_USERNAME_CONFIRMATION: true
-FEATURE_USER_CREATION: true
-FEATURE_USER_LOG_ACCESS: true
-GITHUB_LOGIN_CONFIG: {}
-GITHUB_TRIGGER_CONFIG: {}
-GITLAB_TRIGGER_KIND: {}
-LOGS_MODEL: database
-LOGS_MODEL_CONFIG: {}
-LOG_ARCHIVE_LOCATION: default
-PREFERRED_URL_SCHEME: https
-REGISTRY_TITLE: Red Hat Quay
-REGISTRY_TITLE_SHORT: Red Hat Quay
-REPO_MIRROR_SERVER_HOSTNAME: null
-REPO_MIRROR_TLS_VERIFY: false
-SECRET_KEY: ZShcZTtWI0hefnxnVTdgUHJnfTFWOjkqVH11c2pAOD1VNV9iaD5qNCNRW3ZWVj5k
-SECURITY_SCANNER_ISSUER_NAME: security_scanner
-SERVER_HOSTNAME: mirror1.cl2-mno1-rvt.lan:8443
-SETUP_COMPLETE: true
-SUPER_USERS:
-  - admin
-TAG_EXPIRATION_OPTIONS:
-  - 0s
-  - 1d
-  - 1w
-  - 2w
-  - 4w
-TEAM_RESYNC_STALE_TIME: 60m
-TESTING: false
-USERFILES_LOCATION: default
-USERFILES_PATH: userfiles/
-USER_EVENTS_REDIS:
-  host: localhost
-  password: T95acnX4XGcoCjetSKun7qXc
-  port: 6379
-USE_CDN: false
-FEATURE_USER_INITIALIZE: true
-CREATE_NAMESPACE_ON_PUSH: true
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
 
-[root@mirror1 mirror]# ss -tulpn | grep 8443
-tcp   LISTEN 0      2048                  0.0.0.0:8443      0.0.0.0:*    users:(("conmon",pid=2240897,fd=5))                                                                                                  
-[root@mirror1 mirror]# podman logs quay-app
-   __   __
-  /  \ /  \     ______   _    _     __   __   __
- / /\ / /\ \   /  __  \ | |  | |   /  \  \ \ / /
-/ /  / /  \ \  | |  | | | |  | |  / /\ \  \   /
-\ \  \ \  / /  | |__| | | |__| | / ____ \  | |
- \ \/ \ \/ /   \_  ___/  \____/ /_/    \_\ |_|
-  \__/ \__/      \ \__
-                  \___\ by Red Hat
- Build, Store, and Distribute your Containers
+        dnssec-enable yes;
+        dnssec-validation yes;
 
-Startup timestamp:
-Mon Apr  6 04:48:24 UTC 2026
+        /* Path to ISC DLV key */
+        bindkeys-file "/etc/named.root.key";
 
-Running all default registry services
-Running init script '/quay-registry/conf/init/certs_install.sh'
-Running init script '/quay-registry/conf/init/client_certs.sh'
-Running init script '/quay-registry/conf/init/copy_config_files.sh'
-Running init script '/quay-registry/conf/init/d_validate_config_bundle.sh'
-Validating Configuration
-+------------------------+-------+--------+
-|      Field Group       | Error | Status |
-+------------------------+-------+--------+
-| AccessSettings         | -     | 🟢     |
-+------------------------+-------+--------+
-| ActionLogArchiving     | -     | 🟢     |
-+------------------------+-------+--------+
-| AppTokenAuthentication | -     | 🟢     |
-+------------------------+-------+--------+
-| AutoPrune              | -     | 🟢     |
-+------------------------+-------+--------+
-| BitbucketBuildTrigger  | -     | 🟢     |
-+------------------------+-------+--------+
-| BuildManager           | -     | 🟢     |
-+------------------------+-------+--------+
-| Database               | -     | 🟢     |
-+------------------------+-------+--------+
-| DistributedStorage     | -     | 🟢     |
-+------------------------+-------+--------+
-| ElasticSearch          | -     | 🟢     |
-+------------------------+-------+--------+
-| Email                  | -     | 🟢     |
-+------------------------+-------+--------+
-| GitHubBuildTrigger     | -     | 🟢     |
-+------------------------+-------+--------+
-| GitHubLogin            | -     | 🟢     |
-+------------------------+-------+--------+
-| GitLabBuildTrigger     | -     | 🟢     |
-+------------------------+-------+--------+
-| GoogleLogin            | -     | 🟢     |
-+------------------------+-------+--------+
-| HostSettings           | -     | 🟢     |
-+------------------------+-------+--------+
-| JWTAuthentication      | -     | 🟢     |
-+------------------------+-------+--------+
-| LDAP                   | -     | 🟢     |
-+------------------------+-------+--------+
-| OIDC                   | -     | 🟢     |
-+------------------------+-------+--------+
-| QuayDocumentation      | -     | 🟢     |
-+------------------------+-------+--------+
-| Redis                  | -     | 🟢     |
-+------------------------+-------+--------+
-| RepoMirror             | -     | 🟢     |
-+------------------------+-------+--------+
-| SecurityScanner        | -     | 🟢     |
-+------------------------+-------+--------+
-| TeamSyncing            | -     | 🟢     |
-+------------------------+-------+--------+
-| TimeMachine            | -     | 🟢     |
-+------------------------+-------+--------+
-| UserVisibleSettings    | -     | 🟢     |
-+------------------------+-------+--------+
-Running init script '/quay-registry/conf/init/nginx_conf_create.sh'
-Running init script '/quay-registry/conf/init/runmigration.sh'
-fatal: not a git repository: /quay-registry/../.git/modules/quay
-/opt/app-root/lib64/python3.12/site-packages/peewee.py:2784: SyntaxWarning: invalid escape sequence '\w'
-  clean_field_names = re.sub('[^\w]+', '', '_'.join(accum))
-/opt/app-root/lib64/python3.12/site-packages/peewee.py:5763: SyntaxWarning: invalid escape sequence '\w'
-  return re.sub('[^\w]+', '_', self.name)
-/opt/app-root/lib64/python3.12/site-packages/playhouse/sqlite_ext.py:451: SyntaxWarning: invalid escape sequence '\s'
-  _quote_re = re.compile('(?:[^\s"]|"(?:\\.|[^"])*")+')
-/opt/app-root/lib64/python3.12/site-packages/splunklib/client.py:782: SyntaxWarning: invalid escape sequence '\/'
-  versionSearch = re.search('(?:servicesNS\/[^/]+\/[^/]+|services)\/[^/]+\/v(\d+)\/', path)
-fatal: not a git repository: /quay-registry/../.git/modules/quay
-04:48:30 INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
-04:48:30 INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
-04:48:30 INFO  [alembic.runtime.migration] Running upgrade  -> c156deb8845d, Reset our migrations with a required update.
-04:48:31 INFO  [alembic.runtime.migration] Running upgrade c156deb8845d -> 6c7014e84a5e, Add user prompt support.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 6c7014e84a5e -> faf752bd2e0a, Add user metadata fields.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade faf752bd2e0a -> 94836b099894, Create new notification type.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 94836b099894 -> 45fd8b9869d4, add_notification_type.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 45fd8b9869d4 -> f5167870dd66, update queue item table indices.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade f5167870dd66 -> fc47c1ec019f, Add state_id field to QueueItem.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade fc47c1ec019f -> 3e8cc74a1e7b, Add severity and media_type to global messages.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 3e8cc74a1e7b -> d42c175b439a, Backfill state_id and make it unique.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade d42c175b439a -> e2894a3a3c19, Add full text search indexing for repo name and description.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade e2894a3a3c19 -> 7a525c68eb13, Add OCI/App models.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 7a525c68eb13 -> b8ae68ad3e52, Change BlobUpload fields to BigIntegers to allow layers > 8GB.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade b8ae68ad3e52 -> b4df55dea4b3, add repository kind.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade b4df55dea4b3 -> a6c463dfb9fe, back fill build expand_config.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade a6c463dfb9fe -> be8d1c402ce0, Add TeamSync table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade be8d1c402ce0 -> f30984525c86, Add RepositorySearchScore table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade f30984525c86 -> c3d4b7ebcdf7, Backfill RepositorySearchScore table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade c3d4b7ebcdf7 -> ed01e313d3cb, Add trust_enabled to repository.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade ed01e313d3cb -> 53e2ac668296, Remove reference to subdir.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 53e2ac668296 -> dc4af11a5f90, add notification number of failures column.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade dc4af11a5f90 -> d8989249f8f6, Add change_tag_expiration log type.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade d8989249f8f6 -> 7367229b38d9, Add support for app specific tokens.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 7367229b38d9 -> cbc8177760d9, Add user location field.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade cbc8177760d9 -> 152bb29a1bb3, Add maximum build queue count setting to user table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 152bb29a1bb3 -> c91c564aad34, Drop checksum on ImageStorage.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade c91c564aad34 -> 152edccba18c, Make BlodUpload byte_count not nullable.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 152edccba18c -> b4c2d45bc132, Add deleted namespace table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade b4c2d45bc132 -> 61cadbacb9fc, Add ability for build triggers to be disabled.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 61cadbacb9fc -> 17aff2e1354e, Add automatic disable of build triggers.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 17aff2e1354e -> 87fbbc224f10, Add disabled datetime to trigger.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 87fbbc224f10 -> 0cf50323c78b, Add creation date to User table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 0cf50323c78b -> b547bc139ad8, Add RobotAccountMetadata table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade b547bc139ad8 -> 224ce4c72c2f, Add last_accessed field to User table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 224ce4c72c2f -> 5b7503aada1b, Cleanup old robots.
-04:48:32 INFO  [util.migrate.cleanup_old_robots] Found 0 robots to delete
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 5b7503aada1b -> 1783530bee68, Add LogEntry2 table - QUAY.IO ONLY
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 1783530bee68 -> 5cbbfc95bac7, Remove 'oci' tables not used by CNR. The rest will be migrated and renamed.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 5cbbfc95bac7 -> 610320e9dacf, Add new Appr-specific tables.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 610320e9dacf -> 5d463ea1e8a8, Backfill new appr tables.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 5d463ea1e8a8 -> d17c695859ea, Delete old Appr tables.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade d17c695859ea -> 6c21e2cfb8b6, Change LogEntry to use a BigInteger as its primary key.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 6c21e2cfb8b6 -> 9093adccc784, Add V2_2 data models for Manifest, ManifestBlob and ManifestLegacyImage.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 9093adccc784 -> eafdeadcebc7, Remove blob_index from ManifestBlob table.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade eafdeadcebc7 -> 654e6df88b71, Change manifest_bytes to a UTF8 text field.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 654e6df88b71 -> 13411de1c0ff, Remove unique from TagManifestToManifest.
-04:48:32 INFO  [alembic.runtime.migration] Running upgrade 13411de1c0ff -> 10f45ee2310b, Add Tag, TagKind and ManifestChild tables.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 10f45ee2310b -> 67f0abd172ae, Add TagToRepositoryTag table.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 67f0abd172ae -> c00a1f15968b
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade c00a1f15968b -> 54492a68a3cf, Add NamespaceGeoRestriction table.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 54492a68a3cf -> 6ec8726c0ace, Add LogEntry3 table.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 6ec8726c0ace -> e184af42242d, Add missing index on UUID fields.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade e184af42242d -> b9045731c4de, Add lifetime end indexes to tag tables.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade b9045731c4de -> 481623ba00ba, Add index on logs_archived on repositorybuild.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 481623ba00ba -> b918abdbee43, Run full tag backfill.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade b918abdbee43 -> 5248ddf35167, Repository Mirror.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 5248ddf35167 -> c13c8052f7a6, Add new fields and tables for encrypted tokens.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade c13c8052f7a6 -> 703298a825c2, Backfill new encrypted fields.
-04:48:33 INFO  [703298a825c2_backfill_new_encrypted_fields_py] Backfilling encrypted credentials for access tokens
-04:48:33 INFO  [703298a825c2_backfill_new_encrypted_fields_py] Backfilling encrypted credentials for robots
-04:48:33 INFO  [703298a825c2_backfill_new_encrypted_fields_py] Backfilling encrypted credentials for repo build triggers
-04:48:33 INFO  [703298a825c2_backfill_new_encrypted_fields_py] Backfilling encrypted credentials for app specific auth tokens
-04:48:33 INFO  [703298a825c2_backfill_new_encrypted_fields_py] Backfilling credentials for OAuth access tokens
-04:48:33 INFO  [703298a825c2_backfill_new_encrypted_fields_py] Backfilling credentials for OAuth auth code
-04:48:33 INFO  [703298a825c2_backfill_new_encrypted_fields_py] Backfilling secret for OAuth applications
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 703298a825c2 -> 49e1138ed12d, Change token column types for encrypted columns.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 49e1138ed12d -> c059b952ed76, Remove unencrypted fields and data.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade c059b952ed76 -> cc6778199cdb, repository mirror notification.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade cc6778199cdb -> 34c8ef052ec9, repo mirror columns.
-04:48:33 INFO  [34c8ef052ec9_repo_mirror_columns_py] Migrating to external_reference from existing columns
-04:48:33 INFO  [34c8ef052ec9_repo_mirror_columns_py] Reencrypting existing columns
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 34c8ef052ec9 -> 4fd6b8463eb2, Add new DeletedRepository tracking table.
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 4fd6b8463eb2 -> 8e6a363784bb, add manifestsecuritystatus table
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 8e6a363784bb -> 04b9d2191450
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 04b9d2191450 -> 3383aad1e992, Add UploadedBlob table
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 3383aad1e992 -> 88e64904d000, Add new metadata columns to Manifest table
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 88e64904d000 -> 909d725887d3, Add composite index on manifestblob
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 909d725887d3 -> e9f3e4dbb979, quota_management_reporting
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade e9f3e4dbb979 -> 10d34e6536f8, create proxy_cache_config table
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 10d34e6536f8 -> b43b44996c26, increase proxy cache config creds max len
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade b43b44996c26 -> d94d328733e4, Increase repomirrorconfig char size
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade d94d328733e4 -> 2d66ad598b56, Change metadata_json size in logentry3 table for MySQL
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 2d66ad598b56 -> 7bca88923f2c, add proxy cache logentrykind
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 7bca88923f2c -> b2d1e4b95fc2, add build triggers' logentrykind
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade b2d1e4b95fc2 -> f0875fbc7c7a, “quota-v2”
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade f0875fbc7c7a -> a648ab200ab7, add org auditing
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade a648ab200ab7 -> 43fea47d641f, create RH subscriptions table
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 43fea47d641f -> 0246c2d0e750, add login logout logentrykind
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 0246c2d0e750 -> ab5a24478052, “add_registry_size_table”
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade ab5a24478052 -> 8cf90670bf38, add permanently delete tag log entry kind
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 8cf90670bf38 -> 46980ea2dde5, change removed_tag_expiration_s to BIGINT
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 46980ea2dde5 -> a0fc06d604a4, Unlink deprecated tables
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade a0fc06d604a4 -> 8a70b8777089, drop deprecated tables
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 8a70b8777089 -> b82361fba1cd, Create table for org to sku relations
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade b82361fba1cd -> 4366f54be43c, add indexes to quotanamespacesize and quotarepositorysize tables
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 4366f54be43c -> 222debc16e18, “autopruning”
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 222debc16e18 -> 2062bbd5ef0e, insert logentrykind
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 2062bbd5ef0e -> 8d47693829a0, auto prune policy audit logs
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 8d47693829a0 -> 3f8e3657bb67, add login and pull failure logentrykind
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 3f8e3657bb67 -> 41d15c93c299, add quantity field to orgRhSkus
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 41d15c93c299 -> b4da5b09c8df, repository autoprune policy
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade b4da5b09c8df -> 135fd3e94615, insert oidc in loginservice
-04:48:33 INFO  [alembic.runtime.migration] Running upgrade 135fd3e94615 -> cead4183265c, recreate index for repository autoprune policy
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade cead4183265c -> 36cd2b747a08, team sync logs
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade 36cd2b747a08 -> 946f0e90f9c9, Create manifestsubject table
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade 946f0e90f9c9 -> 0cdd1f27a450, add subject backfilled index
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade 0cdd1f27a450 -> 0988213e0885, add oauth assigned token table
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade 0988213e0885 -> 66147b81aad2, create repo_image_expiry notification type
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade 66147b81aad2 -> f67fe4871771, create tag_notification_sent table
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade f67fe4871771 -> 2664723e1b4b, add last_ran_ms to repository_notification_table
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade 2664723e1b4b -> 8a7ba94c2e84, add assign token logentry
-04:48:34 INFO  [alembic.runtime.migration] Running upgrade 8a7ba94c2e84 -> 3f8d7acdf7f9, Add artifact_type column
-Running init script '/quay-registry/conf/init/supervisord_conf_create.sh'
-Running init script '/quay-registry/conf/init/zz_boot.sh'
-fatal: not a git repository: /quay-registry/../.git/modules/quay
-/quay-registry/boot.py:76: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
-  expiration = datetime.utcnow() + timedelta(minutes=minutes_until_expiration)
+        managed-keys-directory "/var/named/dynamic";
 
-[root@mirror1 mirror]# journalctl -u quay-app -f
--- Logs begin at Fri 2026-04-03 16:13:47 IST. --
-Apr 06 10:29:01 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: buildlogsarchiver stdout | 2026-04-06 04:59:01,602 [65] [INFO] [apscheduler.executors.default] Job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-04-06 04:59:31 UTC)" executed successfully
-Apr 06 10:29:01 mirror1.cl2-mno1-rvt.lan podman[2243660]: buildlogsarchiver stdout | 2026-04-06 04:59:01,602 [65] [INFO] [apscheduler.executors.default] Job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-04-06 04:59:31 UTC)" executed successfully
-Apr 06 10:29:02 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: exportactionlogsworker stdout | 2026-04-06 04:59:02,480 [69] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:02 UTC)" (scheduled at 2026-04-06 04:59:02.479988+00:00)
-Apr 06 10:29:02 mirror1.cl2-mno1-rvt.lan podman[2243660]: exportactionlogsworker stdout | 2026-04-06 04:59:02,480 [69] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:02 UTC)" (scheduled at 2026-04-06 04:59:02.479988+00:00)
-Apr 06 10:29:02 mirror1.cl2-mno1-rvt.lan podman[2243660]: exportactionlogsworker stdout | 2026-04-06 04:59:02,481 [69] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:02 UTC)" executed successfully
-Apr 06 10:29:02 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: exportactionlogsworker stdout | 2026-04-06 04:59:02,481 [69] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:02 UTC)" executed successfully
-Apr 06 10:29:05 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: notificationworker stdout | 2026-04-06 04:59:05,839 [81] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:05 UTC)" (scheduled at 2026-04-06 04:59:05.838644+00:00)
-Apr 06 10:29:05 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: notificationworker stdout | 2026-04-06 04:59:05,839 [81] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:05 UTC)" executed successfully
-Apr 06 10:29:05 mirror1.cl2-mno1-rvt.lan podman[2243660]: notificationworker stdout | 2026-04-06 04:59:05,839 [81] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:05 UTC)" (scheduled at 2026-04-06 04:59:05.838644+00:00)
-Apr 06 10:29:05 mirror1.cl2-mno1-rvt.lan podman[2243660]: notificationworker stdout | 2026-04-06 04:59:05,839 [81] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:05 UTC)" executed successfully
-Apr 06 10:29:07 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: repositorygcworker stdout | 2026-04-06 04:59:07,842 [88] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:07 UTC)" (scheduled at 2026-04-06 04:59:07.842119+00:00)
-Apr 06 10:29:07 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: repositorygcworker stdout | 2026-04-06 04:59:07,843 [88] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:07 UTC)" executed successfully
-Apr 06 10:29:07 mirror1.cl2-mno1-rvt.lan podman[2243660]: repositorygcworker stdout | 2026-04-06 04:59:07,842 [88] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:07 UTC)" (scheduled at 2026-04-06 04:59:07.842119+00:00)
-Apr 06 10:29:07 mirror1.cl2-mno1-rvt.lan podman[2243660]: repositorygcworker stdout | 2026-04-06 04:59:07,843 [88] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-04-06 05:00:07 UTC)" executed successfully
-Apr 06 10:29:08 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: gcworker stdout | 2026-04-06 04:59:08,657 [70] [INFO] [apscheduler.executors.default] Running job "GarbageCollectionWorker._scan_notifications (trigger: interval[0:00:30], next run at: 2026-04-06 04:59:38 UTC)" (scheduled at 2026-04-06 04:59:08.656306+00:00)
-Apr 06 10:29:08 mirror1.cl2-mno1-rvt.lan podman[2243660]: gcworker stdout | 2026-04-06 04:59:08,657 [70] [INFO] [apscheduler.executors.default] Running job "GarbageCollectionWorker._scan_notifications (trigger: interval[0:00:30], next run at: 2026-04-06 04:59:38 UTC)" (scheduled at 2026-04-06 04:59:08.656306+00:00)
-Apr 06 10:29:08 mirror1.cl2-mno1-rvt.lan quay-app[2243700]: gcworker stdout | 2026-04-06 04:59:08,665 [70] [INFO] [apscheduler.executors.default] Job "GarbageCollectionWorker._scan_notifications (trigger: interval[0:00:30], next run at: 2026-04-06 04:59:38 UTC)" executed successfully
-Apr 06 10:29:08 mirror1.cl2-mno1-rvt.lan podman[2243660]: gcworker stdout | 2026-04-06 04:59:08,665 [70] [INFO] [apscheduler.executors.default] Job "GarbageCollectionWorker._scan_notifications (trigger: interval[0:00:30], next run at: 2026-04-06 04:59:38 UTC)" executed successfully
-^C
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+
+        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
+        include "/etc/crypto-policies/back-ends/bind.config";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+# Include ocp zones
+
+zone "cl2-mno1-rvt.lan" {
+    type master;
+    file "/etc/named/zones/db.ocp.lan"; # zone file path
+};
+
+zone "0.2.72.in-addr.arpa" {
+    type master;
+    file "/etc/named/zones/db.reverse";  # 72.2.0.0/22 subnet
+};
+
+zone "0.0.2.0.0.0.1.0.5.0.4.2.ip6.arpa" {
+    type master;
+    file "/etc/named/zones/db.reverse.ipv6";  # File for reverse DNS for IPv6
+};
+
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+[root@mirror1 mirror]# cat /etc/named/zones/db.ocp.lan
+$TTL    604800
+@       IN      SOA     mirror1.cl2-mno1-rvt.lan contact.rvt.lan (
+             202506031     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+        IN      NS      mirror1.cl2-mno1-rvt.lan.
+        IN      AAAA    2405:100:200:172::34
+
+bscmaster1.cl2-mno1-rvt.lan.         IN      A      72.2.0.13
+bscmaster2.cl2-mno1-rvt.lan.         IN      A      72.2.0.15
+bscmaster3.cl2-mno1-rvt.lan.         IN      A      72.2.0.17
+
+; OpenShift Internal - Load balancer - MNO1-BSC
+
+api.cl2-mno1-rvt.lan.        IN    A    72.2.0.87
+api-int.cl2-mno1-rvt.lan.    IN    A    72.2.0.87
+*.apps.cl2-mno1-rvt.lan.     IN    A    72.2.0.88
+
+mirror1.cl2-mno1-rvt.lan.    IN    A    72.2.0.34
+oauth-openshift.apps.cl2-mno1-rvt.lan.               IN     A     72.2.0.88
+console-openshift-console.apps.cl2-mno1-rvt.lan.     IN     A     72.2.0.88
+
+;==============================
+
+;Control Plane Nodes - BSC Cluster
+
+bscmaster1.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::13
+bscmaster2.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::15
+bscmaster3.cl2-mno1-rvt.lan.         IN      AAAA   2405:100:200:172::17
+
+; OpenShift Internal - Load balancer - MNO1-BSC
+
+api.cl2-mno1-rvt.lan.                                                    IN    AAAA 2405:100:200:172::87
+api-int.cl2-mno1-rvt.lan.                                                IN    AAAA 2405:100:200:172::87
+*.apps.cl2-mno1-rvt.lan.                                                 IN    AAAA 2405:100:200:172::88
+
+
+oauth-openshift.apps.cl2-mno1-rvt.lan.               IN      AAAA     2405:100:200:172::88
+console-openshift-console.apps.cl2-mno1-rvt.lan.     IN      AAAA     2405:100:200:172::88
+mirror1.cl2-mno1-rvt.lan.                            IN      AAAA     2405:100:200:172::34
+
+[root@mirror1 mirror]# cat /etc/named/zones/db.reverse
+$TTL    604800
+@       IN      SOA     mirror1.cl2-mno1-rvt.lan. contact.rvt.lan (
+             202506032     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+
+  IN      NS      mirror1.cl2-mno1-rvt.lan.
+
+
+;Mirror Registry FQDN
+
+34     IN    PTR    mirror1.cl2-mno1-rvt.lan.
+
+; MNO CLUSTER 1
+87    IN    PTR    api.cl2-mno1-rvt.lan.
+87   IN    PTR    api-int.cl2-mno1-rvt.lan.
+13    IN    PTR    bscmaster1.cl2-mno1-rvt.lan.
+15    IN    PTR    bscmaster2.cl2-mno1-rvt.lan.
+17    IN    PTR    bscmaster3.cl2-mno1-rvt.lan.
+[root@mirror1 mirror]# cat /etc/named/zones/db.reverse.ipv6
+$TTL    604800
+@       IN      SOA     mirror1.cl2-mno1-rvt.lan. contact.rvt.lan (
+             2026033123  ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+
+  IN      NS      mirror1.cl2-mno1-rvt.lan.
+
+
+;Mirror Registry FQDN
+4.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0     IN    PTR    mirror1.cl2-mno1-rvt.lan.
+
+
+; MNO CLUSTER 1
+7.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    api.cl2-mno1-rvt.lan.
+7.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    api-int.cl2-mno1-rvt.lan.
+3.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster1.cl2-mno1-rvt.lan.
+5.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster2.cl2-mno1-rvt.lan.
+7.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster3.cl2-mno1-rvt.lan.
 [root@mirror1 mirror]#
