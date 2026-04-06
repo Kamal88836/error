@@ -1,19 +1,14 @@
-[root@mirror1 mirror]# curl -vk https://localhost:8443
-* Rebuilt URL to: https://localhost:8443/
-*   Trying ::1...
-* TCP_NODELAY set
-* connect to ::1 port 8443 failed: Connection refused
-*   Trying 127.0.0.1...
-* TCP_NODELAY set
-* connect to 127.0.0.1 port 8443 failed: Connection refused
-* Failed to connect to localhost port 8443: Connection refused
-* Closing connection 0
-curl: (7) Failed to connect to localhost port 8443: Connection refused
-[root@mirror1 mirror]# ls -l /root/quay-install/quay-config/
-total 20
--rwxr-x--- 1 root root 1878 Apr  6 10:45 config.yaml
--rw-r--r-- 1 root root  416 Apr  6 10:45 openssl.cnf
--rw-r--r-- 1 root root 2620 Apr  6 10:45 ssl.cert
--rw-r--r-- 1 root root  899 Apr  6 10:45 ssl.csr
--rw-r--r-- 1 root root 1679 Apr  6 10:45 ssl.key
-[root@mirror1 mirror]#
+
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:4949300290d8b932fdf810990b3771e859b7f5338cd6e0417371977298ccba7e 16.76MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:60d408a28412831c4ba34d5a52e7bef6edbdb851fa1d2d51acbf7b645d584399 43.99MiB
+uploading: mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 sha256:249644e88683636d386228ca9079ebf79ac6aef0a28c191f22ab3093956b26b4 19.41KiB
+error: unable to copy layer sha256:6a371ab6bb1dfa64e6bfde25d2a9c028a3aa95f574c1c359d288e5f22c3ef31e to mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4: Patch "https://mirror1.cl2-mno1-rvt.lan:8443/v2/ocp4/openshift4/blobs/uploads/77f276f1-d0aa-436c-a655-1a88bd43c212": unexpected EOF
+error: unable to copy layer sha256:3da4a90f8badee09eeb7abb842ea43a4d1568994c5c53ba2ec097e39838ce954 to mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4: Patch "https://mirror1.cl2-mno1-rvt.lan:8443/v2/ocp4/openshift4/blobs/uploads/9bc429d9-2573-4329-b5ed-13d129b20308": unexpected EOF
+info: Mirroring completed in 53m10.78s (5.985MB/s)
+error: one or more errors occurred while uploading images
+[root@mirror1 quay-rootCA]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
+Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
+info: Mirroring 189 images to mirror1.cl2-mno1-rvt.lan:8443/ocp4/openshift4 ...
+mirror1.cl2-mno1-rvt.lan:8443/
+  ocp4/openshift4
+    blobs:
