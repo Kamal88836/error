@@ -1,233 +1,188 @@
-[root@mirror1 ocp-install]# openshift-install agent wait-for bootstrap-complete --log-level debug
-DEBUG OpenShift Installer 4.18.23
-DEBUG Built from commit 53d25898f4a68451e9e1478336e1991fd5ded04f
-DEBUG asset directory: .
-DEBUG Loading Agent Config...
-DEBUG Using Agent Config loaded from state file
-DEBUG Loading Agent Manifests...
-DEBUG   Loading Agent PullSecret...
-DEBUG     Loading Agent Workflow...
-DEBUG     Using Agent Workflow loaded from state file
-DEBUG     Loading Agent Installer ClusterInfo...
-DEBUG       Loading Agent Workflow...
-DEBUG       Loading AddNodes Config...
-DEBUG       Using AddNodes Config loaded from state file
-DEBUG     Using Agent Installer ClusterInfo loaded from state file
-DEBUG     Loading Install Config...
-DEBUG     Using Install Config loaded from state file
-DEBUG   Using Agent PullSecret loaded from state file
-DEBUG   Loading InfraEnv Config...
-DEBUG     Loading Agent Workflow...
-DEBUG     Loading Agent Installer ClusterInfo...
-DEBUG     Loading Install Config...
-DEBUG     Loading Agent Config...
-DEBUG   Using InfraEnv Config loaded from state file
-DEBUG   Loading NMState Config...
-DEBUG     Loading Agent Workflow...
-DEBUG     Loading Agent Installer ClusterInfo...
-DEBUG     Loading Agent Hosts...
-DEBUG       Loading Agent Workflow...
-DEBUG       Loading AddNodes Config...
-DEBUG       Loading Install Config...
-DEBUG       Loading Agent Config...
-DEBUG     Using Agent Hosts loaded from state file
-DEBUG     Loading Install Config...
-DEBUG   Using NMState Config loaded from state file
-DEBUG   Loading AgentClusterInstall Config...
-DEBUG     Loading Agent Workflow...
-DEBUG     Loading Install Config...
-DEBUG     Loading Agent Hosts...
-DEBUG     Loading Agent Config...
-DEBUG   Using AgentClusterInstall Config loaded from state file
-DEBUG   Loading ClusterDeployment Config...
-DEBUG     Loading Agent Workflow...
-DEBUG     Loading Install Config...
-DEBUG   Using ClusterDeployment Config loaded from state file
-DEBUG   Loading ClusterImageSet Config...
-DEBUG     Loading Agent Workflow...
-DEBUG     Loading Agent Installer ClusterInfo...
-DEBUG     Loading Release Image Pull Spec...
-DEBUG     Using Release Image Pull Spec loaded from state file
-DEBUG     Loading Install Config...
-DEBUG   Using ClusterImageSet Config loaded from state file
-DEBUG Using Agent Manifests loaded from state file
-DEBUG Loading Install Config...
-DEBUG   Loading SSH Key...
-DEBUG   Loading Base Domain...
-DEBUG     Loading Platform...
-DEBUG   Loading Cluster Name...
-DEBUG     Loading Base Domain...
-DEBUG     Loading Platform...
-DEBUG   Loading Pull Secret...
-DEBUG   Loading Platform...
-DEBUG Loading Agent Hosts...
-DEBUG RendezvousIP from the NMStateConfig 72.2.0.13
-DEBUG Loading Agent Installer API Auth Config...
-DEBUG   Loading Agent Workflow...
-DEBUG   Using Agent Workflow loaded from state file
-DEBUG   Loading AddNodes Config...
-DEBUG   Using AddNodes Config loaded from state file
-DEBUG Using Agent Installer API Auth Config loaded from state file
-DEBUG Agent Rest API Initialized
-INFO Cluster is not ready for install. Check validations
-DEBUG Cluster validation: Platform requirements satisfied
-DEBUG Cluster validation: The pull secret is set.
-WARNING Cluster validation: The cluster has hosts that are not ready to install.
-DEBUG Cluster validation: The cluster has the exact amount of dedicated control plane nodes.
-DEBUG Cluster validation: API virtual IPs are defined.
-DEBUG Cluster validation: api vips 72.2.0.87, 2405:100:200:172::87 belongs to the Machine CIDR and is not in use.
-DEBUG Cluster validation: The Cluster Network CIDR is defined.
-DEBUG Cluster validation: The base domain is defined.
-DEBUG Cluster validation: Ingress virtual IPs are defined.
-DEBUG Cluster validation: ingress vips 72.2.0.88, 2405:100:200:172::88 belongs to the Machine CIDR and is not in use.
-DEBUG Cluster validation: The Machine Network CIDR is defined.
-DEBUG Cluster validation: The Cluster Machine CIDR is equivalent to the calculated CIDR.
-DEBUG Cluster validation: The Cluster Network prefix is valid.
-DEBUG Cluster validation: The cluster has a valid network type
-DEBUG Cluster validation: Same address families for all networks.
-DEBUG Cluster validation: No CIDRS are overlapping.
-WARNING Cluster validation: Hosts' clocks are not synchronized (there's more than a 4 minutes gap between clocks), please configure an NTP server via DHCP or set clocks manually.
-DEBUG Cluster validation: The Service Network CIDR is defined.
-DEBUG Cluster validation: cnv is disabled
-DEBUG Cluster validation: lso is disabled
-DEBUG Cluster validation: lvm is disabled
-DEBUG Cluster validation: mce is disabled
-DEBUG Cluster validation: mtv is disabled
-DEBUG Cluster validation: node-feature-discovery is disabled
-DEBUG Cluster validation: nvidia-gpu is disabled
-DEBUG Cluster validation: odf is disabled
-DEBUG Cluster validation: openshift-ai is disabled
-DEBUG Cluster validation: pipelines is disabled
-DEBUG Cluster validation: serverless is disabled
-DEBUG Cluster validation: servicemesh is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Valid inventory exists for the host
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient CPU cores
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient minimum RAM
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient disk capacity
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient CPU cores for role master
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Sufficient RAM for role master
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Hostname bscmaster2.cl2-mno1-rvt.lan is unique in cluster
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Hostname bscmaster2.cl2-mno1-rvt.lan is allowed
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Speed of installation disk has not yet been measured
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host is compatible with cluster platform baremetal
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host agent is compatible with the service
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: No request to skip formatting of the installation disk
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: All disks that have skipped formatting are present in the host inventory
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host is connected
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Media device is connected
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Machine Network CIDR is defined
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host belongs to all machine network CIDRs
-WARNING Host bscmaster2.cl2-mno1-rvt.lan validation: No connectivity to the majority of hosts in the cluster
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Platform PowerEdge R740 is allowed
-WARNING Host bscmaster2.cl2-mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host clock is synchronized with service
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Network latency requirement has been satisfied.
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Packet loss requirement has been satisfied.
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host has been configured with at least one default route.
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Domain name resolution for the api.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Domain name resolution for the api-int.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: Host subnets are not overlapping
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: No IP collisions were detected by host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: cnv is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: lso is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: lvm is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: mce is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: mtv is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: node-feature-discovery is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: nvidia-gpu is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: odf is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: openshift-ai is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: pipelines is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: serverless is disabled
-DEBUG Host bscmaster2.cl2-mno1-rvt.lan validation: servicemesh is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Valid inventory exists for the host
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient CPU cores
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient minimum RAM
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient disk capacity
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient CPU cores for role master
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Sufficient RAM for role master
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Hostname bscmaster3.cl2-mno1-rvt.lan is unique in cluster
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Hostname bscmaster3.cl2-mno1-rvt.lan is allowed
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Speed of installation disk has not yet been measured
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host is compatible with cluster platform baremetal
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host agent is compatible with the service
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: No request to skip formatting of the installation disk
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: All disks that have skipped formatting are present in the host inventory
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host is connected
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Media device is connected
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Machine Network CIDR is defined
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host belongs to all machine network CIDRs
-WARNING Host bscmaster3.cl2-mno1-rvt.lan validation: No connectivity to the majority of hosts in the cluster
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Platform PowerEdge R740 is allowed
-WARNING Host bscmaster3.cl2-mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host clock is synchronized with service
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host has been configured with at least one default route.
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Domain name resolution for the api.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Domain name resolution for the api-int.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: Host subnets are not overlapping
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: No IP collisions were detected by host 6cb01f00-14a2-56a6-c2df-250d0ccda483
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: cnv is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: lso is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: lvm is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: mce is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: mtv is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: node-feature-discovery is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: nvidia-gpu is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: odf is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: openshift-ai is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: pipelines is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: serverless is disabled
-DEBUG Host bscmaster3.cl2-mno1-rvt.lan validation: servicemesh is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Valid inventory exists for the host
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient CPU cores
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient minimum RAM
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient disk capacity
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient CPU cores for role master
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Sufficient RAM for role master
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Hostname bscmaster1.cl2-mno1-rvt.lan is unique in cluster
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Hostname bscmaster1.cl2-mno1-rvt.lan is allowed
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Speed of installation disk has not yet been measured
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host is compatible with cluster platform baremetal
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host agent is compatible with the service
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: No request to skip formatting of the installation disk
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: All disks that have skipped formatting are present in the host inventory
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host is connected
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Media device is connected
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Machine Network CIDR is defined
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host belongs to all machine network CIDRs
-WARNING Host bscmaster1.cl2-mno1-rvt.lan validation: No connectivity to the majority of hosts in the cluster
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Platform PowerEdge R740 is allowed
-WARNING Host bscmaster1.cl2-mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host clock is synchronized with service
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Network latency requirement has been satisfied.
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Packet loss requirement has been satisfied.
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host has been configured with at least one default route.
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Domain name resolution for the api.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Domain name resolution for the api-int.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2-mno1.rvt.lan domain was successful or not required
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: Host subnets are not overlapping
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: No IP collisions were detected by host 036a5fd0-52e7-8154-b156-ca6303aa84b9
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: cnv is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: lso is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: lvm is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: mce is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: mtv is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: node-feature-discovery is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: nvidia-gpu is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: odf is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: openshift-ai is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: pipelines is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: serverless is disabled
-DEBUG Host bscmaster1.cl2-mno1-rvt.lan validation: servicemesh is disabled
-INFO Host bscmaster3.cl2-mno1-rvt.lan: calculated role is master
-INFO Host bscmaster3.cl2-mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
-INFO Host bscmaster1.cl2-mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
-INFO Host bscmaster2.cl2-mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
-INFO Host bscmaster1.cl2-mno1-rvt.lan: updated status from insufficient to known (Host is ready to be installed)
-INFO Host bscmaster3.cl2-mno1-rvt.lan: updated status from insufficient to known (Host is ready to be installed)
-INFO Cluster validation: All hosts in the cluster are ready to install.
+[core@bscmaster1 ~]$ journalctl -u assisted-service.service
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan systemd[1]: Starting Assisted Service container...
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Trying to pull quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c...
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Pulling image //quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c inside syste>
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Getting image source signatures
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:695b09be4793668dc04830a1eb8223d79834340d302f2bd3dc05f2e2d00e9e83
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:25c75c34b2e2b68ba9245d9cddeb6b8a0887371ed30744064f85241a75704d87
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:71f77f0cdb81c7ed29d5da602ea2b58372dbabb056581d5f94116618833f644c
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:ce93615a492f2dfee74067e43e4e8ddac3effab4787ed7505eec98c1d26fa629
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying config sha256:c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Writing manifest to image destination
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.724338071 +0000 UTC m=+17.320188248 image pull c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738 quay.io/openshi>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.798838712 +0000 UTC m=+17.394688916 container create 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=qu>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.852201125 +0000 UTC m=+17.448051334 container init 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=quay>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.856453601 +0000 UTC m=+17.452303809 container start 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=qua>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan systemd[1]: Started Assisted Service container.
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Setting log format: text" func=main.InitLogs file="/src/cmd/main.go:179"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Setting Log Level: debug" func=main.InitLogs file="/src/cmd/main.go:185"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Starting assisted-service version: 31b2ff596eefe2ae2f971a39f3f5cc67da9a5a4f" func=main.main file="/src>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Starting bm service" func=main.main file="/src/cmd/main.go:227"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Started service with OS Images [{\"openshift_version\":\"4.18.23\",\"cpu_architecture\":\"x86_64\",\"u>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Connecting to DB" func=main.setupDB file="/src/cmd/main.go:691"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Failed to connect to DB, retrying" func=main.setupDB.func1 file="/src/cmd/main.go:698" error="failed t>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Connected to DB" func=main.setupDB file="/src/cmd/main.go:715"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Initializing event stream dummy writer" func=github.com/openshift/assisted-service/internal/stream.New>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Created agent-installer-local authenticator" func=github.com/openshift/assisted-service/pkg/auth.NewAu>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Configuring CNV Operator plugin" func=github.com/openshift/assisted-service/internal/operators/cnv.New>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="DeployTarget: onprem" func=main.main file="/src/cmd/main.go:353"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Starting manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:771"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Finished manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:777"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Start automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:779"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Finished automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:785"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Starting manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:787"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Finished manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:793"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Cluster Events Uploader" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Star>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Cluster State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start">
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Host State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fi>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=debug msg="Truncating all release_images table. '0' records" func=github.com/openshift/assisted-service/internal>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=debug msg="Inserting configuration release images to the DB. '1' records" func=github.com/openshift/assisted-ser>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Deregister Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fil>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file=>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Orphan Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Starting http handler on :8090..."
+Apr 06 07:39:50 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:50Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:51 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:51Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters?with_hosts=false HTTP/1.1 1 1 map[Accept:[application>
+Apr 06 07:39:52 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:52Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:56 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:56Z" level=debug msg="HostMonitoring started at: 2026-04-06 07:39:56.034081211 +0000 UTC m=+10.172536241" func=github.com/o>
+Apr 06 07:39:56 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:56Z" level=debug msg="HostMonitoring took : 5.011508ms" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureO>
+Apr 06 07:39:57 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:57Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="Running ClusterMonitoring" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).Cl>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="ClusterMonitoring started at: 2026-04-06 07:39:58.030991366 +0000 UTC m=+12.169446398" func=github.co>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="Monitored 0 clusters" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).Cluster>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="ClusterMonitoring took : 1.451719ms" func=github.com/openshift/assisted-service/pkg/commonutils.Measu>
+Apr 06 07:40:02 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:40:02Z" level=debug msg="Request: {POST /api/assisted-install/v2/clusters HTTP/1.1 1 1 map[Accept:[application/json] Accept-En>
+Apr 06 07:40:02 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:40:02Z" level=info msg="Register cluster: cl2-mno1 with id 9c6142d2-bcde-4e84-a94f-191590f79c67 and params {\"api_vips\":[{\"i>
+Apr 06 07:40:02 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:40:02Z" level=info msg="Verifying cluster platform and user-managed-networking, got platform=baremetal and userManagedNetworki>
+lines 1-56
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan systemd[1]: Starting Assisted Service container...
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Trying to pull quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c...
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Pulling image //quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c inside syste>
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Getting image source signatures
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:695b09be4793668dc04830a1eb8223d79834340d302f2bd3dc05f2e2d00e9e83
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:25c75c34b2e2b68ba9245d9cddeb6b8a0887371ed30744064f85241a75704d87
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:71f77f0cdb81c7ed29d5da602ea2b58372dbabb056581d5f94116618833f644c
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:ce93615a492f2dfee74067e43e4e8ddac3effab4787ed7505eec98c1d26fa629
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying config sha256:c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Writing manifest to image destination
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.724338071 +0000 UTC m=+17.320188248 image pull c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738 quay.io/openshi>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.798838712 +0000 UTC m=+17.394688916 container create 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=qu>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.852201125 +0000 UTC m=+17.448051334 container init 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=quay>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.856453601 +0000 UTC m=+17.452303809 container start 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=qua>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan systemd[1]: Started Assisted Service container.
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Setting log format: text" func=main.InitLogs file="/src/cmd/main.go:179"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Setting Log Level: debug" func=main.InitLogs file="/src/cmd/main.go:185"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Starting assisted-service version: 31b2ff596eefe2ae2f971a39f3f5cc67da9a5a4f" func=main.main file="/src>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Starting bm service" func=main.main file="/src/cmd/main.go:227"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Started service with OS Images [{\"openshift_version\":\"4.18.23\",\"cpu_architecture\":\"x86_64\",\"u>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Connecting to DB" func=main.setupDB file="/src/cmd/main.go:691"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Failed to connect to DB, retrying" func=main.setupDB.func1 file="/src/cmd/main.go:698" error="failed t>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Connected to DB" func=main.setupDB file="/src/cmd/main.go:715"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Initializing event stream dummy writer" func=github.com/openshift/assisted-service/internal/stream.New>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Created agent-installer-local authenticator" func=github.com/openshift/assisted-service/pkg/auth.NewAu>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Configuring CNV Operator plugin" func=github.com/openshift/assisted-service/internal/operators/cnv.New>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="DeployTarget: onprem" func=main.main file="/src/cmd/main.go:353"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Starting manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:771"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Finished manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:777"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Start automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:779"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Finished automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:785"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Starting manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:787"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Finished manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:793"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Cluster Events Uploader" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Star>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Cluster State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start">
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Host State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fi>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=debug msg="Truncating all release_images table. '0' records" func=github.com/openshift/assisted-service/internal>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=debug msg="Inserting configuration release images to the DB. '1' records" func=github.com/openshift/assisted-ser>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Deregister Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fil>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file=>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Orphan Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Starting http handler on :8090..."
+Apr 06 07:39:50 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:50Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:51 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:51Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters?with_hosts=false HTTP/1.1 1 1 map[Accept:[application>
+Apr 06 07:39:52 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:52Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:56 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:56Z" level=debug msg="HostMonitoring started at: 2026-04-06 07:39:56.034081211 +0000 UTC m=+10.172536241" func=github.com/o>
+Apr 06 07:39:56 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:56Z" level=debug msg="HostMonitoring took : 5.011508ms" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureO>
+Apr 06 07:39:57 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:57Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="Running ClusterMonitoring" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).Cl>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="ClusterMonitoring started at: 2026-04-06 07:39:58.030991366 +0000 UTC m=+12.169446398" func=github.co>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="Monitored 0 clusters" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).Cluster>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="ClusterMonitoring took : 1.451719ms" func=github.com/openshift/assisted-service/pkg/commonutils.Measu>
+Apr 06 07:40:02 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:40:02Z" level=debug msg="Request: {POST /api/assisted-install/v2/clusters HTTP/1.1 1 1 map[Accept:[application/json] Accept-En>
+Apr 06 07:40:02 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:40:02Z" level=info msg="Register cluster: cl2-mno1 with id 9c6142d2-bcde-4e84-a94f-191590f79c67 and params {\"api_vips\":[{\"i>
+lines 1-55
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan systemd[1]: Starting Assisted Service container...
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Trying to pull quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c...
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Pulling image //quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c inside syste>
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Getting image source signatures
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:695b09be4793668dc04830a1eb8223d79834340d302f2bd3dc05f2e2d00e9e83
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:25c75c34b2e2b68ba9245d9cddeb6b8a0887371ed30744064f85241a75704d87
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:71f77f0cdb81c7ed29d5da602ea2b58372dbabb056581d5f94116618833f644c
+Apr 06 07:39:28 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying blob sha256:ce93615a492f2dfee74067e43e4e8ddac3effab4787ed7505eec98c1d26fa629
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Copying config sha256:c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: Writing manifest to image destination
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.724338071 +0000 UTC m=+17.320188248 image pull c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738 quay.io/openshi>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.798838712 +0000 UTC m=+17.394688916 container create 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=qu>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.852201125 +0000 UTC m=+17.448051334 container init 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=quay>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 2026-04-06 07:39:45.856453601 +0000 UTC m=+17.452303809 container start 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826 (image=qua>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan systemd[1]: Started Assisted Service container.
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan podman[4121]: 7fd0f6b00eb6def1bf08570f2e32417a2fba74bab39a82c55a24617a61610826
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Setting log format: text" func=main.InitLogs file="/src/cmd/main.go:179"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Setting Log Level: debug" func=main.InitLogs file="/src/cmd/main.go:185"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Starting assisted-service version: 31b2ff596eefe2ae2f971a39f3f5cc67da9a5a4f" func=main.main file="/src>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Starting bm service" func=main.main file="/src/cmd/main.go:227"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Started service with OS Images [{\"openshift_version\":\"4.18.23\",\"cpu_architecture\":\"x86_64\",\"u>
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Connecting to DB" func=main.setupDB file="/src/cmd/main.go:691"
+Apr 06 07:39:45 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:45Z" level=info msg="Failed to connect to DB, retrying" func=main.setupDB.func1 file="/src/cmd/main.go:698" error="failed t>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Connected to DB" func=main.setupDB file="/src/cmd/main.go:715"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Initializing event stream dummy writer" func=github.com/openshift/assisted-service/internal/stream.New>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Created agent-installer-local authenticator" func=github.com/openshift/assisted-service/pkg/auth.NewAu>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Configuring CNV Operator plugin" func=github.com/openshift/assisted-service/internal/operators/cnv.New>
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="DeployTarget: onprem" func=main.main file="/src/cmd/main.go:353"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Starting manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:771"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Finished manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:777"
+Apr 06 07:39:47 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:47Z" level=info msg="Start automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:779"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Finished automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:785"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Starting manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:787"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Finished manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:793"
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Cluster Events Uploader" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Star>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Cluster State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start">
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Host State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fi>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=debug msg="Truncating all release_images table. '0' records" func=github.com/openshift/assisted-service/internal>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=debug msg="Inserting configuration release images to the DB. '1' records" func=github.com/openshift/assisted-ser>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Deregister Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fil>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file=>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Started Orphan Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start>
+Apr 06 07:39:48 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:48Z" level=info msg="Starting http handler on :8090..."
+Apr 06 07:39:50 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:50Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:51 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:51Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters?with_hosts=false HTTP/1.1 1 1 map[Accept:[application>
+Apr 06 07:39:52 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:52Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:56 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:56Z" level=debug msg="HostMonitoring started at: 2026-04-06 07:39:56.034081211 +0000 UTC m=+10.172536241" func=github.com/o>
+Apr 06 07:39:56 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:56Z" level=debug msg="HostMonitoring took : 5.011508ms" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureO>
+Apr 06 07:39:57 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:57Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="Running ClusterMonitoring" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).Cl>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="ClusterMonitoring started at: 2026-04-06 07:39:58.030991366 +0000 UTC m=+12.169446398" func=github.co>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="Monitored 0 clusters" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).Cluster>
+Apr 06 07:39:58 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:39:58Z" level=debug msg="ClusterMonitoring took : 1.451719ms" func=github.com/openshift/assisted-service/pkg/commonutils.Measu>
+Apr 06 07:40:02 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:40:02Z" level=debug msg="Request: {POST /api/assisted-install/v2/clusters HTTP/1.1 1 1 map[Accept:[application/json] Accept-En>
+Apr 06 07:40:02 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:40:02Z" level=info msg="Register cluster: cl2-mno1 with id 9c6142d2-bcde-4e84-a94f-191590f79c67 and params {\"api_vips\":[{\"i>
+Apr 06 07:40:02 bscmaster1.cl2-mno1-rvt.lan service[4533]: time="2026-04-06T07:40:02Z" level=info msg="Verifying cluster platform and user-managed-networking, got platform=baremetal and userManagedNetworki>
+
+[core@bscmaster1 ~]$ journalctl -u assisted-service.service
+
+
+
+onnectivity to the majority of hosts in the cluster)
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan: calculated role is master
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan: validation 'belongs-to-majority-group' is now fixed
+DEBUG Host bscmaster2.cl2-mno1-rvt.lan: updated status from insufficient to known (Host is ready to be installed)
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan: validation 'belongs-to-majority-group' is now fixed
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan: validation 'belongs-to-majority-group' is now fixed
+DEBUG Host bscmaster1.cl2-mno1-rvt.lan: updated status from insufficient to known (Host is ready to be installed)
+DEBUG Host bscmaster3.cl2-mno1-rvt.lan: updated status from insufficient to known (Host is ready to be installed)
+ERROR Attempted to gather ClusterOperator status after wait failure: Listing ClusterOperator objects: Get "https://api.cl2-mno1.rvt.lan:6443/apis/config.openshift.io/v1/clusteroperators": dial tcp: lookup api.cl2-mno1.rvt.lan on 8.8.8.8:53: no such host
+INFO Use the following commands to gather logs from the cluster
+INFO openshift-install gather bootstrap --help
+ERROR Bootstrap failed to complete: : bootstrap process timed out: context deadline exceeded
+[root@mirror1 ocp-install]#
