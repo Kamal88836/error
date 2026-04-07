@@ -1,11 +1,173 @@
-      sha256:f8899e7b479006d8d6c14e127b1f9f65c388ce647df5d6a97842d516bca8b0e4 -> 4.18.23-x86_64-cluster-ingress-operator
-  stats: shared=4 unique=431 size=20.6GiB ratio=0.99
+[root@mirror1 ~]# cat /etc/named/zones/db.ocp.lan
+$TTL    604800
+@       IN      SOA     mirror1.cl2.mno1-rvt.lan contact.rvt.lan (
+             202506031     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+        IN      NS      mirror1.cl2.mno1-rvt.lan.
+        IN      AAAA    2405:100:200:172::34
 
-phase 0:
-  mirror1.cl2.mno1-rvt.lan:8443 ocp4/openshift4 blobs=435 mounts=0 manifests=189 shared=4
+bscmaster1.cl2.mno1-rvt.lan.         IN      A      72.2.0.13
+bscmaster2.cl2.mno1-rvt.lan.         IN      A      72.2.0.15
+bscmaster3.cl2.mno1-rvt.lan.         IN      A      72.2.0.17
 
-info: Planning completed in 37.8s
-error: unable to upload blob sha256:7f28c33dfa2e2cf8489227761301304867ad0b14853f1872d12fa6a09e09f719 to mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4: unauthorized: access to the requested resource is not authorized
-error: unable to upload blob sha256:71f77f0cdb81c7ed29d5da602ea2b58372dbabb056581d5f94116618833f644c to mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4: unauthorized: access to the requested resource is not authorized
-error: unable to upload blob sha256:25c75c34b2e2b68ba9245d9cddeb6b8a0887371ed30744064f85241a75704d87 to mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4: unauthorized: access to the requested resource is not authorized
-error: unable to upl
+; OpenShift Internal - Load balancer - MNO1-BSC
+
+api.cl2.mno1-rvt.lan.        IN    A    72.2.0.87
+api-int.cl2.mno1-rvt.lan.    IN    A    72.2.0.87
+*.apps.cl2.mno1-rvt.lan.     IN    A    72.2.0.88
+
+mirror1.cl2.mno1-rvt.lan.    IN    A    72.2.0.34
+oauth-openshift.apps.cl2.mno1-rvt.lan.               IN     A     72.2.0.88
+console-openshift-console.apps.cl2.mno1-rvt.lan.     IN     A     72.2.0.88
+
+;==============================
+
+;Control Plane Nodes - BSC Cluster
+
+bscmaster1.cl2.mno1-rvt.lan.         IN      AAAA   2405:100:200:172::13
+bscmaster2.cl2.mno1-rvt.lan.         IN      AAAA   2405:100:200:172::15
+bscmaster3.cl2.mno1-rvt.lan.         IN      AAAA   2405:100:200:172::17
+
+; OpenShift Internal - Load balancer - MNO1-BSC
+
+api.cl2.mno1-rvt.lan.                                                    IN    AAAA 2405:100:200:172::87
+api-int.cl2.mno1-rvt.lan.                                                IN    AAAA 2405:100:200:172::87
+*.apps.cl2.mno1-rvt.lan.                                                 IN    AAAA 2405:100:200:172::88
+
+
+oauth-openshift.apps.cl2.mno1-rvt.lan.               IN      AAAA     2405:100:200:172::88
+console-openshift-console.apps.cl2.mno1-rvt.lan.     IN      AAAA     2405:100:200:172::88
+mirror1.cl2.mno1-rvt.lan.                            IN      AAAA     2405:100:200:172::34
+
+[root@mirror1 ~]# cat /etc/named/zones/db.reverse
+$TTL    604800
+@       IN      SOA     mirror1.cl2.mno1-rvt.lan. contact.rvt.lan (
+             202506032     ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+
+  IN      NS      mirror1.cl2.mno1-rvt.lan.
+
+
+;Mirror Registry FQDN
+
+34     IN    PTR    mirror1.cl2.mno1-rvt.lan.
+
+; MNO CLUSTER 1
+87    IN    PTR    api.cl2.mno1-rvt.lan.
+87   IN    PTR    api-int.cl2.mno1-rvt.lan.
+13    IN    PTR    bscmaster1.cl2.mno1-rvt.lan.
+15    IN    PTR    bscmaster2.cl2.mno1-rvt.lan.
+17    IN    PTR    bscmaster3.cl2.mno1-rvt.lan.
+[root@mirror1 ~]# cat /etc/named/zones/db.reverse.ipv6
+$TTL    604800
+@       IN      SOA     mirror1.cl2.mno1-rvt.lan. contact.rvt.lan (
+             2026033123  ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800     ; Minimum
+)
+
+  IN      NS      mirror1.cl2.mno1-rvt.lan.
+
+
+;Mirror Registry FQDN
+4.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0     IN    PTR    mirror1.cl2.mno1-rvt.lan.
+
+
+; MNO CLUSTER 1
+7.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    api.cl2.mno1-rvt.lan.
+7.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    api-int.cl2.mno1-rvt.lan.
+3.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster1.cl2.mno1-rvt.lan.
+5.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster2.cl2.mno1-rvt.lan.
+7.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.7.1.0    IN    PTR    bscmaster3.cl2.mno1-rvt.lan.
+[root@mirror1 ~]# cat /etc/named.conf
+//
+// named.conf
+//
+// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
+// server as a caching only nameserver (as a localhost DNS resolver only).
+//
+// See /usr/share/doc/bind*/sample/ for example named configuration files.
+//
+
+options {
+        listen-on port 53 { 127.0.0.1; 72.2.0.34; };
+        listen-on-v6 port 53 { ::1; 2405:100:200:172::/64; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        secroots-file   "/var/named/data/named.secroots";
+        recursing-file  "/var/named/data/named.recursing";
+        allow-query     { localhost; any; };
+
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
+
+        dnssec-enable yes;
+        dnssec-validation yes;
+
+        /* Path to ISC DLV key */
+        bindkeys-file "/etc/named.root.key";
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+
+        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
+        include "/etc/crypto-policies/back-ends/bind.config";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+# Include ocp zones
+
+zone "mno1-rvt.lan" {
+    type master;
+    file "/etc/named/zones/db.ocp.lan"; # zone file path
+};
+
+zone "0.2.72.in-addr.arpa" {
+    type master;
+    file "/etc/named/zones/db.reverse";  # 72.2.0.0/22 subnet
+};
+
+zone "0.0.2.0.0.0.1.0.5.0.4.2.ip6.arpa" {
+    type master;
+    file "/etc/named/zones/db.reverse.ipv6";  # File for reverse DNS for IPv6
+};
+
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+[root@mirror1 ~]#
