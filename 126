@@ -1,3 +1,57 @@
-[root@mirror1 4_18]#  oc adm release info -o 'jsonpath={.digest}{"\n"}' mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4/openshift/release-images:4.18.23-x86_64
-sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
-[root@mirror1 4_18]#
+[core@bscmaster1 ~]$ journalctl -u assisted-service.service
+Apr 07 11:24:50 bscmaster1.cl2.mno1-rvt.lan systemd[1]: Starting Assisted Service container...
+Apr 07 11:24:50 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Trying to pull quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c...
+Apr 07 11:24:50 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Pulling image //quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c inside syste>
+Apr 07 11:24:50 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Getting image source signatures
+Apr 07 11:24:50 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Copying blob sha256:695b09be4793668dc04830a1eb8223d79834340d302f2bd3dc05f2e2d00e9e83
+Apr 07 11:24:50 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Copying blob sha256:25c75c34b2e2b68ba9245d9cddeb6b8a0887371ed30744064f85241a75704d87
+Apr 07 11:24:50 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Copying blob sha256:ce93615a492f2dfee74067e43e4e8ddac3effab4787ed7505eec98c1d26fa629
+Apr 07 11:24:50 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Copying blob sha256:71f77f0cdb81c7ed29d5da602ea2b58372dbabb056581d5f94116618833f644c
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Copying config sha256:c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan podman[4166]: Writing manifest to image destination
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan podman[4166]: 2026-04-07 11:25:20.848814278 +0000 UTC m=+30.590270062 container create 042d3d2da3a726f09866fa43208ce851ab27c6e793cfae4780babaaaaffca376 (image=qu>
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan podman[4166]: 2026-04-07 11:25:20.800646487 +0000 UTC m=+30.542102233 image pull c6875c335ca840328876be92b2dc8e500276044ba266aca2f256d5fd02fb8738 quay.io/openshi>
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan podman[4166]: 2026-04-07 11:25:20.90554173 +0000 UTC m=+30.646997517 container init 042d3d2da3a726f09866fa43208ce851ab27c6e793cfae4780babaaaaffca376 (image=quay.>
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan podman[4166]: 2026-04-07 11:25:20.909999261 +0000 UTC m=+30.651455047 container start 042d3d2da3a726f09866fa43208ce851ab27c6e793cfae4780babaaaaffca376 (image=qua>
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan systemd[1]: Started Assisted Service container.
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan podman[4166]: 042d3d2da3a726f09866fa43208ce851ab27c6e793cfae4780babaaaaffca376
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:20Z" level=info msg="Setting log format: text" func=main.InitLogs file="/src/cmd/main.go:179"
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:20Z" level=info msg="Setting Log Level: debug" func=main.InitLogs file="/src/cmd/main.go:185"
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:20Z" level=info msg="Starting assisted-service version: 31b2ff596eefe2ae2f971a39f3f5cc67da9a5a4f" func=main.main file="/src>
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:20Z" level=info msg="Starting bm service" func=main.main file="/src/cmd/main.go:227"
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:20Z" level=info msg="Started service with OS Images [{\"openshift_version\":\"4.18.23\",\"cpu_architecture\":\"x86_64\",\"u>
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:20Z" level=info msg="Connecting to DB" func=main.setupDB file="/src/cmd/main.go:691"
+Apr 07 11:25:20 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:20Z" level=info msg="Failed to connect to DB, retrying" func=main.setupDB.func1 file="/src/cmd/main.go:698" error="failed t>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Connected to DB" func=main.setupDB file="/src/cmd/main.go:715"
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Initializing event stream dummy writer" func=github.com/openshift/assisted-service/internal/stream.New>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Created agent-installer-local authenticator" func=github.com/openshift/assisted-service/pkg/auth.NewAu>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Configuring CNV Operator plugin" func=github.com/openshift/assisted-service/internal/operators/cnv.New>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="DeployTarget: onprem" func=main.main file="/src/cmd/main.go:353"
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Starting manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:771"
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Finished manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:777"
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Start automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:779"
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Finished automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:785"
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Starting manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:787"
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Finished manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:793"
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Started Cluster Events Uploader" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Star>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Started Cluster State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start">
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Started Host State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fi>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=debug msg="Truncating all release_images table. '0' records" func=github.com/openshift/assisted-service/internal>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=debug msg="Inserting configuration release images to the DB. '1' records" func=github.com/openshift/assisted-ser>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Started Deregister Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" fil>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Started Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file=>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Started Orphan Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start>
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=info msg="Starting http handler on :8090..."
+Apr 07 11:25:23 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:23Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 07 11:25:25 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:25Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 07 11:25:26 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:26Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 07 11:25:26 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:26Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters?with_hosts=false HTTP/1.1 1 1 map[Accept:[application>
+Apr 07 11:25:26 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:26Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 07 11:25:29 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:29Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 07 11:25:31 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:31Z" level=debug msg="HostMonitoring started at: 2026-04-07 11:25:31.072270129 +0000 UTC m=+10.155384209" func=github.com/o>
+Apr 07 11:25:31 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:31Z" level=debug msg="HostMonitoring took : 5.264782ms" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureO>
+Apr 07 11:25:31 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:31Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 07 11:25:31 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:31Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authoriz>
+Apr 07 11:25:32 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:32Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Accept-E>
+Apr 07 11:25:32 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:32Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters?with_hosts=false HTTP/1.1 1 1 map[Accept:[application>
+Apr 07 11:25:32 bscmaster1.cl2.mno1-rvt.lan service[4426]: time="2026-04-07T11:25:32Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Accept-E>
