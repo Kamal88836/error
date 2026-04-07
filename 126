@@ -1,177 +1,22 @@
-Got it 👍 — I can see exactly what happened from your screenshot.
-
-
----
-
-❌ Why your gather bootstrap failed
-
-From your output:
-
-failed to run remote command: Process exited with status 127
-
-👉 This means:
-
-> ❌ Installer could not execute commands on bootstrap node
-
-
-
-
----
-
-🔥 Root Cause (very clear)
-
-In agent-based installation:
-
-👉 There is NO dedicated bootstrap node
-👉 Bootstrap runs on one of the master nodes
-
-So your command:
-
---bootstrap 72.2.0.17
---master 72.2.0.15 --master 72.2.0.13 --master 72.2.0.17
-
-❌ Wrong usage (you treated bootstrap as separate)
-
-
----
-
-✅ Correct Approach for Agent-Based
-
-🧠 Key Concept
-
-Bootstrap = runs on one of the masters
-
-Usually the first master that started installation
-
-
-
----
-
-✅ Step 1: Identify bootstrap node
-
-From your masters:
-
-Try SSH:
-
-ssh core@72.2.0.13
-ssh core@72.2.0.15
-ssh core@72.2.0.17
-
-Then check on each:
-
-journalctl -b -u bootkube.service
-
-👉 The node which shows logs = bootstrap node
-
-
----
-
-✅ Step 2: Use correct gather command
-
-Example:
-
-openshift-install gather bootstrap \
-  --bootstrap 72.2.0.13 \
-  --master 72.2.0.13 \
-  --master 72.2.0.15 \
-  --master 72.2.0.17 \
-  --key ~/.ssh/id_rsa
-
-
----
-
-⚠️ Important fixes for your case
-
-1. ❌ You didn’t provide SSH key earlier
-
-Must include:
-
---key ~/.ssh/id_rsa
-
-
----
-
-2. ❌ SSH user issue
-
-Installer uses core user
-
-Test:
-
-ssh core@72.2.0.17
-
-If fails → fix SSH first
-
-
----
-
-3. ❌ Error 127 = command not found
-
-This usually happens when:
-
-SSH works BUT
-
-Required tools missing OR wrong user
-
-
-
----
-
-🚀 Faster Alternative (Recommended)
-
-Since gather is failing, do this manually 👇
-
-
----
-
-🔍 Directly check bootstrap logs
-
-SSH into one master:
-
-ssh core@72.2.0.13
-
-Then run:
-
-journalctl -b -u bootkube.service
-
-AND:
-
-journalctl -b -u kubelet
-
-
----
-
-🔥 Most important check (for your issue)
-
-Run:
-
-curl -k https://api.cl2.mno1-rvt.lan:6443/version
-
-👉 I’m 99% sure it will fail with:
-
-no route to host
-
-
----
-
-🎯 Final Diagnosis (based on everything)
-
-✔ Gather failed → secondary issue
-❌ Real issue → API VIP unreachable
-
-
----
-
-👉 What you should do NOW
-
-Run these 3 commands and send output:
-
-ping api.cl2.mno1-rvt.lan
-
-curl -k https://api.cl2.mno1-rvt.lan:6443/version
-
-ip a
-
-
----
-
-I’ll give you exact fix (network / VIP / LB) after that 👍
+[root@mirror1 ~]# tracepath  72.2.0.13
+ 1?: [LOCALHOST]                      pmtu 1500
+ 1:  bscmaster1.cl2.mno1-rvt.lan                           0.398ms reached
+ 1:  bscmaster1.cl2.mno1-rvt.lan                           0.321ms reached
+     Resume: pmtu 1500 hops 1 back 1
+[root@mirror1 ~]# tracepath  72.2.0.13
+ 1?: [LOCALHOST]                      pmtu 1500
+ 1:  bscmaster1.cl2.mno1-rvt.lan                           0.483ms reached
+ 1:  bscmaster1.cl2.mno1-rvt.lan                           0.494ms reached
+     Resume: pmtu 1500 hops 1 back 1
+[root@mirror1 ~]# tracepath  72.2.0.13
+ 1?: [LOCALHOST]                      pmtu 1500
+ 1:  bscmaster1.cl2.mno1-rvt.lan                           0.429ms reached
+ 1:  bscmaster1.cl2.mno1-rvt.lan                           0.306ms reached
+     Resume: pmtu 1500 hops 1 back 1
+[root@mirror1 ~]# tracepath  72.2.0.17
+ 1?: [LOCALHOST]                      pmtu 1500
+ 1:  bscmaster3.cl2.mno1-rvt.lan                           0.413ms reached
+ 1:  bscmaster3.cl2.mno1-rvt.lan                           0.309ms reached
+     Resume: pmtu 1500 hops 1 back 1
+[root@mirror1 ~]# nmtui
+[root@mirror1 ~]#
