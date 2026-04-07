@@ -1,21 +1,208 @@
-[core@bscmaster1 ~]$ cat /etc/containers/registries.conf
-credential-helpers = []
-short-name-mode = ""
-unqualified-search-registries = []
+Good — this output is very important 👍
+Now we can pinpoint exactly what’s happening.
 
-[[registry]]
-  location = "quay.io/openshift-release-dev/ocp-release"
-  mirror-by-digest-only = true
-  prefix = ""
 
-  [[registry.mirror]]
-    location = "mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4"
+---
 
-[[registry]]
-  location = "quay.io/openshift-release-dev/ocp-v4.0-art-dev"
-  mirror-by-digest-only = true
-  prefix = ""
+✅ What is CORRECT
 
-  [[registry.mirror]]
-    location = "mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4"
-[core@bscmaster1 ~]$
+Your /etc/containers/registries.conf shows:
+
+mirror-by-digest-only = true
+
+and mirrors:
+
+mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4
+
+👉 This means:
+
+Mirror config is applied correctly ✅
+
+Installer generated IDMS properly ✅
+
+
+
+---
+
+⚠️ WHY IT STILL PULLS FROM quay.io
+
+From your earlier log:
+
+Pulling image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:...
+
+👉 This is expected behavior, not a bug.
+
+
+---
+
+🧠 IMPORTANT CONCEPT (Most people miss this)
+
+mirror-by-digest-only = true
+
+Means:
+
+👉 ONLY images with sha256 digest will use mirror
+👉 NOT tag-based pulls
+
+
+---
+
+✔ What your log shows:
+
+@sha256:b678ade...
+
+👉 This should go to mirror
+
+BUT…
+
+
+---
+
+🚨 REAL ISSUE NOW
+
+Even though mirror is configured:
+
+👉 Node is still pulling from quay.io
+
+That means one of these is failing:
+
+
+---
+
+❌ 1. Mirror NOT reachable from node
+
+Test this:
+
+curl -k https://mirror1.cl2.mno1-rvt.lan:8443/v2/_catalog
+
+
+---
+
+❌ 2. Certificate trust issue
+
+Even though you added additionalTrustBundle, verify:
+
+ls /etc/pki/ca-trust/source/anchors/
+
+👉 Your mirror cert should be there
+
+Then:
+
+update-ca-trust extract
+
+
+---
+
+❌ 3. Image NOT present in mirror
+
+BIG possibility 🚨
+
+Test:
+
+podman pull mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4@sha256:b678adeca55d...
+
+👉 If this fails → mirror incomplete
+
+
+---
+
+❌ 4. Wrong ImageContentSource (less likely)
+
+Your config:
+
+imageDigestSources:
+
+👉 This is correct for 4.18 ✅
+
+
+---
+
+🔥 MOST LIKELY ROOT CAUSE
+
+👉 Mirror does NOT contain that digest
+
+Because:
+
+Assisted-service pulls specific images
+
+If missing → fallback to quay.io
+
+
+
+---
+
+🧪 VERIFY THIS (VERY IMPORTANT)
+
+Run on mirror node:
+
+oc adm release info quay.io/openshift-release-dev/ocp-release:4.18.23
+
+Then check:
+
+oc image info mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4:4.18.23
+
+
+---
+
+🚨 QUICK TEST (BEST DEBUG STEP)
+
+On master node:
+
+podman pull mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c
+
+
+---
+
+👉 RESULT:
+
+❌ If FAILS:
+
+👉 Mirror missing images → RE-MIRROR required
+
+✅ If SUCCESS:
+
+👉 Then issue is:
+
+trust
+
+or DNS
+
+or routing
+
+
+
+---
+
+🚀 NEXT ACTION (DO THIS NOW)
+
+Send me output of:
+
+curl -vk https://mirror1.cl2.mno1-rvt.lan:8443/v2/
+
+and
+
+podman pull mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4@sha256:b678adeca55da4267f68a641454845f38c2015458143c62d611f11790dfbf74c
+
+
+---
+
+💡 FINAL INSIGHT
+
+👉 Your setup is 90% correct
+
+The issue is now one of these 3 only:
+
+1. Mirror content missing
+
+
+2. Mirror TLS trust issue
+
+
+3. Network access issue
+
+
+
+
+---
+
+Once you send those outputs, I’ll give you exact final fix (no guesswork).
