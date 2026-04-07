@@ -1,2 +1,248 @@
-WARNING Host bscmaster3.cl2.mno1-rvt.lan: updated status from known to insufficient (Host cannot be installed due to following failing validation(s): Host couldn't synchronize with any NTP server ; No connectivity to the majority of hosts in the cluster)
-WARNING Cluster validation: The cluster has hosts that are not ready to install.
+You’re now hitting the last real blocker before install starts 👍
+This error is very common in agent-based installs.
+
+
+---
+
+🚨 PROBLEM BREAKDOWN
+
+❌ Error 1:
+
+Host couldn't synchronize with any NTP server
+
+❌ Error 2:
+
+No connectivity to the majority of hosts in the cluster
+
+
+---
+
+🧠 WHAT THIS MEANS (Simple)
+
+Issue	Meaning
+
+NTP error	Node time is wrong / unsynced
+Connectivity error	Nodes cannot reach each other (network problem)
+
+
+👉 Both must be fixed, otherwise install WILL NOT start
+
+
+---
+
+🔥 FIX 1 — NTP (MANDATORY)
+
+✔ Check current time on all nodes
+
+Run on each node:
+
+timedatectl
+
+👉 If you see:
+
+NTP synchronized: no ❌ → problem confirmed
+
+
+
+---
+
+✅ Fix using Chrony (BEST METHOD)
+
+Step 1 — Edit config
+
+sudo vi /etc/chrony.conf
+
+Add your local DNS server (recommended):
+
+server 72.2.0.34 iburst
+
+👉 Or public (if internet works):
+
+server 0.pool.ntp.org iburst
+
+
+---
+
+Step 2 — Restart
+
+systemctl restart chronyd
+
+
+---
+
+Step 3 — Verify
+
+chronyc sources -v
+
+👉 You should see ^* → synced
+
+
+---
+
+Step 4 — Force sync (if needed)
+
+chronyc makestep
+
+
+---
+
+🔥 FIX 2 — HOST CONNECTIVITY (CRITICAL)
+
+This is your main issue now.
+
+
+---
+
+✔ Test from each node
+
+From bscmaster1:
+
+ping 72.2.0.15
+ping 72.2.0.17
+
+From bscmaster2:
+
+ping 72.2.0.13
+ping 72.2.0.17
+
+
+---
+
+❌ If ping fails → root cause
+
+
+---
+
+🔍 MOST COMMON CAUSES
+
+1. 🚨 MTU ISSUE (VERY LIKELY in your case)
+
+You configured:
+
+mtu: 8500
+
+👉 This is dangerous unless FULL infra supports jumbo frames
+
+
+---
+
+✅ FIX (RECOMMENDED)
+
+Change in agent-config.yaml:
+
+mtu: 1500
+
+👉 Then regenerate ISO
+
+
+---
+
+2. 🚨 Firewall blocking
+
+On all nodes:
+
+systemctl stop firewalld
+systemctl disable firewalld
+
+
+---
+
+3. 🚨 Wrong subnet / routing
+
+Check:
+
+ip route
+
+👉 Must have:
+
+default via 72.2.0.1 dev ens1f0
+
+
+---
+
+4. 🚨 Switch / VLAN issue
+
+Ensure all nodes are in same VLAN
+
+No L3 restriction
+
+
+
+---
+
+🔥 QUICK DEBUG COMMANDS
+
+Run on each node:
+
+ping -c 3 72.2.0.13
+ping -c 3 72.2.0.15
+ping -c 3 72.2.0.17
+
+nc -zv 72.2.0.13 22
+
+
+---
+
+🚀 FASTEST WAY TO FIX EVERYTHING
+
+✔ Do this:
+
+1. Set MTU → 1500
+
+
+2. Disable firewall
+
+
+3. Fix NTP
+
+
+4. Reboot nodes
+
+
+
+
+---
+
+🔥 EXPECTED RESULT AFTER FIX
+
+You should see:
+
+Host is ready to install
+
+instead of:
+
+insufficient
+
+
+---
+
+💡 IMPORTANT INSIGHT
+
+👉 OpenShift requires:
+
+All nodes reachable (L2/L3)
+
+Time difference < 4 minutes
+
+
+Even small issues → install blocked
+
+
+---
+
+🚀 NEXT STEP
+
+After fixes, run again:
+
+openshift-install agent wait-for bootstrap-complete --log-level debug
+
+
+---
+
+If still failing, send:
+
+ip a
+ip route
+ping results between nodes
+
+I’ll pinpoint exact network issue 👍
