@@ -1,56 +1,238 @@
-[root@mirror1 4_18]# export OCP_RELEASE="4.18.23"
-[root@mirror1 4_18]# export LOCAL_REGISTRY="mirror1.cl2.mno1-rvt.lan:8443"
-[root@mirror1 4_18]# export LOCAL_REPOSITORY="ocp4/openshift4"
-[root@mirror1 4_18]# export PRODUCT_REPO="openshift-release-dev"
-[root@mirror1 4_18]# export LOCAL_SECRET_JSON="/root/4_18/"
-imageset-config.yaml  mirror_000001.tar     pull-secret.json      root/                 working-dir/
-[root@mirror1 4_18]# export LOCAL_SECRET_JSON="/root/4_18/pull-secret.json"
-[root@mirror1 4_18]# export RELEASE_NAME="ocp-release"
-[root@mirror1 4_18]# export ARCHITECTURE="x86_64"
-[root@mirror1 4_18]# oc mirror -c imageset-config.yaml --from file://root/4_18  docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
-2026/04/07 14:13:29  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/04/07 14:13:29  [INFO]   : ⚙️  setting up the environment for you...
-2026/04/07 14:13:29  [INFO]   : ⚙️  environment version: 4.21.0-202603181245.p2.g12f1b06.assembly.stream.el9-12f1b06
-2026/04/07 14:13:29  [INFO]   : 🔀 workflow mode: diskToMirror
-2026/04/07 14:13:29  [ERROR]  : [Executor] no tar archives matching "mirror_[0-9]{6}\\.tar" found in "root/4_18"
-[root@mirror1 4_18]# oc mirror -c imageset-config.yaml --from file:///root/4_18  docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
-2026/04/07 14:13:36  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/04/07 14:13:36  [INFO]   : ⚙️  setting up the environment for you...
-2026/04/07 14:13:36  [INFO]   : ⚙️  environment version: 4.21.0-202603181245.p2.g12f1b06.assembly.stream.el9-12f1b06
-2026/04/07 14:13:36  [INFO]   : 🔀 workflow mode: diskToMirror
-2026/04/07 14:13:36  [ERROR]  : [Executor] checking registry "mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4" access: failed to authenticate: unable to retrieve auth token: invalid username/password: unauthorized: access to the requested resource is not authorized
-[root@mirror1 4_18]#
-[root@mirror1 4_18]#
-[root@mirror1 4_18]#
-[root@mirror1 4_18]#
-[root@mirror1 4_18]# cat pull-secret.json
- {
-      "auths": {
-        "mirror1.cl2.mno1-rvt.lan:8443": {
-            "auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="
-        },
-        "cloud.openshift.com": {
-          "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
-        },
-        "quay.io": {
-          "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
-        },
-        "registry.connect.redhat.com": {
-          "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
-        },
-        "registry.redhat.io": {
-          "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
-        }
-      }
-    }
+Perfect — now we clearly see the exact issue 👍
+You are very close, only one blocker remains.
 
-[root@mirror1 4_18]#
-[root@mirror1 4_18]#
-[root@mirror1 4_18]#
-[root@mirror1 4_18]# oc mirror -c imageset-config.yaml --from file:///root/4_18  docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
-2026/04/07 14:14:08  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/04/07 14:14:08  [INFO]   : ⚙️  setting up the environment for you...
-2026/04/07 14:14:08  [INFO]   : ⚙️  environment version: 4.21.0-202603181245.p2.g12f1b06.assembly.stream.el9-12f1b06
-2026/04/07 14:14:08  [INFO]   : 🔀 workflow mode: diskToMirror
-2026/04/07 14:14:09  [ERROR]  : [Executor] checking registry "mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4" access: failed to authenticate: unable to retrieve auth token: invalid username/password: unauthorized: access to the requested resource is not authorized
-[root@mirror1 4_18]#
+
+---
+
+❗ ROOT CAUSE (100% CONFIRMED)
+
+invalid username/password: unauthorized
+
+👉 Your mirror registry auth is wrong
+
+Even though your pull-secret.json has:
+
+"mirror1.cl2.mno1-rvt.lan:8443": {
+  "auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="
+}
+
+👉 This is NOT being accepted by your Quay registry
+
+
+---
+
+🔍 DECODE YOUR AUTH (VERY IMPORTANT)
+
+echo c3lzYWRtaW46c2Ftc3VuZzEyMw== | base64 -d
+
+👉 This equals:
+
+sysadmin:samsung123
+
+
+---
+
+❌ PROBLEM
+
+👉 Either:
+
+password is wrong
+
+OR user has no repo permission
+
+OR Quay requires robot account / token
+
+OR auth file not being used by oc mirror
+
+
+
+---
+
+✅ STEP-BY-STEP FIX
+
+
+---
+
+🔥 STEP 1 — TEST LOGIN MANUALLY
+
+Run:
+
+podman login mirror1.cl2.mno1-rvt.lan:8443
+
+👉 Enter:
+
+username: sysadmin
+
+password: samsung123
+
+
+
+---
+
+❗ RESULT?
+
+👉 If FAILS ❌
+
+→ credentials WRONG → fix in Quay UI
+
+👉 If SUCCESS ✅
+
+→ then issue is with pull-secret usage
+
+
+---
+
+🔥 STEP 2 — VERIFY ACCESS TO REPO
+
+Even if login works, check:
+
+podman pull mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4:latest
+
+👉 If unauthorized → user lacks permission
+
+
+---
+
+🔥 STEP 3 — FIX QUAY PERMISSIONS
+
+Go to your Quay UI:
+
+👉 Repository: ocp4/openshift4
+
+Ensure:
+
+user sysadmin has:
+
+✅ Read
+
+✅ Write
+
+
+
+OR better:
+
+👉 Create robot account (recommended)
+
+
+---
+
+🔥 STEP 4 — CREATE ROBOT ACCOUNT (BEST PRACTICE)
+
+In Quay:
+
+Create robot:
+ocp4+mirror
+
+Give permission to repo
+
+
+You’ll get:
+
+"auth": "base64(robot$ocp4+mirror:token)"
+
+
+---
+
+🔥 STEP 5 — UPDATE pull-secret.json
+
+Replace this:
+
+"mirror1.cl2.mno1-rvt.lan:8443": {
+  "auth": "OLD"
+}
+
+With new robot auth
+
+
+---
+
+🔥 STEP 6 — FORCE oc TO USE SECRET
+
+Very important 👇
+
+export REGISTRY_AUTH_FILE=/root/4_18/pull-secret.json
+
+
+---
+
+🔥 STEP 7 — RETRY MIRROR PUSH
+
+oc mirror -c imageset-config.yaml \
+  --from file:///root/4_18 \
+  docker://mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4 \
+  --v2
+
+
+---
+
+❗ ALSO FIX THIS SMALL ISSUE
+
+Earlier error:
+
+no tar archives found in root/4_18
+
+👉 Correct path must be:
+
+file:///root/4_18
+
+✔ You already fixed it 👍
+
+
+---
+
+🧠 IMPORTANT INSIGHT
+
+Right now:
+
+oc-mirror disk → OK
+
+push to registry → ❌ FAIL
+
+
+👉 So cluster cannot pull → bootstrap fails
+
+
+---
+
+🚨 FINAL CHECK
+
+After fix, verify:
+
+podman pull mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4:4.18.23
+
+✔ Must work
+
+
+---
+
+💥 WHY YOUR INSTALL IS FAILING
+
+From earlier logs:
+
+Trying to pull quay.io/openshift-release-dev/ocp-v4.0-art-dev
+
+👉 Because mirror push failed
+👉 Cluster falls back to internet
+👉 unauthorized → bootstrap timeout
+
+
+---
+
+🎯 FINAL OUTCOME AFTER FIX
+
+✔ Mirror push works
+✔ Nodes pull from local registry
+✔ No quay.io access
+✔ Bootstrap completes
+
+
+---
+
+👍 NEXT STEP
+
+If still failing, send me:
+
+podman login output
+podman pull output
+
+I’ll pinpoint exact issue in seconds.
