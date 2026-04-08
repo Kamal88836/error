@@ -1,160 +1,209 @@
-[root@bastion ~]# oc get pods -n openshift-ovn-kubernetes -o wide | grep master1
-ovnkube-node-gn2hz                       7/8     CrashLoopBackOff   192 (<invalid> ago)   27d   20.1.30.150   master1.airtelvvt.samsungbsc.local   <none>           <none>
-[root@bastion ~]# oc describe pod ovnkube-node-gn2hz -n openshift-ovn-kubernetes
+Good, now we have clear root cause 👇
 
-t directory volume)
-    Path:          /var/lib/cni/bin
-    HostPathType:
-  host-cni-netd:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/run/multus/cni/net.d
-    HostPathType:
-  host-var-lib-cni-networks-ovn-kubernetes:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/lib/cni/networks/ovn-k8s-cni-overlay
-    HostPathType:
-  ovnkube-config:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      ovnkube-config
-    Optional:  false
-  env-overrides:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      env-overrides
-    Optional:  true
-  ovn-node-metrics-cert:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  ovn-node-metrics-cert
-    Optional:    true
-  ovnkube-script-lib:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      ovnkube-script-lib
-    Optional:  false
-  kube-api-access-b5fwd:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-QoS Class:                   Burstable
-Node-Selectors:              kubernetes.io/os=linux
-Tolerations:                 op=Exists
-Events:
-  Type     Reason   Age                              From     Message
-  ----     ------   ----                             ----     -------
-  Normal   Pulled   <invalid> (x27 over <invalid>)   kubelet  Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:262f1b8efb59a9b0703511df74ad3de9343f04eb20ce3f9892e315381352e020" already present on machine
-  Warning  BackOff  <invalid> (x772 over <invalid>)  kubelet  Back-off restarting failed container ovnkube-controller in pod ovnkube-node-gn2hz_openshift-ovn-kubernetes(b0ce4ec9-4121-438e-89b3-ef788b232078)
-[root@bastion ~]# oc get no
-NAME                                 STATUS   ROLES                         AGE   VERSION
-master1.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   27d   v1.31.9
-master2.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   27d   v1.31.9
-master3.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   27d   v1.31.9
-[root@bastion ~]# ssh core@master1.airtelvvt.samsungbsc.local
-Red Hat Enterprise Linux CoreOS 418.94.202506030254-0
-  Part of OpenShift 4.18, RHCOS is a Kubernetes-native operating system
-  managed by the Machine Config Operator (`clusteroperator/machine-config`).
-
-WARNING: Direct SSH access to machines is not recommended; instead,
-make configuration changes via `machineconfig` objects:
-  https://docs.openshift.com/container-platform/4.18/architecture/architecture-rhcos.html
 
 ---
-Last login: Tue Apr  7 21:47:22 2026 from 20.1.30.148
-[systemd]
-Failed Units: 2
-  chronyd.service
-  NetworkManager-wait-online.service
-[core@master1 ~]$ ls -l /var/run/ovn-kubernetes/cni/
-ls: cannot open directory '/var/run/ovn-kubernetes/cni/': Permission denied
-[core@master1 ~]$ sudo ls -l /var/run/ovn-kubernetes/cni/
-total 0
-srw-------. 1 root root 0 Mar 17 10:17 ovn-cni-server.sock
-[core@master1 ~]$ journalctl -u kubelet -f
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  >
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:21.833100   72131 kuberuntime_sandbox.go:72] "Failed to create sandbox for pod" err=<
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-cmp0-7fdfb79d7b-zg67s_cnf-bscf_739b799a-0520-4765-a196-0d4776cba1b3_0(2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6): error adding pod cnf-bscf_bscf9901-cmp0-7fdfb79d7b-zg67s to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6" Netns:"/var/run/netns/58e45be1-3913-4c5e-913d-9c184ae2161a" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-cmp0-7fdfb79d7b-zg67s;K8S_POD_INFRA_CONTAINER_ID=2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6;K8S_POD_UID=739b799a-0520-4765-a196-0d4776cba1b3" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s] networking: [cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s/739b799a-0520-4765-a196-0d4776cba1b3:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  > pod="cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s"
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:21.833134   72131 kuberuntime_manager.go:1170] "CreatePodSandbox for pod failed" err=<
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-cmp0-7fdfb79d7b-zg67s_cnf-bscf_739b799a-0520-4765-a196-0d4776cba1b3_0(2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6): error adding pod cnf-bscf_bscf9901-cmp0-7fdfb79d7b-zg67s to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6" Netns:"/var/run/netns/58e45be1-3913-4c5e-913d-9c184ae2161a" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-cmp0-7fdfb79d7b-zg67s;K8S_POD_INFRA_CONTAINER_ID=2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6;K8S_POD_UID=739b799a-0520-4765-a196-0d4776cba1b3" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s] networking: [cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s/739b799a-0520-4765-a196-0d4776cba1b3:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  > pod="cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s"
-Apr 09 10:17:21 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:21.833239   72131 pod_workers.go:1301] "Error syncing pod, skipping" err="failed to \"CreatePodSandbox\" for \"bscf9901-cmp0-7fdfb79d7b-zg67s_cnf-bscf(739b799a-0520-4765-a196-0d4776cba1b3)\" with CreatePodSandboxError: \"Failed to create sandbox for pod \\\"bscf9901-cmp0-7fdfb79d7b-zg67s_cnf-bscf(739b799a-0520-4765-a196-0d4776cba1b3)\\\": rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-cmp0-7fdfb79d7b-zg67s_cnf-bscf_739b799a-0520-4765-a196-0d4776cba1b3_0(2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6): error adding pod cnf-bscf_bscf9901-cmp0-7fdfb79d7b-zg67s to CNI network \\\"multus-cni-network\\\": plugin type=\\\"multus-shim\\\" name=\\\"multus-cni-network\\\" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:\\\"2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6\\\" Netns:\\\"/var/run/netns/58e45be1-3913-4c5e-913d-9c184ae2161a\\\" IfName:\\\"eth0\\\" Args:\\\"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-cmp0-7fdfb79d7b-zg67s;K8S_POD_INFRA_CONTAINER_ID=2a24880435272658cba30fcb404474e23d8b98ff8096d2196dae0c91b0377dd6;K8S_POD_UID=739b799a-0520-4765-a196-0d4776cba1b3\\\" Path:\\\"\\\" ERRORED: error configuring pod [cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s] networking: [cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s/739b799a-0520-4765-a196-0d4776cba1b3:ovn-kubernetes]: error adding container to network \\\"ovn-kubernetes\\\": failed to send CNI request: Post \\\"http://dummy/\\\": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused\\n': StdinData: {\\\"binDir\\\":\\\"/var/lib/cni/bin\\\",\\\"clusterNetwork\\\":\\\"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf\\\",\\\"cniVersion\\\":\\\"0.3.1\\\",\\\"daemonSocketDir\\\":\\\"/run/multus/socket\\\",\\\"globalNamespaces\\\":\\\"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv\\\",\\\"logLevel\\\":\\\"verbose\\\",\\\"logToStderr\\\":true,\\\"name\\\":\\\"multus-cni-network\\\",\\\"namespaceIsolation\\\":true,\\\"type\\\":\\\"multus-shim\\\"}\"" pod="cnf-bscf/bscf9901-cmp0-7fdfb79d7b-zg67s" podUID="739b799a-0520-4765-a196-0d4776cba1b3"
-Apr 09 10:17:25 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: I0409 10:17:25.867830   72131 util.go:30] "No sandbox for pod can be found. Need to start a new one" pod="cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w"
-Apr 09 10:17:25 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: I0409 10:17:25.868374   72131 util.go:30] "No sandbox for pod can be found. Need to start a new one" pod="cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z"
-Apr 09 10:17:25 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: I0409 10:17:25.869249   72131 util.go:30] "No sandbox for pod can be found. Need to start a new one" pod="cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w"
-Apr 09 10:17:25 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: I0409 10:17:25.869606   72131 util.go:30] "No sandbox for pod can be found. Need to start a new one" pod="cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z"
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:26.520305   72131 log.go:32] "RunPodSandbox from runtime service failed" err=<
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bpp2-6d947d9f95-tdw9z_cnf-bscf_686e5e28-c88c-4be6-a560-ee227819f552_0(36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd): error adding pod cnf-bscf_bscf9901-bpp2-6d947d9f95-tdw9z to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd" Netns:"/var/run/netns/c43854e4-0c93-4397-89da-57305f459731" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bpp2-6d947d9f95-tdw9z;K8S_POD_INFRA_CONTAINER_ID=36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd;K8S_POD_UID=686e5e28-c88c-4be6-a560-ee227819f552" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z] networking: [cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z/686e5e28-c88c-4be6-a560-ee227819f552:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  >
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:26.520644   72131 kuberuntime_sandbox.go:72] "Failed to create sandbox for pod" err=<
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bpp2-6d947d9f95-tdw9z_cnf-bscf_686e5e28-c88c-4be6-a560-ee227819f552_0(36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd): error adding pod cnf-bscf_bscf9901-bpp2-6d947d9f95-tdw9z to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd" Netns:"/var/run/netns/c43854e4-0c93-4397-89da-57305f459731" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bpp2-6d947d9f95-tdw9z;K8S_POD_INFRA_CONTAINER_ID=36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd;K8S_POD_UID=686e5e28-c88c-4be6-a560-ee227819f552" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z] networking: [cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z/686e5e28-c88c-4be6-a560-ee227819f552:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  > pod="cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z"
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:26.521360   72131 kuberuntime_manager.go:1170] "CreatePodSandbox for pod failed" err=<
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bpp2-6d947d9f95-tdw9z_cnf-bscf_686e5e28-c88c-4be6-a560-ee227819f552_0(36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd): error adding pod cnf-bscf_bscf9901-bpp2-6d947d9f95-tdw9z to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd" Netns:"/var/run/netns/c43854e4-0c93-4397-89da-57305f459731" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bpp2-6d947d9f95-tdw9z;K8S_POD_INFRA_CONTAINER_ID=36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd;K8S_POD_UID=686e5e28-c88c-4be6-a560-ee227819f552" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z] networking: [cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z/686e5e28-c88c-4be6-a560-ee227819f552:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  > pod="cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z"
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:26.521999   72131 pod_workers.go:1301] "Error syncing pod, skipping" err="failed to \"CreatePodSandbox\" for \"bscf9901-bpp2-6d947d9f95-tdw9z_cnf-bscf(686e5e28-c88c-4be6-a560-ee227819f552)\" with CreatePodSandboxError: \"Failed to create sandbox for pod \\\"bscf9901-bpp2-6d947d9f95-tdw9z_cnf-bscf(686e5e28-c88c-4be6-a560-ee227819f552)\\\": rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bpp2-6d947d9f95-tdw9z_cnf-bscf_686e5e28-c88c-4be6-a560-ee227819f552_0(36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd): error adding pod cnf-bscf_bscf9901-bpp2-6d947d9f95-tdw9z to CNI network \\\"multus-cni-network\\\": plugin type=\\\"multus-shim\\\" name=\\\"multus-cni-network\\\" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:\\\"36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd\\\" Netns:\\\"/var/run/netns/c43854e4-0c93-4397-89da-57305f459731\\\" IfName:\\\"eth0\\\" Args:\\\"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bpp2-6d947d9f95-tdw9z;K8S_POD_INFRA_CONTAINER_ID=36ce9600fbf572957d61dca00210d78200807013e9a9925df360c32c1d4baccd;K8S_POD_UID=686e5e28-c88c-4be6-a560-ee227819f552\\\" Path:\\\"\\\" ERRORED: error configuring pod [cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z] networking: [cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z/686e5e28-c88c-4be6-a560-ee227819f552:ovn-kubernetes]: error adding container to network \\\"ovn-kubernetes\\\": failed to send CNI request: Post \\\"http://dummy/\\\": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused\\n': StdinData: {\\\"binDir\\\":\\\"/var/lib/cni/bin\\\",\\\"clusterNetwork\\\":\\\"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf\\\",\\\"cniVersion\\\":\\\"0.3.1\\\",\\\"daemonSocketDir\\\":\\\"/run/multus/socket\\\",\\\"globalNamespaces\\\":\\\"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv\\\",\\\"logLevel\\\":\\\"verbose\\\",\\\"logToStderr\\\":true,\\\"name\\\":\\\"multus-cni-network\\\",\\\"namespaceIsolation\\\":true,\\\"type\\\":\\\"multus-shim\\\"}\"" pod="cnf-bscf/bscf9901-bpp2-6d947d9f95-tdw9z" podUID="686e5e28-c88c-4be6-a560-ee227819f552"
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:26.553361   72131 log.go:32] "RunPodSandbox from runtime service failed" err=<
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-m5g9w_cnf-bscf_8c83a607-7a42-452d-9962-e7471dee2b40_0(152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-m5g9w to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69" Netns:"/var/run/netns/89533b73-ab09-47ae-98ce-cee81678b252" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-m5g9w;K8S_POD_INFRA_CONTAINER_ID=152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69;K8S_POD_UID=8c83a607-7a42-452d-9962-e7471dee2b40" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w/8c83a607-7a42-452d-9962-e7471dee2b40:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  >
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:26.553422   72131 kuberuntime_sandbox.go:72] "Failed to create sandbox for pod" err=<
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-m5g9w_cnf-bscf_8c83a607-7a42-452d-9962-e7471dee2b40_0(152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-m5g9w to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69" Netns:"/var/run/netns/89533b73-ab09-47ae-98ce-cee81678b252" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-m5g9w;K8S_POD_INFRA_CONTAINER_ID=152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69;K8S_POD_UID=8c83a607-7a42-452d-9962-e7471dee2b40" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w/8c83a607-7a42-452d-9962-e7471dee2b40:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  > pod="cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w"
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:26.553448   72131 kuberuntime_manager.go:1170] "CreatePodSandbox for pod failed" err=<
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-m5g9w_cnf-bscf_8c83a607-7a42-452d-9962-e7471dee2b40_0(152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-m5g9w to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69" Netns:"/var/run/netns/89533b73-ab09-47ae-98ce-cee81678b252" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-m5g9w;K8S_POD_INFRA_CONTAINER_ID=152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69;K8S_POD_UID=8c83a607-7a42-452d-9962-e7471dee2b40" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w/8c83a607-7a42-452d-9962-e7471dee2b40:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  > pod="cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w"
-Apr 09 10:17:26 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:26.553522   72131 pod_workers.go:1301] "Error syncing pod, skipping" err="failed to \"CreatePodSandbox\" for \"bscf9901-bip0-76c5df9f8b-m5g9w_cnf-bscf(8c83a607-7a42-452d-9962-e7471dee2b40)\" with CreatePodSandboxError: \"Failed to create sandbox for pod \\\"bscf9901-bip0-76c5df9f8b-m5g9w_cnf-bscf(8c83a607-7a42-452d-9962-e7471dee2b40)\\\": rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-m5g9w_cnf-bscf_8c83a607-7a42-452d-9962-e7471dee2b40_0(152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-m5g9w to CNI network \\\"multus-cni-network\\\": plugin type=\\\"multus-shim\\\" name=\\\"multus-cni-network\\\" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:\\\"152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69\\\" Netns:\\\"/var/run/netns/89533b73-ab09-47ae-98ce-cee81678b252\\\" IfName:\\\"eth0\\\" Args:\\\"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-m5g9w;K8S_POD_INFRA_CONTAINER_ID=152e251444fec5885337a25b15995773007f62aab4cae694cd664310f9835d69;K8S_POD_UID=8c83a607-7a42-452d-9962-e7471dee2b40\\\" Path:\\\"\\\" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w/8c83a607-7a42-452d-9962-e7471dee2b40:ovn-kubernetes]: error adding container to network \\\"ovn-kubernetes\\\": failed to send CNI request: Post \\\"http://dummy/\\\": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused\\n': StdinData: {\\\"binDir\\\":\\\"/var/lib/cni/bin\\\",\\\"clusterNetwork\\\":\\\"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf\\\",\\\"cniVersion\\\":\\\"0.3.1\\\",\\\"daemonSocketDir\\\":\\\"/run/multus/socket\\\",\\\"globalNamespaces\\\":\\\"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv\\\",\\\"logLevel\\\":\\\"verbose\\\",\\\"logToStderr\\\":true,\\\"name\\\":\\\"multus-cni-network\\\",\\\"namespaceIsolation\\\":true,\\\"type\\\":\\\"multus-shim\\\"}\"" pod="cnf-bscf/bscf9901-bip0-76c5df9f8b-m5g9w" podUID="8c83a607-7a42-452d-9962-e7471dee2b40"
-Apr 09 10:17:27 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: I0409 10:17:27.928208   72131 util.go:30] "No sandbox for pod can be found. Need to start a new one" pod="cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj"
-Apr 09 10:17:27 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: I0409 10:17:27.929010   72131 util.go:30] "No sandbox for pod can be found. Need to start a new one" pod="cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj"
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:28.667652   72131 log.go:32] "RunPodSandbox from runtime service failed" err=<
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bpp0-574b6c59dc-qfnpj_cnf-bscf_51e4c058-2b44-4dc0-b141-3c04de04088d_0(354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962): error adding pod cnf-bscf_bscf9901-bpp0-574b6c59dc-qfnpj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962" Netns:"/var/run/netns/cc163070-82a4-42c5-874d-5532290faa39" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bpp0-574b6c59dc-qfnpj;K8S_POD_INFRA_CONTAINER_ID=354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962;K8S_POD_UID=51e4c058-2b44-4dc0-b141-3c04de04088d" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj] networking: [cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj/51e4c058-2b44-4dc0-b141-3c04de04088d:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  >
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:28.667743   72131 kuberuntime_sandbox.go:72] "Failed to create sandbox for pod" err=<
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bpp0-574b6c59dc-qfnpj_cnf-bscf_51e4c058-2b44-4dc0-b141-3c04de04088d_0(354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962): error adding pod cnf-bscf_bscf9901-bpp0-574b6c59dc-qfnpj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962" Netns:"/var/run/netns/cc163070-82a4-42c5-874d-5532290faa39" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bpp0-574b6c59dc-qfnpj;K8S_POD_INFRA_CONTAINER_ID=354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962;K8S_POD_UID=51e4c058-2b44-4dc0-b141-3c04de04088d" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj] networking: [cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj/51e4c058-2b44-4dc0-b141-3c04de04088d:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  > pod="cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj"
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:28.667776   72131 kuberuntime_manager.go:1170] "CreatePodSandbox for pod failed" err=<
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bpp0-574b6c59dc-qfnpj_cnf-bscf_51e4c058-2b44-4dc0-b141-3c04de04088d_0(354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962): error adding pod cnf-bscf_bscf9901-bpp0-574b6c59dc-qfnpj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962" Netns:"/var/run/netns/cc163070-82a4-42c5-874d-5532290faa39" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bpp0-574b6c59dc-qfnpj;K8S_POD_INFRA_CONTAINER_ID=354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962;K8S_POD_UID=51e4c058-2b44-4dc0-b141-3c04de04088d" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj] networking: [cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj/51e4c058-2b44-4dc0-b141-3c04de04088d:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:         ': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]:  > pod="cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj"
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:28.667886   72131 pod_workers.go:1301] "Error syncing pod, skipping" err="failed to \"CreatePodSandbox\" for \"bscf9901-bpp0-574b6c59dc-qfnpj_cnf-bscf(51e4c058-2b44-4dc0-b141-3c04de04088d)\" with CreatePodSandboxError: \"Failed to create sandbox for pod \\\"bscf9901-bpp0-574b6c59dc-qfnpj_cnf-bscf(51e4c058-2b44-4dc0-b141-3c04de04088d)\\\": rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bpp0-574b6c59dc-qfnpj_cnf-bscf_51e4c058-2b44-4dc0-b141-3c04de04088d_0(354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962): error adding pod cnf-bscf_bscf9901-bpp0-574b6c59dc-qfnpj to CNI network \\\"multus-cni-network\\\": plugin type=\\\"multus-shim\\\" name=\\\"multus-cni-network\\\" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:\\\"354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962\\\" Netns:\\\"/var/run/netns/cc163070-82a4-42c5-874d-5532290faa39\\\" IfName:\\\"eth0\\\" Args:\\\"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bpp0-574b6c59dc-qfnpj;K8S_POD_INFRA_CONTAINER_ID=354677650cd2ac7c433fc1b455daba9f9066bb87c1133009d5d62490a4e68962;K8S_POD_UID=51e4c058-2b44-4dc0-b141-3c04de04088d\\\" Path:\\\"\\\" ERRORED: error configuring pod [cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj] networking: [cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj/51e4c058-2b44-4dc0-b141-3c04de04088d:ovn-kubernetes]: error adding container to network \\\"ovn-kubernetes\\\": failed to send CNI request: Post \\\"http://dummy/\\\": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused\\n': StdinData: {\\\"binDir\\\":\\\"/var/lib/cni/bin\\\",\\\"clusterNetwork\\\":\\\"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf\\\",\\\"cniVersion\\\":\\\"0.3.1\\\",\\\"daemonSocketDir\\\":\\\"/run/multus/socket\\\",\\\"globalNamespaces\\\":\\\"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv\\\",\\\"logLevel\\\":\\\"verbose\\\",\\\"logToStderr\\\":true,\\\"name\\\":\\\"multus-cni-network\\\",\\\"namespaceIsolation\\\":true,\\\"type\\\":\\\"multus-shim\\\"}\"" pod="cnf-bscf/bscf9901-bpp0-574b6c59dc-qfnpj" podUID="51e4c058-2b44-4dc0-b141-3c04de04088d"
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: I0409 10:17:28.873447   72131 scope.go:117] "RemoveContainer" containerID="eaa04e8959014f019cf4257a0a0a8869b7ee809875a54c1a60fff2a7e7e3cf02"
-Apr 09 10:17:28 master1.airtelvvt.samsungbsc.local kubenswrapper[72131]: E0409 10:17:28.873823   72131 pod_workers.go:1301] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"ovnkube-controller\" with CrashLoopBackOff: \"back-off 5m0s restarting failed container=ovnkube-controller pod=ovnkube-node-gn2hz_openshift-ovn-kubernetes(b0ce4ec9-4121-438e-89b3-ef788b232078)\"" pod="openshift-ovn-kubernetes/ovnkube-node-gn2hz" podUID="b0ce4ec9-4121-438e-89b3-ef788b232078"
-^C
-[core@master1 ~]$
-logout
-Connection to master1.airtelvvt.samsungbsc.local closed.
-[root@bastion ~]# oc get sriovnetworknodestate -n openshift-sriov-network-operator
-NAME                                 SYNC STATUS   DESIRED SYNC STATE   CURRENT SYNC STATE   AGE
-master1.airtelvvt.samsungbsc.local   Succeeded     Idle                 Idle                 27d
-master2.airtelvvt.samsungbsc.local   Succeeded     Idle                 Idle                 27d
-master3.airtelvvt.samsungbsc.local   Succeeded     Idle                 Idle                 27d
-[root@bastion ~]# ssh core@master1.airtelvvt.samsungbsc.local
-Red Hat Enterprise Linux CoreOS 418.94.202506030254-0
-  Part of OpenShift 4.18, RHCOS is a Kubernetes-native operating system
-  managed by the Machine Config Operator (`clusteroperator/machine-config`).
 
-WARNING: Direct SSH access to machines is not recommended; instead,
-make configuration changes via `machineconfig` objects:
-  https://docs.openshift.com/container-platform/4.18/architecture/architecture-rhcos.html
+🚨 Final Root Cause
+
+👉 On node master1:
+
+ovnkube-node pod = CrashLoopBackOff
+
+Failing container = ovnkube-controller
+
+Result:
+
+ovn-cni-server.sock → exists BUT not responding
+→ connection refused
+
+
+💥 That’s why:
+
+Multus fails
+
+Pod sandbox fails
+
+All CNF pods stuck in PodInitializing
+
+
 
 ---
-Last login: Thu Apr  9 10:16:48 2026 from 20.1.30.148
-[systemd]
-Failed Units: 2
+
+⚠️ Important Observation (VERY KEY)
+
+From node:
+
+Failed Units:
   chronyd.service
   NetworkManager-wait-online.service
-[core@master1 ~]$
-[core@master1 ~]$
-[core@master1 ~]$
-[core@master1 ~]$
-[core@master1 ~]$ sudo systemctl restart kubelet
-[core@master1 ~]$
+
+👉 This is NOT normal in OpenShift
+
+💥 This strongly indicates:
+
+> ❌ Node network stack is unstable / not fully initialized
+
+
+
+And OVN depends heavily on:
+
+NetworkManager
+
+OVS (Open vSwitch)
+
+proper node networking
+
+
+
+---
+
+🎯 Actual Problem Chain
+
+NetworkManager issue
+   ↓
+OVS / OVN not healthy
+   ↓
+ovnkube-controller crashes
+   ↓
+ovn-cni-server not responding
+   ↓
+CNI add fails
+   ↓
+Pods stuck Pending
+
+
+---
+
+🔍 Next Step (CRITICAL DEBUG)
+
+We need exact reason why ovnkube-controller is crashing.
+
+👉 Run this:
+
+oc logs ovnkube-node-gn2hz -n openshift-ovn-kubernetes -c ovnkube-controller
+
+AND also:
+
+oc logs ovnkube-node-gn2hz -n openshift-ovn-kubernetes -c ovn-controller
+
+
+---
+
+🛠️ Immediate Recovery (Try This First)
+
+✅ 1. Restart OVN pod cleanly
+
+oc delete pod ovnkube-node-gn2hz -n openshift-ovn-kubernetes
+
+👉 Wait and check:
+
+oc get pods -n openshift-ovn-kubernetes -o wide | grep master1
+
+
+---
+
+✅ 2. Check OVS on node
+
+SSH to node:
+
+sudo systemctl status openvswitch
+
+If not active:
+
+sudo systemctl restart openvswitch
+
+
+---
+
+✅ 3. Fix NetworkManager issue
+
+Check:
+
+sudo systemctl status NetworkManager
+
+If not healthy:
+
+sudo systemctl restart NetworkManager
+
+
+---
+
+⚠️ 4. chronyd failure (important for CNF)
+
+sudo systemctl status chronyd
+
+If failed:
+
+sudo systemctl restart chronyd
+
+👉 Time sync issues can break OVN/OVS TLS & cluster comms
+
+
+---
+
+✅ 5. Verify OVN socket again
+
+sudo ls -l /var/run/ovn-kubernetes/cni/
+
+Then test:
+
+sudo ss -lx | grep ovn
+
+👉 Socket should be actively listening
+
+
+---
+
+💡 What I Suspect (Based on your logs)
+
+Most likely one of these:
+
+🔴 1. OVS is down / broken
+
+common after reboot or NIC issue
+
+
+🔴 2. NetworkManager stuck
+
+you already saw:
+
+NetworkManager-wait-online.service FAILED
+
+
+🔴 3. Time sync issue
+
+chronyd failed → affects cluster certs / OVN
+
+
+
+---
+
+✅ Expected Healthy State
+
+After fix:
+
+oc get pods -n openshift-ovn-kubernetes
+
+👉 Should be:
+
+ovnkube-node-xxxxx   8/8 Running
+
+
+---
+
+🚀 Once fixed
+
+Immediately your CNF pods will:
+
+Pending → ContainerCreating → Running
+
+
+---
+
+👉 If still not resolved
+
+Share this output:
+
+oc logs ovnkube-node-gn2hz -n openshift-ovn-kubernetes -c ovnkube-controller
+
+That will give exact crash reason (100% root cause) and I’ll pinpoint it precisely.
