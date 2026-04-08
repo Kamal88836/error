@@ -1,176 +1,223 @@
-[root@bastion ~]# oc describe po bscf9901-bip0-76c5df9f8b-mvp9x
-Name:             bscf9901-bip0-76c5df9f8b-mvp9x
-Namespace:        cnf-bscf
-Priority:         0
-Service Account:  bscf-sa
-Node:             master1.airtelvvt.samsungbsc.local/20.1.30.150
-Start Time:       Thu, 09 Apr 2026 16:44:10 +0900
-Labels:           app=bscf9901-bip0
-                  component=bscf9901-bip
-                  nename=bscf9901
-                  pod-template-hash=76c5df9f8b
-                  release=bscf9901
-                  restart-on-reboot=true
-                  tech=gsm
-Annotations:      k8s.v1.cni.cncf.io/networks:
-                    [ { "name": "bscf-bh0c-nad", "interface": "bh0_0" }, { "name": "bscf-bh0c-nad", "interface": "bh1" }, { "name": "bscf-bh0c-1-nad", "interf...
-                  openshift.io/scc: privileged
-Status:           Pending
-IP:
-IPs:              <none>
-Controlled By:    ReplicaSet/bscf9901-bip0-76c5df9f8b
-Init Containers:
-  sleepy:
-    Container ID:
-    Image:         nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-      echo Sleepy has come && sleep 15
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:     500m
-      memory:  256Mi
-    Requests:
-      cpu:        500m
-      memory:     256Mi
-    Environment:  <none>
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vvn9l (ro)
-  install:
-    Container ID:
-    Image:         nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-    Args:
-      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:                                500m
-      memory:                             8Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Requests:
-      cpu:                                500m
-      memory:                             8Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Environment:                          <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf9901-bip-log (rw)
-      /mnt/storage/shared from bscf9901-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vvn9l (ro)
-Containers:
-  bip:
-    Container ID:
-    Image:         nwharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR25ABSCUTDC42_RA01
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:                                22
-      memory:                             8Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Requests:
-      cpu:                                22
-      memory:                             8Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Liveness:                             http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:  Asia/Seoul
-    Mounts:
-      /etc/config from env (rw)
-      /etc/podnetinfo from podnetinfo (ro)
-      /mnt/storage/log from bscf9901-bip-log (rw)
-      /mnt/storage/shared from bscf9901-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vvn9l (ro)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   False
-  Initialized                 False
-  Ready                       False
-  ContainersReady             False
-  PodScheduled                True
-Volumes:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf9901-bip0
-    Optional:  false
-  bscf9901-bip-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf9901-log-pvc
-    ReadOnly:   false
-  bscf9901-bip-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf9901-shared-pvc
-    ReadOnly:   false
-  kube-api-access-vvn9l:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-  podnetinfo:
-    Type:  DownwardAPI (a volume populated by information about the pod)
-    Items:
-      metadata.labels -> labels
-      metadata.annotations -> annotations
-QoS Class:       Guaranteed
-Node-Selectors:  <none>
-Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type     Reason                  Age        From               Message
-  ----     ------                  ----       ----               -------
-  Normal   Scheduled               127m       default-scheduler  Successfully assigned cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x to master1.airtelvvt.samsungbsc.local
-  Warning  RetryFailed             112m       ovnk-controlplane  failed to reconcile and retried 15 times for object: &Pod{ObjectMeta:{bscf9901-bip0-76c5df9f8b-mvp9x bscf9901-bip0-76c5df9f8b- cnf-bscf  27f5ea02-d6aa-4dbd-958c-645a8c3b7b35 16754068 0 2026-04-08 07:41:10 +0000 UTC <nil> <nil> map[app:bscf9901-bip0 component:bscf9901-bip nename:bscf9901 pod-template-hash:76c5df9f8b release:bscf9901 restart-on-reboot:true tech:gsm] map[k8s.v1.cni.cncf.io/networks:[ { "name": "bscf-bh0c-nad", "interface": "bh0_0" }, { "name": "bscf-bh0c-nad", "interface": "bh1" }, { "name": "bscf-bh0c-1-nad", "interface": "bh0_1" }, { "name": "bscf-bh0c-1-nad", "interface": "bh2" }, { "name": "bscf-bond-nad", "interface": "bh0" } ] openshift.io/scc:privileged] [{apps/v1 ReplicaSet bscf9901-bip0-76c5df9f8b 41e66dba-d3d9-4755-aa23-df7b1682855b 0xc00fc9e737 0xc00fc9e738}] [] []},Spec:PodSpec{Volumes:[]Volume{},Containers:[]Container{Container{Name:bip,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR25ABSCUTDC42_RA01,Command:[],Args:[],WorkingDir:,Ports:[]ContainerPort{},Env:[]EnvVar{},Resources:ResourceRequirements{Limits:ResourceList{cpu: {{22 0} {<nil>} 22 DecimalSI},memory: {{8589934592 0} {<nil>}  BinarySI},openshift.io/pci_sriov_net_bh0c: {{2 0} {<nil>} 2 DecimalSI},openshift.io/pci_sriov_net_bh0c_1: {{2 0} {<nil>} 2 DecimalSI},},Requests:ResourceList{cpu: {{22 0} {<nil>} 22 DecimalSI},memory: {{8589934592 0} {<nil>}  BinarySI},openshift.io/pci_sriov_net_bh0c: {{2 0} {<nil>} 2 DecimalSI},openshift.io/pci_sriov_net_bh0c_1: {{2 0} {<nil>} 2 DecimalSI},},Claims:[]ResourceClaim{},},VolumeMounts:[]VolumeMount{},LivenessProbe:&Probe{ProbeHandler:ProbeHandler{Exec:nil,HTTPGet:&HTTPGetAction{Path:/bip_live_probe,Port:{0 8080 },Host:,Scheme:HTTP,HTTPHeaders:[]HTTPHeader{},},TCPSocket:nil,GRPC:nil,},InitialDelaySeconds:30,TimeoutSeconds:5,PeriodSeconds:10,SuccessThreshold:1,FailureThreshold:5,TerminationGracePeriodSeconds:nil,},ReadinessProbe:&Probe{ProbeHandler:ProbeHandler{Exec:nil,HTTPGet:&HTTPGetAction{Path:/swm_read_probe,Port:{0 8080 },Host:,Scheme:HTTP,HTTPHeaders:[]HTTPHeader{},},TCPSocket:nil,GRPC:nil,},InitialDelaySeconds:30,TimeoutSeconds:5,PeriodSeconds:10,SuccessThreshold:1,FailureThreshold:5,TerminationGracePeriodSeconds:nil,},Lifecycle:&Lifecycle{PostStart:nil,PreStop:&LifecycleHandler{Exec:&ExecAction{Command:[/bin/bash -c /pkg/bin/preStop.sh],},HTTPGet:nil,TCPSocket:nil,Sleep:nil,},},TerminationMessagePath:/dev/termination-log,ImagePullPolicy:IfNotPresent,SecurityContext:&SecurityContext{Capabilities:&Capabilities{Add:[NET_ADMIN NET_RAW DAC_READ_SEARCH IPC_LOCK SYS_MODULE SYS_RAWIO SYS_PTRACE SYS_ADMIN SYS_NICE SYS_TIME SYS_TTY_CONFIG SYS_RESOURCE SYS_CHROOT SETFCAP],Drop:[],},Privileged:*false,SELinuxOptions:&SELinuxOptions{User:,Role:,Type:,Level:s0,},RunAsUser:*2101,RunAsNonRoot:*true,ReadOnlyRootFilesystem:nil,AllowPrivilegeEscalation:nil,RunAsGroup:*2001,ProcMount:nil,WindowsOptions:nil,SeccompProfile:nil,AppArmorProfile:nil,},Stdin:false,StdinOnce:false,TTY:false,EnvFrom:[]EnvFromSource{},TerminationMessagePolicy:File,VolumeDevices:[]VolumeDevice{},StartupProbe:nil,ResizePolicy:[]ContainerResizePolicy{},RestartPolicy:nil,},},RestartPolicy:Always,TerminationGracePeriodSeconds:*8,ActiveDeadlineSeconds:nil,DNSPolicy:ClusterFirst,NodeSelector:map[string]string{},ServiceAccountName:bscf-sa,DeprecatedServiceAccount:bscf-sa,NodeName:master1.airtelvvt.samsungbsc.local,HostNetwork:false,HostPID:false,HostIPC:false,SecurityContext:&PodSecurityContext{SELinuxOptions:&SELinuxOptions{User:,Role:,Type:,Level:s0,},RunAsUser:*2101,RunAsNonRoot:nil,SupplementalGroups:[],FSGroup:*2001,RunAsGroup:*2001,Sysctls:[]Sysctl{},WindowsOptions:nil,FSGroupChangePolicy:nil,SeccompProfile:nil,AppArmorProfile:nil,SupplementalGroupsPolicy:nil,},ImagePullSecrets:[]LocalObjectReference{},Hostname:,Subdomain:,Affinity:&Affinity{NodeAffinity:&NodeAffinity{RequiredDuringSchedulingIgnoredDuringExecution:&NodeSelector{NodeSelectorTerms:[]NodeSelectorTerm{NodeSelectorTerm{MatchExpressions:[]NodeSelectorRequirement{NodeSelectorRequirement{Key:kubernetes.io/hostname,Operator:In,Values:[master1.airtelvvt.samsungbsc.local],},},MatchFields:[]NodeSelectorRequirement{},},},},PreferredDuringSchedulingIgnoredDuringExecution:[]PreferredSchedulingTerm{},},PodAffinity:nil,PodAntiAffinity:nil,},SchedulerName:default-scheduler,InitContainers:[]Container{Container{Name:sleepy,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01,Command:[sh -c echo Sleepy has come && sleep 15],Args:[],WorkingDir:,Ports:[]ContainerPort{},Env:[]EnvVar{},Resources:ResourceRequirements{Limits:ResourceList{cpu: {{500 -3} {<nil>} 500m DecimalSI},memory: {{268435456 0} {<nil>}  BinarySI},},Requests:ResourceList{cpu: {{500 -3} {<nil>} 500m DecimalSI},memory: {{268435456 0} {<nil>}  BinarySI},},Claims:[]ResourceClaim{},},VolumeMounts:[]VolumeMount{VolumeMount{Name:kube-api-access-vvn9l,ReadOnly:true,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},},LivenessProbe:nil,ReadinessProbe:nil,Lifecycle:nil,TerminationMessagePath:/dev/termination-log,ImagePullPolicy:IfNotPresent,SecurityContext:&SecurityContext{Capabilities:nil,Privileged:nil,SELinuxOptions:nil,RunAsUser:nil,RunAsNonRoot:*true,ReadOnlyRootFilesystem:nil,AllowPrivilegeEscalation:nil,RunAsGroup:nil,ProcMount:nil,WindowsOptions:nil,SeccompProfile:nil,AppArmorProfile:nil,},Stdin:false,StdinOnce:false,TTY:false,EnvFrom:[]EnvFromSource{},TerminationMessagePolicy:File,VolumeDevices:[]VolumeDevice{},StartupProbe:nil,ResizePolicy:[]ContainerResizePolicy{},RestartPolicy:nil,},Container{Name:install,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01,Command:[sh -c],Args:[find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi],WorkingDir:,Ports:[]ContainerPort{},Env:[]EnvVar{},Resources:ResourceRequirements{Limits:ResourceList{cpu: {{500 -3} {<nil>} 500m DecimalSI},memory: {{8589934592 0} {<nil>}  BinarySI},openshift.io/pci_sriov_net_bh0c: {{2 0} {<nil>} 2 DecimalSI},openshift.io/pci_sriov_net_bh0c_1: {{2 0} {<nil>} 2 DecimalSI},},Requests:ResourceList{cpu: {{500 -3} {<nil>} 500m DecimalSI},memory: {{8589934592 0} {<nil>}  BinarySI},openshift.io/pci_sriov_net_bh0c: {{2 0} {<nil>} 2 DecimalSI},openshift.io/pci_sriov_net_bh0c_1: {{2 0} {<nil>} 2 DecimalSI},},Claims:[]ResourceClaim{},},VolumeMounts:[]VolumeMount{VolumeMount{Name:env,ReadOnly:false,MountPath:/etc/config,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},VolumeMount{Name:bscf9901-bip-shared,ReadOnly:false,MountPath:/mnt/storage/shared,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},VolumeMount{Name:bscf9901-bip-log,ReadOnly:false,MountPath:/mnt/storage/log,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},VolumeMount{Name:kube-api-access-vvn9l,ReadOnly:true,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},},LivenessProbe:nil,ReadinessProbe:nil,Lifecycle:nil,TerminationMessagePath:/dev/termination-log,ImagePullPolicy:IfNotPresent,SecurityContext:&SecurityContext{Capabilities:nil,Privileged:*true,SELinuxOptions:nil,RunAsUser:*0,RunAsNonRoot:nil,ReadOnlyRootFilesystem:nil,AllowPrivilegeEscalation:nil,RunAsGroup:nil,ProcMount:nil,WindowsOptions:nil,SeccompProfile:nil,AppArmorProfile:nil,},Stdin:false,StdinOnce:false,TTY:false,EnvFrom:[]EnvFromSource{},TerminationMessagePolicy:File,VolumeDevices:[]VolumeDevice{},StartupProbe:nil,ResizePolicy:[]ContainerResizePolicy{},RestartPolicy:nil,},},AutomountServiceAccountToken:nil,Tolerations:[]Toleration{Toleration{Key:node.kubernetes.io/not-ready,Operator:Exists,Value:,Effect:NoExecute,TolerationSeconds:*300,},Toleration{Key:node.kubernetes.io/unreachable,Operator:Exists,Value:,Effect:NoExecute,TolerationSeconds:*300,},Toleration{Key:node.kubernetes.io/memory-pressure,Operator:Exists,Value:,Effect:NoSchedule,TolerationSeconds:nil,},},HostAliases:[]HostAlias{},PriorityClassName:,Priority:*0,DNSConfig:nil,ShareProcessNamespace:nil,ReadinessGates:[]PodReadinessGate{},RuntimeClassName:nil,EnableServiceLinks:*true,PreemptionPolicy:*PreemptLowerPriority,Overhead:ResourceList{},TopologySpreadConstraints:[]TopologySpreadConstraint{},EphemeralContainers:[]EphemeralContainer{},SetHostnameAsFQDN:nil,OS:nil,HostUsers:nil,SchedulingGates:[]PodSchedulingGate{},ResourceClaims:[]PodResourceClaim{},},Status:PodStatus{Phase:Pending,Conditions:[]PodCondition{PodCondition{Type:PodReadyToStartContainers,Status:False,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-09 07:44:10 +0000 UTC,Reason:,Message:,},PodCondition{Type:Initialized,Status:False,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-09 07:44:10 +0000 UTC,Reason:ContainersNotInitialized,Message:containers with incomplete status: [sleepy install],},PodCondition{Type:Ready,Status:False,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-09 07:44:10 +0000 UTC,Reason:ContainersNotReady,Message:containers with unready status: [bip],},PodCondition{Type:ContainersReady,Status:False,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-09 07:44:10 +0000 UTC,Reason:ContainersNotReady,Message:containers with unready status: [bip],},PodCondition{Type:PodScheduled,Status:True,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-08 07:41:10 +0000 UTC,Reason:,Message:,},},Message:,Reason:,HostIP:20.1.30.150,PodIP:,StartTime:2026-04-09 07:44:10 +0000 UTC,ContainerStatuses:[]ContainerStatus{ContainerStatus{Name:bip,State:ContainerState{Waiting:&ContainerStateWaiting{Reason:PodInitializing,Message:,},Running:nil,Terminated:nil,},LastTerminationState:ContainerState{Waiting:nil,Running:nil,Terminated:nil,},Ready:false,RestartCount:0,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR25ABSCUTDC42_RA01,ImageID:,ContainerID:,Started:*false,AllocatedResources:ResourceList{},Resources:nil,VolumeMounts:[]VolumeMountStatus{VolumeMountStatus{Name:env,MountPath:/etc/config,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:bscf9901-bip-log,MountPath:/mnt/storage/log,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:bscf9901-bip-shared,MountPath:/mnt/storage/shared,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:kube-api-access-vvn9l,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,ReadOnly:true,RecursiveReadOnly:*Disabled,},VolumeMountStatus{Name:podnetinfo,MountPath:/etc/podnetinfo,ReadOnly:true,RecursiveReadOnly:*Disabled,},},User:nil,AllocatedResourcesStatus:[]ResourceStatus{},},},QOSClass:Guaranteed,InitContainerStatuses:[]ContainerStatus{ContainerStatus{Name:sleepy,State:ContainerState{Waiting:&ContainerStateWaiting{Reason:PodInitializing,Message:,},Running:nil,Terminated:nil,},LastTerminationState:ContainerState{Waiting:nil,Running:nil,Terminated:nil,},Ready:false,RestartCount:0,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01,ImageID:,ContainerID:,Started:*false,AllocatedResources:ResourceList{},Resources:nil,VolumeMounts:[]VolumeMountStatus{VolumeMountStatus{Name:kube-api-access-vvn9l,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,ReadOnly:true,RecursiveReadOnly:*Disabled,},},User:nil,AllocatedResourcesStatus:[]ResourceStatus{},},ContainerStatus{Name:install,State:ContainerState{Waiting:&ContainerStateWaiting{Reason:PodInitializing,Message:,},Running:nil,Terminated:nil,},LastTerminationState:ContainerState{Waiting:nil,Running:nil,Terminated:nil,},Ready:false,RestartCount:0,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01,ImageID:,ContainerID:,Started:*false,AllocatedResources:ResourceList{},Resources:nil,VolumeMounts:[]VolumeMountStatus{VolumeMountStatus{Name:env,MountPath:/etc/config,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:bscf9901-bip-shared,MountPath:/mnt/storage/shared,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:bscf9901-bip-log,MountPath:/mnt/storage/log,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:kube-api-access-vvn9l,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,ReadOnly:true,RecursiveReadOnly:*Disabled,},},User:nil,AllocatedResourcesStatus:[]ResourceStatus{},},},NominatedNodeName:,PodIPs:[]PodIP{},EphemeralContainerStatuses:[]ContainerStatus{},Resize:,ResourceClaimStatuses:[]PodResourceClaimStatus{},HostIPs:[]HostIP{HostIP{IP:20.1.30.150,},HostIP{IP:2010:0:0:30::10,},},},}
-  Warning  RetryFailed             111m       ovnk-controlplane  failed to reconcile and retried 15 times for object: &Pod{ObjectMeta:{bscf9901-bip0-76c5df9f8b-mvp9x bscf9901-bip0-76c5df9f8b- cnf-bscf  27f5ea02-d6aa-4dbd-958c-645a8c3b7b35 16754068 0 2026-04-08 07:41:10 +0000 UTC <nil> <nil> map[app:bscf9901-bip0 component:bscf9901-bip nename:bscf9901 pod-template-hash:76c5df9f8b release:bscf9901 restart-on-reboot:true tech:gsm] map[k8s.v1.cni.cncf.io/networks:[ { "name": "bscf-bh0c-nad", "interface": "bh0_0" }, { "name": "bscf-bh0c-nad", "interface": "bh1" }, { "name": "bscf-bh0c-1-nad", "interface": "bh0_1" }, { "name": "bscf-bh0c-1-nad", "interface": "bh2" }, { "name": "bscf-bond-nad", "interface": "bh0" } ] openshift.io/scc:privileged] [{apps/v1 ReplicaSet bscf9901-bip0-76c5df9f8b 41e66dba-d3d9-4755-aa23-df7b1682855b 0xc008615307 0xc008615308}] [] []},Spec:PodSpec{Volumes:[]Volume{},Containers:[]Container{Container{Name:bip,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR25ABSCUTDC42_RA01,Command:[],Args:[],WorkingDir:,Ports:[]ContainerPort{},Env:[]EnvVar{},Resources:ResourceRequirements{Limits:ResourceList{cpu: {{22 0} {<nil>} 22 DecimalSI},memory: {{8589934592 0} {<nil>}  BinarySI},openshift.io/pci_sriov_net_bh0c: {{2 0} {<nil>} 2 DecimalSI},openshift.io/pci_sriov_net_bh0c_1: {{2 0} {<nil>} 2 DecimalSI},},Requests:ResourceList{cpu: {{22 0} {<nil>} 22 DecimalSI},memory: {{8589934592 0} {<nil>}  BinarySI},openshift.io/pci_sriov_net_bh0c: {{2 0} {<nil>} 2 DecimalSI},openshift.io/pci_sriov_net_bh0c_1: {{2 0} {<nil>} 2 DecimalSI},},Claims:[]ResourceClaim{},},VolumeMounts:[]VolumeMount{},LivenessProbe:&Probe{ProbeHandler:ProbeHandler{Exec:nil,HTTPGet:&HTTPGetAction{Path:/bip_live_probe,Port:{0 8080 },Host:,Scheme:HTTP,HTTPHeaders:[]HTTPHeader{},},TCPSocket:nil,GRPC:nil,},InitialDelaySeconds:30,TimeoutSeconds:5,PeriodSeconds:10,SuccessThreshold:1,FailureThreshold:5,TerminationGracePeriodSeconds:nil,},ReadinessProbe:&Probe{ProbeHandler:ProbeHandler{Exec:nil,HTTPGet:&HTTPGetAction{Path:/swm_read_probe,Port:{0 8080 },Host:,Scheme:HTTP,HTTPHeaders:[]HTTPHeader{},},TCPSocket:nil,GRPC:nil,},InitialDelaySeconds:30,TimeoutSeconds:5,PeriodSeconds:10,SuccessThreshold:1,FailureThreshold:5,TerminationGracePeriodSeconds:nil,},Lifecycle:&Lifecycle{PostStart:nil,PreStop:&LifecycleHandler{Exec:&ExecAction{Command:[/bin/bash -c /pkg/bin/preStop.sh],},HTTPGet:nil,TCPSocket:nil,Sleep:nil,},},TerminationMessagePath:/dev/termination-log,ImagePullPolicy:IfNotPresent,SecurityContext:&SecurityContext{Capabilities:&Capabilities{Add:[NET_ADMIN NET_RAW DAC_READ_SEARCH IPC_LOCK SYS_MODULE SYS_RAWIO SYS_PTRACE SYS_ADMIN SYS_NICE SYS_TIME SYS_TTY_CONFIG SYS_RESOURCE SYS_CHROOT SETFCAP],Drop:[],},Privileged:*false,SELinuxOptions:&SELinuxOptions{User:,Role:,Type:,Level:s0,},RunAsUser:*2101,RunAsNonRoot:*true,ReadOnlyRootFilesystem:nil,AllowPrivilegeEscalation:nil,RunAsGroup:*2001,ProcMount:nil,WindowsOptions:nil,SeccompProfile:nil,AppArmorProfile:nil,},Stdin:false,StdinOnce:false,TTY:false,EnvFrom:[]EnvFromSource{},TerminationMessagePolicy:File,VolumeDevices:[]VolumeDevice{},StartupProbe:nil,ResizePolicy:[]ContainerResizePolicy{},RestartPolicy:nil,},},RestartPolicy:Always,TerminationGracePeriodSeconds:*8,ActiveDeadlineSeconds:nil,DNSPolicy:ClusterFirst,NodeSelector:map[string]string{},ServiceAccountName:bscf-sa,DeprecatedServiceAccount:bscf-sa,NodeName:master1.airtelvvt.samsungbsc.local,HostNetwork:false,HostPID:false,HostIPC:false,SecurityContext:&PodSecurityContext{SELinuxOptions:&SELinuxOptions{User:,Role:,Type:,Level:s0,},RunAsUser:*2101,RunAsNonRoot:nil,SupplementalGroups:[],FSGroup:*2001,RunAsGroup:*2001,Sysctls:[]Sysctl{},WindowsOptions:nil,FSGroupChangePolicy:nil,SeccompProfile:nil,AppArmorProfile:nil,SupplementalGroupsPolicy:nil,},ImagePullSecrets:[]LocalObjectReference{},Hostname:,Subdomain:,Affinity:&Affinity{NodeAffinity:&NodeAffinity{RequiredDuringSchedulingIgnoredDuringExecution:&NodeSelector{NodeSelectorTerms:[]NodeSelectorTerm{NodeSelectorTerm{MatchExpressions:[]NodeSelectorRequirement{NodeSelectorRequirement{Key:kubernetes.io/hostname,Operator:In,Values:[master1.airtelvvt.samsungbsc.local],},},MatchFields:[]NodeSelectorRequirement{},},},},PreferredDuringSchedulingIgnoredDuringExecution:[]PreferredSchedulingTerm{},},PodAffinity:nil,PodAntiAffinity:nil,},SchedulerName:default-scheduler,InitContainers:[]Container{Container{Name:sleepy,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01,Command:[sh -c echo Sleepy has come && sleep 15],Args:[],WorkingDir:,Ports:[]ContainerPort{},Env:[]EnvVar{},Resources:ResourceRequirements{Limits:ResourceList{cpu: {{500 -3} {<nil>} 500m DecimalSI},memory: {{268435456 0} {<nil>}  BinarySI},},Requests:ResourceList{cpu: {{500 -3} {<nil>} 500m DecimalSI},memory: {{268435456 0} {<nil>}  BinarySI},},Claims:[]ResourceClaim{},},VolumeMounts:[]VolumeMount{VolumeMount{Name:kube-api-access-vvn9l,ReadOnly:true,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},},LivenessProbe:nil,ReadinessProbe:nil,Lifecycle:nil,TerminationMessagePath:/dev/termination-log,ImagePullPolicy:IfNotPresent,SecurityContext:&SecurityContext{Capabilities:nil,Privileged:nil,SELinuxOptions:nil,RunAsUser:nil,RunAsNonRoot:*true,ReadOnlyRootFilesystem:nil,AllowPrivilegeEscalation:nil,RunAsGroup:nil,ProcMount:nil,WindowsOptions:nil,SeccompProfile:nil,AppArmorProfile:nil,},Stdin:false,StdinOnce:false,TTY:false,EnvFrom:[]EnvFromSource{},TerminationMessagePolicy:File,VolumeDevices:[]VolumeDevice{},StartupProbe:nil,ResizePolicy:[]ContainerResizePolicy{},RestartPolicy:nil,},Container{Name:install,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01,Command:[sh -c],Args:[find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi],WorkingDir:,Ports:[]ContainerPort{},Env:[]EnvVar{},Resources:ResourceRequirements{Limits:ResourceList{cpu: {{500 -3} {<nil>} 500m DecimalSI},memory: {{8589934592 0} {<nil>}  BinarySI},openshift.io/pci_sriov_net_bh0c: {{2 0} {<nil>} 2 DecimalSI},openshift.io/pci_sriov_net_bh0c_1: {{2 0} {<nil>} 2 DecimalSI},},Requests:ResourceList{cpu: {{500 -3} {<nil>} 500m DecimalSI},memory: {{8589934592 0} {<nil>}  BinarySI},openshift.io/pci_sriov_net_bh0c: {{2 0} {<nil>} 2 DecimalSI},openshift.io/pci_sriov_net_bh0c_1: {{2 0} {<nil>} 2 DecimalSI},},Claims:[]ResourceClaim{},},VolumeMounts:[]VolumeMount{VolumeMount{Name:env,ReadOnly:false,MountPath:/etc/config,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},VolumeMount{Name:bscf9901-bip-shared,ReadOnly:false,MountPath:/mnt/storage/shared,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},VolumeMount{Name:bscf9901-bip-log,ReadOnly:false,MountPath:/mnt/storage/log,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},VolumeMount{Name:kube-api-access-vvn9l,ReadOnly:true,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,SubPath:,MountPropagation:nil,SubPathExpr:,RecursiveReadOnly:nil,},},LivenessProbe:nil,ReadinessProbe:nil,Lifecycle:nil,TerminationMessagePath:/dev/termination-log,ImagePullPolicy:IfNotPresent,SecurityContext:&SecurityContext{Capabilities:nil,Privileged:*true,SELinuxOptions:nil,RunAsUser:*0,RunAsNonRoot:nil,ReadOnlyRootFilesystem:nil,AllowPrivilegeEscalation:nil,RunAsGroup:nil,ProcMount:nil,WindowsOptions:nil,SeccompProfile:nil,AppArmorProfile:nil,},Stdin:false,StdinOnce:false,TTY:false,EnvFrom:[]EnvFromSource{},TerminationMessagePolicy:File,VolumeDevices:[]VolumeDevice{},StartupProbe:nil,ResizePolicy:[]ContainerResizePolicy{},RestartPolicy:nil,},},AutomountServiceAccountToken:nil,Tolerations:[]Toleration{Toleration{Key:node.kubernetes.io/not-ready,Operator:Exists,Value:,Effect:NoExecute,TolerationSeconds:*300,},Toleration{Key:node.kubernetes.io/unreachable,Operator:Exists,Value:,Effect:NoExecute,TolerationSeconds:*300,},Toleration{Key:node.kubernetes.io/memory-pressure,Operator:Exists,Value:,Effect:NoSchedule,TolerationSeconds:nil,},},HostAliases:[]HostAlias{},PriorityClassName:,Priority:*0,DNSConfig:nil,ShareProcessNamespace:nil,ReadinessGates:[]PodReadinessGate{},RuntimeClassName:nil,EnableServiceLinks:*true,PreemptionPolicy:*PreemptLowerPriority,Overhead:ResourceList{},TopologySpreadConstraints:[]TopologySpreadConstraint{},EphemeralContainers:[]EphemeralContainer{},SetHostnameAsFQDN:nil,OS:nil,HostUsers:nil,SchedulingGates:[]PodSchedulingGate{},ResourceClaims:[]PodResourceClaim{},},Status:PodStatus{Phase:Pending,Conditions:[]PodCondition{PodCondition{Type:PodReadyToStartContainers,Status:False,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-09 07:44:10 +0000 UTC,Reason:,Message:,},PodCondition{Type:Initialized,Status:False,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-09 07:44:10 +0000 UTC,Reason:ContainersNotInitialized,Message:containers with incomplete status: [sleepy install],},PodCondition{Type:Ready,Status:False,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-09 07:44:10 +0000 UTC,Reason:ContainersNotReady,Message:containers with unready status: [bip],},PodCondition{Type:ContainersReady,Status:False,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-09 07:44:10 +0000 UTC,Reason:ContainersNotReady,Message:containers with unready status: [bip],},PodCondition{Type:PodScheduled,Status:True,LastProbeTime:0001-01-01 00:00:00 +0000 UTC,LastTransitionTime:2026-04-08 07:41:10 +0000 UTC,Reason:,Message:,},},Message:,Reason:,HostIP:20.1.30.150,PodIP:,StartTime:2026-04-09 07:44:10 +0000 UTC,ContainerStatuses:[]ContainerStatus{ContainerStatus{Name:bip,State:ContainerState{Waiting:&ContainerStateWaiting{Reason:PodInitializing,Message:,},Running:nil,Terminated:nil,},LastTerminationState:ContainerState{Waiting:nil,Running:nil,Terminated:nil,},Ready:false,RestartCount:0,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR25ABSCUTDC42_RA01,ImageID:,ContainerID:,Started:*false,AllocatedResources:ResourceList{},Resources:nil,VolumeMounts:[]VolumeMountStatus{VolumeMountStatus{Name:env,MountPath:/etc/config,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:bscf9901-bip-log,MountPath:/mnt/storage/log,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:bscf9901-bip-shared,MountPath:/mnt/storage/shared,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:kube-api-access-vvn9l,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,ReadOnly:true,RecursiveReadOnly:*Disabled,},VolumeMountStatus{Name:podnetinfo,MountPath:/etc/podnetinfo,ReadOnly:true,RecursiveReadOnly:*Disabled,},},User:nil,AllocatedResourcesStatus:[]ResourceStatus{},},},QOSClass:Guaranteed,InitContainerStatuses:[]ContainerStatus{ContainerStatus{Name:sleepy,State:ContainerState{Waiting:&ContainerStateWaiting{Reason:PodInitializing,Message:,},Running:nil,Terminated:nil,},LastTerminationState:ContainerState{Waiting:nil,Running:nil,Terminated:nil,},Ready:false,RestartCount:0,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01,ImageID:,ContainerID:,Started:*false,AllocatedResources:ResourceList{},Resources:nil,VolumeMounts:[]VolumeMountStatus{VolumeMountStatus{Name:kube-api-access-vvn9l,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,ReadOnly:true,RecursiveReadOnly:*Disabled,},},User:nil,AllocatedResourcesStatus:[]ResourceStatus{},},ContainerStatus{Name:install,State:ContainerState{Waiting:&ContainerStateWaiting{Reason:PodInitializing,Message:,},Running:nil,Terminated:nil,},LastTerminationState:ContainerState{Waiting:nil,Running:nil,Terminated:nil,},Ready:false,RestartCount:0,Image:nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01,ImageID:,ContainerID:,Started:*false,AllocatedResources:ResourceList{},Resources:nil,VolumeMounts:[]VolumeMountStatus{VolumeMountStatus{Name:env,MountPath:/etc/config,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:bscf9901-bip-shared,MountPath:/mnt/storage/shared,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:bscf9901-bip-log,MountPath:/mnt/storage/log,ReadOnly:false,RecursiveReadOnly:nil,},VolumeMountStatus{Name:kube-api-access-vvn9l,MountPath:/var/run/secrets/kubernetes.io/serviceaccount,ReadOnly:true,RecursiveReadOnly:*Disabled,},},User:nil,AllocatedResourcesStatus:[]ResourceStatus{},},},NominatedNodeName:,PodIPs:[]PodIP{},EphemeralContainerStatuses:[]ContainerStatus{},Resize:,ResourceClaimStatuses:[]PodResourceClaimStatus{},HostIPs:[]HostIP{HostIP{IP:20.1.30.150,},HostIP{IP:2010:0:0:30::10,},},},}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(87ffbef5dd3b2386a5600afa70b15e46de605fb5da839b31bdbf1acab48736dc): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"87ffbef5dd3b2386a5600afa70b15e46de605fb5da839b31bdbf1acab48736dc" Netns:"/var/run/netns/e73b4e11-2392-4fb3-8b70-92c6390d5e9d" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=87ffbef5dd3b2386a5600afa70b15e46de605fb5da839b31bdbf1acab48736dc;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(707531e39d7937aae4c745803e12386120ab43993d899341a2e1cac5bedc9250): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"707531e39d7937aae4c745803e12386120ab43993d899341a2e1cac5bedc9250" Netns:"/var/run/netns/020377d8-d9d4-4202-8f16-c9a19d24e263" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=707531e39d7937aae4c745803e12386120ab43993d899341a2e1cac5bedc9250;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(ee3b2b4cc2469543b573dc4e817b156a6efa4f96a38e1e3a4b1c12f89ccecdd8): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"ee3b2b4cc2469543b573dc4e817b156a6efa4f96a38e1e3a4b1c12f89ccecdd8" Netns:"/var/run/netns/8cbcc556-a9d8-4d5e-8fd0-8bf71281d876" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=ee3b2b4cc2469543b573dc4e817b156a6efa4f96a38e1e3a4b1c12f89ccecdd8;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(b3f74de761cf0e5271e36d30de9887c39d35b25e892301d75709816493c7e5fd): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"b3f74de761cf0e5271e36d30de9887c39d35b25e892301d75709816493c7e5fd" Netns:"/var/run/netns/2ccba459-cf43-4549-86b6-68b1754de9b5" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=b3f74de761cf0e5271e36d30de9887c39d35b25e892301d75709816493c7e5fd;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(03a51bedef8349e02bf366b5c6ddf332623c3eceb72687ce28f4f8b9df388406): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"03a51bedef8349e02bf366b5c6ddf332623c3eceb72687ce28f4f8b9df388406" Netns:"/var/run/netns/44704b58-5057-4f6e-8802-0d0ca619a83e" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=03a51bedef8349e02bf366b5c6ddf332623c3eceb72687ce28f4f8b9df388406;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(e53b6f432ea931af2250b87dbaa26df5e1feb7d5d156b46db263e3f35d8e03be): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"e53b6f432ea931af2250b87dbaa26df5e1feb7d5d156b46db263e3f35d8e03be" Netns:"/var/run/netns/08879a40-21a8-4689-8b1f-b8cc0ac6ca8e" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=e53b6f432ea931af2250b87dbaa26df5e1feb7d5d156b46db263e3f35d8e03be;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(6b41d3da6328ec67aa283ab36094b693067e82cfb74eb60643b07e62024255f1): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"6b41d3da6328ec67aa283ab36094b693067e82cfb74eb60643b07e62024255f1" Netns:"/var/run/netns/35ba61fc-5db0-4a6e-8e5a-717fb70cc274" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=6b41d3da6328ec67aa283ab36094b693067e82cfb74eb60643b07e62024255f1;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(e2ecbf41f5dba0fdd8c2cbfc00262b240fb8b32158eb7b80f69e2d09f0b39475): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"e2ecbf41f5dba0fdd8c2cbfc00262b240fb8b32158eb7b80f69e2d09f0b39475" Netns:"/var/run/netns/ebf18f67-2230-4ef3-8b2b-04e52fd92c0a" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=e2ecbf41f5dba0fdd8c2cbfc00262b240fb8b32158eb7b80f69e2d09f0b39475;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid>  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(a2acffb35c62fa74b4fcacafe10fdbead4ee0579d12d70fa2cc30c783eab342d): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"a2acffb35c62fa74b4fcacafe10fdbead4ee0579d12d70fa2cc30c783eab342d" Netns:"/var/run/netns/7d9a943a-b272-4ca5-afb3-ccc161e30baa" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=a2acffb35c62fa74b4fcacafe10fdbead4ee0579d12d70fa2cc30c783eab342d;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  <invalid> (x583 over <invalid>)  kubelet  (combined from similar events): Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf9901-bip0-76c5df9f8b-mvp9x_cnf-bscf_27f5ea02-d6aa-4dbd-958c-645a8c3b7b35_0(2df740d10427e26004d61b5da78b7c1890a7c99e9072e2733c58857b0d778a1b): error adding pod cnf-bscf_bscf9901-bip0-76c5df9f8b-mvp9x to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"2df740d10427e26004d61b5da78b7c1890a7c99e9072e2733c58857b0d778a1b" Netns:"/var/run/netns/fbab466e-9fe6-4d5a-95a6-7ac65df924bc" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf-bscf;K8S_POD_NAME=bscf9901-bip0-76c5df9f8b-mvp9x;K8S_POD_INFRA_CONTAINER_ID=2df740d10427e26004d61b5da78b7c1890a7c99e9072e2733c58857b0d778a1b;K8S_POD_UID=27f5ea02-d6aa-4dbd-958c-645a8c3b7b35" Path:"" ERRORED: error configuring pod [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x] networking: [cnf-bscf/bscf9901-bip0-76c5df9f8b-mvp9x/27f5ea02-d6aa-4dbd-958c-645a8c3b7b35:ovn-kubernetes]: error adding container to network "ovn-kubernetes": failed to send CNI request: Post "http://dummy/": dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
-': StdinData: {"binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+Your pod is stuck in Pending → PodInitializing, but the real root cause is network failure, not the containers themselves.
+
+
+---
+
+🔥 Actual Root Cause (from Events)
+
+This is the key error:
+
+failed to create pod network sandbox
+...
+ovn-kubernetes: failed to send CNI request:
+dial unix /var/run/ovn-kubernetes/cni//ovn-cni-server.sock: connect: connection refused
+
+👉 This clearly means:
+
+➡️ OVN-Kubernetes CNI is NOT running or not reachable on node
+➡️ So Multus cannot attach networks
+➡️ So pod sandbox creation fails
+➡️ So init containers never start → Pod stays in PodInitializing
+
+
+---
+
+🧠 What is failing here
+
+Your networking chain:
+
+Pod → Multus → OVN-Kubernetes (default network) → SR-IOV networks
+
+Failure is happening at:
+
+👉 Multus → OVN-Kubernetes socket communication
+
+
+---
+
+🚨 Key Observations
+
+1. Pod scheduled successfully
+
+Node: master1.airtelvvt.samsungbsc.local
+
+✔ Scheduler is fine
+
+
+---
+
+2. Init containers NOT starting
+
+Reason: PodInitializing
+containers with incomplete status: [sleepy install]
+
+✔ Because pod sandbox itself not created
+
+
+---
+
+3. OVN socket error (CRITICAL)
+
+/var/run/ovn-kubernetes/cni/ovn-cni-server.sock: connect: connection refused
+
+💥 Means:
+
+ovn-kubernetes-node daemon is DOWN
+
+OR socket not created
+
+OR kubelet can't reach it
+
+
+
+---
+
+🛠️ What to check (Step-by-step)
+
+✅ 1. Check OVN pods on that node
+
+oc get pods -n openshift-ovn-kubernetes -o wide | grep master1
+
+👉 Look for:
+
+ovnkube-node
+
+ovnkube-control-plane
+
+
+✔ Must be Running
+
+
+---
+
+❌ If NOT running → describe it
+
+oc describe pod <ovnkube-node-pod> -n openshift-ovn-kubernetes
+
+
+---
+
+✅ 2. Check OVN CNI socket on node
+
+SSH to node:
+
+ls -l /var/run/ovn-kubernetes/cni/
+
+👉 Expected:
+
+ovn-cni-server.sock
+
+❌ If missing → OVN not started properly
+
+
+---
+
+✅ 3. Check kubelet + OVN logs
+
+journalctl -u kubelet -f
+
+oc logs <ovnkube-node-pod> -n openshift-ovn-kubernetes
+
+Look for:
+
+CNI init failure
+
+ovs issues
+
+permission/socket errors
+
+
+
+---
+
+✅ 4. Check node status
+
+oc get nodes
+
+oc describe node master1.airtelvvt.samsungbsc.local
+
+Check:
+
+NetworkUnavailable
+
+Ready condition
+
+
+
+---
+
+✅ 5. Restart OVN (quick recovery)
+
+If OVN pod stuck:
+
+oc delete pod -n openshift-ovn-kubernetes <ovnkube-node-pod>
+
+OR restart kubelet (on node):
+
+systemctl restart kubelet
+
+
+---
+
+✅ 6. Check SR-IOV (secondary issue possibility)
+
+Your pod requests:
+
+openshift.io/pci_sriov_net_bh0c: 2
+openshift.io/pci_sriov_net_bh0c_1: 2
+
+Even though current failure is OVN, also verify:
+
+oc get sriovnetworknodestate -n openshift-sriov-network-operator
+
+
+---
+
+🎯 Final Diagnosis
+
+👉 Primary issue:
+
+> ❌ OVN-Kubernetes CNI is not running / socket unavailable on node master1
+
+
+
+
+---
+
+💡 Why this blocks everything
+
+Because in OpenShift:
+
+Every pod MUST attach default network (OVN) first
+
+Multus cannot proceed without it
+
+So even SR-IOV networks won't attach
+
+
+
+---
+
+✅ Quick Fix Summary
+
+1. Check ovnkube-node pod → must be Running
+
+
+2. Verify /var/run/ovn-kubernetes/cni/ovn-cni-server.sock
+
+
+3. Restart OVN pod or kubelet
+
+
+4. Recreate your pod
+
+
+
+
+---
+
+If you want, I can help you pinpoint exactly why OVN is down—just share:
+
+oc get pods -n openshift-ovn-kubernetes -o wide
+
+and I’ll go deeper.
