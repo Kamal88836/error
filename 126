@@ -1,123 +1,22 @@
-[core@bscmaster3 ~]$ ip route
-default via 72.2.0.1 dev ens1f0 proto static metric 105
-10.88.0.0/16 dev cni-podman0 proto kernel scope link src 10.88.0.1
-72.2.0.0/22 dev ens1f0 proto kernel scope link src 72.2.0.17 metric 105
-[core@bscmaster3 ~]$ ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: eno1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether e4:43:4b:bd:a0:d0 brd ff:ff:ff:ff:ff:ff
-    altname enp25s0f0
-3: eno2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether e4:43:4b:bd:a0:d1 brd ff:ff:ff:ff:ff:ff
-    altname enp25s0f1
-4: eno3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether e4:43:4b:bd:a0:d2 brd ff:ff:ff:ff:ff:ff
-    altname enp25s0f2
-5: eno4: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether e4:43:4b:bd:a0:d3 brd ff:ff:ff:ff:ff:ff
-    altname enp25s0f3
-6: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:70:d9:48 brd ff:ff:ff:ff:ff:ff
-    altname enp135s0f0
-7: ens3f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:16:1c brd ff:ff:ff:ff:ff:ff
-    altname enp94s0f0
-8: ens3f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:16:1d brd ff:ff:ff:ff:ff:ff
-    altname enp94s0f1
-9: ens3f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:16:1e brd ff:ff:ff:ff:ff:ff
-    altname enp94s0f2
-10: ens3f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:16:1f brd ff:ff:ff:ff:ff:ff
-    altname enp94s0f3
-11: ens2f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:18 brd ff:ff:ff:ff:ff:ff
-    altname enp95s0f0
-12: ens2f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:19 brd ff:ff:ff:ff:ff:ff
-    altname enp95s0f1
-13: ens2f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:1a brd ff:ff:ff:ff:ff:ff
-    altname enp95s0f2
-14: ens2f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:1b brd ff:ff:ff:ff:ff:ff
-    altname enp95s0f3
-15: ens7f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:70:d9:4a brd ff:ff:ff:ff:ff:ff
-    altname enp135s0f1
-16: ens1f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:39:cc brd ff:ff:ff:ff:ff:ff
-    altname enp59s0f0
-    inet 72.2.0.17/22 brd 72.2.3.255 scope global noprefixroute ens1f0
-       valid_lft forever preferred_lft forever
-    inet6 2405:100:200:172::17/64 scope global noprefixroute
-       valid_lft forever preferred_lft forever
-    inet6 fe80::527c:6fff:fe24:39cc/64 scope link noprefixroute
-       valid_lft forever preferred_lft forever
-17: ens1f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:39:cd brd ff:ff:ff:ff:ff:ff
-    altname enp59s0f1
-18: ens1f2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:39:ce brd ff:ff:ff:ff:ff:ff
-    altname enp59s0f2
-    inet6 fe80::c0c9:4b70:60d4:78da/64 scope link noprefixroute
-       valid_lft forever preferred_lft forever
-19: ens1f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether 50:7c:6f:24:39:cf brd ff:ff:ff:ff:ff:ff
-    altname enp59s0f3
-20: ens4f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:39:44 brd ff:ff:ff:ff:ff:ff
-    altname enp175s0f0
-21: ens4f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:39:45 brd ff:ff:ff:ff:ff:ff
-    altname enp175s0f1
-22: ens4f2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:39:46 brd ff:ff:ff:ff:ff:ff
-    altname enp175s0f2
-23: ens4f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether 50:7c:6f:24:39:47 brd ff:ff:ff:ff:ff:ff
-    altname enp175s0f3
-24: cni-podman0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 1a:de:ea:12:97:8f brd ff:ff:ff:ff:ff:ff
-    inet 10.88.0.1/16 brd 10.88.255.255 scope global cni-podman0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::18de:eaff:fe12:978f/64 scope link
-       valid_lft forever preferred_lft forever
-25: vethad979ad7@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni-podman0 state UP group default
-    link/ether 7a:88:24:05:15:52 brd ff:ff:ff:ff:ff:ff link-netns netns-996b564a-0c00-95a8-6be4-bfd39ae6ed8f
-    inet6 fe80::7888:24ff:fe05:1552/64 scope link
-       valid_lft forever preferred_lft forever
-[core@bscmaster3 ~]$ nmcli device status
-DEVICE        TYPE      STATE                                  CONNECTION
-ens1f0        ethernet  connected                              ens1f0
-ens1f2        ethernet  connecting (getting IP configuration)  Wired connection 6
-cni-podman0   bridge    connected (externally)                 cni-podman0
-lo            loopback  connected (externally)                 lo
-ens1f1        ethernet  disconnected                           --
-ens4f0        ethernet  disconnected                           --
-ens4f1        ethernet  disconnected                           --
-ens4f2        ethernet  disconnected                           --
-eno1          ethernet  unavailable                            --
-eno2          ethernet  unavailable                            --
-eno3          ethernet  unavailable                            --
-eno4          ethernet  unavailable                            --
-ens1f3        ethernet  unavailable                            --
-ens2f0        ethernet  unavailable                            --
-ens2f1        ethernet  unavailable                            --
-ens2f2        ethernet  unavailable                            --
-ens2f3        ethernet  unavailable                            --
-ens3f0        ethernet  unavailable                            --
-ens3f1        ethernet  unavailable                            --
-ens3f2        ethernet  unavailable                            --
-ens3f3        ethernet  unavailable                            --
-ens4f3        ethernet  unavailable                            --
-ens7f0        ethernet  unavailable                            --
-ens7f1        ethernet  unavailable                            --
-vethad979ad7  ethernet  unmanaged                              --
+[root@mirror1 ~]# nslookup mirror1.cl2.mno1-rvt.lan
+Server:         72.2.0.34
+Address:        72.2.0.34#53
+
+Name:   mirror1.cl2.mno1-rvt.lan
+Address: 72.2.0.34
+Name:   mirror1.cl2.mno1-rvt.lan
+Address: 2405:100:200:172::34
+
+[root@mirror1 ~]# ssh core@bscmaster3.cl2.mno1-rvt.lan
+The primary service is assisted-service.service. To watch its status, run:
+
+  journalctl -u assisted-service.service
+This host (72.2.0.17) is the rendezvous host.
+Last login: Wed Apr  8 06:18:15 2026 from 72.2.0.34
+[systemd]
+Failed Units: 2
+  NetworkManager-wait-online.service
+  start-cluster-installation.service
+[core@bscmaster3 ~]$ who
+core     pts/1        2026-04-08 06:20 (2405:100:200:172::34)
 [core@bscmaster3 ~]$
