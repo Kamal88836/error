@@ -1,11 +1,180 @@
-[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443
-Error: authenticating creds for "bastion-sno.lab.ocp.lan:8443": pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-09T07:10:26Z is after 2025-06-26T14:41:18Z
-[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443
-Error: authenticating creds for "bastion-sno.lab.ocp.lan:8443": pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-09T07:10:41Z is after 2025-06-26T14:41:18Z
-[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443 --tls-verify=false
-Login Succeeded!
-[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443
-Error: authenticating creds for "bastion-sno.lab.ocp.lan:8443": pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-09T07:11:36Z is after 2025-06-26T14:41:18Z
-[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443 --tls-verify=false
-Login Succeeded!
-[root@bastion-sno mirror-reg]#
+Perfect — now everything is clear ✅
+You’ve fixed networking, and now you’ve hit the final issue: expired TLS certificate 🔐
+
+
+---
+
+🚨 Root Cause
+
+Error:
+
+x509: certificate has expired or is not yet valid
+current time 2026-04-09 > 2025-06-26
+
+👉 Your Quay registry certificate expired in June 2025
+
+
+---
+
+✅ Why this happens
+
+Quay was installed ~3 months ago
+
+Self-signed cert was generated with limited validity
+
+Now system date is 2026 → cert expired ❌
+
+
+
+---
+
+🧠 Current behavior
+
+Command	Result
+
+normal login	❌ fails
+--tls-verify=false	✅ works
+
+
+👉 So registry is working fine, only TLS validation failing
+
+
+---
+
+⚡ Quick Workaround (what you did)
+
+podman login ... --tls-verify=false
+
+✔ Works
+❌ Not recommended for production
+
+
+---
+
+✅ Permanent Fix Options
+
+🔧 Option 1 — Regenerate Certificate (BEST)
+
+You need to create new cert and update Quay.
+
+Step 1: Generate new cert
+
+openssl req -newkey rsa:4096 -nodes -sha256 \
+-keyout quay.key \
+-x509 -days 3650 \
+-out quay.crt \
+-subj "/CN=bastion-sno.lab.ocp.lan"
+
+
+---
+
+Step 2: Replace cert in Quay config
+
+Your Quay config directory:
+
+/root/quay-config
+
+Place:
+
+quay.crt
+quay.key
+
+Update config if needed.
+
+
+---
+
+Step 3: Restart Quay
+
+podman restart quay-app
+
+
+---
+
+🔧 Option 2 — Trust existing cert (only if not expired)
+
+❌ Not applicable here (already expired)
+
+
+---
+
+🔧 Option 3 — Always use insecure (NOT recommended)
+
+In /etc/containers/registries.conf:
+
+[[registry]]
+location = "bastion-sno.lab.ocp.lan:8443"
+insecure = true
+
+👉 Works but insecure
+
+
+---
+
+🚀 Recommended for OCP Mirror Setup
+
+👉 Use valid long-term cert (10 years)
+👉 Or use internal CA and trust it
+
+
+---
+
+🔥 Important for OpenShift
+
+If you don’t fix cert:
+
+Image pulls may fail ❌
+
+Cluster operators may degrade ❌
+
+
+
+---
+
+✅ Verify after fix
+
+curl -k https://bastion-sno.lab.ocp.lan:8443/health/instance
+podman login bastion-sno.lab.ocp.lan:8443
+
+
+---
+
+🧠 Summary
+
+Issue	Status
+
+DNS	✅ Fixed
+Routing	✅ Fixed
+Connectivity	✅ Fixed
+TLS cert	❌ Expired (final issue)
+
+
+
+---
+
+👉 My suggestion
+
+Since your setup already had issues earlier:
+
+👉 Best clean approach:
+
+Regenerate cert
+
+Restart Quay
+
+Avoid --tls-verify=false
+
+
+
+---
+
+👉 If you want
+
+I can give you:
+
+🔥 Exact Quay cert replacement steps (based on your config.yaml)
+
+🔥 Or full mirror-registry reinstall (clean & stable)
+
+
+Just tell 👍
