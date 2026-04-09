@@ -1,11 +1,11 @@
-[root@bastion-sno quay-rootCA]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443
-Error: authenticating creds for "bastion-sno.lab.ocp.lan:8443": pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": dial tcp 72.1.0.172:8443: i/o timeout
-[root@bastion-sno quay-rootCA]# ip route
-default via 72.1.0.1 dev ens2f3
-default via 70.1.1.1 dev eno8303np0 proto static metric 100
-10.88.0.0/16 dev podman0 proto kernel scope link src 10.88.0.1
-65.1.1.0/24 via 72.1.0.1 dev ens2f3
-70.1.0.0/23 dev eno8303np0 proto kernel scope link src 70.1.1.4 metric 100
-72.1.0.0/22 dev ens2f3 proto kernel scope link src 72.1.0.172 metric 101
-75.1.1.0/24 via 72.1.0.1 dev ens2f3
-[root@bastion-sno quay-rootCA]#
+[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443
+Error: authenticating creds for "bastion-sno.lab.ocp.lan:8443": pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-09T07:10:26Z is after 2025-06-26T14:41:18Z
+[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443
+Error: authenticating creds for "bastion-sno.lab.ocp.lan:8443": pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-09T07:10:41Z is after 2025-06-26T14:41:18Z
+[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443 --tls-verify=false
+Login Succeeded!
+[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443
+Error: authenticating creds for "bastion-sno.lab.ocp.lan:8443": pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-09T07:11:36Z is after 2025-06-26T14:41:18Z
+[root@bastion-sno mirror-reg]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443 --tls-verify=false
+Login Succeeded!
+[root@bastion-sno mirror-reg]#
