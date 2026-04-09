@@ -1,56 +1,165 @@
-[root@bastion-sno quay-config]# ll
-total 28
--rw-r--r--. 1 root root 1884 Jul  5  2024 config.yaml
--rw-r--r--. 1 root root  414 Jul  5  2024 openssl.cnf
--rw-r--r--. 1 root root 1846 Apr  9 07:21 quay.crt
--rw-------. 1 root root 3268 Apr  9 07:21 quay.key
--rw-r--r--. 1 root root 2741 Jul  5  2024 ssl.cert
--rw-r--r--. 1 root root  899 Jul  5  2024 ssl.csr
--rw-r--r--. 1 root root 1704 Jul  5  2024 ssl.key
-[root@bastion-sno quay-config]# rm -rf quay.crt quay.key ssl.cert ssl.key
-[root@bastion-sno quay-config]# openssl req -newkey rsa:4096 -nodes -sha256 -keyout ssl.key -x509 -days 3650 -out ssl.cert -subj "/CN=bastion-sno.lab.ocp.lan"
-.+...............+................+..+.......+..+....+..+....+.....+...+...+....+..............+.+...+...+..+................+.....+....+...+............+...+.....+.......+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*.+.....+......+.+..+.+......+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...+.......................+....+........+...+.......+........+............+...+.......+.....+...+...+..........+.....+....+......+............+.....+....+...+...+..+......+.....................+...+............+................+..+.+......+.........+...........+...............+.....................+.........+...+..........+..+....+.........+........+............+.+.....+.......+........+......+.+..+.......+.........+.....+.........+...+.......+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-...+.....+.+......+.....+....+.........+.....+...+.........+.+..............+....+..+....+.........+......+.........+.....+......................+........+....+...+..+......+.+...+...............+..+.+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*..+.........+......+...+...+.........+...+.+......+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*.............+.....+......+....+.................+.+........+.......+..+......+.+......+..............+....+.........+.................+....+............+...+......+.....+...+.+..............+.+..+..........+........+...............+.......+.................+..................+....+...+............+......+........+.......+..+...+..........+...+...........+......+....+.....+...+.+............+..+.+.........+..+.....................+.........+...+.......+.........+.........+.....................+.....+....+...+..+...............+......+.......+...+..+............+............+.+........+....+...............+..+...+...+....+...........+.......+....................+......+....+...........+....+..+......+.........+.+...+...............+..............+............+.+...+..............+.+......+...........+.........+......+.......+......+......+.....................+........+......+........................+....+...........+.......+...+.........+..+...+.......+...+........+...+....+...........+.........................+......+......+..............+.+.....+............+...+.......+..+....+.................+..........+.........+........+.+...........+...+......+....+...+...+.................+............+..........+...+.....+.............+.....+.+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
------
-[root@bastion-sno quay-config]# ll
-total 20
--rw-r--r--. 1 root root 1884 Jul  5  2024 config.yaml
--rw-r--r--. 1 root root  414 Jul  5  2024 openssl.cnf
--rw-r--r--. 1 root root 1846 Apr  9 07:25 ssl.cert
--rw-r--r--. 1 root root  899 Jul  5  2024 ssl.csr
--rw-------. 1 root root 3272 Apr  9 07:25 ssl.key
-[root@bastion-sno quay-config]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                                                 NAMES
-1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp                                91fefcc27356-infra
-620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
-8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
-f2d0c41d6904  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
-[root@bastion-sno quay-config]# podman restart quay-app
-WARN[0010] StopSignal SIGTERM failed to stop container quay-app in 10 seconds, resorting to SIGKILL
-quay-app
-[root@bastion-sno quay-config]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
-1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
-620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-[root@bastion-sno quay-config]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
-1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        17 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
-620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-[root@bastion-sno quay-config]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
-1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
-620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-[root@bastion-sno quay-config]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
-1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
-620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-[root@bastion-sno quay-config]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
-1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
-620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-[root@bastion-sno quay-config]#
+Perfect — that confirms the diagnosis 👍
+
+👉 Why it worked now:
+
+Old cert = known working format + permissions + expected structure ✅
+
+New cert = something mismatched (permissions / format / how mirror-registry expects it) ❌
+
+
+
+---
+
+🧠 What this means
+
+Your issue was NOT just “expired cert”, it was:
+
+> ❗ New certificate was not compatible with mirror-registry Quay setup
+
+
+
+
+---
+
+🚨 Current State (Important)
+
+Component	Status
+
+Quay app	✅ Running
+Registry	✅ Working
+Certificate	❌ Expired
+
+
+👉 So you are back to:
+
+--tls-verify=false  → works
+normal login        → fails (expired cert)
+
+
+---
+
+🎯 Now what are your options?
+
+✅ Option 1 — Continue temporarily (quick workaround)
+
+Use:
+
+podman login ... --tls-verify=false
+
+✔ Works
+❌ Not suitable for long-term / OCP cluster
+
+
+---
+
+🔥 Option 2 — Proper Fix (RECOMMENDED)
+
+👉 Since you are using
+mirror-registry for Red Hat OpenShift
+
+👉 Correct way = let tool regenerate cert
+
+
+---
+
+✅ Clean & Correct Fix (NO BREAKAGE)
+
+🔧 Step 1 — Backup (just in case)
+
+cp -r /datastorage /datastorage-backup
+
+
+---
+
+🔧 Step 2 — Reinstall mirror-registry
+
+mirror-registry uninstall
+
+Then:
+
+mirror-registry install \
+  --quayHostname bastion-sno.lab.ocp.lan \
+  --quayRoot /datastorage
+
+
+---
+
+🧠 Why this works perfectly
+
+Generates valid certificate
+
+Configures Quay correctly
+
+Fixes permissions automatically
+
+Keeps your image data
+
+
+
+---
+
+⚠️ Why your manual cert failed
+
+Most likely one of these:
+
+❌ Missing SAN (Subject Alternative Name)
+
+❌ Wrong permissions (you had 600 earlier)
+
+❌ Wrong file format expected by Quay
+
+❌ Mirror-registry expects internal CA structure
+
+
+
+---
+
+💡 Important (OCP impact)
+
+If you don’t fix cert:
+
+Image pulls may fail ❌
+
+Cluster operators degrade ❌
+
+Need insecure registry config ❌
+
+
+
+---
+
+🚀 Best Practice
+
+Approach	Status
+
+Manual cert replace	❌ risky
+--tls-verify=false	⚠️ temporary
+mirror-registry reinstall	✅ best
+
+
+
+---
+
+👉 My Recommendation (final)
+
+👉 Since your setup already broke once:
+
+> 🔥 Do clean reinstall using mirror-registry tool
+
+
+
+
+---
+
+👉 If you want safer approach
+
+I can guide you:
+
+Keep existing images
+
+Reinstall without data loss
+
+Verify everything step-by-step
+
+
+Just say: 👉 “safe reinstall with data preserved” 👍
