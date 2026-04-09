@@ -1,100 +1,11 @@
-[root@bastion-sno ~]# curl -k  https://localhost:8443/health/instance
-curl: (28) Failed to connect to localhost port 8443: Connection timed out
-[root@bastion-sno ~]#
-[root@bastion-sno quay-config]# cat config.yaml
-AUTHENTICATION_TYPE: Database
-BUILDLOGS_REDIS:
-  host: localhost
-  password: password
-  port: 6379
-DATABASE_SECRET_KEY: "81541057085600720484162638317561463611194901378275494293746615390984668417511"
-DB_URI: postgresql://user:password@localhost/quay
-DEFAULT_TAG_EXPIRATION: 2w
-DISTRIBUTED_STORAGE_DEFAULT_LOCATIONS: []
-DISTRIBUTED_STORAGE_PREFERENCE:
-  - default
-DISTRIBUTED_STORAGE_CONFIG:
-  default:
-    - LocalStorage
-    - storage_path: /datastorage
-ENTERPRISE_LOGO_URL: /static/img/quay-horizontal-color.svg
-FEATURE_ACI_CONVERSION: false
-FEATURE_ANONYMOUS_ACCESS: true
-FEATURE_APP_REGISTRY: false
-FEATURE_APP_SPECIFIC_TOKENS: true
-FEATURE_BUILD_SUPPORT: false
-FEATURE_CHANGE_TAG_EXPIRATION: true
-FEATURE_DIRECT_LOGIN: true
-FEATURE_PARTIAL_USER_AUTOCOMPLETE: true
-FEATURE_REPO_MIRROR: true
-FEATURE_MAILING: false
-FEATURE_REQUIRE_TEAM_INVITE: true
-FEATURE_RESTRICTED_V1_PUSH: true
-FEATURE_SECURITY_NOTIFICATIONS: true
-FEATURE_SECURITY_SCANNER: false
-FEATURE_USERNAME_CONFIRMATION: true
-FEATURE_USER_CREATION: true
-FEATURE_USER_LOG_ACCESS: true
-GITHUB_LOGIN_CONFIG: {}
-GITHUB_TRIGGER_CONFIG: {}
-GITLAB_TRIGGER_KIND: {}
-LOGS_MODEL: database
-LOGS_MODEL_CONFIG: {}
-LOG_ARCHIVE_LOCATION: default
-PREFERRED_URL_SCHEME: https
-REGISTRY_TITLE: Red Hat Quay
-REGISTRY_TITLE_SHORT: Red Hat Quay
-REPO_MIRROR_SERVER_HOSTNAME: null
-REPO_MIRROR_TLS_VERIFY: false
-SECRET_KEY: "30824339799025335633887256663000123118247018465144108496567331049820667127217"
-SECURITY_SCANNER_ISSUER_NAME: security_scanner
-SERVER_HOSTNAME: bastion-sno.lab.ocp.lan:8443
-SETUP_COMPLETE: true
-SUPER_USERS:
-  - admin
-TAG_EXPIRATION_OPTIONS:
-  - 0s
-  - 1d
-  - 1w
-  - 2w
-  - 4w
-TEAM_RESYNC_STALE_TIME: 60m
-TESTING: false
-USERFILES_LOCATION: default
-USERFILES_PATH: userfiles/
-USER_EVENTS_REDIS:
-  host: localhost
-  password: password
-  port: 6379
-USE_CDN: false
-FEATURE_USER_INITIALIZE: true
-CREATE_NAMESPACE_ON_PUSH: true
-
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]# \
->
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]# podman ps -a\
-> ^C
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED       STATUS       PORTS                                                 NAMES
-1382d5b1e345  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        3 months ago  Up 3 months  0.0.0.0:8443->8443/tcp                                163a29296c40-infra
-ef5012f68291  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  3 months ago  Up 3 months  0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
-1ddc3e56ec6b  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       3 months ago  Up 3 months  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
-9a2fc89e97e9  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        3 months ago  Up 3 months  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]#
-[root@bastion-sno quay-config]# podman pod  restart quay-app
-Error: no pod with name or ID quay-app found: no such pod
-[root@bastion-sno quay-config]# podman pod  restart 9a2fc89e97e9
-Error: no pod with name or ID 9a2fc89e97e9 found: no such pod
-[root@bastion-sno quay-config]#
+[root@bastion-sno quay-rootCA]# podman login -u sysadmin -p samsung123  bastion-sno.lab.ocp.lan:8443
+Error: authenticating creds for "bastion-sno.lab.ocp.lan:8443": pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": dial tcp 72.1.0.172:8443: i/o timeout
+[root@bastion-sno quay-rootCA]# ip route
+default via 72.1.0.1 dev ens2f3
+default via 70.1.1.1 dev eno8303np0 proto static metric 100
+10.88.0.0/16 dev podman0 proto kernel scope link src 10.88.0.1
+65.1.1.0/24 via 72.1.0.1 dev ens2f3
+70.1.0.0/23 dev eno8303np0 proto kernel scope link src 70.1.1.4 metric 100
+72.1.0.0/22 dev ens2f3 proto kernel scope link src 72.1.0.172 metric 101
+75.1.1.0/24 via 72.1.0.1 dev ens2f3
+[root@bastion-sno quay-rootCA]#
