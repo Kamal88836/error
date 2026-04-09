@@ -1,0 +1,56 @@
+[root@bastion-sno quay-config]# ll
+total 28
+-rw-r--r--. 1 root root 1884 Jul  5  2024 config.yaml
+-rw-r--r--. 1 root root  414 Jul  5  2024 openssl.cnf
+-rw-r--r--. 1 root root 1846 Apr  9 07:21 quay.crt
+-rw-------. 1 root root 3268 Apr  9 07:21 quay.key
+-rw-r--r--. 1 root root 2741 Jul  5  2024 ssl.cert
+-rw-r--r--. 1 root root  899 Jul  5  2024 ssl.csr
+-rw-r--r--. 1 root root 1704 Jul  5  2024 ssl.key
+[root@bastion-sno quay-config]# rm -rf quay.crt quay.key ssl.cert ssl.key
+[root@bastion-sno quay-config]# openssl req -newkey rsa:4096 -nodes -sha256 -keyout ssl.key -x509 -days 3650 -out ssl.cert -subj "/CN=bastion-sno.lab.ocp.lan"
+.+...............+................+..+.......+..+....+..+....+.....+...+...+....+..............+.+...+...+..+................+.....+....+...+............+...+.....+.......+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*.+.....+......+.+..+.+......+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...+.......................+....+........+...+.......+........+............+...+.......+.....+...+...+..........+.....+....+......+............+.....+....+...+...+..+......+.....................+...+............+................+..+.+......+.........+...........+...............+.....................+.........+...+..........+..+....+.........+........+............+.+.....+.......+........+......+.+..+.......+.........+.....+.........+...+.......+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+...+.....+.+......+.....+....+.........+.....+...+.........+.+..............+....+..+....+.........+......+.........+.....+......................+........+....+...+..+......+.+...+...............+..+.+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*..+.........+......+...+...+.........+...+.+......+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*.............+.....+......+....+.................+.+........+.......+..+......+.+......+..............+....+.........+.................+....+............+...+......+.....+...+.+..............+.+..+..........+........+...............+.......+.................+..................+....+...+............+......+........+.......+..+...+..........+...+...........+......+....+.....+...+.+............+..+.+.........+..+.....................+.........+...+.......+.........+.........+.....................+.....+....+...+..+...............+......+.......+...+..+............+............+.+........+....+...............+..+...+...+....+...........+.......+....................+......+....+...........+....+..+......+.........+.+...+...............+..............+............+.+...+..............+.+......+...........+.........+......+.......+......+......+.....................+........+......+........................+....+...........+.......+...+.........+..+...+.......+...+........+...+....+...........+.........................+......+......+..............+.+.....+............+...+.......+..+....+.................+..........+.........+........+.+...........+...+......+....+...+...+.................+............+..........+...+.....+.............+.....+.+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-----
+[root@bastion-sno quay-config]# ll
+total 20
+-rw-r--r--. 1 root root 1884 Jul  5  2024 config.yaml
+-rw-r--r--. 1 root root  414 Jul  5  2024 openssl.cnf
+-rw-r--r--. 1 root root 1846 Apr  9 07:25 ssl.cert
+-rw-r--r--. 1 root root  899 Jul  5  2024 ssl.csr
+-rw-------. 1 root root 3272 Apr  9 07:25 ssl.key
+[root@bastion-sno quay-config]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                                                 NAMES
+1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp                                91fefcc27356-infra
+620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
+8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
+f2d0c41d6904  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
+[root@bastion-sno quay-config]# podman restart quay-app
+WARN[0010] StopSignal SIGTERM failed to stop container quay-app in 10 seconds, resorting to SIGKILL
+quay-app
+[root@bastion-sno quay-config]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
+1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
+620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+[root@bastion-sno quay-config]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
+1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        17 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
+620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       16 minutes ago  Up 16 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+[root@bastion-sno quay-config]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
+1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
+620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+[root@bastion-sno quay-config]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
+1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
+620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+[root@bastion-sno quay-config]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED         STATUS         PORTS                             NAMES
+1d10542d3041  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp            91fefcc27356-infra
+620ed2980a2a  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+8dd1594507de  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       17 minutes ago  Up 17 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+[root@bastion-sno quay-config]#
