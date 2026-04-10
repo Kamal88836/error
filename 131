@@ -1,7 +1,69 @@
-[root@bastion ~]# oc get no
-E0410 16:12:53.534506 1686684 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://api.airtelvvt.samsungbsc.local:6443/api?timeout=32s\": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-10T16:12:53+09:00 is before 2026-04-11T04:36:53Z"
-E0410 16:12:53.540811 1686684 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://api.airtelvvt.samsungbsc.local:6443/api?timeout=32s\": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-10T16:12:53+09:00 is before 2026-04-11T04:36:53Z"
-E0410 16:12:53.548504 1686684 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://api.airtelvvt.samsungbsc.local:6443/api?timeout=32s\": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-10T16:12:53+09:00 is before 2026-04-11T04:36:53Z"
-E0410 16:12:53.559807 1686684 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://api.airtelvvt.samsungbsc.local:6443/api?timeout=32s\": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-10T16:12:53+09:00 is before 2026-04-11T04:36:53Z"
-E0410 16:12:53.565394 1686684 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://api.airtelvvt.samsungbsc.local:6443/api?timeout=32s\": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-10T16:12:53+09:00 is before 2026-04-11T04:36:53Z"
-Unable to connect to the server: tls: failed to verify certificate: x509: certificate has expired or is not yet valid: current time 2026-04-10T16:12:53+09:00 is before 2026-04-11T04:36:53Z
+If you want to delete error pods in one single command, here are the most useful options 👇
+
+
+---
+
+🔥 1. Delete all failed / error pods (all namespaces)
+
+oc delete pod --field-selector=status.phase=Failed --all-namespaces
+
+
+---
+
+🔥 2. Delete CrashLoopBackOff / Error pods (most common case)
+
+oc get pods --all-namespaces | grep -E 'Error|CrashLoopBackOff' | awk '{print "oc delete pod -n "$1" "$2}' | bash
+
+
+---
+
+🔥 3. Delete pods from a specific namespace
+
+oc get pods -n <namespace> | grep -E 'Error|CrashLoopBackOff' | awk '{print "oc delete pod -n <namespace> "$1}' | bash
+
+👉 Example:
+
+oc get pods -n openshift-ovn-kubernetes | grep -E 'Error|CrashLoopBackOff' | awk '{print "oc delete pod -n openshift-ovn-kubernetes "$1}' | bash
+
+
+---
+
+⚠️ Important Notes
+
+Pods will usually recreate automatically if controlled by:
+
+Deployment
+
+DaemonSet
+
+StatefulSet
+
+
+If root issue not fixed → pods will go back to error again
+
+
+
+---
+
+💡 Pro Tip (safer way)
+
+First just list pods:
+
+oc get pods -A | grep -E 'Error|CrashLoopBackOff'
+
+Then delete.
+
+
+---
+
+🚀 One-liner (clean + safe)
+
+oc get pods -A --no-headers | awk '$4 ~ /Error|CrashLoopBackOff/ {print "oc delete pod -n "$1" "$2}' | bash
+
+
+---
+
+If you want, I can also give: 👉 command to delete only Evicted pods
+👉 or pods stuck in Terminating
+
+Just tell 👍
