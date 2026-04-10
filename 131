@@ -1,69 +1,51 @@
-If you want to delete error pods in one single command, here are the most useful options 👇
+To check time on all 3 nodes in a single command, you can use oc debug with a loop 👇
 
 
 ---
 
-🔥 1. Delete all failed / error pods (all namespaces)
+🔥 Single command (best way)
 
-oc delete pod --field-selector=status.phase=Failed --all-namespaces
-
-
----
-
-🔥 2. Delete CrashLoopBackOff / Error pods (most common case)
-
-oc get pods --all-namespaces | grep -E 'Error|CrashLoopBackOff' | awk '{print "oc delete pod -n "$1" "$2}' | bash
+for node in $(oc get nodes -o name); do echo "===== $node ====="; oc debug $node -- chroot /host date; done
 
 
 ---
 
-🔥 3. Delete pods from a specific namespace
+✅ Output will look like:
 
-oc get pods -n <namespace> | grep -E 'Error|CrashLoopBackOff' | awk '{print "oc delete pod -n <namespace> "$1}' | bash
+===== node/master1 =====
+Fri Apr 10 16:30:00 IST 2026
 
-👉 Example:
+===== node/master2 =====
+Fri Apr 10 16:29:58 IST 2026
 
-oc get pods -n openshift-ovn-kubernetes | grep -E 'Error|CrashLoopBackOff' | awk '{print "oc delete pod -n openshift-ovn-kubernetes "$1}' | bash
-
-
----
-
-⚠️ Important Notes
-
-Pods will usually recreate automatically if controlled by:
-
-Deployment
-
-DaemonSet
-
-StatefulSet
-
-
-If root issue not fixed → pods will go back to error again
-
+===== node/worker1 =====
+Fri Apr 10 16:30:02 IST 2026
 
 
 ---
 
-💡 Pro Tip (safer way)
+🔍 Alternative (with hostname)
 
-First just list pods:
-
-oc get pods -A | grep -E 'Error|CrashLoopBackOff'
-
-Then delete.
+for node in $(oc get nodes -o name); do oc debug $node -- chroot /host sh -c 'echo -n "$(hostname): "; date'; done
 
 
 ---
 
-🚀 One-liner (clean + safe)
+💡 Pro Tip
 
-oc get pods -A --no-headers | awk '$4 ~ /Error|CrashLoopBackOff/ {print "oc delete pod -n "$1" "$2}' | bash
+If you see time difference > few seconds, it will cause:
+
+TLS errors (like you saw)
+
+MCP issues
+
+etcd instability
+
 
 
 ---
 
-If you want, I can also give: 👉 command to delete only Evicted pods
-👉 or pods stuck in Terminating
+If you want, I can also give: 👉 one-liner to fix time on all nodes
+👉 or check chrony sync status cluster-wide
 
 Just tell 👍
