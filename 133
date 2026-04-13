@@ -1,0 +1,158 @@
+[root@bastion ~]# oc describe po bscf9901-bip1-55f89464d7-zltt2
+Name:             bscf9901-bip1-55f89464d7-zltt2
+Namespace:        cnf-bscf
+Priority:         0
+Service Account:  bscf-sa
+Node:             master2.airtelvvt.samsungbsc.local/20.1.30.151
+Start Time:       Tue, 14 Apr 2026 14:17:22 +0900
+Labels:           app=bscf9901-bip1
+                  component=bscf9901-bip
+                  nename=bscf9901
+                  pod-template-hash=55f89464d7
+                  release=bscf9901
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.ovn.org/pod-networks:
+                    {"default":{"ip_addresses":["10.30.1.162/24","fd01:0:0:1::a2/64"],"mac_address":"0a:58:0a:1e:01:a2","gateway_ips":["10.30.1.1","fd01:0:0:1...
+                  k8s.v1.cni.cncf.io/networks:
+                    [ { "name": "bscf-bh0c-nad", "interface": "bh0_0" }, { "name": "bscf-bh0c-nad", "interface": "bh1" }, { "name": "bscf-bh0c-1-nad", "interf...
+                  openshift.io/scc: privileged
+Status:           Pending
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/bscf9901-bip1-55f89464d7
+Init Containers:
+  sleepy:
+    Container ID:
+    Image:         nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo Sleepy has come && sleep 15
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:        500m
+      memory:     256Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wf4ld (ro)
+  install:
+    Container ID:
+    Image:         nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+    Args:
+      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:                                500m
+      memory:                             8Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Requests:
+      cpu:                                500m
+      memory:                             8Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Environment:                          <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf9901-bip-log (rw)
+      /mnt/storage/shared from bscf9901-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wf4ld (ro)
+Containers:
+  bip:
+    Container ID:
+    Image:         nwharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR25ABSCUTDC42_RA01
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:                                22
+      memory:                             8Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Requests:
+      cpu:                                22
+      memory:                             8Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Liveness:                             http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:  Asia/Seoul
+    Mounts:
+      /etc/config from env (rw)
+      /etc/podnetinfo from podnetinfo (ro)
+      /mnt/storage/log from bscf9901-bip-log (rw)
+      /mnt/storage/shared from bscf9901-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wf4ld (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False
+  Initialized                 False
+  Ready                       False
+  ContainersReady             False
+  PodScheduled                True
+Volumes:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf9901-bip1
+    Optional:  false
+  bscf9901-bip-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf9901-log-pvc
+    ReadOnly:   false
+  bscf9901-bip-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf9901-shared-pvc
+    ReadOnly:   false
+  kube-api-access-wf4ld:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    ConfigMapOptional:       <nil>
+  podnetinfo:
+    Type:  DownwardAPI (a volume populated by information about the pod)
+    Items:
+      metadata.labels -> labels
+      metadata.annotations -> annotations
+QoS Class:       Guaranteed
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age        From               Message
+  ----     ------            ----       ----               -------
+  Warning  FailedScheduling  <invalid>  default-scheduler  0/3 nodes are available: 1 Insufficient cpu, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/3 nodes are available: 1 No preemption victims found for incoming pod, 2 Preemption is not helpful for scheduling.
+  Normal   Scheduled         <invalid>  default-scheduler  Successfully assigned cnf-bscf/bscf9901-bip1-55f89464d7-zltt2 to master2.airtelvvt.samsungbsc.local
+[root@bastion ~]#
