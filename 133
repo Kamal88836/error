@@ -1,87 +1,376 @@
-[root@bastion ~]# oc get pod bscf9901-bpp3-6fb597b54-vpq68 -o yaml
-Error from server (NotFound): pods "bscf9901-bpp3-6fb597b54-vpq68" not found
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]# oc get pods
-NAME                             READY   STATUS     RESTARTS   AGE
-bscf9901-bip0-76c5df9f8b-s6s5g   1/1     Running    0          2d15h
-bscf9901-bip1-55f89464d7-zltt2   0/1     Init:0/2   0          16m
-bscf9901-bpp0-574b6c59dc-sbm4s   1/1     Running    0          2d15h
-bscf9901-bpp1-6cc5f66858-tcznf   0/1     Init:0/1   0          15m
-bscf9901-bpp2-6d947d9f95-vvsgv   1/1     Running    0          2d15h
-bscf9901-bpp3-6fb597b54-f9rjr    0/1     Init:0/1   0          66s
-bscf9901-cmp0-7fdfb79d7b-rxrff   1/1     Running    0          2d15h
-bscf9901-cmp1-79d4cbcf74-jxj5k   1/1     Running    0          2d14h
-bscf9901-dmp0-6fd9b97cc-xsng9    0/1     Init:0/1   0          18h
-bscf9901-pmp0-747f9cd8f7-kd2lf   1/1     Running    0          2d14h
-[root@bastion ~]# oc get pods  -owide
-NAME                             READY   STATUS     RESTARTS   AGE         IP           NODE                                 NOMINATED NODE   READINESS GATES
-bscf9901-bip0-76c5df9f8b-s6s5g   1/1     Running    0          46h         10.30.2.59   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bip1-55f89464d7-zltt2   0/1     Init:0/2   0          <invalid>   <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp0-574b6c59dc-sbm4s   1/1     Running    0          46h         10.30.2.49   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp1-6cc5f66858-tcznf   0/1     Init:0/1   0          <invalid>   <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp2-6d947d9f95-vvsgv   1/1     Running    0          46h         10.30.2.51   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp3-6fb597b54-f9rjr    0/1     Init:0/1   0          <invalid>   <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp0-7fdfb79d7b-rxrff   1/1     Running    0          46h         10.30.2.27   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp1-79d4cbcf74-jxj5k   1/1     Running    0          46h         10.30.0.99   master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-dmp0-6fd9b97cc-xsng9    0/1     Init:0/1   0          78m         <none>       master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-pmp0-747f9cd8f7-kd2lf   1/1     Running    0          46h         10.30.0.97   master3.airtelvvt.samsungbsc.local   <none>           <none>
-[root@bastion ~]# oc describe node master3 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests      Limits
-  --------                                --------      ------
-  cpu                                     21103m (19%)  34898m (32%)
-  memory                                  138Gi (19%)   129452Mi (17%)
-[root@bastion ~]# oc describe node master2 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests        Limits
-  --------                                --------        ------
-  cpu                                     97770m (92%)    97150m (91%)
-  memory                                  121541Mi (16%)  113852Mi (15%)
-[root@bastion ~]# oc describe node master1 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests        Limits
-  --------                                --------        ------
-  cpu                                     103890m (98%)   104250m (98%)
-  memory                                  138638Mi (18%)  129724Mi (17%)
-[root@bastion ~]#
-[root@bastion ~]# oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.18.17   True        False         False      22h
-baremetal                                  4.18.17   True        False         False      33d
-cloud-controller-manager                   4.18.17   True        False         False      33d
-cloud-credential                           4.18.17   True        False         False      33d
-cluster-autoscaler                         4.18.17   True        False         False      33d
-config-operator                            4.18.17   True        False         False      33d
-console                                    4.18.17   True        False         False      2d15h
-control-plane-machine-set                  4.18.17   True        False         False      33d
-csi-snapshot-controller                    4.18.17   True        False         False      2d14h
-dns                                        4.18.17   True        False         False      2d15h
-etcd                                       4.18.17   True        False         False      8d
-image-registry                             4.18.17   True        False         False      2d15h
-ingress                                    4.18.17   True        False         False      18h
-insights                                   4.18.17   True        False         False      33d
-kube-apiserver                             4.18.17   True        True          False      33d     NodeInstallerProgressing: 1 node is at revision 13; 2 nodes are at revision 14; 0 nodes have achieved new revision 15
-kube-controller-manager                    4.18.17   True        False         True       33d     GarbageCollectorDegraded: error querying alerts: client_error: client error: 401
-kube-scheduler                             4.18.17   True        False         True       33d     StaticPodsDegraded: pod/openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local container "kube-scheduler" is waiting: RunContainerError: container c4e40561698891ee0e9d26948375f80a75301eb139fdc0c25b8dc891d82d3675 is not in created state: running
-kube-storage-version-migrator              4.18.17   True        False         False      39h
-machine-api                                4.18.17   True        False         False      33d
-machine-approver                           4.18.17   True        False         False      33d
-machine-config                             4.18.17   True        False         False      33d
-marketplace                                4.18.17   True        False         False      33d
-monitoring                                 4.18.17   True        False         False      2d14h
-network                                    4.18.17   True        False         False      33d
-node-tuning                                4.18.17   True        False         False      2d15h
-olm                                        4.18.17   True        False         False      46h
-openshift-apiserver                        4.18.17   True        False         False      44h
-openshift-controller-manager               4.18.17   True        False         False      2d15h
-openshift-samples                          4.18.17   True        False         False      33d
-operator-lifecycle-manager                 4.18.17   True        False         False      33d
-operator-lifecycle-manager-catalog         4.18.17   True        False         False      33d
-operator-lifecycle-manager-packageserver   4.18.17   True        False         False      2d14h
-service-ca                                 4.18.17   True        False         False      33d
-storage                                    4.18.17   True        False         False      33d
+[root@bastion ~]# oc get po  bscf9901-bpp3-6fb597b54-f9rjr -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.ovn.org/pod-networks: '{"default":{"ip_addresses":["10.30.1.164/24","fd01:0:0:1::a4/64"],"mac_address":"0a:58:0a:1e:01:a4","gateway_ips":["10.30.1.1","fd01:0:0:1::1"],"routes":[{"dest":"10.30.0.0/16","nextHop":"10.30.1.1"},{"dest":"172.25.0.0/16","nextHop":"10.30.1.1"},{"dest":"169.254.0.5/32","nextHop":"10.30.1.1"},{"dest":"100.64.0.0/16","nextHop":"10.30.1.1"},{"dest":"fd01::/48","nextHop":"fd01:0:0:1::1"},{"dest":"fd02::/112","nextHop":"fd01:0:0:1::1"},{"dest":"fd69::5/128","nextHop":"fd01:0:0:1::1"},{"dest":"fd98::/64","nextHop":"fd01:0:0:1::1"}],"role":"primary"}}'
+    k8s.v1.cni.cncf.io/networks: '[ { "name": "bscf-bh0u-2-nad", "interface": "bh0_0"
+      }, { "name": "bscf-bh0u-2-1-nad", "interface": "bh0_1" } ]'
+    openshift.io/scc: privileged
+  creationTimestamp: "2026-04-14T05:32:28Z"
+  generateName: bscf9901-bpp3-6fb597b54-
+  labels:
+    app: bscf9901-bpp3
+    component: bscf9901-bpp
+    nename: bscf9901
+    pod-template-hash: 6fb597b54
+    release: bscf9901
+    restart-on-reboot: "true"
+    tech: gsm
+  name: bscf9901-bpp3-6fb597b54-f9rjr
+  namespace: cnf-bscf
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: bscf9901-bpp3-6fb597b54
+    uid: 58456279-19a8-48fd-974f-b346e53f1748
+  resourceVersion: "20562052"
+  uid: a4b0e52f-09c0-4dd2-8626-937aea8de537
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - master2.airtelvvt.samsungbsc.local
+  containers:
+  - args:
+    - /pkg/bin/appStart.sh
+    command:
+    - /bin/bash
+    - -c
+    env:
+    - name: TZ
+      value: Asia/Seoul
+    - name: CONTAINER_NAME
+      value: bpp
+    image: nwharbor.sec.samsung.net/rel-ran/utd-bscf-bpp:SVR25ABSCUTDC42_RA01
+    imagePullPolicy: IfNotPresent
+    lifecycle:
+      preStop:
+        exec:
+          command:
+          - /bin/bash
+          - -c
+          - /pkg/bin/preStop.sh
+    livenessProbe:
+      failureThreshold: 5
+      httpGet:
+        path: /bpp_live_probe
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    name: bpp
+    readinessProbe:
+      failureThreshold: 5
+      httpGet:
+        path: /swm_read_probe
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    resources:
+      limits:
+        cpu: "48"
+        hugepages-1Gi: 8Gi
+        memory: 64Gi
+        openshift.io/pci_sriov_net_bh0u_2: "1"
+        openshift.io/pci_sriov_net_bh0u_2_1: "1"
+      requests:
+        cpu: "48"
+        hugepages-1Gi: 8Gi
+        memory: 64Gi
+        openshift.io/pci_sriov_net_bh0u_2: "1"
+        openshift.io/pci_sriov_net_bh0u_2_1: "1"
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN
+        - NET_RAW
+        - SYS_CHROOT
+        - AUDIT_WRITE
+      privileged: true
+      runAsUser: 0
+      seLinuxOptions:
+        level: s0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /dev/shm
+      name: cshm
+    - mountPath: /hugepages
+      name: hugepage
+    - mountPath: /sys
+      name: sys
+    - mountPath: /etc/config
+      name: env
+    - mountPath: /mnt/storage/log
+      name: bscf9901-bpp-log
+    - mountPath: /mnt/storage/shared
+      name: bscf9901-bpp-shared
+    - mountPath: /var/run/ptp
+      name: ptpdir
+    - mountPath: /var/host-run
+      name: ptp4l
+      readOnly: true
+    - mountPath: /etc/ptp4l.conf
+      name: ptpconf
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5gfhh
+      readOnly: true
+    - mountPath: /etc/podnetinfo
+      name: podnetinfo
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  initContainers:
+  - command:
+    - sh
+    - -c
+    - chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared;
+      chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared;
+      chmod g+s /mnt/storage/log; echo 1 > /proc/sys/net/ipv4/conf/all/forwarding;
+      echo 1 > /proc/sys/net/ipv6/conf/all/forwarding;
+    image: nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01
+    imagePullPolicy: IfNotPresent
+    name: install
+    resources:
+      limits:
+        cpu: 500m
+        hugepages-1Gi: 8Gi
+        memory: 64Gi
+        openshift.io/pci_sriov_net_bh0u_2: "1"
+        openshift.io/pci_sriov_net_bh0u_2_1: "1"
+      requests:
+        cpu: 500m
+        hugepages-1Gi: 8Gi
+        memory: 64Gi
+        openshift.io/pci_sriov_net_bh0u_2: "1"
+        openshift.io/pci_sriov_net_bh0u_2_1: "1"
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/config
+      name: env
+    - mountPath: /mnt/storage/log
+      name: bscf9901-bpp-log
+    - mountPath: /mnt/storage/shared
+      name: bscf9901-bpp-shared
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5gfhh
+      readOnly: true
+  nodeName: master2.airtelvvt.samsungbsc.local
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    seLinuxOptions:
+      level: s0
+  serviceAccount: bscf-sa
+  serviceAccountName: bscf-sa
+  terminationGracePeriodSeconds: 15
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir:
+      medium: Memory
+    name: cshm
+  - emptyDir:
+      medium: HugePages
+    name: hugepage
+  - hostPath:
+      path: /sys
+      type: ""
+    name: sys
+  - configMap:
+      defaultMode: 420
+      name: bscf9901-bpp3
+    name: env
+  - hostPath:
+      path: /var/run/ptp
+      type: DirectoryOrCreate
+    name: ptpdir
+  - hostPath:
+      path: /var/run
+      type: Directory
+    name: ptp4l
+  - hostPath:
+      path: /etc/ptp4l.conf
+      type: File
+    name: ptpconf
+  - name: bscf9901-bpp-log
+    persistentVolumeClaim:
+      claimName: bscf9901-log-pvc
+  - name: bscf9901-bpp-shared
+    persistentVolumeClaim:
+      claimName: bscf9901-shared-pvc
+  - name: kube-api-access-5gfhh
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+  - downwardAPI:
+      defaultMode: 420
+      items:
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.labels
+        path: labels
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.annotations
+        path: annotations
+      - path: hugepages_1G_request_bpp
+        resourceFieldRef:
+          containerName: bpp
+          divisor: 1Mi
+          resource: requests.hugepages-1Gi
+      - path: hugepages_1G_limit_bpp
+        resourceFieldRef:
+          containerName: bpp
+          divisor: 1Mi
+          resource: limits.hugepages-1Gi
+    name: podnetinfo
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2026-04-14T05:32:17Z"
+    status: "False"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2026-04-14T05:32:17Z"
+    message: 'containers with incomplete status: [install]'
+    reason: ContainersNotInitialized
+    status: "False"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2026-04-14T05:32:17Z"
+    message: 'containers with unready status: [bpp]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2026-04-14T05:32:17Z"
+    message: 'containers with unready status: [bpp]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2026-04-14T05:32:30Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - image: nwharbor.sec.samsung.net/rel-ran/utd-bscf-bpp:SVR25ABSCUTDC42_RA01
+    imageID: ""
+    lastState: {}
+    name: bpp
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      waiting:
+        reason: PodInitializing
+    volumeMounts:
+    - mountPath: /dev/shm
+      name: cshm
+    - mountPath: /hugepages
+      name: hugepage
+    - mountPath: /sys
+      name: sys
+    - mountPath: /etc/config
+      name: env
+    - mountPath: /mnt/storage/log
+      name: bscf9901-bpp-log
+    - mountPath: /mnt/storage/shared
+      name: bscf9901-bpp-shared
+    - mountPath: /var/run/ptp
+      name: ptpdir
+    - mountPath: /var/host-run
+      name: ptp4l
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /etc/ptp4l.conf
+      name: ptpconf
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5gfhh
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /etc/podnetinfo
+      name: podnetinfo
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 20.1.30.151
+  hostIPs:
+  - ip: 20.1.30.151
+  - ip: 2010:0:0:30::11
+  initContainerStatuses:
+  - image: nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR25ABSCUTDC42_RA01
+    imageID: ""
+    lastState: {}
+    name: install
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      waiting:
+        reason: PodInitializing
+    volumeMounts:
+    - mountPath: /etc/config
+      name: env
+    - mountPath: /mnt/storage/log
+      name: bscf9901-bpp-log
+    - mountPath: /mnt/storage/shared
+      name: bscf9901-bpp-shared
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5gfhh
+      readOnly: true
+      recursiveReadOnly: Disabled
+  phase: Pending
+  qosClass: Guaranteed
+  startTime: "2026-04-14T05:32:17Z"
 [root@bastion ~]#
