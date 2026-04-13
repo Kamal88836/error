@@ -1,14 +1,238 @@
-[root@bastion ~]# oc get po -o wide
-NAME                             READY   STATUS        RESTARTS   AGE         IP           NODE                                 NOMINATED NODE   READINESS GATES
-bscf9901-bip0-76c5df9f8b-s6s5g   1/1     Running       0          46h         10.30.2.59   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bip1-55f89464d7-zltt2   0/1     Init:0/2      0          <invalid>   <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp0-574b6c59dc-sbm4s   1/1     Running       0          46h         10.30.2.49   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp1-6cc5f66858-tcznf   0/1     Init:0/1      0          <invalid>   <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp2-6d947d9f95-vvsgv   1/1     Running       0          46h         10.30.2.51   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp3-6fb597b54-vpq68    0/1     Init:0/1      0          65m         <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp0-7fdfb79d7b-rxrff   1/1     Running       0          46h         10.30.2.27   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp1-79d4cbcf74-jxj5k   1/1     Running       0          45h         10.30.0.99   master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-dmp0-6fd9b97cc-pk46j    1/1     Terminating   0          45h         10.30.1.60   master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-dmp0-6fd9b97cc-xsng9    0/1     Init:0/1      0          65m         <none>       master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-pmp0-747f9cd8f7-kd2lf   1/1     Running       0          45h         10.30.0.97   master3.airtelvvt.samsungbsc.local   <none>           <none>
-[root@bastion ~]#
+Perfect — now we can pinpoint exact issue + exact fix 🔥
+
+
+---
+
+🔴 What’s Happening (Clear View)
+
+👉 Your cluster distribution:
+
+🟢 master1
+
+Running many CNF pods (bip0, bpp0, bpp2, cmp0)
+
+Still healthy
+
+
+🟡 master3
+
+Running some pods (cmp1, pmp0)
+
+Has capacity
+
+
+🔴 master2 (PROBLEM NODE)
+
+Trying to run:
+
+bip1 ❌
+
+bpp1 ❌
+
+bpp3 ❌ (48 CPU!!)
+
+
+Already overloaded (93% CPU reserved)
+
+
+
+---
+
+🔥 Critical Problem
+
+👉 These pods are stuck on master2 only:
+
+bpp3 → 48 CPU
+bpp1 → 24 CPU
+bip1 → 22 CPU
+
+👉 Total demand:
+
+48 + 24 + 22 = 94 CPU cores
+
+🚨 Your node capacity:
+
+Allocatable = 106 cores
+Already reserved ≈ 98 cores
+
+👉 So: ❌ No space left for new pods
+
+
+---
+
+🧠 Hidden Root Cause (IMPORTANT)
+
+👉 Why not scheduled to master1/master3?
+
+Earlier error:
+
+2 node(s) didn't match Pod's node affinity/selector
+
+💡 That means:
+
+These pods are restricted to master2
+
+Likely due to:
+
+SR-IOV interface mapping
+
+Node labels
+
+NUMA / topology constraints
+
+
+
+
+---
+
+⚠️ Special Problem Detected
+
+bscf9901-dmp0 → Terminating (on master2)
+
+👉 This is VERY IMPORTANT
+
+🚨 This pod is:
+
+Still holding CPU + resources
+
+Blocking scheduling
+
+New pod (dmp0-xsng9) already trying on master3
+
+
+
+---
+
+✅ IMMEDIATE FIX (DO THIS FIRST)
+
+🚀 Step 1: Force delete stuck pod
+
+oc delete pod bscf9901-dmp0-6fd9b97cc-pk46j --force --grace-period=0
+
+👉 This will:
+
+Free CPU
+
+Release SR-IOV resources
+
+
+
+---
+
+🚀 Step 2: Check CPU again
+
+oc describe node master2 | grep -A5 "Allocated resources"
+
+
+---
+
+🚀 Step 3: Watch pending pods
+
+oc get pods -w
+
+
+---
+
+🔥 If Still Not Fixed
+
+✔ Option 2: Move heavy pod (BEST)
+
+👉 Target this one:
+
+bpp3 (48 CPU) ← biggest problem
+
+Delete it:
+
+oc delete pod bscf9901-bpp3-6fb597b54-vpq68
+
+👉 It will reschedule:
+
+If affinity allows → to master3
+
+Else → again stuck → confirms affinity issue
+
+
+
+---
+
+🔍 Confirm Affinity Lock
+
+Run:
+
+oc get pod bscf9901-bpp3-6fb597b54-vpq68 -o yaml | grep -i affinity -A20
+
+👉 You will likely see:
+
+Node-specific label
+
+SR-IOV NIC binding tied to master2
+
+
+
+---
+
+🧠 Real Design Issue (Important Insight)
+
+👉 Your CNF is deployed like:
+
+3 nodes only
+
+Heavy CPU workloads (20–50 cores each)
+
+SR-IOV strict placement
+
+
+🚨 This setup is not scalable
+
+
+---
+
+✅ Recommended Architecture
+
+👉 For telecom CNF:
+
+❌ Don’t overload control-plane nodes
+
+✅ Add dedicated worker nodes with SR-IOV
+
+✅ Spread BPP/BIP workloads across nodes
+
+
+
+---
+
+⚡ Quick Fix Summary
+
+Action	Impact
+
+Delete terminating pod	✅ Immediate relief
+Free CPU on master2	✅ Required
+Move bpp3	🚀 Best fix
+Check affinity	🔍 Root cause
+Add nodes	💡 Long-term
+
+
+
+---
+
+🎯 My Recommendation (Fastest Recovery)
+
+👉 Do this in order:
+
+# 1. Remove stuck pod
+oc delete pod bscf9901-dmp0-6fd9b97cc-pk46j --force --grace-period=0
+
+# 2. Delete heavy pod
+oc delete pod bscf9901-bpp3-6fb597b54-vpq68
+
+# 3. Watch recovery
+oc get pods -w
+
+
+---
+
+If you want next-level debugging, send me:
+
+oc get pod bscf9901-bpp3-6fb597b54-vpq68 -o yaml
+
+👉 I’ll tell you exactly why it is locked to master2 (SR-IOV / affinity / NUMA) 👍
