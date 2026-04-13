@@ -1,94 +1,313 @@
-[core@bscmaster1 ~]$ ip route
-default via 72.2.0.1 dev ens1f0 proto static metric 100
-10.88.0.0/16 dev cni-podman0 proto kernel scope link src 10.88.0.1
-72.2.0.0/22 dev ens1f0 proto kernel scope link src 72.2.0.13 metric 100
-[core@bscmaster1 ~]$ ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: eno1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether e4:43:4b:bd:9c:00 brd ff:ff:ff:ff:ff:ff
-    altname enp25s0f0
-3: eno2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether e4:43:4b:bd:9c:01 brd ff:ff:ff:ff:ff:ff
-    altname enp25s0f1
-4: eno3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether e4:43:4b:bd:9c:02 brd ff:ff:ff:ff:ff:ff
-    altname enp25s0f2
-5: eno4: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether e4:43:4b:bd:9c:03 brd ff:ff:ff:ff:ff:ff
-    altname enp25s0f3
-6: ens3f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:28 brd ff:ff:ff:ff:ff:ff
-    altname enp94s0f0
-7: ens3f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:29 brd ff:ff:ff:ff:ff:ff
-    altname enp94s0f1
-8: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:70:dc:84 brd ff:ff:ff:ff:ff:ff
-    altname enp135s0f0
-9: ens3f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:2a brd ff:ff:ff:ff:ff:ff
-    altname enp94s0f2
-10: ens3f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:2b brd ff:ff:ff:ff:ff:ff
-    altname enp94s0f3
-11: ens2f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:04 brd ff:ff:ff:ff:ff:ff
-    altname enp96s0f0
-12: ens2f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:05 brd ff:ff:ff:ff:ff:ff
-    altname enp96s0f1
-13: ens2f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:06 brd ff:ff:ff:ff:ff:ff
-    altname enp96s0f2
-14: ens2f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:86:17:07 brd ff:ff:ff:ff:ff:ff
-    altname enp96s0f3
-15: ens7f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether b4:96:91:70:dc:86 brd ff:ff:ff:ff:ff:ff
-    altname enp135s0f1
-16: ens1f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:3b:18 brd ff:ff:ff:ff:ff:ff
-    altname enp59s0f0
-    inet 72.2.0.13/22 brd 72.2.3.255 scope global noprefixroute ens1f0
-       valid_lft forever preferred_lft forever
-    inet6 2405:100:200:172::13/64 scope global noprefixroute
-       valid_lft forever preferred_lft forever
-    inet6 fe80::527c:6fff:fe24:3b18/64 scope link noprefixroute
-       valid_lft forever preferred_lft forever
-17: ens1f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:3b:19 brd ff:ff:ff:ff:ff:ff
-    altname enp59s0f1
-18: ens1f2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:3b:1a brd ff:ff:ff:ff:ff:ff
-    altname enp59s0f2
-19: ens1f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether 50:7c:6f:24:3b:1b brd ff:ff:ff:ff:ff:ff
-    altname enp59s0f3
-20: ens4f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:3b:84 brd ff:ff:ff:ff:ff:ff
-    altname enp175s0f0
-21: ens4f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:3b:85 brd ff:ff:ff:ff:ff:ff
-    altname enp175s0f1
-22: ens4f2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 50:7c:6f:24:3b:86 brd ff:ff:ff:ff:ff:ff
-    altname enp175s0f2
-23: ens4f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
-    link/ether 50:7c:6f:24:3b:87 brd ff:ff:ff:ff:ff:ff
-    altname enp175s0f3
-24: cni-podman0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether c2:aa:c9:5c:90:11 brd ff:ff:ff:ff:ff:ff
-    inet 10.88.0.1/16 brd 10.88.255.255 scope global cni-podman0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::c0aa:c9ff:fe5c:9011/64 scope link
-       valid_lft forever preferred_lft forever
-25: veth67d83a29@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni-podman0 state UP group default
-    link/ether 1a:32:62:fc:09:14 brd ff:ff:ff:ff:ff:ff link-netns netns-ad1a7a8e-ea35-c346-92b4-1c6b148a5539
-    inet6 fe80::1832:62ff:fefc:914/64 scope link
-       valid_lft forever preferred_lft forever
-[core@bscmaster1 ~]$
+[root@mirror1 ocp-agentMNO]# openshift-install agent wait-for bootstrap-complete --log-level debug
+DEBUG OpenShift Installer 4.18.23
+DEBUG Built from commit 53d25898f4a68451e9e1478336e1991fd5ded04f
+DEBUG asset directory: .
+DEBUG Loading Agent Config...
+DEBUG Using Agent Config loaded from state file
+DEBUG Loading Agent Manifests...
+DEBUG   Loading Agent PullSecret...
+DEBUG     Loading Agent Workflow...
+DEBUG     Using Agent Workflow loaded from state file
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG       Loading Agent Workflow...
+DEBUG       Loading AddNodes Config...
+DEBUG       Using AddNodes Config loaded from state file
+DEBUG     Using Agent Installer ClusterInfo loaded from state file
+DEBUG     Loading Install Config...
+DEBUG     Using Install Config loaded from state file
+DEBUG   Using Agent PullSecret loaded from state file
+DEBUG   Loading InfraEnv Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG     Loading Install Config...
+DEBUG     Loading Agent Config...
+DEBUG   Using InfraEnv Config loaded from state file
+DEBUG   Loading NMState Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG     Loading Agent Hosts...
+DEBUG       Loading Agent Workflow...
+DEBUG       Loading AddNodes Config...
+DEBUG       Loading Install Config...
+DEBUG       Loading Agent Config...
+DEBUG     Using Agent Hosts loaded from state file
+DEBUG     Loading Install Config...
+DEBUG   Using NMState Config loaded from state file
+DEBUG   Loading AgentClusterInstall Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Install Config...
+DEBUG     Loading Agent Hosts...
+DEBUG     Loading Agent Config...
+DEBUG   Using AgentClusterInstall Config loaded from state file
+DEBUG   Loading ClusterDeployment Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Install Config...
+DEBUG   Using ClusterDeployment Config loaded from state file
+DEBUG   Loading ClusterImageSet Config...
+DEBUG     Loading Agent Workflow...
+DEBUG     Loading Agent Installer ClusterInfo...
+DEBUG     Loading Release Image Pull Spec...
+DEBUG     Using Release Image Pull Spec loaded from state file
+DEBUG     Loading Install Config...
+DEBUG   Using ClusterImageSet Config loaded from state file
+DEBUG Using Agent Manifests loaded from state file
+DEBUG Loading Install Config...
+DEBUG   Loading SSH Key...
+DEBUG   Loading Base Domain...
+DEBUG     Loading Platform...
+DEBUG   Loading Cluster Name...
+DEBUG     Loading Base Domain...
+DEBUG     Loading Platform...
+DEBUG   Loading Pull Secret...
+DEBUG   Loading Platform...
+DEBUG Loading Agent Hosts...
+DEBUG RendezvousIP from the NMStateConfig 72.2.0.13
+DEBUG Loading Agent Installer API Auth Config...
+DEBUG   Loading Agent Workflow...
+DEBUG   Using Agent Workflow loaded from state file
+DEBUG   Loading AddNodes Config...
+DEBUG   Using AddNodes Config loaded from state file
+DEBUG Using Agent Installer API Auth Config loaded from state file
+DEBUG Agent Rest API never initialized. Bootstrap Kube API never initialized
+INFO Waiting for cluster install to initialize. Sleeping for 30 seconds
+DEBUG Agent Rest API never initialized. Bootstrap Kube API never initialized
+INFO Waiting for cluster install to initialize. Sleeping for 30 seconds
+DEBUG Agent Rest API Initialized
+DEBUG cluster is not registered in rest API
+DEBUG infraenv is not registered in rest API
+INFO Unable to retrieve cluster metadata from Agent Rest API: no clusterID known for the cluster
+DEBUG cluster is not registered in rest API
+DEBUG infraenv is not registered in rest API
+DEBUG cluster is not registered in rest API
+DEBUG infraenv is not registered in rest API
+DEBUG cluster is not registered in rest API
+DEBUG infraenv is not registered in rest API
+DEBUG cluster is not registered in rest API
+DEBUG infraenv is not registered in rest API
+DEBUG cluster is not registered in rest API
+DEBUG infraenv is not registered in rest API
+DEBUG cluster is not registered in rest API
+DEBUG infraenv is not registered in rest API
+DEBUG cluster is not registered in rest API
+DEBUG infraenv is not registered in rest API
+INFO Cluster is not ready for install. Check validations
+INFO Host 036a5fd0-52e7-8154-b156-ca6303aa84b9: Successfully registered
+DEBUG Cluster validation: Platform requirements satisfied
+DEBUG Cluster validation: The pull secret is set.
+WARNING Cluster validation: The cluster has hosts that are not ready to install.
+WARNING Cluster validation: The cluster must have exactly 3 dedicated control plane nodes. Add or remove hosts, or change their roles configurations to meet the requirement.
+DEBUG Cluster validation: API virtual IPs are defined.
+DEBUG Cluster validation: The Cluster Network CIDR is defined.
+DEBUG Cluster validation: The base domain is defined.
+DEBUG Cluster validation: Ingress virtual IPs are defined.
+DEBUG Cluster validation: The Machine Network CIDR is defined.
+DEBUG Cluster validation: The Cluster Network prefix is valid.
+DEBUG Cluster validation: The cluster has a valid network type
+DEBUG Cluster validation: Same address families for all networks.
+DEBUG Cluster validation: No CIDRS are overlapping.
+DEBUG Cluster validation: No ntp problems found
+DEBUG Cluster validation: The Service Network CIDR is defined.
+DEBUG Cluster validation: cnv is disabled
+DEBUG Cluster validation: lso is disabled
+DEBUG Cluster validation: lvm is disabled
+DEBUG Cluster validation: mce is disabled
+DEBUG Cluster validation: mtv is disabled
+DEBUG Cluster validation: node-feature-discovery is disabled
+DEBUG Cluster validation: nvidia-gpu is disabled
+DEBUG Cluster validation: odf is disabled
+DEBUG Cluster validation: openshift-ai is disabled
+DEBUG Cluster validation: pipelines is disabled
+DEBUG Cluster validation: serverless is disabled
+DEBUG Cluster validation: servicemesh is disabled
+WARNING Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Inventory has not been received for the host
+WARNING Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Missing inventory
+WARNING Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Validation error
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Host agent is compatible with the service
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: No request to skip formatting of the installation disk
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Host is connected
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Media device is connected
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Machine Network CIDR is defined
+WARNING Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Host couldn't synchronize with any NTP server
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Host clock is synchronized with service
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Domain name resolution for the api.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Domain name resolution for the api-int.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Domain name resolution for the *.apps.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: Host inventory has not yet been defined, skipping validation.
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: cnv is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: lso is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: lvm is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: mce is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: mtv is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: node-feature-discovery is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: nvidia-gpu is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: odf is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: openshift-ai is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: pipelines is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: serverless is disabled
+DEBUG Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: servicemesh is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: cnv is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: lso is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: lvm is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: mce is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: mtv is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: node-feature-discovery is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: nvidia-gpu is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: odf is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: openshift-ai is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: pipelines is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: serverless is disabled
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: servicemesh is disabled
+WARNING Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Inventory has not been received for the host
+WARNING Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Missing inventory
+WARNING Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Validation error
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Host agent is compatible with the service
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: No request to skip formatting of the installation disk
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Host is connected
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Media device is connected
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Machine Network CIDR is defined
+WARNING Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Host couldn't synchronize with any NTP server
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Host clock is synchronized with service
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Domain name resolution for the api.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Domain name resolution for the api-int.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Domain name resolution for the *.apps.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: Host inventory has not yet been defined, skipping validation.
+WARNING Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Inventory has not been received for the host
+WARNING Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Missing inventory
+WARNING Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Validation error
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Host agent is compatible with the service
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: No request to skip formatting of the installation disk
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Host is connected
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Media device is connected
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Machine Network CIDR is defined
+WARNING Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Host couldn't synchronize with any NTP server
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Domain name resolution for the api.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Domain name resolution for the api-int.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Domain name resolution for the *.apps.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: Host inventory has not yet been defined, skipping validation.
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: cnv is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: lso is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: lvm is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: mce is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: mtv is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: node-feature-discovery is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: nvidia-gpu is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: odf is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: openshift-ai is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: pipelines is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: serverless is disabled
+DEBUG Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: servicemesh is disabled
+INFO Host 6cb01f00-14a2-56a6-c2df-250d0ccda483: Successfully registered
+WARNING Host c4cf52a6-d75c-609b-e9df-e6ceb1b496a6 validation: No connectivity to the majority of hosts in the cluster
+WARNING Host 036a5fd0-52e7-8154-b156-ca6303aa84b9 validation: No connectivity to the majority of hosts in the cluster
+WARNING Host 6cb01f00-14a2-56a6-c2df-250d0ccda483 validation: No connectivity to the majority of hosts in the cluster
+WARNING Host 6cb01f00-14a2-56a6-c2df-250d0ccda483: validation 'belongs-to-majority-group' failed
+INFO Updated image information (Image type is "full-iso", SSH public key is set)
+WARNING Cluster validation: api vips <72.2.0.87> are not verified yet.;api vips <2405:100:200:172::87> are not verified yet.
+WARNING Cluster validation: ingress vips <72.2.0.88> are not verified yet.;ingress vips <2405:100:200:172::88> are not verified yet.
+WARNING Host bscmaster2.cl2.mno1-rvt.lan validation: Inventory has not been received for the host
+WARNING Host bscmaster2.cl2.mno1-rvt.lan validation: Missing inventory
+WARNING Host bscmaster2.cl2.mno1-rvt.lan validation: Validation error
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Host agent is compatible with the service
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: No request to skip formatting of the installation disk
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Host is connected
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Media device is connected
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Machine Network CIDR is defined
+WARNING Host bscmaster2.cl2.mno1-rvt.lan validation: No connectivity to the majority of hosts in the cluster
+WARNING Host bscmaster2.cl2.mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Host clock is synchronized with service
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Domain name resolution for the api.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Domain name resolution for the api-int.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: Host inventory has not yet been defined, skipping validation.
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: cnv is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: lso is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: lvm is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: mce is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: mtv is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: node-feature-discovery is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: nvidia-gpu is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: odf is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: openshift-ai is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: pipelines is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: serverless is disabled
+DEBUG Host bscmaster2.cl2.mno1-rvt.lan validation: servicemesh is disabled
+WARNING Host bscmaster1.cl2.mno1-rvt.lan validation: Inventory has not been received for the host
+WARNING Host bscmaster1.cl2.mno1-rvt.lan validation: Missing inventory
+WARNING Host bscmaster1.cl2.mno1-rvt.lan validation: Validation error
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Host agent is compatible with the service
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: No request to skip formatting of the installation disk
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Host is connected
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Media device is connected
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Machine Network CIDR is defined
+WARNING Host bscmaster1.cl2.mno1-rvt.lan validation: No connectivity to the majority of hosts in the cluster
+WARNING Host bscmaster1.cl2.mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Host clock is synchronized with service
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Domain name resolution for the api.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Domain name resolution for the api-int.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: Host inventory has not yet been defined, skipping validation.
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: cnv is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: lso is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: lvm is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: mce is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: mtv is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: node-feature-discovery is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: nvidia-gpu is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: odf is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: openshift-ai is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: pipelines is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: serverless is disabled
+DEBUG Host bscmaster1.cl2.mno1-rvt.lan validation: servicemesh is disabled
+WARNING Host bscmaster3.cl2.mno1-rvt.lan validation: Inventory has not been received for the host
+WARNING Host bscmaster3.cl2.mno1-rvt.lan validation: Missing inventory
+WARNING Host bscmaster3.cl2.mno1-rvt.lan validation: Validation error
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Host agent is compatible with the service
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: No request to skip formatting of the installation disk
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Host is connected
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Media device is connected
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Machine Network CIDR is defined
+WARNING Host bscmaster3.cl2.mno1-rvt.lan validation: No connectivity to the majority of hosts in the cluster
+WARNING Host bscmaster3.cl2.mno1-rvt.lan validation: Host couldn't synchronize with any NTP server
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Host clock is synchronized with service
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: All required container images were either pulled successfully or no attempt was made to pull them
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Domain name resolution for the api.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Domain name resolution for the api-int.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Domain name resolution for the *.apps.cl2.mno1-rvt.lan domain was successful or not required
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: Host inventory has not yet been defined, skipping validation.
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: cnv is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: lso is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: lvm is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: mce is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: mtv is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: node-feature-discovery is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: nvidia-gpu is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: odf is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: openshift-ai is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: pipelines is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: serverless is disabled
+DEBUG Host bscmaster3.cl2.mno1-rvt.lan validation: servicemesh is disabled
+INFO Host 036a5fd0-52e7-8154-b156-ca6303aa84b9: set as bootstrap
+INFO Host bscmaster2.cl2.mno1-rvt.lan validation: Valid inventory exists for the host
+INFO Host bscmaster2.cl2.mno1-rvt.lan validation: Hostname bscmaster2.cl2.mno1-rvt.lan is allowed
+INFO Host bscmaster2.cl2.mno1-rvt.lan validation: Speed of installation disk has not yet been measured
+INFO Host bscmaster1.cl2.mno1-rvt.lan validation: Valid inventory exists for the host
+INFO Host bscmaster1.cl2.mno1-rvt.lan validation: Hostname bscmaster1.cl2.mno1-rvt.lan is allowed
+INFO Host bscmaster1.cl2.mno1-rvt.lan validation: Speed of installation disk has not yet been measured
+INFO Host bscmaster3.cl2.mno1-rvt.lan validation: Valid inventory exists for the host
+INFO Host bscmaster3.cl2.mno1-rvt.lan validation: Hostname bscmaster3.cl2.mno1-rvt.lan is allowed
+INFO Host bscmaster3.cl2.mno1-rvt.lan validation: Speed of installation disk has not yet been measured
+INFO Host bscmaster3.cl2.mno1-rvt.lan: calculated role is master
+INFO Cluster validation: The cluster has the exact amount of dedicated control plane nodes.
+WARNING Cluster validation: Hosts' clocks are not synchronized (there's more than a 4 minutes gap between clocks), please configure an NTP server via DHCP or set clocks manually.
+INFO Cluster validation: api vips 72.2.0.87, 2405:100:200:172::87 belongs to the Machine CIDR and is not in use.
+INFO Cluster validation: ingress vips 72.2.0.88, 2405:100:200:172::88 belongs to the Machine CIDR and is not in use.
+INFO Cluster validation: All hosts in the cluster are ready to install.
+INFO Host bscmaster2.cl2.mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
+INFO Host bscmaster1.cl2.mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
+INFO Host bscmaster3.cl2.mno1-rvt.lan validation: Host has connectivity to the majority of hosts in the cluster
+INFO Host bscmaster3.cl2.mno1-rvt.lan: updated status from insufficient to known (Host is ready to be installed)
