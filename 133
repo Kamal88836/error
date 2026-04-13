@@ -1,42 +1,7 @@
 Events:
-  Type     Reason            Age                            From               Message
-  ----     ------            ----                           ----               -------
-  Warning  FailedScheduling  <invalid>                      default-scheduler  0/3 nodes are available: 1 Insufficient cpu, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/3 nodes are available: 1 No preemption victims found for incoming pod, 2 Preemption is not helpful for scheduling.
-  Normal   Scheduled         <invalid>                      default-scheduler  Successfully assigned cnf-bscf/bscf9901-bip1-55f89464d7-zltt2 to master2.airtelvvt.samsungbsc.local
-  Warning  FailedMount       <invalid> (x2 over <invalid>)  kubelet            MountVolume.MountDevice failed for volume "pvc-ebe919ef-0b57-4e2d-bbf4-6008e700bade" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-dcd756fa-a3b1-4f15-a688-4b310df53d0a already exists
-  Warning  FailedMount       <invalid> (x4 over <invalid>)  kubelet            MountVolume.MountDevice failed for volume "pvc-8e07fe3a-e11a-41ab-a172-20028d5178d8" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-55706e06-be35-485a-a919-10b3ff5be049 already exists
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]# oc get po -A -o wide | grep dcd756fa
-[root@bastion ~]# oc get po -A -o wide | grep 55706e06
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]# oc get volumeattachment
-NAME                                                                   ATTACHER                                PV                                         NODE                                 ATTACHED   AGE
-csi-11253101c0da2b589234a95231490b94fe9c88b30f6b1ab6203861f279d59425   openshift-storage.cephfs.csi.ceph.com   pvc-e0439e5b-9282-4600-bad2-3b383d15f30e   master3.airtelvvt.samsungbsc.local   true       18h
-csi-17de8f29d4d7edd67b54cd94e12b3eda16081a88e2400a02d9c05a15e3086ecd   openshift-storage.cephfs.csi.ceph.com   pvc-e0439e5b-9282-4600-bad2-3b383d15f30e   master2.airtelvvt.samsungbsc.local   true       2d15h
-csi-9805de75e2632e0e3f0f38b553379017443402ba7eb12502a31d0bbfdd8afcc8   openshift-storage.cephfs.csi.ceph.com   pvc-8e07fe3a-e11a-41ab-a172-20028d5178d8   master3.airtelvvt.samsungbsc.local   true       2d14h
-csi-a566cde68f9f2866862f332a34635cfac8891fa35d8a75b855a288e6dc59a8cd   openshift-storage.cephfs.csi.ceph.com   pvc-ebe919ef-0b57-4e2d-bbf4-6008e700bade   master2.airtelvvt.samsungbsc.local   true       2d15h
-csi-a9751c5f20d43192b1cb9be1899f11d2e91477803c07afe7dfdd8162ffebbb09   openshift-storage.rbd.csi.ceph.com      pvc-3101a03c-2fca-46c0-9179-368a47a3ce9e   master3.airtelvvt.samsungbsc.local   true       2d15h
-csi-c0554f1d775bba9ac416878a0e91a5e09fc2e5f4081d982c93d7e0fbcf2ea6ff   openshift-storage.cephfs.csi.ceph.com   pvc-ebe919ef-0b57-4e2d-bbf4-6008e700bade   master1.airtelvvt.samsungbsc.local   true       2d15h
-csi-cacfccc60851996dccfe198c0af8f889af52c1224afa1548a6e4b13e728d5918   openshift-storage.cephfs.csi.ceph.com   pvc-8e07fe3a-e11a-41ab-a172-20028d5178d8   master1.airtelvvt.samsungbsc.local   true       2d15h
-csi-d90a981c123af2acfd53d005bcbfd0bc4127c4d3fb2be5f6bf93a5805f4a588e   openshift-storage.cephfs.csi.ceph.com   pvc-ebe919ef-0b57-4e2d-bbf4-6008e700bade   master3.airtelvvt.samsungbsc.local   true       2d14h
-csi-f83335bdb733ec3178ff1a4b92558a53eb1ddd80b7d75e05b904c279adcb43d1   openshift-storage.cephfs.csi.ceph.com   pvc-8e07fe3a-e11a-41ab-a172-20028d5178d8   master2.airtelvvt.samsungbsc.local   true       2d15h
-[root@bastion ~]# oc get volumeattachment  | grep dcd756fa
-[root@bastion ~]# oc get po -o wide
-NAME                             READY   STATUS     RESTARTS   AGE     IP           NODE                                 NOMINATED NODE   READINESS GATES
-bscf9901-bip0-76c5df9f8b-s6s5g   1/1     Running    0          2d15h   10.30.2.59   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bip1-55f89464d7-zltt2   0/1     Init:0/2   0          37m     <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp0-574b6c59dc-sbm4s   1/1     Running    0          2d15h   10.30.2.49   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp1-6cc5f66858-tcznf   0/1     Init:0/1   0          37m     <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp2-6d947d9f95-vvsgv   1/1     Running    0          2d15h   10.30.2.51   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp3-6fb597b54-f9rjr    0/1     Init:0/1   0          22m     <none>       master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp0-7fdfb79d7b-rxrff   1/1     Running    0          2d15h   10.30.2.27   master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp1-79d4cbcf74-jxj5k   1/1     Running    0          2d15h   10.30.0.99   master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-dmp0-6fd9b97cc-xsng9    0/1     Init:0/1   0          18h     <none>       master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-pmp0-747f9cd8f7-kd2lf   1/1     Running    0          2d15h   10.30.0.97   master3.airtelvvt.samsungbsc.local   <none>           <none>
-[root@bastion ~]#
+  Type     Reason            Age                             From               Message
+  ----     ------            ----                            ----               -------
+  Warning  FailedScheduling  <invalid>                       default-scheduler  0/3 nodes are available: 1 Insufficient cpu, 1 Insufficient hugepages-1Gi, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/3 nodes are available: 1 No preemption victims found for incoming pod, 2 Preemption is not helpful for scheduling.
+  Normal   Scheduled         <invalid>                       default-scheduler  Successfully assigned cnf-bscf/bscf9901-bpp1-6cc5f66858-tcznf to master2.airtelvvt.samsungbsc.local
+  Warning  FailedMount       <invalid> (x12 over <invalid>)  kubelet            MountVolume.MountDevice failed for volume "pvc-8e07fe3a-e11a-41ab-a172-20028d5178d8" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-55706e06-be35-485a-a919-10b3ff5be049 already exists
+  Warning  FailedMount       <invalid> (x15 over <invalid>)  kubelet            MountVolume.MountDevice failed for volume "pvc-ebe919ef-0b57-4e2d-bbf4-6008e700bade" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-dcd756fa-a3b1-4f15-a688-4b310df53d0a already exists
