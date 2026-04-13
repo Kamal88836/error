@@ -1,90 +1,94 @@
-[root@mirror1 ocp-agentMNO]# cat /root/kamal/install-config.yaml
-apiVersion: v1
-baseDomain: mno1-rvt.lan
-cpuPartitioningMode: AllNodes
-imageDigestSources:
-- mirrors:
-  - mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4/openshift/release
-  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-
-- mirrors:
-  - mirror1.cl2.mno1-rvt.lan:8443/ocp4/openshift4/openshift/release-images
-  source: quay.io/openshift-release-dev/ocp-release
-metadata:
-  name: cl2
-compute:
-- hyperthreading: Enabled
-  name: worker
-  replicas: 0
-controlPlane:
-  hyperthreading: Enabled
-  name: master
-  replicas: 3
-networking:
-  networkType: OVNKubernetes
-  clusterNetwork:
-  - cidr: 10.128.0.0/14
-    hostPrefix: 23
-  - cidr: fd01::/48
-    hostPrefix: 64
-  serviceNetwork:
-  - 172.30.0.0/16
-  - fd02::/112
-  machineNetwork:
-  - cidr: 72.2.0.0/22
-  - cidr: 2405:100:200:172::/64
-platform:
-  baremetal:
-    apiVIPs:
-    - 72.2.0.87
-    - 2405:100:200:172::87
-    ingressVIPs:
-    - 72.2.0.88
-    - 2405:100:200:172::88
-
-fips: false
-pullSecret: '{
-      "auths": {
-        "mirror1.cl2.mno1-rvt.lan:8443": {
-            "auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="
-        },
-        "cloud.openshift.com": {
-          "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
-        },
-        "quay.io": {
-          "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA=="
-        },
-        "registry.connect.redhat.com": {
-          "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
-        },
-        "registry.redhat.io": {
-          "auth": "fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA=="
-        }
-      }
-    }'
-sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGbH2nrLS8wuuEuXAuIsbQgn50sf/wVifmUe8wbJ/dI5TLD94OopQBGwbh62C38LBS2UtU5thkUZjlLXxCBk10lLK7p1gO154Fqq9mEQQn2xwF9jCFxAvWVb1u7Gr512KFIFx23Ct4sGiQcH9eXxeDLvRRz8d4QqFPIQ2pNbdz8Ef7UtqQIeBlzgDSHBqiylhQYQtthqHOWby8Phdoz51gxqwQRo91fJW5Kxhm2O1fSRR6tgLAx2+REzMQhFDtrZr6VexiTzrBuZcY0tl6QWMioIhjlmGwpeOH5Q0jIiXi9Egg+FIOw7R9ytFSXZCcOpZmoL5WGxvnd0eOoHD9t8kdb5oSxT5ypY3Q+jAU6IyuED/9i9BtI36vIYRmZKO9buMTxgQ4TVsJZe2K1stv6ENnpZvTqIoJPar7Syi7uov9QUSPuccc9ver0jpNfO8M4OSFCepKNXxIQ7/QyCIgx+is3AukBip55TiSOHCu9vlSHRo93P1kOjsAzxF7ujkLDes= root@mirror1.cl2-mno1-rvt.lan'
-# Get root ca cert from Mirror Registry Server and keep proper indentation while pasting here (cat /root/quay-install/quay-rootCA/rootCA.pem)
-additionalTrustBundle: |
- -----BEGIN CERTIFICATE-----
- MIIDzzCCAregAwIBAgIUT1svH1HqiPZbBLxdshjq5T6arT0wDQYJKoZIhvcNAQEL
- BQAwcjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
- azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xITAfBgNVBAMMGG1p
- cnJvcjEuY2wyLm1ubzEtcnZ0LmxhbjAeFw0yNjA0MDYwOTU4MzZaFw0yOTAxMjQw
- OTU4MzZaMHIxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJWQTERMA8GA1UEBwwITmV3
- IFlvcmsxDTALBgNVBAoMBFF1YXkxETAPBgNVBAsMCERpdmlzaW9uMSEwHwYDVQQD
- DBhtaXJyb3IxLmNsMi5tbm8xLXJ2dC5sYW4wggEiMA0GCSqGSIb3DQEBAQUAA4IB
- DwAwggEKAoIBAQDLhB0BstGJxCnbgJgaqGghENtuWCDipuVnWLXprR93rRcYHBJS
- MHZwzBxXZf2HveQTskUh69G4x4nj1Ttq3WUCMBUsfYbJ2YTbUNn27yCHKrq9ftMr
- +UqGq7uTjZhPCi41dTt54Q/bk1i3BtaYDNMasNRSGz1F0UXvg6Z08UlDOpMA86/i
- ydnBmtaXU4kUXnOqwtQdS1ggzNVGb5YosOCqe60gO/RDRLbmbiMxyJEyyv7nJkpT
- niaIvR33qmAQXyyIYvBM9zcTJSRxFbSn7vXzKI5g/TUHkKWGJQsesw2/Y33kRdOG
- bwh/DOKFVIXwR1WyP4xBt/Mw12AIQ2SEm6bxAgMBAAGjXTBbMAsGA1UdDwQEAwIC
- 5DATBgNVHSUEDDAKBggrBgEFBQcDATAjBgNVHREEHDAaghhtaXJyb3IxLmNsMi5t
- bm8xLXJ2dC5sYW4wEgYDVR0TAQH/BAgwBgEB/wIBATANBgkqhkiG9w0BAQsFAAOC
- AQEAc4tsiF6u+jYd8eeaSuI/NY0TDzbHzmdv9ychBG3Xo1CLdQxabKothWdtPmXx
- BpBg2uF6u62fYNaXFh61wDyNCdWO1oPYr59R5vKNR6/upokLFFonpAo9ju0r1fMt
- +WwT0CcKfzdDKq9Q46m3xuAAuof+KydjIDjBDUJSHx/TVTPl9V8V1IhN8x+evnIk
- YWeMKFY2f+J4MmNtFYI+pIM/z0znWXm7xf5JEMB9e9HpiQ/0El8Fwegb/L1dVxOi
- yf+8aJNVEbw3D7E4cJ0hw9qO37EMNsPq6H2eYtIj0srisaj0rxP5hXxhbAJGeTxr
- HNFtdieJATc5I48ZIaHbfIbZTw==
- -----END CERTIFICATE-----
+[core@bscmaster1 ~]$ ip route
+default via 72.2.0.1 dev ens1f0 proto static metric 100
+10.88.0.0/16 dev cni-podman0 proto kernel scope link src 10.88.0.1
+72.2.0.0/22 dev ens1f0 proto kernel scope link src 72.2.0.13 metric 100
+[core@bscmaster1 ~]$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eno1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether e4:43:4b:bd:9c:00 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f0
+3: eno2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether e4:43:4b:bd:9c:01 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f1
+4: eno3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether e4:43:4b:bd:9c:02 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f2
+5: eno4: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether e4:43:4b:bd:9c:03 brd ff:ff:ff:ff:ff:ff
+    altname enp25s0f3
+6: ens3f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:86:17:28 brd ff:ff:ff:ff:ff:ff
+    altname enp94s0f0
+7: ens3f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:86:17:29 brd ff:ff:ff:ff:ff:ff
+    altname enp94s0f1
+8: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:70:dc:84 brd ff:ff:ff:ff:ff:ff
+    altname enp135s0f0
+9: ens3f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:86:17:2a brd ff:ff:ff:ff:ff:ff
+    altname enp94s0f2
+10: ens3f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:86:17:2b brd ff:ff:ff:ff:ff:ff
+    altname enp94s0f3
+11: ens2f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:86:17:04 brd ff:ff:ff:ff:ff:ff
+    altname enp96s0f0
+12: ens2f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:86:17:05 brd ff:ff:ff:ff:ff:ff
+    altname enp96s0f1
+13: ens2f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:86:17:06 brd ff:ff:ff:ff:ff:ff
+    altname enp96s0f2
+14: ens2f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:86:17:07 brd ff:ff:ff:ff:ff:ff
+    altname enp96s0f3
+15: ens7f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether b4:96:91:70:dc:86 brd ff:ff:ff:ff:ff:ff
+    altname enp135s0f1
+16: ens1f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq state UP group default qlen 1000
+    link/ether 50:7c:6f:24:3b:18 brd ff:ff:ff:ff:ff:ff
+    altname enp59s0f0
+    inet 72.2.0.13/22 brd 72.2.3.255 scope global noprefixroute ens1f0
+       valid_lft forever preferred_lft forever
+    inet6 2405:100:200:172::13/64 scope global noprefixroute
+       valid_lft forever preferred_lft forever
+    inet6 fe80::527c:6fff:fe24:3b18/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+17: ens1f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 50:7c:6f:24:3b:19 brd ff:ff:ff:ff:ff:ff
+    altname enp59s0f1
+18: ens1f2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 50:7c:6f:24:3b:1a brd ff:ff:ff:ff:ff:ff
+    altname enp59s0f2
+19: ens1f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:24:3b:1b brd ff:ff:ff:ff:ff:ff
+    altname enp59s0f3
+20: ens4f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 50:7c:6f:24:3b:84 brd ff:ff:ff:ff:ff:ff
+    altname enp175s0f0
+21: ens4f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 50:7c:6f:24:3b:85 brd ff:ff:ff:ff:ff:ff
+    altname enp175s0f1
+22: ens4f2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 50:7c:6f:24:3b:86 brd ff:ff:ff:ff:ff:ff
+    altname enp175s0f2
+23: ens4f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 50:7c:6f:24:3b:87 brd ff:ff:ff:ff:ff:ff
+    altname enp175s0f3
+24: cni-podman0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether c2:aa:c9:5c:90:11 brd ff:ff:ff:ff:ff:ff
+    inet 10.88.0.1/16 brd 10.88.255.255 scope global cni-podman0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c0aa:c9ff:fe5c:9011/64 scope link
+       valid_lft forever preferred_lft forever
+25: veth67d83a29@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master cni-podman0 state UP group default
+    link/ether 1a:32:62:fc:09:14 brd ff:ff:ff:ff:ff:ff link-netns netns-ad1a7a8e-ea35-c346-92b4-1c6b148a5539
+    inet6 fe80::1832:62ff:fefc:914/64 scope link
+       valid_lft forever preferred_lft forever
+[core@bscmaster1 ~]$
