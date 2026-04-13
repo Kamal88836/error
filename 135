@@ -1,0 +1,245 @@
+[root@bastion ~]# oc describe node master3
+Name:               master3.airtelvvt.samsungbsc.local
+Roles:              control-plane,master,worker
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    cluster.ocs.openshift.io/openshift-storage=
+                    feature.node.kubernetes.io/network-sriov.capable=true
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=master3.airtelvvt.samsungbsc.local
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node-role.kubernetes.io/master=
+                    node-role.kubernetes.io/worker=
+                    node.openshift.io/os_id=rhcos
+                    sriovnetwork.openshift.io/device-plugin=Enabled
+                    topology.rook.io/rack=rack0
+Annotations:        csi.volume.kubernetes.io/nodeid:
+                      {"openshift-storage.cephfs.csi.ceph.com":"master3.airtelvvt.samsungbsc.local","openshift-storage.rbd.csi.ceph.com":"master3.airtelvvt.sams...
+                    k8s.ovn.org/host-cidrs:
+                      ["20.1.30.152/24","20.1.30.160/32","20.1.30.161/32","2010:0:0:30::12/64","2010:0:0:30::15/128","2010:0:0:30::16/128"]
+                    k8s.ovn.org/l3-gateway-config:
+                      {"default":{"mode":"shared","bridge-id":"br-ex","interface-id":"br-ex_master3.airtelvvt.samsungbsc.local","mac-address":"50:7c:6f:4b:9b:18...
+                    k8s.ovn.org/node-chassis-id: 82254b54-3c11-494a-8c9e-34fc79448bad
+                    k8s.ovn.org/node-gateway-router-lrp-ifaddrs: {"default":{"ipv4":"100.64.0.3/16","ipv6":"fd98::3/64"}}
+                    k8s.ovn.org/node-id: 3
+                    k8s.ovn.org/node-masquerade-subnet: {"ipv4":"169.254.0.0/17","ipv6":"fd69::/112"}
+                    k8s.ovn.org/node-primary-ifaddr: {"ipv4":"20.1.30.152/24","ipv6":"2010:0:0:30::12/64"}
+                    k8s.ovn.org/node-subnets: {"default":["10.30.0.0/24","fd01:0:0:2::/64"]}
+                    k8s.ovn.org/node-transit-switch-port-ifaddr: {"ipv4":"100.88.0.3/16","ipv6":"fd97::3/64"}
+                    k8s.ovn.org/remote-zone-migrated: master3.airtelvvt.samsungbsc.local
+                    k8s.ovn.org/zone-name: master3.airtelvvt.samsungbsc.local
+                    machine.openshift.io/machine: openshift-machine-api/airtelvvt-zqxbg-master-2
+                    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+                    machineconfiguration.openshift.io/currentConfig: rendered-master-0fc6d7305d49d26c15f89b00c28e98c5
+                    machineconfiguration.openshift.io/desiredConfig: rendered-master-0fc6d7305d49d26c15f89b00c28e98c5
+                    machineconfiguration.openshift.io/desiredDrain: uncordon-rendered-master-0fc6d7305d49d26c15f89b00c28e98c5
+                    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-0fc6d7305d49d26c15f89b00c28e98c5
+                    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: false
+                    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: 20331213
+                    machineconfiguration.openshift.io/post-config-action:
+                    machineconfiguration.openshift.io/reason:
+                    machineconfiguration.openshift.io/state: Done
+                    sriovnetwork.openshift.io/current-state: Idle
+                    sriovnetwork.openshift.io/state: Idle
+                    tuned.openshift.io/bootcmdline:
+                      skew_tick=1 tsc=reliable rcupdate.rcu_normal_after_boot=1 nohz=on rcu_nocbs=1-27,29-54,57-83,85-110 tuned.non_isolcpus=00008000,00100000,0...
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 11 Mar 2026 22:14:39 +0900
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  master3.airtelvvt.samsungbsc.local
+  AcquireTime:     <unset>
+  RenewTime:       Mon, 13 Apr 2026 22:30:50 +0900
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Mon, 13 Apr 2026 22:30:40 +0900   Sat, 11 Apr 2026 23:03:21 +0900   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Mon, 13 Apr 2026 22:30:40 +0900   Sat, 11 Apr 2026 23:03:21 +0900   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Mon, 13 Apr 2026 22:30:40 +0900   Sat, 11 Apr 2026 23:03:21 +0900   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Mon, 13 Apr 2026 22:30:40 +0900   Sat, 11 Apr 2026 23:03:21 +0900   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  20.1.30.152
+  InternalIP:  2010:0:0:30::12
+  Hostname:    master3.airtelvvt.samsungbsc.local
+Capacity:
+  cpu:                                     112
+  ephemeral-storage:                       936653792Ki
+  hugepages-1Gi:                           18Gi
+  hugepages-2Mi:                           0
+  management.workload.openshift.io/cores:  112k
+  memory:                                  791463688Ki
+  openshift.io/pci_sriov_net_bh0c:         5
+  openshift.io/pci_sriov_net_bh0u:         4
+  openshift.io/pci_sriov_net_bh0u_2:       4
+  pods:                                    250
+Allocatable:
+  cpu:                                     106
+  ephemeral-storage:                       862146391454
+  hugepages-1Gi:                           18Gi
+  hugepages-2Mi:                           0
+  management.workload.openshift.io/cores:  112k
+  memory:                                  754149128Ki
+  openshift.io/pci_sriov_net_bh0c:         5
+  openshift.io/pci_sriov_net_bh0u:         4
+  openshift.io/pci_sriov_net_bh0u_2:       4
+  pods:                                    250
+System Info:
+  Machine ID:                                       672a1662015745f8b1ed44795b10b115
+  System UUID:                                      31353050-3237-4753-4831-333153323542
+  Boot ID:                                          5514b5c2-d150-4178-847c-c9b14e389e78
+  Kernel Version:                                   5.14.0-427.72.1.el9_4.x86_64+rt
+  OS Image:                                         Red Hat Enterprise Linux CoreOS 418.94.202506030254-0
+  Operating System:                                 linux
+  Architecture:                                     amd64
+  Container Runtime Version:                        cri-o://1.31.8-4.rhaos4.18.git2d48ec9.el9
+  Kubelet Version:                                  v1.31.9
+  Kube-Proxy Version:                               v1.31.9
+ProviderID:                                         baremetalhost:///openshift-machine-api/master3.airtelvvt.samsungbsc.local/96c83e2b-998c-4a88-b7c0-20fcb84469d9
+Non-terminated Pods:                                (127 in total)
+  Namespace                                         Name                                                                 CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                                         ----                                                                 ------------  ----------  ---------------  -------------  ---
+  cnf-bscf                                          bscf9901-cmp1-79d4cbcf74-jxj5k                                       2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       2d13h
+  cnf-bscf                                          bscf9901-dmp0-6fd9b97cc-rvj6c                                        1 (0%)        8 (7%)      44Gi (6%)        44Gi (6%)      <invalid>
+  cnf-bscf                                          bscf9901-dmp0-6fd9b97cc-xsng9                                        1 (0%)        8 (7%)      44Gi (6%)        44Gi (6%)      16h
+  cnf-bscf                                          bscf9901-pmp0-747f9cd8f7-kd2lf                                       5 (4%)        9 (8%)      46Gi (6%)        46Gi (6%)      2d13h
+  openshift-apiserver-operator                      openshift-apiserver-operator-56888b8879-vp48c                        0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d14h
+  openshift-apiserver                               apiserver-74d584d8ff-hqhwj                                           0 (0%)        0 (0%)      250Mi (0%)       0 (0%)         2d14h
+  openshift-authentication-operator                 authentication-operator-54dbdcdcbf-n666k                             0 (0%)        0 (0%)      200Mi (0%)       0 (0%)         2d13h
+  openshift-authentication                          oauth-openshift-57b46b89f7-mjbbh                                     0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d14h
+  openshift-catalogd                                catalogd-controller-manager-845fbcfc85-xsjdf                         0 (0%)        0 (0%)      264Mi (0%)       0 (0%)         2d13h
+  openshift-cloud-controller-manager-operator       cluster-cloud-controller-manager-operator-5f5d7f96f6-r46rr           0 (0%)        0 (0%)      95Mi (0%)        0 (0%)         17h
+  openshift-cloud-credential-operator               cloud-credential-operator-74b9d89574-r4kbl                           0 (0%)        0 (0%)      40Mi (0%)        0 (0%)         2d13h
+  openshift-cluster-machine-approver                machine-approver-dc9d9d8f-hb666                                      0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         2d14h
+  openshift-cluster-node-tuning-operator            cluster-node-tuning-operator-56678557f-bwtrv                         0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         2d13h
+  openshift-cluster-node-tuning-operator            tuned-b447b                                                          0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         33d
+  openshift-cluster-olm-operator                    cluster-olm-operator-66677756f4-mllx5                                0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         2d14h
+  openshift-cluster-samples-operator                cluster-samples-operator-9b796b886-dfvtg                             0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         17h
+  openshift-cluster-storage-operator                cluster-storage-operator-5fc5cbbf5c-4ldpw                            0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         2d13h
+  openshift-cluster-storage-operator                csi-snapshot-controller-7788dc4d8c-hjstf                             0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-cluster-storage-operator                csi-snapshot-controller-operator-74f4b8c5c7-qnpvg                    0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         2d13h
+  openshift-cluster-version                         cluster-version-operator-6b779bbb4-lqz8f                             0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d14h
+  openshift-config-operator                         openshift-config-operator-5786d8b758-9rsqs                           0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d14h
+  openshift-console-operator                        console-operator-7459b65f45-bdffr                                    0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         2d13h
+  openshift-console                                 console-6779f94445-nsrww                                             0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         2d14h
+  openshift-console                                 downloads-84c5c7f9d4-ztlhc                                           0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d14h
+  openshift-controller-manager-operator             openshift-controller-manager-operator-6f584cc468-vzl2t               0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-controller-manager                      controller-manager-64b77ddcc-pjw7g                                   0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         6h58m
+  openshift-dns-operator                            dns-operator-7bdc655998-st5ng                                        0 (0%)        0 (0%)      69Mi (0%)        0 (0%)         17h
+  openshift-dns                                     dns-default-wc9f6                                                    0 (0%)        0 (0%)      110Mi (0%)       0 (0%)         33d
+  openshift-dns                                     node-resolver-54vv8                                                  0 (0%)        0 (0%)      21Mi (0%)        0 (0%)         33d
+  openshift-etcd-operator                           etcd-operator-5fdd96b6f6-l6ct7                                       0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-etcd                                    etcd-guard-master3.airtelvvt.samsungbsc.local                        0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         38h
+  openshift-etcd                                    etcd-master3.airtelvvt.samsungbsc.local                              0 (0%)        0 (0%)      960Mi (0%)       0 (0%)         3d17h
+  openshift-image-registry                          cluster-image-registry-operator-64f4b46c45-q67j4                     0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-image-registry                          node-ca-m5nps                                                        0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         33d
+  openshift-ingress-canary                          ingress-canary-zrwv7                                                 0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         33d
+  openshift-ingress-operator                        ingress-operator-7b9b484d4d-d58rm                                    0 (0%)        0 (0%)      96Mi (0%)        0 (0%)         17h
+  openshift-ingress                                 router-default-584597895-p7jxh                                       0 (0%)        0 (0%)      256Mi (0%)       0 (0%)         16h
+  openshift-kni-infra                               coredns-master3.airtelvvt.samsungbsc.local                           200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         33d
+  openshift-kni-infra                               haproxy-master3.airtelvvt.samsungbsc.local                           200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         33d
+  openshift-kni-infra                               keepalived-master3.airtelvvt.samsungbsc.local                        200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         33d
+  openshift-kube-apiserver-operator                 kube-apiserver-operator-76b769568d-g5vbq                             0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-kube-apiserver                          kube-apiserver-guard-master3.airtelvvt.samsungbsc.local              0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         32d
+  openshift-kube-apiserver                          kube-apiserver-master3.airtelvvt.samsungbsc.local                    0 (0%)        0 (0%)      1224Mi (0%)      0 (0%)         20h
+  openshift-kube-controller-manager-operator        kube-controller-manager-operator-75555c868f-4pltb                    0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-kube-controller-manager                 kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local     0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         32d
+  openshift-kube-controller-manager                 kube-controller-manager-master3.airtelvvt.samsungbsc.local           0 (0%)        0 (0%)      500Mi (0%)       0 (0%)         2d14h
+  openshift-kube-scheduler-operator                 openshift-kube-scheduler-operator-84f7c9479b-5cmrn                   0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-kube-scheduler                          openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local    0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         20h
+  openshift-kube-scheduler                          openshift-kube-scheduler-master3.airtelvvt.samsungbsc.local          0 (0%)        0 (0%)      150Mi (0%)       0 (0%)         20h
+  openshift-kube-storage-version-migrator-operator  kube-storage-version-migrator-operator-5794f9f48-ht256               0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-kube-storage-version-migrator           migrator-f449d76b9-psv5f                                             0 (0%)        0 (0%)      201Mi (0%)       0 (0%)         17h
+  openshift-local-storage                           diskmaker-discovery-qp78k                                            0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         2d13h
+  openshift-local-storage                           diskmaker-manager-m7db6                                              0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         2d13h
+  openshift-local-storage                           local-storage-operator-cc4f6db59-jl6t5                               0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-machine-api                             cluster-autoscaler-operator-7fb5cbc4bb-s67vh                         0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         2d13h
+  openshift-machine-api                             cluster-baremetal-operator-86956f945c-59js9                          0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         2d13h
+  openshift-machine-api                             control-plane-machine-set-operator-57dc649768-mqsht                  0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d13h
+  openshift-machine-api                             ironic-proxy-cdfvd                                                   0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         17h
+  openshift-machine-api                             machine-api-controllers-65b5d4fc9b-pfnlv                             0 (0%)        0 (0%)      140Mi (0%)       0 (0%)         2d13h
+  openshift-machine-api                             machine-api-operator-74f8fdd8d5-8f7w7                                0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         2d13h
+  openshift-machine-api                             metal3-76888f5b57-qptfk                                              0 (0%)        0 (0%)      555Mi (0%)       0 (0%)         17h
+  openshift-machine-api                             metal3-baremetal-operator-78bd585689-56g4l                           0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         17h
+  openshift-machine-api                             metal3-image-customization-6d8976f5-pkcjr                            0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         17h
+  openshift-machine-config-operator                 kube-rbac-proxy-crio-master3.airtelvvt.samsungbsc.local              0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         33d
+  openshift-machine-config-operator                 machine-config-controller-7b4585d594-7hrml                           0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         2d13h
+  openshift-machine-config-operator                 machine-config-daemon-xqwxm                                          0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         33d
+  openshift-machine-config-operator                 machine-config-operator-6bc9c86945-wdnls                             0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         2d13h
+  openshift-machine-config-operator                 machine-config-server-wpwdg                                          0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         33d
+  openshift-marketplace                             marketplace-operator-84c64f6998-pwl6k                                0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         2d13h
+  openshift-monitoring                              alertmanager-main-1                                                  0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         2d12h
+  openshift-monitoring                              cluster-monitoring-operator-7754ddbd88-ggvbx                         0 (0%)        0 (0%)      75Mi (0%)        0 (0%)         2d13h
+  openshift-monitoring                              metrics-server-d97d7484d-xhvvm                                       0 (0%)        0 (0%)      40Mi (0%)        0 (0%)         7h2m
+  openshift-monitoring                              monitoring-plugin-7c5db89b7d-8wbgx                                   0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         16h
+  openshift-monitoring                              node-exporter-d852z                                                  0 (0%)        0 (0%)      47Mi (0%)        0 (0%)         33d
+  openshift-monitoring                              openshift-state-metrics-b8cb9876f-sk97z                              0 (0%)        0 (0%)      72Mi (0%)        0 (0%)         16h
+  openshift-monitoring                              prometheus-k8s-1                                                     0 (0%)        0 (0%)      1099Mi (0%)      0 (0%)         2d12h
+  openshift-monitoring                              prometheus-operator-admission-webhook-79cfd5b5d9-hb4fk               0 (0%)        0 (0%)      30Mi (0%)        0 (0%)         16h
+  openshift-monitoring                              thanos-querier-54f9675bbc-wlqvp                                      0 (0%)        0 (0%)      87Mi (0%)        0 (0%)         16h
+  openshift-multus                                  multus-additional-cni-plugins-z5ksw                                  0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         33d
+  openshift-multus                                  multus-admission-controller-5786b74c4d-5pwt4                         0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         16h
+  openshift-multus                                  multus-rb7wc                                                         0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         33d
+  openshift-multus                                  network-metrics-daemon-9mhll                                         0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         33d
+  openshift-network-console                         networking-console-plugin-769cfbcc6-nq6lz                            0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         16h
+  openshift-network-diagnostics                     network-check-target-mxkq9                                           0 (0%)        0 (0%)      15Mi (0%)        0 (0%)         33d
+  openshift-network-node-identity                   network-node-identity-mwhbr                                          0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         33d
+  openshift-network-operator                        iptables-alerter-zlsf5                                               0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         33d
+  openshift-network-operator                        network-operator-6c64cf5c9c-25prt                                    0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d14h
+  openshift-oauth-apiserver                         apiserver-7894d96bdf-5q8gv                                           0 (0%)        0 (0%)      200Mi (0%)       0 (0%)         2d14h
+  openshift-operator-controller                     operator-controller-controller-manager-b8d67b98c-mpl9j               0 (0%)        0 (0%)      128Mi (0%)       0 (0%)         2d13h
+  openshift-operator-lifecycle-manager              catalog-operator-7b89b4554c-jbs7k                                    0 (0%)        0 (0%)      80Mi (0%)        0 (0%)         17h
+  openshift-operator-lifecycle-manager              olm-operator-774988ff44-rx27s                                        0 (0%)        0 (0%)      160Mi (0%)       0 (0%)         2d13h
+  openshift-operator-lifecycle-manager              package-server-manager-cb746cf6f-w288v                               0 (0%)        0 (0%)      30Mi (0%)        0 (0%)         2d13h
+  openshift-operator-lifecycle-manager              packageserver-598cff79bb-dqn4v                                       0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d14h
+  openshift-ovn-kubernetes                          ovnkube-control-plane-7bd5c75758-7mwkr                               0 (0%)        0 (0%)      320Mi (0%)       0 (0%)         32d
+  openshift-ovn-kubernetes                          ovnkube-node-xt6c4                                                   0 (0%)        0 (0%)      1630Mi (0%)      0 (0%)         2d14h
+  openshift-ptp                                     linuxptp-daemon-v4fjt                                                0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         2d14h
+  openshift-ptp                                     ptp-operator-7b94496cf-hv7dw                                         0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         2d12h
+  openshift-route-controller-manager                route-controller-manager-558446b6c5-z9z6k                            0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         6h57m
+  openshift-service-ca-operator                     service-ca-operator-7cdbc8dd99-zdlzq                                 0 (0%)        0 (0%)      80Mi (0%)        0 (0%)         2d13h
+  openshift-service-ca                              service-ca-5bc4568b7d-78zbn                                          0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         2d13h
+  openshift-sriov-network-operator                  network-resources-injector-xn4fr                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         21d
+  openshift-sriov-network-operator                  operator-webhook-8n97l                                               10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         21d
+  openshift-sriov-network-operator                  sriov-device-plugin-mbglm                                            0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         2d2h
+  openshift-sriov-network-operator                  sriov-network-config-daemon-2sxbm                                    0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         2d14h
+  openshift-sriov-network-operator                  sriov-network-operator-767f8bc9d5-9hdkc                              0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d13h
+  openshift-storage                                 ceph-csi-controller-manager-6f65bbd578-hjq55                         15m (0%)      1 (0%)      128Mi (0%)       256Mi (0%)     2d13h
+  openshift-storage                                 csi-addons-controller-manager-696c476d88-qlj8g                       20m (0%)      1500m (1%)  128Mi (0%)       640Mi (0%)     2d13h
+  openshift-storage                                 csi-cephfsplugin-provisioner-7b7cb5988d-8mf8v                        0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d13h
+  openshift-storage                                 csi-cephfsplugin-zvg6m                                               0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d14h
+  openshift-storage                                 csi-rbdplugin-provisioner-5489bb4b89-dq8wj                           0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d13h
+  openshift-storage                                 csi-rbdplugin-whsrj                                                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d14h
+  openshift-storage                                 noobaa-core-0                                                        1199m (1%)    1199m (1%)  4596Mi (0%)      4596Mi (0%)    38h
+  openshift-storage                                 noobaa-db-pg-0                                                       500m (0%)     500m (0%)   4Gi (0%)         4Gi (0%)       2d13h
+  openshift-storage                                 noobaa-endpoint-749bc5477b-8jt6w                                     999m (0%)     999m (0%)   2Gi (0%)         2Gi (0%)       38h
+  openshift-storage                                 noobaa-operator-5f56ccb4cd-gb7h8                                     250m (0%)     250m (0%)   512Mi (0%)       512Mi (0%)     38h
+  openshift-storage                                 ocs-metrics-exporter-74c467b6c7-5vnrr                                150m (0%)     100m (0%)   130Mi (0%)       80Mi (0%)      2d13h
+  openshift-storage                                 ocs-operator-968899ffb-ck2gt                                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d13h
+  openshift-storage                                 odf-operator-controller-manager-6df95b7f67-8vn4m                     200m (0%)     200m (0%)   200Mi (0%)       300Mi (0%)     2d13h
+  openshift-storage                                 rook-ceph-crashcollector-master3.airtelvvt.samsungbsc.locamlnhx      100m (0%)     100m (0%)   60Mi (0%)        60Mi (0%)      19h
+  openshift-storage                                 rook-ceph-exporter-master3.airtelvvt.samsungbsc.local-85bctz6cp      50m (0%)      50m (0%)    50Mi (0%)        128Mi (0%)     19h
+  openshift-storage                                 rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-8467df47svzvt      3 (2%)        3 (2%)      8Gi (1%)         8Gi (1%)       38h
+  openshift-storage                                 rook-ceph-mgr-a-86f6d94965-lskw2                                     1 (0%)        2 (1%)      1536Mi (0%)      3Gi (0%)       19h
+  openshift-storage                                 rook-ceph-mon-e-67c954c998-sh5t9                                     1 (0%)        1 (0%)      2Gi (0%)         2Gi (0%)       38h
+  openshift-storage                                 rook-ceph-operator-6668964b7b-nvz76                                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d13h
+  openshift-storage                                 rook-ceph-osd-2-b5ccbf78-spn5m                                       2 (1%)        2 (1%)      5Gi (0%)         5Gi (0%)       18h
+  openshift-storage                                 rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-86dd4dbfpd4x      2 (1%)        2 (1%)      2Gi (0%)         2Gi (0%)       32h
+  openshift-storage                                 ux-backend-server-7bcb7df8fc-nsf6r                                   0 (0%)        0 (0%)      0 (0%)           0 (0%)         2d12h
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                                Requests      Limits
+  --------                                --------      ------
+  cpu                                     22103m (20%)  42898m (40%)
+  memory                                  182Gi (25%)   174508Mi (23%)
+  ephemeral-storage                       0 (0%)        0 (0%)
+  hugepages-1Gi                           0 (0%)        0 (0%)
+  hugepages-2Mi                           0 (0%)        0 (0%)
+  management.workload.openshift.io/cores  3014          3014
+  openshift.io/pci_sriov_net_bh0c         0             0
+  openshift.io/pci_sriov_net_bh0u         0             0
+  openshift.io/pci_sriov_net_bh0u_2       0             0
+Events:                                   <none>
+
+[root@bastion ~]#
