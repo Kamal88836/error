@@ -1,20 +1,3 @@
-[core@bscmaster1 ~]$ lsblk
-NAME  MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
-loop0   7:0    0 125.8G  0 loop /var/lib/containers/storage/overlay
-                                /var
-                                /etc
-                                /run/ephemeral
-loop1   7:1    0   1.1G  1 loop /usr
-                                /boot
-                                /
-                                /sysroot
-sda     8:0    1     0B  0 disk
-sdb     8:16   0 446.6G  0 disk
-sr0    11:0    1   1.2G  0 rom  /run/media/iso
-sr1    11:1    1  1024M  0 rom
-[core@bscmaster1 ~]$ blkid
-[core@bscmaster1 ~]$
-[core@bscmaster1 ~]$
 [core@bscmaster1 ~]$ ls -l /dev/
 Display all 191 possibilities? (y or n)^C
 [core@bscmaster1 ~]$ ls -l /dev/disk/by-
@@ -29,3 +12,87 @@ lrwxrwxrwx. 1 root root 9 Apr 13 05:31 usb-Linux_Virtual_Floppy_20180726-1-0-0:1
 lrwxrwxrwx. 1 root root 9 Apr 13 05:31 wwn-0x5001480000000000 -> ../../sr1
 lrwxrwxrwx. 1 root root 9 Apr 13 05:31 wwn-0x64cd98f0ccee1d00316b9af7dc7bff18 -> ../../sdb
 [core@bscmaster1 ~]$
+logout
+Connection to bscmaster1.cl2.mno1-rvt.lan closed.
+[root@mirror1 ~]# ssh core@bscmaster2.cl2.mno1-rvt.lan
+The authenticity of host 'bscmaster2.cl2.mno1-rvt.lan (2405:100:200:172::15)' can't be established.
+ECDSA key fingerprint is SHA256:PrQfVxfx2EvtASoOA4CJdrjmFwDMHGthmf1/4FT11b0.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'bscmaster2.cl2.mno1-rvt.lan,2405:100:200:172::15' (ECDSA) to the list of known hosts.
+The primary service is agent.service. To watch its status, run:
+
+  journalctl -u agent.service
+
+To view the agent log, run:
+
+  journalctl TAG=agent
+This host is not the rendezvous host. The rendezvous host is at 72.2.0.13.
+[systemd]
+Failed Units: 1
+  NetworkManager-wait-online.service
+[core@bscmaster2 ~]$ lsblk
+NAME  MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0   7:0    0 125.8G  0 loop /var/lib/containers/storage/overlay
+                                /var
+                                /etc
+                                /run/ephemeral
+loop1   7:1    0   1.1G  1 loop /usr
+                                /boot
+                                /
+                                /sysroot
+sda     8:0    0 446.6G  0 disk
+sdb     8:16   1     0B  0 disk
+sr0    11:0    1   1.2G  0 rom  /run/media/iso
+sr1    11:1    1  1024M  0 rom
+[core@bscmaster2 ~]$ ls -l /dev/disk/by-id/
+total 0
+lrwxrwxrwx. 1 root root 9 Apr 13 05:24 ata-HL-DT-ST_DVD+_-RW_GU90N_M2JK5J75648 -> ../../sr1
+lrwxrwxrwx. 1 root root 9 Apr 13 05:24 scsi-364cd98f0ccee3700316b994ad21f294c -> ../../sda
+lrwxrwxrwx. 1 root root 9 Apr 13 05:24 scsi-SDELL_PERC_H740P_Adp_004c291fd24a996b310037eeccf098cd -> ../../sda
+lrwxrwxrwx. 1 root root 9 Apr 13 05:24 usb-Linux_Virtual_CD_20180726-1-0-0:0 -> ../../sr0
+lrwxrwxrwx. 1 root root 9 Apr 13 05:24 usb-Linux_Virtual_Floppy_20180726-1-0-0:1 -> ../../sdb
+lrwxrwxrwx. 1 root root 9 Apr 13 05:24 wwn-0x5001480000000000 -> ../../sr1
+lrwxrwxrwx. 1 root root 9 Apr 13 05:24 wwn-0x64cd98f0ccee3700316b994ad21f294c -> ../../sda
+[core@bscmaster2 ~]$
+logout
+Connection to bscmaster2.cl2.mno1-rvt.lan closed.
+[root@mirror1 ~]# ssh core@bscmaster3.cl2.mno1-rvt.lan
+The authenticity of host 'bscmaster3.cl2.mno1-rvt.lan (2405:100:200:172::17)' can't be established.
+ECDSA key fingerprint is SHA256:m1axBET6axO3A68cIvoKo2UO4cPV2SS618BSCYshwJY.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'bscmaster3.cl2.mno1-rvt.lan,2405:100:200:172::17' (ECDSA) to the list of known hosts.
+The primary service is agent.service. To watch its status, run:
+
+  journalctl -u agent.service
+
+To view the agent log, run:
+
+  journalctl TAG=agent
+This host is not the rendezvous host. The rendezvous host is at 72.2.0.13.
+[systemd]
+Failed Units: 1
+  NetworkManager-wait-online.service
+[core@bscmaster3 ~]$ lsblk
+NAME  MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0   7:0    0 125.8G  0 loop /var/lib/containers/storage/overlay
+                                /var
+                                /etc
+                                /run/ephemeral
+loop1   7:1    0   1.1G  1 loop /usr
+                                /boot
+                                /
+                                /sysroot
+sda     8:0    0 446.6G  0 disk
+sdb     8:16   1     0B  0 disk
+sr0    11:0    1  1024M  0 rom
+sr1    11:1    1   1.2G  0 rom  /run/media/iso
+[core@bscmaster3 ~]$ ls -l /dev/disk/by-id/
+total 0
+lrwxrwxrwx. 1 root root 9 Apr 13 05:37 ata-HL-DT-ST_DVD+_-RW_GU90N_M2FK5J75741 -> ../../sr0
+lrwxrwxrwx. 1 root root 9 Apr 13 05:37 scsi-364cd98f0ccee1600316b9cc6f7e4fccf -> ../../sda
+lrwxrwxrwx. 1 root root 9 Apr 13 05:37 scsi-SDELL_PERC_H740P_Adp_00cffce4f7c69c6b310016eeccf098cd -> ../../sda
+lrwxrwxrwx. 1 root root 9 Apr 13 05:37 usb-Linux_Virtual_CD_20180726-1-0-0:0 -> ../../sr1
+lrwxrwxrwx. 1 root root 9 Apr 13 05:37 usb-Linux_Virtual_Floppy_20180726-1-0-0:1 -> ../../sdb
+lrwxrwxrwx. 1 root root 9 Apr 13 05:37 wwn-0x5001480000000000 -> ../../sr0
+lrwxrwxrwx. 1 root root 9 Apr 13 05:37 wwn-0x64cd98f0ccee1600316b9cc6f7e4fccf -> ../../sda
+[core@bscmaster3 ~]$
