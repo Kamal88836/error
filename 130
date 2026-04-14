@@ -1,38 +1,212 @@
-Events:
-  Type     Reason       Age                  From     Message
-  ----     ------       ----                 ----     -------
-  Warning  FailedMount  16h (x334 over 27h)  kubelet  MountVolume.MountDevice failed for volume "pvc-e0439e5b-9282-4600-bad2-3b383d15f30e" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-51c66a43-7bfe-4fbf-93bc-91bc6cf34be3 already exists
-[root@bastion ~]# oc get po -o wide
-NAME                             READY   STATUS     RESTARTS   AGE    IP            NODE                                 NOMINATED NODE   READINESS GATES
-bscf9901-bip0-76c5df9f8b-s6s5g   1/1     Running    0          3d7h   10.30.2.59    master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bip1-55f89464d7-zltt2   1/1     Running    0          16h    10.30.1.162   master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp0-574b6c59dc-sbm4s   1/1     Running    0          3d8h   10.30.2.49    master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp1-6cc5f66858-tcznf   1/1     Running    0          16h    10.30.1.163   master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp2-6d947d9f95-vvsgv   1/1     Running    0          3d8h   10.30.2.51    master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp3-6fb597b54-f9rjr    1/1     Running    0          16h    10.30.1.164   master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp0-7fdfb79d7b-rxrff   1/1     Running    0          3d8h   10.30.2.27    master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp1-79d4cbcf74-cqcfw   1/1     Running    0          14h    10.30.0.14    master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-dmp0-6fd9b97cc-wl94d    0/1     Init:0/1   0          27h    <none>        master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-pmp0-747f9cd8f7-jl4bl   1/1     Running    0          14h    10.30.0.12    master3.airtelvvt.samsungbsc.local   <none>           <none>
-[root@bastion ~]# oc describe node master1 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests        Limits
-  --------                                --------        ------
-  cpu                                     104040m (98%)   104350m (98%)
-  memory                                  140717Mi (19%)  129804Mi (17%)
-[root@bastion ~]# oc describe node master2 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests        Limits
-  --------                                --------        ------
-  cpu                                     104255m (98%)   107100m (101%)
-  memory                                  137184Mi (18%)  128872Mi (17%)
-[root@bastion ~]# oc describe node master3 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests        Limits
-  --------                                --------        ------
-  cpu                                     14468m (13%)    24848m (23%)
-  memory                                  123670Mi (16%)  114352Mi (15%)
-[root@bastion ~]#
+You have two separate but related issues here—let’s break them clearly and fix step-by-step.
+
+
+---
+
+🔴 1. Main Error (Root Cause)
+
+MountVolume.MountDevice failed:
+rpc error: code = Aborted
+desc = an operation with the given Volume ID ... already exists
+
+👉 This is a storage (ODF / CSI) stuck operation issue
+It means:
+
+Kubernetes tried to attach/mount the PVC
+
+But previous attach/detach operation is stuck
+
+CSI driver thinks operation is still in progress
+
+
+
+---
+
+🔴 2. Impact Seen
+
+Pod:
+
+bscf9901-dmp0 → Init:0/1 (stuck)
+
+No IP assigned → volume not mounted → container not starting
+
+
+
+---
+
+🟡 3. Node Resource Check
+
+Good news 👇
+
+master1 & master2 → CPU almost 98–101% (critical)
+
+master3 → only 13% CPU (healthy)
+
+
+👉 So:
+
+Scheduling is OK (pod already on master3)
+
+Problem is NOT CPU
+
+Problem is storage attach
+
+
+
+---
+
+🧠 4. Why This Happens (Common in ODF)
+
+Typical reasons:
+
+Node reboot during volume attach
+
+CSI pod restart
+
+Network glitch between node & storage
+
+RBD/CEPH lock not released
+
+
+
+---
+
+🔧 5. Step-by-Step Fix
+
+✅ Step 1: Check VolumeAttachment
+
+Run:
+
+oc get volumeattachment | grep 51c66a43
+
+Then describe:
+
+oc describe volumeattachment <name>
+
+👉 If stuck → delete it:
+
+oc delete volumeattachment <name>
+
+
+---
+
+✅ Step 2: Check if volume attached to wrong node
+
+oc get pvc | grep pvc-e0439e5b
+oc describe pvc <pvc-name>
+
+Then:
+
+oc get pv <pv-name> -o yaml
+
+Look for:
+
+nodeAffinity / attachment info
+
+
+---
+
+✅ Step 3: Restart CSI Pods (VERY IMPORTANT)
+
+Check:
+
+oc get pods -n openshift-storage | grep csi
+
+Restart:
+
+oc delete pod -n openshift-storage -l app=csi-rbdplugin
+oc delete pod -n openshift-storage -l app=csi-rbdplugin-provisioner
+
+👉 This clears stuck operations
+
+
+---
+
+✅ Step 4: Check Ceph Health
+
+oc -n openshift-storage exec -it rook-ceph-tools-... -- ceph -s
+
+Ensure:
+
+HEALTH_OK
+
+If not → storage issue
+
+
+---
+
+✅ Step 5: Force Pod Restart
+
+oc delete pod bscf9901-dmp0-6fd9b97cc-wl94d
+
+
+---
+
+🚨 If Still Not Fixed (Advanced)
+
+Check RBD lock manually:
+
+rbd status <image-name> --pool replicapool
+
+Remove lock:
+
+rbd lock remove <image> <lock-id> <locker>
+
+
+---
+
+⚠️ Important Observations
+
+🔥 Your cluster risk:
+
+master1 & master2 CPU ~100% 👉 This can cause:
+
+Slow scheduling
+
+CSI delays
+
+Control plane instability
+
+
+👉 Recommended:
+
+Move workloads to worker nodes
+
+Avoid heavy apps on masters
+
+
+
+---
+
+✅ Final Summary
+
+✔ Issue Type → ODF / CSI stuck volume operation
+✔ Affected Pod → bscf9901-dmp0
+✔ Node → master3 (healthy)
+✔ Root Cause → stale volume attachment / lock
+
+
+---
+
+🚀 Quick Fix Order (Do this exactly)
+
+1. Delete VolumeAttachment
+
+
+2. Restart CSI pods
+
+
+3. Check Ceph health
+
+
+4. Delete stuck pod
+
+
+
+
+---
+
+If you want, I can give: 👉 exact command to identify correct VolumeAttachment
+👉 or analyze your pv/pvc yaml
+
+Just paste it 👍
