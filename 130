@@ -1,212 +1,65 @@
-You have two separate but related issues here—let’s break them clearly and fix step-by-step.
-
-
----
-
-🔴 1. Main Error (Root Cause)
-
-MountVolume.MountDevice failed:
-rpc error: code = Aborted
-desc = an operation with the given Volume ID ... already exists
-
-👉 This is a storage (ODF / CSI) stuck operation issue
-It means:
-
-Kubernetes tried to attach/mount the PVC
-
-But previous attach/detach operation is stuck
-
-CSI driver thinks operation is still in progress
-
-
-
----
-
-🔴 2. Impact Seen
-
-Pod:
-
-bscf9901-dmp0 → Init:0/1 (stuck)
-
-No IP assigned → volume not mounted → container not starting
-
-
-
----
-
-🟡 3. Node Resource Check
-
-Good news 👇
-
-master1 & master2 → CPU almost 98–101% (critical)
-
-master3 → only 13% CPU (healthy)
-
-
-👉 So:
-
-Scheduling is OK (pod already on master3)
-
-Problem is NOT CPU
-
-Problem is storage attach
-
-
-
----
-
-🧠 4. Why This Happens (Common in ODF)
-
-Typical reasons:
-
-Node reboot during volume attach
-
-CSI pod restart
-
-Network glitch between node & storage
-
-RBD/CEPH lock not released
-
-
-
----
-
-🔧 5. Step-by-Step Fix
-
-✅ Step 1: Check VolumeAttachment
-
-Run:
-
-oc get volumeattachment | grep 51c66a43
-
-Then describe:
-
-oc describe volumeattachment <name>
-
-👉 If stuck → delete it:
-
-oc delete volumeattachment <name>
-
-
----
-
-✅ Step 2: Check if volume attached to wrong node
-
-oc get pvc | grep pvc-e0439e5b
-oc describe pvc <pvc-name>
-
-Then:
-
-oc get pv <pv-name> -o yaml
-
-Look for:
-
-nodeAffinity / attachment info
-
-
----
-
-✅ Step 3: Restart CSI Pods (VERY IMPORTANT)
-
-Check:
-
-oc get pods -n openshift-storage | grep csi
-
-Restart:
-
-oc delete pod -n openshift-storage -l app=csi-rbdplugin
-oc delete pod -n openshift-storage -l app=csi-rbdplugin-provisioner
-
-👉 This clears stuck operations
-
-
----
-
-✅ Step 4: Check Ceph Health
-
-oc -n openshift-storage exec -it rook-ceph-tools-... -- ceph -s
-
-Ensure:
-
-HEALTH_OK
-
-If not → storage issue
-
-
----
-
-✅ Step 5: Force Pod Restart
-
-oc delete pod bscf9901-dmp0-6fd9b97cc-wl94d
-
-
----
-
-🚨 If Still Not Fixed (Advanced)
-
-Check RBD lock manually:
-
-rbd status <image-name> --pool replicapool
-
-Remove lock:
-
-rbd lock remove <image> <lock-id> <locker>
-
-
----
-
-⚠️ Important Observations
-
-🔥 Your cluster risk:
-
-master1 & master2 CPU ~100% 👉 This can cause:
-
-Slow scheduling
-
-CSI delays
-
-Control plane instability
-
-
-👉 Recommended:
-
-Move workloads to worker nodes
-
-Avoid heavy apps on masters
-
-
-
----
-
-✅ Final Summary
-
-✔ Issue Type → ODF / CSI stuck volume operation
-✔ Affected Pod → bscf9901-dmp0
-✔ Node → master3 (healthy)
-✔ Root Cause → stale volume attachment / lock
-
-
----
-
-🚀 Quick Fix Order (Do this exactly)
-
-1. Delete VolumeAttachment
-
-
-2. Restart CSI pods
-
-
-3. Check Ceph health
-
-
-4. Delete stuck pod
-
-
-
-
----
-
-If you want, I can give: 👉 exact command to identify correct VolumeAttachment
-👉 or analyze your pv/pvc yaml
-
-Just paste it 👍
+[root@bastion ~]# oc get volumeattachment
+NAME                                                                   ATTACHER                                PV                                         NODE                                 ATTACHED   AGE
+csi-11253101c0da2b589234a95231490b94fe9c88b30f6b1ab6203861f279d59425   openshift-storage.cephfs.csi.ceph.com   pvc-e0439e5b-9282-4600-bad2-3b383d15f30e   master3.airtelvvt.samsungbsc.local   true       11h
+csi-17de8f29d4d7edd67b54cd94e12b3eda16081a88e2400a02d9c05a15e3086ecd   openshift-storage.cephfs.csi.ceph.com   pvc-e0439e5b-9282-4600-bad2-3b383d15f30e   master2.airtelvvt.samsungbsc.local   true       2d15h
+csi-9805de75e2632e0e3f0f38b553379017443402ba7eb12502a31d0bbfdd8afcc8   openshift-storage.cephfs.csi.ceph.com   pvc-8e07fe3a-e11a-41ab-a172-20028d5178d8   master3.airtelvvt.samsungbsc.local   true       2d14h
+csi-a566cde68f9f2866862f332a34635cfac8891fa35d8a75b855a288e6dc59a8cd   openshift-storage.cephfs.csi.ceph.com   pvc-ebe919ef-0b57-4e2d-bbf4-6008e700bade   master2.airtelvvt.samsungbsc.local   true       2d15h
+csi-a9751c5f20d43192b1cb9be1899f11d2e91477803c07afe7dfdd8162ffebbb09   openshift-storage.rbd.csi.ceph.com      pvc-3101a03c-2fca-46c0-9179-368a47a3ce9e   master3.airtelvvt.samsungbsc.local   true       <invalid>
+csi-c0554f1d775bba9ac416878a0e91a5e09fc2e5f4081d982c93d7e0fbcf2ea6ff   openshift-storage.cephfs.csi.ceph.com   pvc-ebe919ef-0b57-4e2d-bbf4-6008e700bade   master1.airtelvvt.samsungbsc.local   true       2d15h
+csi-cacfccc60851996dccfe198c0af8f889af52c1224afa1548a6e4b13e728d5918   openshift-storage.cephfs.csi.ceph.com   pvc-8e07fe3a-e11a-41ab-a172-20028d5178d8   master1.airtelvvt.samsungbsc.local   true       2d15h
+csi-d90a981c123af2acfd53d005bcbfd0bc4127c4d3fb2be5f6bf93a5805f4a588e   openshift-storage.cephfs.csi.ceph.com   pvc-ebe919ef-0b57-4e2d-bbf4-6008e700bade   master3.airtelvvt.samsungbsc.local   true       2d14h
+csi-f83335bdb733ec3178ff1a4b92558a53eb1ddd80b7d75e05b904c279adcb43d1   openshift-storage.cephfs.csi.ceph.com   pvc-8e07fe3a-e11a-41ab-a172-20028d5178d8   master2.airtelvvt.samsungbsc.local   true       2d15h
+[root@bastion ~]# oc get pvc | grep pvc-e0439e5b
+bscf9901-db-pvc       Bound    pvc-e0439e5b-9282-4600-bad2-3b383d15f30e   8Gi        RWX            ocs-storagecluster-cephfs   <unset>                 28d
+[root@bastion ~]# oc describe pvc bscf9901-db-pvc
+Name:          bscf9901-db-pvc
+Namespace:     cnf-bscf
+StorageClass:  ocs-storagecluster-cephfs
+Status:        Bound
+Volume:        pvc-e0439e5b-9282-4600-bad2-3b383d15f30e
+Labels:        app=bscf9901-db-pvc
+               app.kubernetes.io/managed-by=Helm
+               chart=bscf-251.0.17
+               heritage=Helm
+               nename=bscf9901
+               release=bscf9901
+Annotations:   meta.helm.sh/release-name: bscf9901
+               meta.helm.sh/release-namespace: cnf-bscf
+               pv.kubernetes.io/bind-completed: yes
+               pv.kubernetes.io/bound-by-controller: yes
+               volume.beta.kubernetes.io/storage-provisioner: openshift-storage.cephfs.csi.ceph.com
+               volume.kubernetes.io/storage-provisioner: openshift-storage.cephfs.csi.ceph.com
+Finalizers:    [kubernetes.io/pvc-protection]
+Capacity:      8Gi
+Access Modes:  RWX
+VolumeMode:    Filesystem
+Used By:       bscf9901-dmp0-6fd9b97cc-wl94d
+Events:        <none>
+[root@bastion ~]# oc get pv bscf9901-db-pvc -o yaml
+Error from server (NotFound): persistentvolumes "bscf9901-db-pvc" not found
+[root@bastion ~]# oc get pv bscf9901-db-pvc -o yaml
+Error from server (NotFound): persistentvolumes "bscf9901-db-pvc" not found
+[root@bastion ~]# oc get pods -n openshift-storage | grep csi
+ceph-csi-controller-manager-6f65bbd578-bhkrw                      2/2     Running   0               14h
+csi-addons-controller-manager-696c476d88-xctn7                    2/2     Running   0               14h
+csi-cephfsplugin-64zvv                                            3/3     Running   0               3d8h
+csi-cephfsplugin-kmmbn                                            3/3     Running   0               3d8h
+csi-cephfsplugin-provisioner-7b7cb5988d-rd8cn                     7/7     Running   3 (11h ago)     3d8h
+csi-cephfsplugin-provisioner-7b7cb5988d-vsbhd                     7/7     Running   1 (14h ago)     14h
+csi-cephfsplugin-zvg6m                                            3/3     Running   20 (28h ago)    3d8h
+csi-rbdplugin-4w9nh                                               4/4     Running   5 (20h ago)     3d8h
+csi-rbdplugin-nttnv                                               4/4     Running   2 (3d8h ago)    3d8h
+csi-rbdplugin-provisioner-5489bb4b89-7sq74                        7/7     Running   3 (34h ago)     3d8h
+csi-rbdplugin-provisioner-5489bb4b89-h6nb2                        7/7     Running   1 (14h ago)     14h
+csi-rbdplugin-whsrj                                               4/4     Running   15 (28h ago)    3d8h
+[root@bastion ~]# oc delete pod -n openshift-storage -l app=csi-rbdplugin
+pod "csi-rbdplugin-4w9nh" deleted
+pod "csi-rbdplugin-nttnv" deleted
+pod "csi-rbdplugin-whsrj" deleted
+[root@bastion ~]# oc delete pod -n openshift-storage -l app=csi-rbdplugin-provisioner
+pod "csi-rbdplugin-provisioner-5489bb4b89-7sq74" deleted
+pod "csi-rbdplugin-provisioner-5489bb4b89-h6nb2" deleted
+
+[root@bastion ~]#
+[root@bastion ~]# oc delete pod bscf9901-dmp0-6fd9b97cc-wl94d
+pod "bscf9901-dmp0-6fd9b97cc-wl94d" deleted
