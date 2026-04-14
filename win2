@@ -1,217 +1,55 @@
-sysadmin@controller-0:~$ kubectl get po -A
-NAMESPACE                     NAME                                              READY   STATUS             RESTARTS           AGE
-cert-manager                  cm-cert-manager-5d7fdf9b4-55dgg                   1/1     Running            96 (25s ago)       24d
-cert-manager                  cm-cert-manager-5d7fdf9b4-m6bc6                   1/1     Running            0                  41m
-cert-manager                  cm-cert-manager-cainjector-6959f97678-dxcvz       1/1     Running            2 (62s ago)        41m
-cert-manager                  cm-cert-manager-cainjector-6959f97678-w6hjf       1/1     Running            1570 (28m ago)     24d
-cert-manager                  cm-cert-manager-webhook-67b547bbdf-xzbbc          1/1     Running            0                  41m
-cert-manager                  cm-cert-manager-webhook-67b547bbdf-zzxkz          1/1     Running            5 (19m ago)        24d
-flux-helm                     helm-controller-76795d9bfc-f9vdp                  0/1     CrashLoopBackOff   186 (25s ago)      5d22h
-flux-helm                     source-controller-856594f8f8-fmc5d                0/1     CrashLoopBackOff   299 (25s ago)      5d22h
-kube-system                   calico-kube-controllers-7cdcb6bb89-jcsl8          1/1     Running            1927 (5m13s ago)   5d22h
-kube-system                   calico-node-gcj6n                                 1/1     Running            27 (19m ago)       237d
-kube-system                   calico-node-jd5lc                                 1/1     Running            25 (42m ago)       236d
-kube-system                   ceph-pools-audit-29602625-h9mhn                   1/1     Running            5 (2m23s ago)      41m
-kube-system                   cephfs-nodeplugin-fd8sw                           2/2     Running            56 (12m ago)       214d
-kube-system                   cephfs-nodeplugin-ph4nj                           2/2     Running            80 (13m ago)       214d
-kube-system                   cephfs-provisioner-57d7ff7975-ldsnm               4/4     Running            469 (59s ago)      24d
-kube-system                   cephfs-provisioner-57d7ff7975-m28pb               4/4     Running            0                  41m
-kube-system                   coredns-78c9fb7965-65gcv                          1/1     Running            0                  41m
-kube-system                   coredns-78c9fb7965-7t7vl                          1/1     Running            5 (19m ago)        24d
-kube-system                   ic-nginx-ingress-ingress-nginx-controller-7kqqx   1/1     Running            6 (19m ago)        6d2h
-kube-system                   ic-nginx-ingress-ingress-nginx-controller-kmxnd   1/1     Running            21 (24m ago)       90d
-kube-system                   kube-apiserver-controller-0                       1/1     Running            1591 (28m ago)     235d
-kube-system                   kube-apiserver-controller-1                       1/1     Running            5369 (14m ago)     235d
-kube-system                   kube-controller-manager-controller-0              1/1     Running            186 (11m ago)      237d
-kube-system                   kube-controller-manager-controller-1              1/1     Running            220 (98s ago)      236d
-kube-system                   kube-multus-ds-amd64-8dcdl                        1/1     Running            24 (19m ago)       237d
-kube-system                   kube-multus-ds-amd64-95czc                        1/1     Running            22 (42m ago)       236d
-kube-system                   kube-proxy-k454b                                  1/1     Running            25 (24m ago)       236d
-kube-system                   kube-proxy-r5nfq                                  1/1     Running            24 (19m ago)       237d
-kube-system                   kube-scheduler-controller-0                       1/1     Running            179 (54s ago)      237d
-kube-system                   kube-scheduler-controller-1                       1/1     Running            213 (6m35s ago)    236d
-kube-system                   kube-sriov-cni-ds-576p5                           1/1     Running            7 (42m ago)        90d
-kube-system                   kube-sriov-cni-ds-q2cxv                           1/1     Running            5 (19m ago)        6d2h
-kube-system                   kube-sriov-device-plugin-amd64-5hc4f              1/1     Running            11 (24m ago)       90d
-kube-system                   kube-sriov-device-plugin-amd64-tfv8g              1/1     Running            5 (19m ago)        6d2h
-kube-system                   rbd-nodeplugin-s9djv                              2/2     Running            78 (13m ago)       214d
-kube-system                   rbd-nodeplugin-z6l79                              2/2     Running            61 (12m ago)       214d
-kube-system                   rbd-provisioner-69ccddcd8c-2pspq                  6/6     Running            2 (6m39s ago)      41m
-kube-system                   rbd-provisioner-69ccddcd8c-4xr4x                  6/6     Running            803 (58s ago)      24d
-kube-system                   volume-snapshot-controller-0                      1/1     Running            0                  12m
-metrics-server                ms-metrics-server-79946c68b-b44vl                 1/1     Running            5 (19m ago)        5d22h
-platform-deployment-manager   dm-monitor-6d65dc86cb-4skb8                       1/1     Running            1095 (19m ago)     5d22h
-platform-deployment-manager   platform-deployment-manager-7fcc5dfb75-fq7df      2/2     Running            10 (19m ago)       5d22h
-sysadmin@controller-0:~$ kubectl get po -n flux-helm
-NAME                                 READY   STATUS             RESTARTS        AGE
-helm-controller-76795d9bfc-f9vdp     1/1     Running            187 (48s ago)   5d22h
-source-controller-856594f8f8-fmc5d   0/1     CrashLoopBackOff   299 (48s ago)   5d22h
-sysadmin@controller-0:~$ kubectl describe  po source-controller-856594f8f8-fmc5d -n flux-helm
-Name:                 source-controller-856594f8f8-fmc5d
-Namespace:            flux-helm
-Priority:             2000000000
-Priority Class Name:  system-cluster-critical
-Service Account:      default
-Node:                 controller-0/feed:beef::2
-Start Time:           Wed, 08 Apr 2026 11:51:39 +0000
-Labels:               app=source-controller
-                      app.starlingx.io/component=platform
-                      pod-template-hash=856594f8f8
-Annotations:          cni.projectcalico.org/containerID: 5e160004330847b14df06c950e77d1432bd16005ba6dbf77ce9f669eb9020689
-                      cni.projectcalico.org/podIP: 172.16.192.103/32
-                      cni.projectcalico.org/podIPs: 172.16.192.103/32,dead:beef::8e22:765f:6121:eb69/128
-                      k8s.v1.cni.cncf.io/network-status:
-                        [{
-                            "name": "chain",
-                            "ips": [
-                                "172.16.192.103",
-                                "dead:beef::8e22:765f:6121:eb69"
-                            ],
-                            "default": true,
-                            "dns": {}
-                        }]
-                      k8s.v1.cni.cncf.io/networks-status:
-                        [{
-                            "name": "chain",
-                            "ips": [
-                                "172.16.192.103",
-                                "dead:beef::8e22:765f:6121:eb69"
-                            ],
-                            "default": true,
-                            "dns": {}
-                        }]
-                      prometheus.io/port: 8080
-                      prometheus.io/scrape: true
-Status:               Running
-IP:                   dead:beef::8e22:765f:6121:eb69
-IPs:
-  IP:           dead:beef::8e22:765f:6121:eb69
-  IP:           172.16.192.103
-Controlled By:  ReplicaSet/source-controller-856594f8f8
-Containers:
-  manager:
-    Container ID:    containerd://ae571ecb06e4a0a5f3c3239d6a19e682c5a6a4506321dd7c4c11212ba5d3bae7
-    Image:           registry.local:9001/docker.io/fluxcd/source-controller:v1.3.0
-    Image ID:        registry.local:9001/docker.io/fluxcd/source-controller@sha256:e8a5f9ac585646d2b92ebebb3fe09568a6ddaf4be6ec46d5a334496ab9c06bbd
-    Ports:           9090/TCP, 8080/TCP, 9440/TCP
-    Host Ports:      0/TCP, 0/TCP, 0/TCP
-    SeccompProfile:  RuntimeDefault
-    Command:
-      /bin/sh
-    Args:
-      -c
-      source-controller  --watch-all-namespaces --log-level=debug --log-encoding=console --enable-leader-election --storage-path=/data --storage-adv-addr=source-controller.$(RUNTIME_NAMESPACE).svc.cluster.local. 2>&1 | tee -a /var/log/source-controller.log
-    State:          Running
-      Started:      Tue, 14 Apr 2026 10:00:08 +0000
-    Last State:     Terminated
-      Reason:       Completed
-      Exit Code:    0
-      Started:      Tue, 14 Apr 2026 09:54:42 +0000
-      Finished:     Tue, 14 Apr 2026 09:59:14 +0000
-    Ready:          True
-    Restart Count:  300
-    Limits:
-      cpu:     1
-      memory:  1Gi
-    Requests:
-      cpu:      0
-      memory:   0
-    Liveness:   http-get http://:healthz/healthz delay=0s timeout=5s period=10s #success=1 #failure=3
-    Readiness:  http-get http://:http/ delay=0s timeout=10s period=10s #success=1 #failure=3
-    Environment:
-      RUNTIME_NAMESPACE:  flux-helm (v1:metadata.namespace)
-      TUF_ROOT:           /tmp/.sigstore
-      GOMAXPROCS:         1 (limits.cpu)
-      GOMEMLIMIT:         1073741824 (limits.memory)
-    Mounts:
-      /data from data (rw)
-      /tmp from tmp (rw)
-      /var/log from log-volume (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-zkph4 (ro)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   True
-  Initialized                 True
-  Ready                       True
-  ContainersReady             True
-  PodScheduled                True
-Volumes:
-  data:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:
-    SizeLimit:  <unset>
-  tmp:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:
-    SizeLimit:  <unset>
-  log-volume:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/log/flux
-    HostPathType:  Directory
-  kube-api-access-zkph4:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-QoS Class:                   Burstable
-Node-Selectors:              node-role.kubernetes.io/control-plane=
-Tolerations:                 node-role.kubernetes.io/control-plane:NoSchedule op=Exists
-                             node-role.kubernetes.io/master:NoSchedule op=Exists
-                             node.kubernetes.io/not-ready:NoExecute op=Exists for 30s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 30s
-Events:
-  Type     Reason          Age                      From               Message
-  ----     ------          ----                     ----               -------
-  Normal   Scheduled       5d22h                    default-scheduler  Successfully assigned flux-helm/source-controller-856594f8f8-fmc5d to controller-0
-  Normal   AddedInterface  5d22h                    multus             Add eth0 [172.16.192.91/32 dead:beef::8e22:765f:6121:eb4f/128] from chain
-  Normal   Pulled          5d22h                    kubelet            Container image "registry.local:9001/docker.io/fluxcd/source-controller:v1.3.0" already present on machine
-  Normal   Created         5d22h                    kubelet            Created container manager
-  Normal   Started         5d22h                    kubelet            Started container manager
-  Warning  FailedMount     5d9h (x9 over 5d17h)     kubelet            MountVolume.SetUp failed for volume "kube-api-access-zkph4" : failed to fetch token: Post "https://[feed:beef::1]:6443/api/v1/namespaces/flux-helm/serviceaccounts/default/token": dial tcp [feed:beef::1]:6443: connect: no route to host
-  Warning  Unhealthy       5d9h (x406 over 5d22h)   kubelet            Readiness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb4f]:9090/": dial tcp [dead:beef::8e22:765f:6121:eb4f]:9090: connect: connection refused
-  Normal   SandboxChanged  5d3h                     kubelet            Pod sandbox changed, it will be killed and re-created.
-  Normal   AddedInterface  5d3h                     multus             Add eth0 [172.16.192.127/32 dead:beef::8e22:765f:6121:eb79/128] from chain
-  Normal   Created         5d3h (x3 over 5d3h)      kubelet            Created container manager
-  Normal   Started         5d3h (x3 over 5d3h)      kubelet            Started container manager
-  Normal   Pulled          5d1h (x24 over 5d3h)     kubelet            Container image "registry.local:9001/docker.io/fluxcd/source-controller:v1.3.0" already present on machine
-  Warning  Unhealthy       4d23h (x29 over 5d3h)    kubelet            Readiness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb79]:9090/": dial tcp [dead:beef::8e22:765f:6121:eb79]:9090: connect: connection refused
-  Warning  BackOff         4d23h (x494 over 5d3h)   kubelet            Back-off restarting failed container manager in pod source-controller-856594f8f8-fmc5d_flux-helm(807da8ca-1327-4a5a-8535-ada0945e232e)
-  Normal   SandboxChanged  4d22h                    kubelet            Pod sandbox changed, it will be killed and re-created.
-  Normal   AddedInterface  4d22h                    multus             Add eth0 [172.16.192.96/32 dead:beef::8e22:765f:6121:eb68/128] from chain
-  Normal   Created         4d22h (x4 over 4d22h)    kubelet            Created container manager
-  Normal   Started         4d22h (x4 over 4d22h)    kubelet            Started container manager
-  Warning  Unhealthy       4d22h                    kubelet            Liveness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb68]:9440/healthz": dial tcp [dead:beef::8e22:765f:6121:eb68]:9440: connect: connection refused
-  Normal   Pulled          4d21h (x15 over 4d22h)   kubelet            Container image "registry.local:9001/docker.io/fluxcd/source-controller:v1.3.0" already present on machine
-  Warning  BackOff         4d20h (x247 over 4d22h)  kubelet            Back-off restarting failed container manager in pod source-controller-856594f8f8-fmc5d_flux-helm(807da8ca-1327-4a5a-8535-ada0945e232e)
-  Warning  FailedMount     4d13h (x2 over 4d13h)    kubelet            MountVolume.SetUp failed for volume "kube-api-access-zkph4" : failed to fetch token: Post "https://[feed:beef::1]:6443/api/v1/namespaces/flux-helm/serviceaccounts/default/token": http2: client connection lost
-  Warning  FailedMount     4d9h (x18 over 4d15h)    kubelet            MountVolume.SetUp failed for volume "kube-api-access-zkph4" : failed to fetch token: Post "https://[feed:beef::1]:6443/api/v1/namespaces/flux-helm/serviceaccounts/default/token": dial tcp [feed:beef::1]:6443: connect: no route to host
-  Warning  Unhealthy       4d8h (x792 over 4d22h)   kubelet            Readiness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb68]:9090/": dial tcp [dead:beef::8e22:765f:6121:eb68]:9090: connect: connection refused
-  Normal   SandboxChanged  4d2h                     kubelet            Pod sandbox changed, it will be killed and re-created.
-  Normal   AddedInterface  4d2h                     multus             Add eth0 [172.16.192.92/32 dead:beef::8e22:765f:6121:eb7f/128] from chain
-  Warning  Unhealthy       3d19h (x3 over 4d)       kubelet            Liveness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb7f]:9440/healthz": dial tcp [dead:beef::8e22:765f:6121:eb7f]:9440: connect: connection refused
-  Warning  NodeNotReady    3d18h                    node-controller    Node is not ready
-  Warning  BackOff         3d15h (x805 over 4d2h)   kubelet            Back-off restarting failed container manager in pod source-controller-856594f8f8-fmc5d_flux-helm(807da8ca-1327-4a5a-8535-ada0945e232e)
-  Normal   Pulled          35h (x85 over 4d2h)      kubelet            Container image "registry.local:9001/docker.io/fluxcd/source-controller:v1.3.0" already present on machine
-  Normal   Created         35h (x84 over 4d2h)      kubelet            Created container manager
-  Normal   Started         29h (x85 over 4d2h)      kubelet            Started container manager
-  Warning  FailedMount     20h (x7 over 47h)        kubelet            MountVolume.SetUp failed for volume "kube-api-access-zkph4" : failed to fetch token: Post "https://[feed:beef::1]:6443/api/v1/namespaces/flux-helm/serviceaccounts/default/token": http2: client connection lost
-  Warning  FailedMount     9h (x174 over 3d17h)     kubelet            MountVolume.SetUp failed for volume "kube-api-access-zkph4" : failed to fetch token: Post "https://[feed:beef::1]:6443/api/v1/namespaces/flux-helm/serviceaccounts/default/token": dial tcp [feed:beef::1]:6443: connect: no route to host
-  Warning  Unhealthy       9h (x3428 over 4d2h)     kubelet            Readiness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb7f]:9090/": dial tcp [dead:beef::8e22:765f:6121:eb7f]:9090: connect: connection refused
-  Warning  Unhealthy       4h49m (x2 over 4h49m)    kubelet            Readiness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb7f]:9090/": dial tcp [dead:beef::8e22:765f:6121:eb7f]:9090: connect: connection refused
-  Normal   SandboxChanged  4h1m                     kubelet            Pod sandbox changed, it will be killed and re-created.
-  Normal   AddedInterface  4h                       multus             Add eth0 [172.16.192.118/32 dead:beef::8e22:765f:6121:eb67/128] from chain
-  Normal   Started         3h29m (x4 over 4h)       kubelet            Started container manager
-  Warning  BackOff         100m (x267 over 3h34m)   kubelet            Back-off restarting failed container manager in pod source-controller-856594f8f8-fmc5d_flux-helm(807da8ca-1327-4a5a-8535-ada0945e232e)
-  Warning  Unhealthy       80m (x171 over 4h)       kubelet            Readiness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb67]:9090/": dial tcp [dead:beef::8e22:765f:6121:eb67]:9090: connect: connection refused
-  Warning  Unhealthy       80m (x2 over 3h17m)      kubelet            Liveness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb67]:9440/healthz": dial tcp [dead:beef::8e22:765f:6121:eb67]:9440: connect: connection refused
-  Normal   Pulled          50m (x31 over 4h)        kubelet            Container image "registry.local:9001/docker.io/fluxcd/source-controller:v1.3.0" already present on machine
-  Normal   Created         50m (x31 over 4h)        kubelet            Created container manager
-  Normal   SandboxChanged  13m                      kubelet            Pod sandbox changed, it will be killed and re-created.
-  Normal   AddedInterface  13m                      multus             Add eth0 [172.16.192.103/32 dead:beef::8e22:765f:6121:eb69/128] from chain
-  Warning  Unhealthy       12m (x6 over 13m)        kubelet            Readiness probe failed: Get "http://[dead:beef::8e22:765f:6121:eb69]:9090/": dial tcp [dead:beef::8e22:765f:6121:eb69]:9090: connect: connection refused
-  Normal   Pulled          5m32s (x3 over 13m)      kubelet            Container image "registry.local:9001/docker.io/fluxcd/source-controller:v1.3.0" already present on machine
-  Normal   Created         5m32s (x3 over 13m)      kubelet            Created container manager
-  Normal   Started         5m32s (x3 over 13m)      kubelet            Started container manager
-  Warning  BackOff         34s (x11 over 11m)       kubelet            Back-off restarting failed container manager in pod source-controller-856594f8f8-fmc5d_flux-helm(807da8ca-1327-4a5a-8535-ada0945e232e)
+sysadmin@controller-0:~$ kubectl get pv -A -o wide
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                        STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE   VOLUMEMODE
+pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd   8Gi        RWX            Delete           Released   default/bscf236-db-pvc       cephfs         <unset>                          40d   Filesystem
+pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719   40Gi       RWX            Delete           Released   default/bscf236-shared-pvc   cephfs         <unset>                          40d   Filesystem
+pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7   50Gi       RWX            Delete           Released   default/bscf236-log-pvc      cephfs         <unset>                          40d   Filesystem
+sysadmin@controller-0:~$ helm install  bscf oci://sribharbor.sec.samsung.net/rel-ran/bscf -f local-values-25A.yaml --version 251.0.16
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /etc/kubernetes/admin.conf
+Pulled: sribharbor.sec.samsung.net/rel-ran/bscf:251.0.16
+Digest: sha256:96da06e98aea9be8b59cc075db7881a9cbb18f901f892fb14808903d427e15f8
+NAME: bscf
+LAST DEPLOYED: Tue Apr 14 10:17:46 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+Your release is named "bscf" and this chart is "bscf-251.0.16".
+
+Check again if you have selected the appropriate chart version for your purpose.
+The recommended platform and patch according to the chart version is as below:
+
+  25.1.0    SVR25A initial version                         WRCP22.12/OCP_4.14
+  251.0.0   Change a version format for helm chart         WRCP22.12/OCP_4.14
+  251.0.1   Added ODF network as eth1 &  medium-2u flavor  WRCP22.12/OCP_4.14
+  251.0.2   Added DSS ports for GSRB in BIP                WRCP22.12/OCP_4.14
+  251.0.3   Added tiny-2u-t3 flavor                        WRCP22.12/OCP_4.14
+  251.0.4   Add EMS_MCM_IP to all pod configmaps           WRCP22.12/OCP_4.14
+  251.0.5   Added two more DSS ports for GSRB in BIP       WRCP22.12/OCP_4.14
+  251.0.6   Added alarm-audit-channel UDP port for CMP     WRCP22.12/OCP_4.14
+  251.0.7   DMP Core limt & Memory change for Multi Confd  WRCP22.12/OCP_4.14
+  251.0.8   Added confd sub ipc for support multi ConfD    WRCP22.12/OCP_4.14
+  251.0.9   Added KA port for GSRB in BIP                  WRCP22.12/OCP_4.14
+  251.0.10  Support 2nd bscf, NAD & SA as per namespace    WRCP22.12/OCP_4.14
+  251.0.11  Run BSCF as a non root user(sapp)              WRCP22.12/OCP_4.14
+  251.0.12  Added GSOB CellSetup Multithreading in BIP     WRCP22.12/OCP_4.14
+  251.0.13  PDB changes                                    WRCP22.12/OCP_4.14
+  251.0.14  2nd BSCF changes                               WRCP22.12/OCP_4.14
+  251.0.15  PTP notification support for OCP               WRCP22.12/OCP_4.14
+  251.0.16  Increased pod memory to 48GB for BPP pods      WRCP22.12/OCP_4.14
 sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$ kubectl get po -o wide
+NAME                            READY   STATUS    RESTARTS   AGE   IP       NODE     NOMINATED NODE   READINESS GATES
+bscf236-bip0-7cfbc868d-2vz9h    0/1     Pending   0          11s   <none>   <none>   <none>           <none>
+bscf236-bip1-64559b675-5t7sb    0/1     Pending   0          11s   <none>   <none>   <none>           <none>
+bscf236-bpp0-574b597fd4-p4wr4   0/1     Pending   0          12s   <none>   <none>   <none>           <none>
+bscf236-bpp1-c656b95f5-xq92b    0/1     Pending   0          12s   <none>   <none>   <none>           <none>
+bscf236-bpp2-77796d5d47-wvp5x   0/1     Pending   0          11s   <none>   <none>   <none>           <none>
+bscf236-bpp3-9f68755f6-n6lx7    0/1     Pending   0          12s   <none>   <none>   <none>           <none>
+bscf236-bpp4-f4b687c7b-bj8g8    0/1     Pending   0          11s   <none>   <none>   <none>           <none>
+bscf236-bpp5-96dd577dc-tfn5n    0/1     Pending   0          11s   <none>   <none>   <none>           <none>
+bscf236-cmp0-5bbdbf579f-wbhgw   0/1     Pending   0          12s   <none>   <none>   <none>           <none>
+bscf236-cmp1-5f5b8db8d4-ptkgn   0/1     Pending   0          11s   <none>   <none>   <none>           <none>
+bscf236-dmp0-7f9894c5f5-zb55b   0/1     Pending   0          11s   <none>   <none>   <none>           <none>
+bscf236-pmp0-85968cf575-fv4sh   0/1     Pending   0          12s   <none>   <none>   <none>           <none>
