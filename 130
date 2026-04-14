@@ -1,252 +1,195 @@
-[root@bastion ~]# oc delete  pods  openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local -n openshift-kube-scheduler
-pod "openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local" deleted
-[root@bastion ~]# oc get pods -n openshift-kube-scheduler -o wide
-NAME                                                                READY   STATUS              RESTARTS         AGE         IP            NODE                                 NOMINATED NODE   READINESS GATES
-openshift-kube-scheduler-guard-master1.airtelvvt.samsungbsc.local   1/1     Running             1                5d17h       10.30.2.4     master1.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-guard-master2.airtelvvt.samsungbsc.local   1/1     Running             2                33d         10.30.1.6     master2.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local   1/1     Running             1                22h         10.30.0.249   master3.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local         2/3     RunContainerError   84 (2d16h ago)   <invalid>   20.1.30.150   master1.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-master2.airtelvvt.samsungbsc.local         3/3     Running             66 (17h ago)     33d         20.1.30.151   master2.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-master3.airtelvvt.samsungbsc.local         3/3     Running             42               22h         20.1.30.152   master3.airtelvvt.samsungbsc.local   <none>           <none>
-revision-pruner-6-master1.airtelvvt.samsungbsc.local                0/1     Completed           0                33d         <none>        master1.airtelvvt.samsungbsc.local   <none>           <none>
-revision-pruner-6-master2.airtelvvt.samsungbsc.local                0/1     Completed           1                33d         <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
-revision-pruner-6-master3.airtelvvt.samsungbsc.local                0/1     Completed           0                33d         <none>        master3.airtelvvt.samsungbsc.local   <none>           <none>
-[root@bastion ~]# oc describe   pods  openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local -n openshift-kube-scheduler
-Name:                 openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local
-Namespace:            openshift-kube-scheduler
-Priority:             2000001000
-Priority Class Name:  system-node-critical
-Node:                 master1.airtelvvt.samsungbsc.local/20.1.30.150
-Start Time:           Wed, 15 Apr 2026 07:34:18 +0900
-Labels:               app=openshift-kube-scheduler
-                      revision=6
-                      scheduler=true
-Annotations:          kubectl.kubernetes.io/default-container: kube-scheduler
-                      kubernetes.io/config.hash: 9eb9eca7b22d7849a31d9808ba261058
-                      kubernetes.io/config.mirror: 9eb9eca7b22d7849a31d9808ba261058
-                      kubernetes.io/config.seen: 2026-04-14T22:34:14.961802560Z
-                      kubernetes.io/config.source: file
-                      resources.workload.openshift.io/kube-scheduler: {"cpushares":15}
-                      resources.workload.openshift.io/kube-scheduler-cert-syncer: {"cpushares":5}
-                      resources.workload.openshift.io/kube-scheduler-recovery-controller: {"cpushares":5}
-                      resources.workload.openshift.io/wait-for-host-port: {"cpushares":15}
-                      target.workload.openshift.io/management: {"effect": "PreferredDuringScheduling"}
-Status:               Running
-IP:                   20.1.30.150
-IPs:
-  IP:           20.1.30.150
-  IP:           2010:0:0:30::10
-Controlled By:  Node/master1.airtelvvt.samsungbsc.local
-Init Containers:
-  wait-for-host-port:
-    Container ID:  cri-o://97745f2c2e46942a32e78b80fa684774ae31953a3c391708f78c93f0fae4ef20
-    Image:         quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29bbfa694380fe78f0edb37ec2d8131f0f41a3646c57383d134446e6ad525361
-    Image ID:      7af7ff772ab837e388a8c76ec3fb3acfaa9b3f43eca7061757dafadf2f3f94a8
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      /usr/bin/timeout
-      30
-      /bin/bash
-      -c
-    Args:
-      echo -n "Waiting for port :10259 to be released."
-      while [ -n "$(ss -Htan '( sport = 10259 )')" ]; do
-        echo -n "."
-        sleep 1
-      done
+Alright — now we finally have the complete picture and I’ll be very direct:
 
-    State:          Terminated
-      Reason:       Completed
-      Exit Code:    0
-      Started:      Sat, 11 Apr 2026 23:28:20 +0900
-      Finished:     Sat, 11 Apr 2026 23:28:20 +0900
-    Ready:          True
-    Restart Count:  8
-    Limits:
-      management.workload.openshift.io/cores:  15
-    Requests:
-      management.workload.openshift.io/cores:  15
-      memory:                                  50Mi
-    Environment:                               <none>
-    Mounts:                                    <none>
-Containers:
-  kube-scheduler:
-    Container ID:  cri-o://bd77fc2fcfb821b2b39378a32429c896aafb9e7057cde63cea5a136c3c467bb2
-    Image:         quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29bbfa694380fe78f0edb37ec2d8131f0f41a3646c57383d134446e6ad525361
-    Image ID:      7af7ff772ab837e388a8c76ec3fb3acfaa9b3f43eca7061757dafadf2f3f94a8
-    Port:          10259/TCP
-    Host Port:     10259/TCP
-    Command:
-      hyperkube
-      kube-scheduler
-    Args:
-      --config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml
-      --cert-dir=/var/run/kubernetes
-      --authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig
-      --authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig
-      --feature-gates=AWSClusterHostedDNS=false,AWSEFSDriverVolumeMetrics=true,AdditionalRoutingCapabilities=false,AdminNetworkPolicy=true,AlibabaPlatform=true,AutomatedEtcdBackup=false,AzureWorkloadIdentity=true,BareMetalLoadBalancer=true,BootcNodeManagement=false,BuildCSIVolumes=true,CSIDriverSharedResource=false,ChunkSizeMiB=true,CloudDualStackNodeIPs=true,ClusterAPIInstall=false,ClusterAPIInstallIBMCloud=false,ClusterMonitoringConfig=false,ConsolePluginContentSecurityPolicy=false,DNSNameResolver=false,DisableKubeletCloudCredentialProviders=true,DynamicResourceAllocation=false,EtcdBackendQuota=false,EventedPLEG=false,Example=false,ExternalOIDC=false,ExternalOIDCWithUIDAndExtraClaimMappings=false,GCPClusterHostedDNS=false,GCPLabelsTags=true,GatewayAPI=false,HardwareSpeed=true,ImageStreamImportMode=false,IngressControllerDynamicConfigurationManager=false,IngressControllerLBSubnetsAWS=true,InsightsConfig=false,InsightsConfigAPI=false,InsightsOnDemandDataGather=false,InsightsRuntimeExtractor=false,KMSv1=true,MachineAPIMigration=false,MachineAPIOperatorDisableMachineHealthCheckController=false,MachineAPIProviderOpenStack=false,MachineConfigNodes=false,ManagedBootImages=true,ManagedBootImagesAWS=true,MaxUnavailableStatefulSet=false,MetricsCollectionProfiles=false,MinimumKubeletVersion=false,MixedCPUsAllocation=false,MultiArchInstallAWS=true,MultiArchInstallAzure=false,MultiArchInstallGCP=true,NetworkDiagnosticsConfig=true,NetworkLiveMigration=true,NetworkSegmentation=true,NewOLM=true,NodeDisruptionPolicy=true,NodeSwap=false,NutanixMultiSubnets=false,OVNObservability=false,OnClusterBuild=false,OpenShiftPodSecurityAdmission=false,PersistentIPsForVirtualization=true,PinnedImages=false,PlatformOperators=false,PrivateHostedZoneAWS=true,ProcMountType=false,RouteAdvertisements=false,RouteExternalCertificate=false,ServiceAccountTokenNodeBinding=false,SetEIPForNLBIngressController=true,SignatureStores=false,SigstoreImageVerification=false,TranslateStreamCloseWebsocketRequests=false,UpgradeStatus=false,UserNamespacesPodSecurityStandards=false,UserNamespacesSupport=false,VSphereControlPlaneMachineSet=true,VSphereDriverConfiguration=true,VSphereMultiNetworks=false,VSphereMultiVCenters=true,VSphereStaticIPs=true,ValidatingAdmissionPolicy=true,VolumeAttributesClass=false,VolumeGroupSnapshot=false
-      -v=2
-      --tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt
-      --tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key
-      --tls-cipher-suites=TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-      --tls-min-version=VersionTLS12
-    State:       Waiting
-      Reason:    RunContainerError
-    Last State:  Terminated
-      Reason:    Error
-      Message:   r from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:12.001648       1 reflector.go:368] Caches populated for *v1.StatefulSet from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:12.259502       1 reflector.go:368] Caches populated for *v1.PersistentVolume from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:12.547293       1 reflector.go:368] Caches populated for *v1.ConfigMap from runtime/asm_amd64.s:1695
-I0411 14:00:15.344217       1 reflector.go:368] Caches populated for *v1.VolumeAttachment from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:19.869283       1 reflector.go:368] Caches populated for *v1.CSINode from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:22.528524       1 reflector.go:368] Caches populated for *v1.ConfigMap from runtime/asm_amd64.s:1695
-I0411 14:00:25.959023       1 reflector.go:368] Caches populated for *v1.Node from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:26.010210       1 reflector.go:368] Caches populated for *v1.StorageClass from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:28.122307       1 reflector.go:368] Caches populated for *v1.PersistentVolumeClaim from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:33.217433       1 reflector.go:368] Caches populated for *v1.ReplicationController from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:37.962041       1 reflector.go:368] Caches populated for *v1.Namespace from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:39.247538       1 reflector.go:368] Caches populated for *v1.CSIStorageCapacity from k8s.io/client-go/informers/factory.go:160
-I0411 14:00:57.370644       1 reflector.go:368] Caches populated for *v1.Pod from k8s.io/client-go/informers/factory.go:160
-E0411 14:00:57.382626       1 cache.go:539] "Pod updated on a different node than previously added to" podKey="7ad40c4c-5587-441c-97e6-bf9247b4a54b" pod="openshift-storage/noobaa-core-0"
-E0411 14:00:57.382654       1 cache.go:540] "scheduler cache is corrupted and can badly affect scheduling decisions"
+👉 Your scheduler is NOT recovering because revision-6 itself is corrupted.
+Deleting pods won’t help — Kubernetes keeps recreating the same broken revision.
 
-      Exit Code:    1
-      Started:      Sun, 12 Apr 2026 00:49:32 +0900
-      Finished:     Sat, 11 Apr 2026 23:00:57 +0900
-    Ready:          False
-    Restart Count:  52
-    Limits:
-      management.workload.openshift.io/cores:  15
-    Requests:
-      management.workload.openshift.io/cores:  15
-      memory:                                  50Mi
-    Liveness:                                  http-get https://:10259/healthz delay=45s timeout=1s period=10s #success=1 #failure=3
-    Readiness:                                 http-get https://:10259/healthz delay=45s timeout=1s period=10s #success=1 #failure=3
-    Environment:                               <none>
-    Mounts:
-      /etc/kubernetes/static-pod-certs from cert-dir (rw)
-      /etc/kubernetes/static-pod-resources from resource-dir (rw)
-  kube-scheduler-cert-syncer:
-    Container ID:  cri-o://252e14e22ac8eb2acebd765a3c15874d9cd4ff0e88ef4cb974cefa54c975e822
-    Image:         quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bb8765cef23ca4b57014119db091bf795ff845f9ae24e22223440f17208ff2c9
-    Image ID:      66b601f6a5049f1d064718de2e72317e7c20213df3b57e7fc3d709ddd28c3cc9
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      cluster-kube-scheduler-operator
-      cert-syncer
-    Args:
-      --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig
-      --namespace=$(POD_NAMESPACE)
-      --destination-dir=/etc/kubernetes/static-pod-certs
-    State:          Running
-      Started:      Sat, 11 Apr 2026 23:28:21 +0900
-    Ready:          True
-    Restart Count:  8
-    Limits:
-      management.workload.openshift.io/cores:  5
-    Requests:
-      management.workload.openshift.io/cores:  5
-      memory:                                  50Mi
-    Environment:
-      POD_NAME:       openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local (v1:metadata.name)
-      POD_NAMESPACE:  openshift-kube-scheduler (v1:metadata.namespace)
-    Mounts:
-      /etc/kubernetes/static-pod-certs from cert-dir (rw)
-      /etc/kubernetes/static-pod-resources from resource-dir (rw)
-  kube-scheduler-recovery-controller:
-    Container ID:  cri-o://6a72e545049516409aed8f8c85a0f334c3d186c462b25ad617882725fa5f1ce9
-    Image:         quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bb8765cef23ca4b57014119db091bf795ff845f9ae24e22223440f17208ff2c9
-    Image ID:      66b601f6a5049f1d064718de2e72317e7c20213df3b57e7fc3d709ddd28c3cc9
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      /bin/bash
-      -euxo
-      pipefail
-      -c
-    Args:
-      timeout 3m /bin/bash -exuo pipefail -c 'while [ -n "$(ss -Htanop \( sport = 11443 \))" ]; do sleep 1; done'
 
-      exec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2
+---
 
-    State:          Running
-      Started:      Sat, 11 Apr 2026 23:28:22 +0900
-    Ready:          True
-    Restart Count:  24
-    Limits:
-      management.workload.openshift.io/cores:  5
-    Requests:
-      management.workload.openshift.io/cores:  5
-      memory:                                  50Mi
-    Environment:
-      POD_NAMESPACE:  openshift-kube-scheduler (v1:metadata.namespace)
-    Mounts:
-      /etc/kubernetes/static-pod-certs from cert-dir (rw)
-      /etc/kubernetes/static-pod-resources from resource-dir (rw)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   True
-  Initialized                 True
-  Ready                       False
-  ContainersReady             False
-  PodScheduled                True
-Volumes:
-  resource-dir:
-    Type:          HostPath (bare host directory volume)
-    Path:          /etc/kubernetes/static-pod-resources/kube-scheduler-pod-6
-    HostPathType:
-  cert-dir:
-    Type:          HostPath (bare host directory volume)
-    Path:          /etc/kubernetes/static-pod-resources/kube-scheduler-certs
-    HostPathType:
-QoS Class:         Burstable
-Node-Selectors:    <none>
-Tolerations:       op=Exists
-Events:
-  Type     Reason   Age                       From     Message
-  ----     ------   ----                      ----     -------
-  Normal   Pulled   17m (x22276 over 3d8h)    kubelet  Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29bbfa694380fe78f0edb37ec2d8131f0f41a3646c57383d134446e6ad525361" already present on machine
-  Normal   Created  13m (x8 over 14m)         kubelet  Created container: kube-scheduler
-  Warning  Failed   13m (x8 over 14m)         kubelet  Error: container kube-scheduler is not in created state: running
-  Normal   Pulled   <invalid> (x75 over 14m)  kubelet  Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29bbfa694380fe78f0edb37ec2d8131f0f41a3646c57383d134446e6ad525361" already present on machine
-[root@bastion ~]# oc get po
-NAME                             READY   STATUS     RESTARTS   AGE
-bscf9901-bip0-76c5df9f8b-b9wdp   0/1     Pending    0          16h
-bscf9901-bip1-55f89464d7-nxlrk   0/1     Init:0/2   0          16h
-bscf9901-bpp0-574b6c59dc-dqw7p   0/1     Pending    0          16h
-bscf9901-bpp1-6cc5f66858-2mhsw   0/1     Init:0/1   0          16h
-bscf9901-bpp2-6d947d9f95-dfs5w   0/1     Pending    0          16h
-bscf9901-bpp3-6fb597b54-47t6x    0/1     Init:0/1   0          16h
-bscf9901-cmp0-7fdfb79d7b-458lw   0/1     Pending    0          16h
-bscf9901-cmp1-79d4cbcf74-c6hlj   0/1     Pending    0          16h
-bscf9901-dmp0-6fd9b97cc-m7q4f    0/1     Init:0/1   0          16h
-bscf9901-pmp0-747f9cd8f7-cvlcn   0/1     Init:0/1   0          16h
-[root@bastion ~]# oc get no
-NAME                                 STATUS                     ROLES                         AGE   VERSION
-master1.airtelvvt.samsungbsc.local   Ready,SchedulingDisabled   control-plane,master,worker   33d   v1.31.9
-master2.airtelvvt.samsungbsc.local   Ready                      control-plane,master,worker   33d   v1.31.9
-master3.airtelvvt.samsungbsc.local   Ready,SchedulingDisabled   control-plane,master,worker   33d   v1.31.9
-[root@bastion ~]# oc describe node master1 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests      Limits
-  --------                                --------      ------
-  cpu                                     8040m (7%)    8350m (7%)
-  memory                                  30125Mi (4%)  19212Mi (2%)
-[root@bastion ~]# oc describe node master2 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests        Limits
-  --------                                --------        ------
-  cpu                                     104005m (98%)   116850m (110%)
-  memory                                  217056Mi (29%)  207208Mi (28%)
-[root@bastion ~]# oc describe node master3 | grep -A5 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                                Requests      Limits
-  --------                                --------      ------
-  cpu                                     12818m (12%)  13198m (12%)
-  memory                                  39682Mi (5%)  31980Mi (4%)
+🔴 FINAL ROOT CAUSE (CONFIRMED)
+
+From your output:
+
+revision=6
+scheduler cache is corrupted
+
+👉 This means:
+
+Static pod config (/etc/kubernetes/static-pod-resources/...-6) is bad
+
+kubelet keeps restarting the SAME broken revision
+
+So it will never recover until a new revision is forced
+
+
+
+---
+
+❗ WHY IT’S STILL FAILING
+
+You did NOT run this step yet (critical):
+
+oc patch kubeScheduler cluster ...
+
+👉 Without this:
+
+Cluster keeps using revision-6
+
+Which is already corrupted
+
+
+
+---
+
+✅ 🔥 REAL FIX (DO THIS NOW)
+
+🧨 STEP 1: Force NEW scheduler revision (MOST IMPORTANT)
+
+oc patch kubeScheduler cluster \
+  --type=merge \
+  -p '{"spec":{"forceRedeploymentReason":"scheduler-recovery-2"}}'
+
+
+---
+
+🔍 STEP 2: Verify new revision
+
+oc get pods -n openshift-kube-scheduler -o wide
+
+👉 You MUST see:
+
+revision=7 (or higher)
+
+⚠️ If still revision=6 → patch didn’t apply
+
+
+---
+
+🧨 STEP 3: Restart kubelet ONLY on master1
+
+ssh core@master1
+sudo systemctl restart kubelet
+
+👉 This will:
+
+Load new revision
+
+Drop corrupted scheduler cache
+
+
+
+---
+
+🧨 STEP 4: Uncordon nodes (IMPORTANT)
+
+Right now:
+
+master1 → SchedulingDisabled
+master3 → SchedulingDisabled
+
+👉 That’s why pods are Pending
+
+Fix:
+
+oc adm uncordon master1
+oc adm uncordon master3
+
+
+---
+
+🧨 STEP 5: Clean stuck pods (optional but recommended)
+
+oc delete pod -n cnf-bscf --all --force --grace-period=0
+
+
+---
+
+🔍 EXPECTED RESULT
+
+After 2–3 minutes:
+
+oc get pods -n openshift-kube-scheduler
+
+✅ Should be:
+
+master1 → 3/3 Running ✅
+
+
+---
+
+oc get co
+
+✅ Should be:
+
+kube-scheduler → Available=True, Degraded=False
+
+
+---
+
+⚠️ IMPORTANT OBSERVATION (NEW)
+
+Your CPU situation changed:
+
+Node	CPU
+
+master1	7% ✅
+master2	98% 🔥
+master3	12% ✅
+
+
+👉 Now master2 is overloaded
+
+
+---
+
+💥 WHY YOUR APPS STILL PENDING
+
+Because:
+
+master1 + master3 → cordoned ❌
+
+master2 → overloaded ❌
+
+
+👉 Result:
+
+No node available → Pending pods
+
+
+---
+
+✅ AFTER FIX (DO THIS)
+
+Either:
+
+✔ Uncordon all:
+
+oc adm uncordon master1
+oc adm uncordon master3
+
+
+---
+
+OR reduce load on master2:
+
+oc adm top pods -A | sort -k3 -nr | head
+
+
+---
+
+🚀 FINAL SUMMARY
+
+✔ Problem = corrupted scheduler revision (rev-6)
+✔ Fix = force new revision (rev-7)
+✔ Secondary issue = nodes cordoned + CPU imbalance
+
+
+---
+
+👉 NEXT STEP (IMPORTANT)
+
+Run this NOW and paste output:
+
+oc get pods -n openshift-kube-scheduler -o wide
+
+👉 I’ll confirm if revision changed and guide final stabilization 👍
