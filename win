@@ -1,22 +1,49 @@
-Events:
-  Type     Reason            Age                    From               Message
-  ----     ------            ----                   ----               -------
-  Warning  FailedScheduling  3d17h (x2 over 3d17h)  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d9h                   default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d20h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d20h (x2 over 3d20h)  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d20h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d20h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d20h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d20h (x2 over 3d20h)  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d19h (x2 over 3d19h)  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d19h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d19h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d19h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d19h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d19h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d18h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d18h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d18h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d18h (x2 over 3d18h)  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  3d18h                  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
+sysadmin@controller-1:~$ cat /proc/dr
+drbd    driver/
+sysadmin@controller-1:~$ cat /proc/drbd
+version: 8.4.11 (api:1/proto:86-101)
+srcversion: E101BCE78F2AA7247827232
+ 0: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
+    ns:0 nr:3792 dw:8092 dr:25385 al:10 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:2496
+ 1: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
+    ns:0 nr:832 dw:1472 dr:8149 al:8 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:620
+ 2: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
+    ns:0 nr:908 dw:1908 dr:9157 al:10 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:724
+
+ 5: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
+    ns:0 nr:0 dw:144 dr:7881 al:3 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:104
+
+ 7: cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown C r-----
+    ns:0 nr:0 dw:0 dr:0 al:0 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:14124
+ 8: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
+    ns:0 nr:0 dw:4 dr:7317 al:1 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:4
+ 9: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
+    ns:0 nr:0 dw:7520 dr:13525 al:12 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:6884
+sysadmin@controller-1:~$
+
+sysadmin@controller-0:~$ cat /etc/drbd.
+drbd.conf  drbd.d/
+sysadmin@controller-0:~$ cat /proc/drbd
+version: 8.4.11 (api:1/proto:86-101)
+srcversion: E101BCE78F2AA7247827232
+sysadmin@controller-0:~$
+
+sysadmin@controller-1:~$ drbdadm status
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-cephmon.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-dockerdistribution.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-etcd.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-extension.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-pgsql.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-platform.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-rabbit.res'.
+sysadmin@controller-1:~$
+sysadmin@controller-0:~$ drbdadm status
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-cephmon.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-dockerdistribution.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-etcd.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-extension.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-pgsql.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-platform.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-rabbit.res'.
+sysadmin@controller-0:~$
+
