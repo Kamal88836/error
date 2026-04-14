@@ -1,229 +1,35 @@
-Now we have full clarity — this is a classic control-plane instability due to scheduler cache corruption + OVN crash + CPU pressure.
-
-Let’s break it down cleanly and fix properly 👇
-
-
----
-
-🔴 ROOT CAUSE (CONFIRMED)
-
-From your scheduler logs:
-
-scheduler cache is corrupted and can badly affect scheduling decisions
-
-👉 This is critical
-
-It happens when:
-
-Pods move unexpectedly (your storage + network issues earlier)
-
-API state mismatch
-
-OR kubelet / CRI glitch under load
-
-
-
----
-
-🔴 Current Problems
-
-1. kube-scheduler (master1)
-
-2/3 Running → RunContainerError ❌
-
-
----
-
-2. OVN (master3)
-
-ovnkube-node → CrashLoopBackOff ❌
-
-
----
-
-3. Master1 CPU
-
-98% CPU 🔥
-
-👉 This is the trigger for everything
-
-
----
-
-🧠 What Actually Happened
-
-Sequence:
-
-1. CPU overload on masters
-
-
-2. Storage attach issues (you fixed partially)
-
-
-3. Pod rescheduling inconsistency
-
-
-4. Scheduler cache corrupted
-
-
-5. OVN instability
-
-
-6. kube-scheduler crash
-
-
-
-
----
-
-✅ 🔧 FIX (FOLLOW EXACT ORDER)
-
-
----
-
-🧨 STEP 1: Restart kubelet on master1 (MANDATORY)
-
-👉 This will FIX scheduler corruption
-
-ssh core@master1
-sudo systemctl restart kubelet
-
-✅ This recreates:
-
-kube-scheduler static pod
-
-cleans cache corruption
-
-
-
----
-
-🧨 STEP 2: Fix OVN Crash (master3)
-
-Your issue:
-
-ovnkube-node-xt6c4 → CrashLoopBackOff
-
-👉 Restart it:
-
-oc delete pod ovnkube-node-xt6c4 -n openshift-ovn-kubernetes
-
-
----
-
-🧨 STEP 3: Verify OVN DaemonSet
-
-oc get ds -n openshift-ovn-kubernetes
-
-Expected:
-
-DESIRED = READY = 3
-
-
----
-
-🧨 STEP 4: Restart kubelet on master3 (IMPORTANT)
-
-Because OVN crashed heavily:
-
-ssh core@master3
-sudo systemctl restart kubelet
-
-
----
-
-🧨 STEP 5: Reduce CPU Pressure (VERY IMPORTANT)
-
-You are running CNF workloads on masters:
-
-Example:
-
-bpp2 → 48 CPU
-bpp0 → 24 CPU
-
-👉 This is NOT recommended
-
-
----
-
-🔥 Immediate mitigation
-
-Check heavy pods:
-
-oc adm top pods -A | sort -k3 -nr | head
-
-
----
-
-🚨 Best Fix
-
-✔ Add worker nodes
-✔ Move CNF workloads to workers
-
-OR (temporary):
-
-oc adm cordon master1
-
-
----
-
-🧨 STEP 6: Final Verification
-
-oc get co
-
-Expected:
-
-kube-scheduler → True / False / False ✅
-network        → True / False / False ✅
-
-
----
-
-🚨 IMPORTANT INSIGHT
-
-Your cluster design issue:
-
-Roles: control-plane, master, worker (same nodes)
-
-👉 This means:
-
-Masters are also running workloads
-
-Leads to instability like this
-
-
-
----
-
-💡 Recommended Architecture
-
-✔ Separate:
-
-Control plane (masters)
-
-Worker nodes (apps)
-
-
-
----
-
-✅ FINAL SUMMARY
-
-Issue	Root Cause	Fix
-
-kube-scheduler crash	cache corruption	restart kubelet (master1)
-OVN crash	node instability	restart ovn pod + kubelet
-cluster instability	CPU overload	move workloads
-
-
-
----
-
-🚀 If still not fixed after this
-
-Send:
-
-journalctl -u kubelet -n 100 --no-pager
-oc logs ovnkube-node-xt6c4 -n openshift-ovn-kubernetes
-
-I’ll go to deep CRI / OVN level debugging 👍
+[root@bastion ~]# oc delete  pods  openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local -n openshift-kube-scheduler
+pod "openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local" deleted
+[root@bastion ~]# oc get pods -n openshift-kube-scheduler -o wide
+NAME                                                                READY   STATUS              RESTARTS        AGE    IP            NODE                                 NOMINATED NODE   READINESS GATES
+openshift-kube-scheduler-guard-master1.airtelvvt.samsungbsc.local   1/1     Running             1               6d9h   10.30.2.4     master1.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-guard-master2.airtelvvt.samsungbsc.local   1/1     Running             2               33d    10.30.1.6     master2.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local   1/1     Running             1               38h    10.30.0.249   master3.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local         2/3     RunContainerError   84 (3d8h ago)   7s     20.1.30.150   master1.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master2.airtelvvt.samsungbsc.local         3/3     Running             66 (33h ago)    34d    20.1.30.151   master2.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master3.airtelvvt.samsungbsc.local         3/3     Running             42              38h    20.1.30.152   master3.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master1.airtelvvt.samsungbsc.local                0/1     Completed           0               33d    <none>        master1.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master2.airtelvvt.samsungbsc.local                0/1     Completed           1               33d    <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master3.airtelvvt.samsungbsc.local                0/1     Completed           0               33d    <none>        master3.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion ~]# oc get po -o wide
+NAME                             READY   STATUS                        RESTARTS   AGE         IP            NODE                                 NOMINATED NODE   READINESS GATES
+bscf9901-bip0-76c5df9f8b-c27zh   0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
+bscf9901-bip0-76c5df9f8b-s6s5g   1/1     Terminating                   0          2d16h       10.30.2.59    master1.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bip1-55f89464d7-kw952   0/1     Init:0/2                      0          2m55s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bip1-55f89464d7-zltt2   1/1     Terminating                   0          81m         10.30.1.162   master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp0-574b6c59dc-hs4gq   0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
+bscf9901-bpp0-574b6c59dc-sbm4s   1/1     Terminating                   0          2d16h       10.30.2.49    master1.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp1-6cc5f66858-29jlz   0/1     Init:0/1                      0          2m53s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp1-6cc5f66858-79lgg   0/1     Init:ContainerStatusUnknown   0          2m55s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp1-6cc5f66858-dkjhv   0/1     Init:ContainerStatusUnknown   0          2m54s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp2-6d947d9f95-nchfq   0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
+bscf9901-bpp2-6d947d9f95-vvsgv   1/1     Terminating                   0          2d16h       10.30.2.51    master1.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp3-6fb597b54-7v5rs    0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
+bscf9901-cmp0-7fdfb79d7b-d5lxk   0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
+bscf9901-cmp0-7fdfb79d7b-rxrff   1/1     Terminating                   0          2d16h       10.30.2.27    master1.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-cmp1-79d4cbcf74-cqcfw   1/1     Terminating                   0          <invalid>   10.30.0.14    master3.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-cmp1-79d4cbcf74-kqgm2   0/1     Pending                       0          2m54s       <none>        <none>                               <none>           <none>
+bscf9901-dmp0-6fd9b97cc-9rhd7    0/1     Init:0/1                      0          2m54s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-pmp0-747f9cd8f7-jl4bl   1/1     Terminating                   0          <invalid>   10.30.0.12    master3.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-pmp0-747f9cd8f7-v8rvm   0/1     Init:0/1                      0          2m54s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion ~]#
