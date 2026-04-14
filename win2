@@ -196,4 +196,20 @@ But first fix storage (this is blocking everything)
 kubectl get pvc
 kubectl get pv
 
+
+sysadmin@controller-0:~$ helm uninstall bscf
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /etc/kubernetes/admin.conf
+release "bscf" uninstalled
+sysadmin@controller-0:~$ kubectl get pv -A
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                        STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd   8Gi        RWX            Delete           Released   default/bscf236-db-pvc       cephfs         <unset>                          40d
+pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719   40Gi       RWX            Delete           Released   default/bscf236-shared-pvc   cephfs         <unset>                          40d
+pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7   50Gi       RWX            Delete           Released   default/bscf236-log-pvc      cephfs         <unset>                          40d
+sysadmin@controller-0:~$ kubectl get pvc -A
+No resources found
+sysadmin@controller-0:~$ kubectl get pvc -A
+No resources found
+sysadmin@controller-0:~$
+
+
 I’ll confirm everything is clean 👍
