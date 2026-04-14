@@ -1,55 +1,121 @@
-sysadmin@controller-0:~$ kubectl get pv -A -o wide
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                        STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE   VOLUMEMODE
-pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd   8Gi        RWX            Delete           Released   default/bscf236-db-pvc       cephfs         <unset>                          40d   Filesystem
-pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719   40Gi       RWX            Delete           Released   default/bscf236-shared-pvc   cephfs         <unset>                          40d   Filesystem
-pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7   50Gi       RWX            Delete           Released   default/bscf236-log-pvc      cephfs         <unset>                          40d   Filesystem
-sysadmin@controller-0:~$ helm install  bscf oci://sribharbor.sec.samsung.net/rel-ran/bscf -f local-values-25A.yaml --version 251.0.16
-WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /etc/kubernetes/admin.conf
-Pulled: sribharbor.sec.samsung.net/rel-ran/bscf:251.0.16
-Digest: sha256:96da06e98aea9be8b59cc075db7881a9cbb18f901f892fb14808903d427e15f8
-NAME: bscf
-LAST DEPLOYED: Tue Apr 14 10:17:46 2026
-NAMESPACE: default
-STATUS: deployed
-REVISION: 1
-NOTES:
-Your release is named "bscf" and this chart is "bscf-251.0.16".
-
-Check again if you have selected the appropriate chart version for your purpose.
-The recommended platform and patch according to the chart version is as below:
-
-  25.1.0    SVR25A initial version                         WRCP22.12/OCP_4.14
-  251.0.0   Change a version format for helm chart         WRCP22.12/OCP_4.14
-  251.0.1   Added ODF network as eth1 &  medium-2u flavor  WRCP22.12/OCP_4.14
-  251.0.2   Added DSS ports for GSRB in BIP                WRCP22.12/OCP_4.14
-  251.0.3   Added tiny-2u-t3 flavor                        WRCP22.12/OCP_4.14
-  251.0.4   Add EMS_MCM_IP to all pod configmaps           WRCP22.12/OCP_4.14
-  251.0.5   Added two more DSS ports for GSRB in BIP       WRCP22.12/OCP_4.14
-  251.0.6   Added alarm-audit-channel UDP port for CMP     WRCP22.12/OCP_4.14
-  251.0.7   DMP Core limt & Memory change for Multi Confd  WRCP22.12/OCP_4.14
-  251.0.8   Added confd sub ipc for support multi ConfD    WRCP22.12/OCP_4.14
-  251.0.9   Added KA port for GSRB in BIP                  WRCP22.12/OCP_4.14
-  251.0.10  Support 2nd bscf, NAD & SA as per namespace    WRCP22.12/OCP_4.14
-  251.0.11  Run BSCF as a non root user(sapp)              WRCP22.12/OCP_4.14
-  251.0.12  Added GSOB CellSetup Multithreading in BIP     WRCP22.12/OCP_4.14
-  251.0.13  PDB changes                                    WRCP22.12/OCP_4.14
-  251.0.14  2nd BSCF changes                               WRCP22.12/OCP_4.14
-  251.0.15  PTP notification support for OCP               WRCP22.12/OCP_4.14
-  251.0.16  Increased pod memory to 48GB for BPP pods      WRCP22.12/OCP_4.14
+sysadmin@controller-0:~$ kubectl describe po bscf236-bpp0-574b597fd4-p4wr4
+Name:             bscf236-bpp0-574b597fd4-p4wr4
+Namespace:        default
+Priority:         0
+Service Account:  bscf-sa
+Node:             <none>
+Labels:           app=bscf236-bpp0
+                  component=bscf236-bpp
+                  nename=bscf236
+                  pod-template-hash=574b597fd4
+                  release=bscf
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.v1.cni.cncf.io/networks:
+                    [ { "name": "bscf-bh0u-nad", "interface": "bh0" }
+                    ]
+Status:           Pending
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/bscf236-bpp0-574b597fd4
+Init Containers:
+  install:
+    Image:      sribharbor.sec.samsung.net/rel-ran/vos-bscf-init:SVR25ABSCVOSC44_RA00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+      chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared; chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; echo 1 > /proc/sys/net/ipv4/conf/all/forwarding; echo 1 > /proc/sys/net/ipv6/conf/all/forwarding;
+    Limits:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        48Gi
+      windriver.com/isolcpus:        28
+    Requests:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        48Gi
+      windriver.com/isolcpus:        28
+    Environment:                     <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf236-bpp-log (rw)
+      /mnt/storage/shared from bscf236-bpp-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8zlvk (ro)
+Containers:
+  bpp:
+    Image:      sribharbor.sec.samsung.net/rel-ran/vos-bscf-bpp:SVR25ABSCVOSC44_RA00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    Limits:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        48Gi
+      windriver.com/isolcpus:        28
+    Requests:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        48Gi
+      windriver.com/isolcpus:        28
+    Liveness:                        http-get http://:8080/bpp_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                       http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:  UTC
+    Mounts:
+      /dev/shm from cshm (rw)
+      /etc/config from env (rw)
+      /hugepages from hugepage (rw)
+      /mnt/storage/log from bscf236-bpp-log (rw)
+      /mnt/storage/shared from bscf236-bpp-shared (rw)
+      /sys from sys (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8zlvk (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False
+Volumes:
+  cshm:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     Memory
+    SizeLimit:  <unset>
+  hugepage:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     HugePages
+    SizeLimit:  <unset>
+  sys:
+    Type:          HostPath (bare host directory volume)
+    Path:          /sys
+    HostPathType:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf236-bpp0
+    Optional:  false
+  bscf236-bpp-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf236-log-pvc
+    ReadOnly:   false
+  bscf236-bpp-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf236-shared-pvc
+    ReadOnly:   false
+  kube-api-access-8zlvk:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 30s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 30s
+Events:
+  Type     Reason            Age    From               Message
+  ----     ------            ----   ----               -------
+  Warning  FailedScheduling  3m34s  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling  2m25s  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
 sysadmin@controller-0:~$
-sysadmin@controller-0:~$
-sysadmin@controller-0:~$
-sysadmin@controller-0:~$ kubectl get po -o wide
-NAME                            READY   STATUS    RESTARTS   AGE   IP       NODE     NOMINATED NODE   READINESS GATES
-bscf236-bip0-7cfbc868d-2vz9h    0/1     Pending   0          11s   <none>   <none>   <none>           <none>
-bscf236-bip1-64559b675-5t7sb    0/1     Pending   0          11s   <none>   <none>   <none>           <none>
-bscf236-bpp0-574b597fd4-p4wr4   0/1     Pending   0          12s   <none>   <none>   <none>           <none>
-bscf236-bpp1-c656b95f5-xq92b    0/1     Pending   0          12s   <none>   <none>   <none>           <none>
-bscf236-bpp2-77796d5d47-wvp5x   0/1     Pending   0          11s   <none>   <none>   <none>           <none>
-bscf236-bpp3-9f68755f6-n6lx7    0/1     Pending   0          12s   <none>   <none>   <none>           <none>
-bscf236-bpp4-f4b687c7b-bj8g8    0/1     Pending   0          11s   <none>   <none>   <none>           <none>
-bscf236-bpp5-96dd577dc-tfn5n    0/1     Pending   0          11s   <none>   <none>   <none>           <none>
-bscf236-cmp0-5bbdbf579f-wbhgw   0/1     Pending   0          12s   <none>   <none>   <none>           <none>
-bscf236-cmp1-5f5b8db8d4-ptkgn   0/1     Pending   0          11s   <none>   <none>   <none>           <none>
-bscf236-dmp0-7f9894c5f5-zb55b   0/1     Pending   0          11s   <none>   <none>   <none>           <none>
-bscf236-pmp0-85968cf575-fv4sh   0/1     Pending   0          12s   <none>   <none>   <none>           <none>
