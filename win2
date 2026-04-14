@@ -1,0 +1,387 @@
+root@controller-0:/etc/drbd.d# ls -ltr
+total 32
+-rw-r--r-- 1 root root  114 Aug 20  2025 global_common.conf
+-rw-r--r-- 1 root root  955 Aug 20  2025 drbd-pgsql.res
+-rw-r--r-- 1 root root  994 Aug 20  2025 drbd-rabbit.res
+-rw-r--r-- 1 root root 1003 Aug 20  2025 drbd-platform.res
+-rw-r--r-- 1 root root  977 Aug 20  2025 drbd-extension.res
+-rw-r--r-- 1 root root  957 Aug 20  2025 drbd-etcd.res
+-rw-r--r-- 1 root root 1013 Aug 20  2025 drbd-dockerdistribution.res
+-rw-r--r-- 1 root root  970 Aug 20  2025 drbd-cephmon.res
+root@controller-0:/etc/drbd.d#
+logout
+sysadmin@controller-0:/etc/drbd.d$ sudo systemctl restart drbd
+sysadmin@controller-0:/etc/drbd.d$ drbdadm status
+drbd-cephmon: No such resource
+Command 'drbdsetup-84 status drbd-cephmon' terminated with exit code 10
+drbd-dockerdistribution: No such resource
+Command 'drbdsetup-84 status drbd-dockerdistribution' terminated with exit code 10
+drbd-etcd: No such resource
+Command 'drbdsetup-84 status drbd-etcd' terminated with exit code 10
+drbd-extension: No such resource
+Command 'drbdsetup-84 status drbd-extension' terminated with exit code 10
+drbd-pgsql: No such resource
+Command 'drbdsetup-84 status drbd-pgsql' terminated with exit code 10
+drbd-platform: No such resource
+Command 'drbdsetup-84 status drbd-platform' terminated with exit code 10
+drbd-rabbit role:Primary
+  disk:UpToDate
+  peer role:Secondary
+    replication:Established peer-disk:UpToDate
+
+sysadmin@controller-0:/etc/drbd.d$ drbdadm status
+drbd-cephmon: No such resource
+Command 'drbdsetup-84 status drbd-cephmon' terminated with exit code 10
+drbd-dockerdistribution: No such resource
+Command 'drbdsetup-84 status drbd-dockerdistribution' terminated with exit code 10
+drbd-etcd: No such resource
+Command 'drbdsetup-84 status drbd-etcd' terminated with exit code 10
+drbd-extension: No such resource
+Command 'drbdsetup-84 status drbd-extension' terminated with exit code 10
+drbd-pgsql: No such resource
+Command 'drbdsetup-84 status drbd-pgsql' terminated with exit code 10
+drbd-platform: No such resource
+Command 'drbdsetup-84 status drbd-platform' terminated with exit code 10
+drbd-rabbit: No such resource
+Command 'drbdsetup-84 status drbd-rabbit' terminated with exit code 10
+sysadmin@controller-0:/etc/drbd.d$ drbdadm status
+drbd-cephmon: No such resource
+Command 'drbdsetup-84 status drbd-cephmon' terminated with exit code 10
+drbd-dockerdistribution: No such resource
+Command 'drbdsetup-84 status drbd-dockerdistribution' terminated with exit code 10
+drbd-etcd: No such resource
+Command 'drbdsetup-84 status drbd-etcd' terminated with exit code 10
+drbd-extension: No such resource
+Command 'drbdsetup-84 status drbd-extension' terminated with exit code 10
+drbd-pgsql: No such resource
+Command 'drbdsetup-84 status drbd-pgsql' terminated with exit code 10
+drbd-platform: No such resource
+Command 'drbdsetup-84 status drbd-platform' terminated with exit code 10
+drbd-rabbit: No such resource
+Command 'drbdsetup-84 status drbd-rabbit' terminated with exit code 10
+sysadmin@controller-0:/etc/drbd.d$ drbdadm status
+drbd-cephmon: No such resource
+Command 'drbdsetup-84 status drbd-cephmon' terminated with exit code 10
+drbd-dockerdistribution: No such resource
+Command 'drbdsetup-84 status drbd-dockerdistribution' terminated with exit code 10
+drbd-etcd: No such resource
+Command 'drbdsetup-84 status drbd-etcd' terminated with exit code 10
+drbd-extension: No such resource
+Command 'drbdsetup-84 status drbd-extension' terminated with exit code 10
+drbd-pgsql: No such resource
+Command 'drbdsetup-84 status drbd-pgsql' terminated with exit code 10
+drbd-platform: No such resource
+Command 'drbdsetup-84 status drbd-platform' terminated with exit code 10
+drbd-rabbit: No such resource
+Command 'drbdsetup-84 status drbd-rabbit' terminated with exit code 10
+sysadmin@controller-0:/etc/drbd.d$ sudo systemctl restart drbd
+sysadmin@controller-0:/etc/drbd.d$ drbdadm status
+drbd-cephmon: No such resource
+Command 'drbdsetup-84 status drbd-cephmon' terminated with exit code 10
+drbd-dockerdistribution: No such resource
+Command 'drbdsetup-84 status drbd-dockerdistribution' terminated with exit code 10
+drbd-etcd: No such resource
+Command 'drbdsetup-84 status drbd-etcd' terminated with exit code 10
+drbd-extension: No such resource
+Command 'drbdsetup-84 status drbd-extension' terminated with exit code 10
+drbd-pgsql: No such resource
+Command 'drbdsetup-84 status drbd-pgsql' terminated with exit code 10
+drbd-platform: No such resource
+Command 'drbdsetup-84 status drbd-platform' terminated with exit code 10
+drbd-rabbit: No such resource
+Command 'drbdsetup-84 status drbd-rabbit' terminated with exit code 10
+sysadmin@controller-0:/etc/drbd.d$ drbdam down all
+-bash: drbdam: command not found
+sysadmin@controller-0:/etc/drbd.d$ drbdadm down all
+Command 'drbdsetup-84 down drbd-cephmon' terminated with exit code 20
+sysadmin@controller-0:/etc/drbd.d$ drbdadm up all
+drbd-cephmon: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-cephmon --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-cephmon: skipped due to earlier error
+drbd-dockerdistribution: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-dockerdistribution --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-dockerdistribution: skipped due to earlier error
+drbd-etcd: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-etcd --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-etcd: skipped due to earlier error
+drbd-extension: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-extension --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-extension: skipped due to earlier error
+drbd-pgsql: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-pgsql --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-pgsql: skipped due to earlier error
+drbd-platform: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-platform --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-platform: skipped due to earlier error
+drbd-rabbit: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-rabbit --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-rabbit: skipped due to earlier error
+sysadmin@controller-0:/etc/drbd.d$ dmesg | grep -i drbd | tail -50
+[11785.552531] drbd drbd-pgsql: Method to ensure write ordering: flush
+[11785.552532] drbd drbd-pgsql/0 drbd0: max BIO size = 1048576
+[11785.552535] drbd drbd-pgsql/0 drbd0: drbd_bm_resize called with capacity == 41941688
+[11785.552659] drbd drbd-pgsql/0 drbd0: resync bitmap: bits=5242711 words=81918 pages=160
+[11785.552661] drbd0: detected capacity change from 0 to 41941688
+[11785.552663] drbd drbd-pgsql/0 drbd0: size = 20 GB (20970844 KB)
+[11785.553482] drbd drbd-pgsql/0 drbd0: recounting of set bits took additional 0 jiffies
+[11785.553489] drbd drbd-pgsql/0 drbd0: 0 KB (0 bits) marked out-of-sync by on disk bit-map.
+[11785.553491] drbd drbd-pgsql/0 drbd0: disk( Attaching -> UpToDate )
+[11785.553495] drbd drbd-pgsql/0 drbd0: attached to UUIDs FF0BE0913CA53918:0000000000000000:34C3269FE620572C:34C2269FE620572C
+[11785.553659] drbd drbd-rabbit: Starting worker thread (from drbdsetup-84 [2435606])
+[11785.553931] drbd drbd-rabbit/0 drbd1: disk( Diskless -> Attaching )
+[11785.554168] drbd drbd-rabbit: Method to ensure write ordering: flush
+[11785.554171] drbd drbd-rabbit/0 drbd1: max BIO size = 1048576
+[11785.554173] drbd drbd-rabbit/0 drbd1: drbd_bm_resize called with capacity == 4194104
+[11785.554190] drbd drbd-rabbit/0 drbd1: resync bitmap: bits=524263 words=8192 pages=16
+[11785.554193] drbd1: detected capacity change from 0 to 4194104
+[11785.554194] drbd drbd-rabbit/0 drbd1: size = 2048 MB (2097052 KB)
+[11785.554357] drbd drbd-rabbit/0 drbd1: recounting of set bits took additional 0 jiffies
+[11785.554359] drbd drbd-rabbit/0 drbd1: 0 KB (0 bits) marked out-of-sync by on disk bit-map.
+[11785.554362] drbd drbd-rabbit/0 drbd1: disk( Attaching -> UpToDate )
+[11785.554364] drbd drbd-rabbit/0 drbd1: attached to UUIDs A93CA1946674CD3A:0000000000000000:77F3DFB474277FDE:77F2DFB474277FDE
+[11785.563515] drbd drbd-cephmon: conn( StandAlone -> Unconnected )
+[11785.563557] drbd drbd-cephmon: Starting receiver thread (from drbd_w_drbd-cep [2435529])
+[11785.563620] drbd drbd-cephmon: receiver (re)started
+[11785.563637] drbd drbd-cephmon: conn( Unconnected -> WFConnection )
+[11785.567413] drbd drbd-etcd: conn( StandAlone -> Unconnected )
+[11785.567442] drbd drbd-etcd: Starting receiver thread (from drbd_w_drbd-etc [2435551])
+[11785.567490] drbd drbd-etcd: receiver (re)started
+[11785.567500] drbd drbd-etcd: conn( Unconnected -> WFConnection )
+[11785.569988] drbd drbd-extension: conn( StandAlone -> Unconnected )
+[11785.570092] drbd drbd-extension: Starting receiver thread (from drbd_w_drbd-ext [2435566])
+[11785.570320] drbd drbd-extension: receiver (re)started
+[11785.570340] drbd drbd-extension: conn( Unconnected -> WFConnection )
+[11785.570445] drbd drbd-dockerdistribution: conn( StandAlone -> Unconnected )
+[11785.570465] drbd drbd-dockerdistribution: Starting receiver thread (from drbd_w_drbd-doc [2435559])
+[11785.570505] drbd drbd-dockerdistribution: receiver (re)started
+[11785.570516] drbd drbd-dockerdistribution: conn( Unconnected -> WFConnection )
+[11785.572459] drbd drbd-platform: conn( StandAlone -> Unconnected )
+[11785.572488] drbd drbd-platform: Starting receiver thread (from drbd_w_drbd-pla [2435572])
+[11785.572530] drbd drbd-platform: receiver (re)started
+[11785.572544] drbd drbd-platform: conn( Unconnected -> WFConnection )
+[11785.575728] drbd drbd-pgsql: conn( StandAlone -> Unconnected )
+[11785.575755] drbd drbd-pgsql: Starting receiver thread (from drbd_w_drbd-pgs [2435608])
+[11785.575791] drbd drbd-pgsql: receiver (re)started
+[11785.575804] drbd drbd-pgsql: conn( Unconnected -> WFConnection )
+[11785.577399] drbd drbd-rabbit: conn( StandAlone -> Unconnected )
+[11785.577641] drbd drbd-rabbit: Starting receiver thread (from drbd_w_drbd-rab [2435615])
+[11785.577963] drbd drbd-rabbit: receiver (re)started
+[11785.577980] drbd drbd-rabbit: conn( Unconnected -> WFConnection )
+sysadmin@controller-0:/etc/drbd.d$
+
+root@controller-1:/etc/drbd.d# ls -ltr
+total 32
+-rw-r----- 1 root root  114 Aug 20  2025 global_common.conf
+-rw------- 1 root root  955 Aug 20  2025 drbd-pgsql.res
+-rw------- 1 root root  994 Aug 20  2025 drbd-rabbit.res
+-rw------- 1 root root 1003 Aug 20  2025 drbd-platform.res
+-rw------- 1 root root  977 Aug 20  2025 drbd-extension.res
+-rw------- 1 root root  957 Aug 20  2025 drbd-etcd.res
+-rw------- 1 root root 1013 Aug 20  2025 drbd-dockerdistribution.res
+-rw------- 1 root root  970 Aug 20  2025 drbd-cephmon.res
+root@controller-1:/etc/drbd.d# chmod 644 *
+root@controller-1:/etc/drbd.d# ls -ltr
+total 32
+-rw-r--r-- 1 root root  114 Aug 20  2025 global_common.conf
+-rw-r--r-- 1 root root  955 Aug 20  2025 drbd-pgsql.res
+-rw-r--r-- 1 root root  994 Aug 20  2025 drbd-rabbit.res
+-rw-r--r-- 1 root root 1003 Aug 20  2025 drbd-platform.res
+-rw-r--r-- 1 root root  977 Aug 20  2025 drbd-extension.res
+-rw-r--r-- 1 root root  957 Aug 20  2025 drbd-etcd.res
+-rw-r--r-- 1 root root 1013 Aug 20  2025 drbd-dockerdistribution.res
+-rw-r--r-- 1 root root  970 Aug 20  2025 drbd-cephmon.res
+root@controller-1:/etc/drbd.d# systemctl restrat brdb
+Unknown command verb restrat.
+root@controller-1:/etc/drbd.d# systemctl restrat drbd
+Unknown command verb restrat.
+root@controller-1:/etc/drbd.d#
+logout
+sysadmin@controller-1:/etc/drbd.d$ sudo systemctl restart drbd
+sysadmin@controller-1:/etc/drbd.d$ drbdadm status
+drbd-cephmon role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-dockerdistribution role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-etcd role:Secondary
+  disk:Inconsistent
+  peer connection:Connecting
+
+drbd-extension role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-pgsql role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-platform role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-rabbit role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+sysadmin@controller-1:/etc/drbd.d$ drbdadm status
+drbd-cephmon role:Primary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-dockerdistribution role:Primary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-etcd role:Secondary
+  disk:Inconsistent
+  peer connection:Connecting
+
+drbd-extension role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-pgsql role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-platform role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-rabbit role:Secondary
+  disk:UpToDate
+  peer connection:Connecting
+
+sysadmin@controller-1:/etc/drbd.d$ drbdadm status
+drbd-cephmon role:Primary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-dockerdistribution role:Primary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-etcd role:Secondary
+  disk:Inconsistent
+  peer connection:Connecting
+
+drbd-extension role:Primary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-pgsql role:Primary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-platform role:Primary
+  disk:UpToDate
+  peer connection:Connecting
+
+drbd-rabbit role:Primary
+  disk:UpToDate
+  peer connection:Connecting
+
+sysadmin@controller-1:/etc/drbd.d$ oc get no
+-bash: oc: command not found
+sysadmin@controller-1:/etc/drbd.d$ kubectl  get no
+Get "https://[feed:beef::1]:6443/api/v1/nodes?limit=500": net/http: TLS handshake timeout - error from a previous attempt: http2: server sent GOAWAY and closed the connection; LastStreamID=1, ErrCode=NO_ERROR, debug=""
+sysadmin@controller-1:/etc/drbd.d$ drbdam down all
+-bash: drbdam: command not found
+sysadmin@controller-1:/etc/drbd.d$ drbdadm down all
+Command 'drbdsetup-84 down drbd-cephmon' terminated with exit code 20
+sysadmin@controller-1:/etc/drbd.d$ drbdadm up all
+drbd-cephmon: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-cephmon --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-cephmon: skipped due to earlier error
+drbd-dockerdistribution: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-dockerdistribution --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-dockerdistribution: skipped due to earlier error
+drbd-etcd: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-etcd --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-etcd: skipped due to earlier error
+drbd-extension: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-extension --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-extension: skipped due to earlier error
+drbd-pgsql: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-pgsql --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-pgsql: skipped due to earlier error
+drbd-platform: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-platform --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-platform: skipped due to earlier error
+drbd-rabbit: Operation not permitted
+Command 'drbdsetup-84 new-resource drbd-rabbit --cpu-mask=3,00000000,00000003' terminated with exit code 20
+drbdadm: new-minor drbd-rabbit: skipped due to earlier error
+sysadmin@controller-1:/etc/drbd.d$ ping controller-1
+PING controller-1(controller-1 (face::3)) 56 data bytes
+64 bytes from controller-1 (face::3): icmp_seq=1 ttl=64 time=0.167 ms
+64 bytes from controller-1 (face::3): icmp_seq=2 ttl=64 time=0.081 ms
+^C
+--- controller-1 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1030ms
+rtt min/avg/max/mdev = 0.081/0.124/0.167/0.043 ms
+sysadmin@controller-1:/etc/drbd.d$ ping controller-0
+PING controller-0(controller-0 (face::2)) 56 data bytes
+64 bytes from controller-0 (face::2): icmp_seq=1 ttl=64 time=0.179 ms
+^C
+--- controller-0 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.179/0.179/0.179/0.000 ms
+sysadmin@controller-1:/etc/drbd.d$ nc -zv controller-1 7788
+Connection to controller-1 (face::3) 7788 port [tcp/*] succeeded!
+sysadmin@controller-1:/etc/drbd.d$ nc -zv controller-0 7788
+nc: connect to controller-0 (face::2) port 7788 (tcp) failed: Connection refused
+sysadmin@controller-1:/etc/drbd.d$ dmesg | grep -i drbd | tail -50
+[ 9908.900491] drbd drbd-etcd/0 drbd7:   state = { cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9908.900496] drbd drbd-etcd/0 drbd7:  wanted = { cs:WFConnection ro:Primary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9924.087501] drbd drbd-etcd/0 drbd7: State change failed: Need access to UpToDate data
+[ 9924.087509] drbd drbd-etcd/0 drbd7:   state = { cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9924.087512] drbd drbd-etcd/0 drbd7:  wanted = { cs:WFConnection ro:Primary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9940.676899] drbd drbd-etcd/0 drbd7: State change failed: Need access to UpToDate data
+[ 9940.676906] drbd drbd-etcd/0 drbd7:   state = { cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9940.676909] drbd drbd-etcd/0 drbd7:  wanted = { cs:WFConnection ro:Primary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9954.908229] drbd drbd-cephmon: Error receiving initial packet
+[ 9955.806950] drbd drbd-etcd/0 drbd7: State change failed: Need access to UpToDate data
+[ 9955.806959] drbd drbd-etcd/0 drbd7:   state = { cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9955.806963] drbd drbd-etcd/0 drbd7:  wanted = { cs:WFConnection ro:Primary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9972.416153] drbd drbd-etcd: conn( WFConnection -> Disconnecting )
+[ 9972.416173] drbd drbd-etcd: Discarding network configuration.
+[ 9972.416229] drbd drbd-etcd: Connection closed
+[ 9972.416235] drbd drbd-etcd: conn( Disconnecting -> StandAlone )
+[ 9972.416238] drbd drbd-etcd: receiver terminated
+[ 9972.416244] drbd drbd-etcd: Terminating drbd_r_drbd-etc
+[ 9972.416265] drbd drbd-etcd/0 drbd7: disk( Inconsistent -> Failed )
+[ 9972.416286] drbd drbd-etcd/0 drbd7: 14 MB (3531 bits) marked out-of-sync by on disk bit-map.
+[ 9972.416290] drbd drbd-etcd/0 drbd7: disk( Failed -> Diskless )
+[ 9972.462761] drbd drbd-etcd: Terminating drbd_w_drbd-etc
+[ 9973.102282] drbd drbd-etcd: Starting worker thread (from drbdsetup-84 [1734635])
+[ 9973.102947] drbd drbd-etcd/0 drbd7: disk( Diskless -> Attaching )
+[ 9973.103571] drbd drbd-etcd: Method to ensure write ordering: flush
+[ 9973.103578] drbd drbd-etcd/0 drbd7: max BIO size = 1048576
+[ 9973.103585] drbd drbd-etcd/0 drbd7: drbd_bm_resize called with capacity == 10485368
+[ 9973.103646] drbd drbd-etcd/0 drbd7: resync bitmap: bits=1310671 words=20480 pages=40
+[ 9973.103651] drbd7: detected capacity change from 0 to 10485368
+[ 9973.103654] drbd drbd-etcd/0 drbd7: size = 5120 MB (5242684 KB)
+[ 9973.105445] drbd drbd-etcd/0 drbd7: recounting of set bits took additional 0 jiffies
+[ 9973.105452] drbd drbd-etcd/0 drbd7: 14 MB (3531 bits) marked out-of-sync by on disk bit-map.
+[ 9973.105458] drbd drbd-etcd/0 drbd7: disk( Attaching -> Inconsistent )
+[ 9973.105464] drbd drbd-etcd/0 drbd7: attached to UUIDs A107255C8F5C0E32:0000000000000000:74C55F8FADC23DBC:74C45F8FADC23DBC
+[ 9973.161981] drbd drbd-etcd: conn( StandAlone -> Unconnected )
+[ 9973.162008] drbd drbd-etcd: Starting receiver thread (from drbd_w_drbd-etc [1734637])
+[ 9973.162617] drbd drbd-etcd: receiver (re)started
+[ 9973.162645] drbd drbd-etcd: conn( Unconnected -> WFConnection )
+[ 9978.552843] drbd drbd-etcd/0 drbd7: State change failed: Need access to UpToDate data
+[ 9978.552851] drbd drbd-etcd/0 drbd7:   state = { cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9978.552854] drbd drbd-etcd/0 drbd7:  wanted = { cs:WFConnection ro:Primary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9992.711803] drbd drbd-etcd/0 drbd7: State change failed: Need access to UpToDate data
+[ 9992.711810] drbd drbd-etcd/0 drbd7:   state = { cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown r----- }
+[ 9992.711814] drbd drbd-etcd/0 drbd7:  wanted = { cs:WFConnection ro:Primary/Unknown ds:Inconsistent/DUnknown r----- }
+[10009.236300] drbd drbd-etcd/0 drbd7: State change failed: Need access to UpToDate data
+[10009.236307] drbd drbd-etcd/0 drbd7:   state = { cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown r----- }
+[10009.236310] drbd drbd-etcd/0 drbd7:  wanted = { cs:WFConnection ro:Primary/Unknown ds:Inconsistent/DUnknown r----- }
+[10024.363629] drbd drbd-etcd/0 drbd7: State change failed: Need access to UpToDate data
+[10024.363638] drbd drbd-etcd/0 drbd7:   state = { cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown r----- }
+[10024.363642] drbd drbd-etcd/0 drbd7:  wanted = { cs:WFConnection ro:Primary/Unknown ds:Inconsistent/DUnknown r----- }
+sysadmin@controller-1:/etc/drbd.d$
