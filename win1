@@ -1,0 +1,65 @@
+sysadmin@controller-1:~$ drbdadm status
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-cephmon.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-dockerdistribution.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-etcd.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-extension.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-pgsql.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-platform.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-rabbit.res'.
+sysadmin@controller-1:~$ cd /etc/drbd.d/
+sysadmin@controller-1:/etc/drbd.d$ ls -ltra
+total 48
+-rw-r-----   1 root root   114 Aug 20  2025 global_common.conf
+-rw-------   1 root root   955 Aug 20  2025 drbd-pgsql.res
+-rw-------   1 root root   994 Aug 20  2025 drbd-rabbit.res
+-rw-------   1 root root  1003 Aug 20  2025 drbd-platform.res
+-rw-------   1 root root   977 Aug 20  2025 drbd-extension.res
+-rw-------   1 root root   957 Aug 20  2025 drbd-etcd.res
+-rw-------   1 root root  1013 Aug 20  2025 drbd-dockerdistribution.res
+-rw-------   1 root root   970 Aug 20  2025 drbd-cephmon.res
+drwxr-x---   2 root root  4096 Aug 20  2025 .
+drwxr-xr-x 182 root root 12288 Apr 14 06:16 ..
+sysadmin@controller-1:/etc/drbd.d$ ls -ltr
+total 32
+-rw-r----- 1 root root  114 Aug 20  2025 global_common.conf
+-rw------- 1 root root  955 Aug 20  2025 drbd-pgsql.res
+-rw------- 1 root root  994 Aug 20  2025 drbd-rabbit.res
+-rw------- 1 root root 1003 Aug 20  2025 drbd-platform.res
+-rw------- 1 root root  977 Aug 20  2025 drbd-extension.res
+-rw------- 1 root root  957 Aug 20  2025 drbd-etcd.res
+-rw------- 1 root root 1013 Aug 20  2025 drbd-dockerdistribution.res
+-rw------- 1 root root  970 Aug 20  2025 drbd-cephmon.res
+sysadmin@controller-1:/etc/drbd.d$ kubectl get no
+Get "https://[feed:beef::1]:6443/api/v1/nodes?limit=500": net/http: TLS handshake timeout - error from a previous attempt: http2: server sent GOAWAY and closed the connection; LastStreamID=1, ErrCode=NO_ERROR, debug=""
+
+sysadmin@controller-0:~$ kubectl get no
+The connection to the server [feed:beef::1]:6443 was refused - did you specify the right host or port?
+sysadmin@controller-0:~$ kubectl get no
+NAME           STATUS   ROLES           AGE    VERSION
+controller-0   Ready    control-plane   237d   v1.29.2
+controller-1   Ready    control-plane   236d   v1.29.2
+sysadmin@controller-0:~$ drbdadm status
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-cephmon.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-dockerdistribution.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-etcd.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-extension.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-pgsql.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-platform.res'.
+/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-rabbit.res'.
+sysadmin@controller-0:~$ cd /etc/drbd.d/
+sysadmin@controller-0:/etc/drbd.d$ ll
+-bash: ll: command not found
+sysadmin@controller-0:/etc/drbd.d$ ls -ltr
+total 32
+-rw-r----- 1 root root  114 Aug 20  2025 global_common.conf
+-rw------- 1 root root  955 Aug 20  2025 drbd-pgsql.res
+-rw------- 1 root root  994 Aug 20  2025 drbd-rabbit.res
+-rw------- 1 root root 1003 Aug 20  2025 drbd-platform.res
+-rw------- 1 root root  977 Aug 20  2025 drbd-extension.res
+-rw------- 1 root root  957 Aug 20  2025 drbd-etcd.res
+-rw------- 1 root root 1013 Aug 20  2025 drbd-dockerdistribution.res
+-rw------- 1 root root  970 Aug 20  2025 drbd-cephmon.res
+sysadmin@controller-0:/etc/drbd.d$ kubectl get po
+Error from server (Timeout): the server was unable to return a response in the time allotted, but may still be processing the request (get pods)
+sysadmin@controller-0:/etc/drbd.d$
+
