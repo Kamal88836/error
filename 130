@@ -1,201 +1,460 @@
-Good — your cluster is mostly healthy, but there are 2 real issues you need to fix:
-
-
----
-
-🔴 1. kube-scheduler → DEGRADED
-
-Error:
-
-StaticPodsDegraded:
-kube-scheduler-master1 container "kube-scheduler" is waiting:
-RunContainerError: container ... is not in created state: running
-
-👉 This means:
-
-Static pod on master1 is in inconsistent state
-
-CRI-O / container runtime glitch OR resource pressure
-
-
-
----
-
-🔴 2. network → PROGRESSING
-
-DaemonSet ovnkube-node is not available (awaiting 1 nodes)
-
-👉 One node (very likely master1) has:
-
-ovn-kubernetes pod not ready
-
-Network not fully healthy
-
-
-
----
-
-🧠 ROOT CAUSE (Based on your data)
-
-You already showed earlier:
-
-master1 CPU → 98% 🔥
-
-master2 CPU → 101% 🔥
-
-
-👉 This is the real problem
-
-Because of high CPU:
-
-kube-scheduler static pod unstable
-
-ovnkube-node failing on that node
-
-CSI/storage delays (your earlier issue)
-
-
-
----
-
-✅ 🔧 FIX PLAN (Follow in order)
-
-
----
-
-🧨 Step 1: Identify Problem Node
-
-Run:
-
-oc get pods -n openshift-ovn-kubernetes -o wide | grep -v Running
-
-👉 Find which node is failing (likely master1)
-
-
----
-
-🧨 Step 2: Check kube-scheduler pod
-
-oc get pods -n openshift-kube-scheduler -o wide
-
-Then:
-
-oc describe pod <scheduler-pod-on-master1> -n openshift-kube-scheduler
-
-
----
-
-🧨 Step 3: Restart kube-scheduler (SAFE)
-
-Since it's static pod:
-
-👉 Restart kubelet on master1
-
-ssh core@master1
-sudo systemctl restart kubelet
-
-✔ This will recreate static pods cleanly
-
-
----
-
-🧨 Step 4: Fix OVN issue
-
-Restart ovn pod on that node:
-
-oc delete pod -n openshift-ovn-kubernetes -l app=ovnkube-node
-
-👉 It will recreate automatically
-
-
----
-
-🧨 Step 5: RELIEVE CPU PRESSURE (CRITICAL)
-
-Right now:
-
-Your masters are overloaded
-
-
-👉 Check heavy pods:
-
-oc adm top pods --all-namespaces | sort -k3 -nr | head
-
-👉 Move workloads away from masters:
-
-Check:
-
-oc get pods -A -o wide | grep master
-
-
----
-
-🔥 If workloads running on master → BAD
-
-👉 Fix by:
-
-Adding worker nodes (best)
-
-OR taint masters (if possible)
-
-
-Example:
-
-oc adm taint nodes master1 node-role.kubernetes.io/master=:NoSchedule
-
-⚠️ Only if cluster design allows
-
-
----
-
-🧨 Step 6: Verify
-
-After fixes:
-
-oc get co
-
-Expected:
-
-kube-scheduler → Available=True, Degraded=False
-network        → Progressing=False
-
-
----
-
-🚨 IMPORTANT OBSERVATION
-
-You are running CNF workloads on master nodes
-
-👉 This is not recommended 👉 Causes exactly these issues:
-
-Scheduler failures
-
-Network instability
-
-Storage attach problems
-
-
-
----
-
-✅ FINAL SUMMARY
-
-Issue	Cause	Fix
-
-kube-scheduler degraded	static pod crash / CPU pressure	restart kubelet on master1
-network progressing	ovn pod not ready	restart ovnkube-node
-root problem	CPU overload on masters	move workloads / add workers
-
-
-
----
-
-🚀 If still not fixed
-
-Send me:
-
-oc describe node master1
-oc get pods -n openshift-kube-scheduler -o wide
-oc get pods -n openshift-ovn-kubernetes -o wide
-
-I’ll pinpoint exact failing component 👍
+[root@bastion ~]# oc get pods -n openshift-ovn-kubernetes -o wide | grep -v Running
+NAME                                     READY   STATUS             RESTARTS         AGE     IP            NODE                                 NOMINATED NODE   READINESS GATES
+ovnkube-node-xt6c4                       7/8     CrashLoopBackOff   427 (16h ago)    3d8h    20.1.30.152   master3.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion ~]# oc get pods -n openshift-kube-scheduler -o wide
+NAME                                                                READY   STATUS              RESTARTS         AGE         IP            NODE                                 NOMINATED NODE   READINESS GATES
+openshift-kube-scheduler-guard-master1.airtelvvt.samsungbsc.local   1/1     Running             1                5d16h       10.30.2.4     master1.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-guard-master2.airtelvvt.samsungbsc.local   1/1     Running             2                33d         10.30.1.6     master2.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local   1/1     Running             1                22h         10.30.0.249   master3.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local         2/3     RunContainerError   84 (2d16h ago)   <invalid>   20.1.30.150   master1.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master2.airtelvvt.samsungbsc.local         3/3     Running             66 (17h ago)     33d         20.1.30.151   master2.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master3.airtelvvt.samsungbsc.local         3/3     Running             42               22h         20.1.30.152   master3.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master1.airtelvvt.samsungbsc.local                0/1     Completed           0                33d         <none>        master1.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master2.airtelvvt.samsungbsc.local                0/1     Completed           1                33d         <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master3.airtelvvt.samsungbsc.local                0/1     Completed           0                33d         <none>        master3.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion ~]# oc describe pod openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local -n openshift-kube-scheduler
+Name:                 openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local
+Namespace:            openshift-kube-scheduler
+Priority:             2000001000
+Priority Class Name:  system-node-critical
+Node:                 master1.airtelvvt.samsungbsc.local/20.1.30.150
+Start Time:           Sat, 11 Apr 2026 23:00:33 +0900
+Labels:               app=openshift-kube-scheduler
+                      revision=6
+                      scheduler=true
+Annotations:          kubectl.kubernetes.io/default-container: kube-scheduler
+                      kubernetes.io/config.hash: 9eb9eca7b22d7849a31d9808ba261058
+                      kubernetes.io/config.mirror: 9eb9eca7b22d7849a31d9808ba261058
+                      kubernetes.io/config.seen: 2026-04-11T14:00:03.138970600Z
+                      kubernetes.io/config.source: file
+                      resources.workload.openshift.io/kube-scheduler: {"cpushares":15}
+                      resources.workload.openshift.io/kube-scheduler-cert-syncer: {"cpushares":5}
+                      resources.workload.openshift.io/kube-scheduler-recovery-controller: {"cpushares":5}
+                      resources.workload.openshift.io/wait-for-host-port: {"cpushares":15}
+                      target.workload.openshift.io/management: {"effect": "PreferredDuringScheduling"}
+Status:               Running
+IP:                   20.1.30.150
+IPs:
+  IP:           20.1.30.150
+  IP:           2010:0:0:30::10
+Controlled By:  Node/master1.airtelvvt.samsungbsc.local
+Init Containers:
+  wait-for-host-port:
+    Container ID:  cri-o://97745f2c2e46942a32e78b80fa684774ae31953a3c391708f78c93f0fae4ef20
+    Image:         quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29bbfa694380fe78f0edb37ec2d8131f0f41a3646c57383d134446e6ad525361
+    Image ID:      7af7ff772ab837e388a8c76ec3fb3acfaa9b3f43eca7061757dafadf2f3f94a8
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /usr/bin/timeout
+      30
+      /bin/bash
+      -c
+    Args:
+      echo -n "Waiting for port :10259 to be released."
+      while [ -n "$(ss -Htan '( sport = 10259 )')" ]; do
+        echo -n "."
+        sleep 1
+      done
+
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Sat, 11 Apr 2026 23:28:20 +0900
+      Finished:     Sat, 11 Apr 2026 23:28:20 +0900
+    Ready:          True
+    Restart Count:  8
+    Limits:
+      management.workload.openshift.io/cores:  15
+    Requests:
+      management.workload.openshift.io/cores:  15
+      memory:                                  50Mi
+    Environment:                               <none>
+    Mounts:                                    <none>
+Containers:
+  kube-scheduler:
+    Container ID:  cri-o://bd77fc2fcfb821b2b39378a32429c896aafb9e7057cde63cea5a136c3c467bb2
+    Image:         quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29bbfa694380fe78f0edb37ec2d8131f0f41a3646c57383d134446e6ad525361
+    Image ID:      7af7ff772ab837e388a8c76ec3fb3acfaa9b3f43eca7061757dafadf2f3f94a8
+    Port:          10259/TCP
+    Host Port:     10259/TCP
+    Command:
+      hyperkube
+      kube-scheduler
+    Args:
+      --config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml
+      --cert-dir=/var/run/kubernetes
+      --authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig
+      --authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig
+      --feature-gates=AWSClusterHostedDNS=false,AWSEFSDriverVolumeMetrics=true,AdditionalRoutingCapabilities=false,AdminNetworkPolicy=true,AlibabaPlatform=true,AutomatedEtcdBackup=false,AzureWorkloadIdentity=true,BareMetalLoadBalancer=true,BootcNodeManagement=false,BuildCSIVolumes=true,CSIDriverSharedResource=false,ChunkSizeMiB=true,CloudDualStackNodeIPs=true,ClusterAPIInstall=false,ClusterAPIInstallIBMCloud=false,ClusterMonitoringConfig=false,ConsolePluginContentSecurityPolicy=false,DNSNameResolver=false,DisableKubeletCloudCredentialProviders=true,DynamicResourceAllocation=false,EtcdBackendQuota=false,EventedPLEG=false,Example=false,ExternalOIDC=false,ExternalOIDCWithUIDAndExtraClaimMappings=false,GCPClusterHostedDNS=false,GCPLabelsTags=true,GatewayAPI=false,HardwareSpeed=true,ImageStreamImportMode=false,IngressControllerDynamicConfigurationManager=false,IngressControllerLBSubnetsAWS=true,InsightsConfig=false,InsightsConfigAPI=false,InsightsOnDemandDataGather=false,InsightsRuntimeExtractor=false,KMSv1=true,MachineAPIMigration=false,MachineAPIOperatorDisableMachineHealthCheckController=false,MachineAPIProviderOpenStack=false,MachineConfigNodes=false,ManagedBootImages=true,ManagedBootImagesAWS=true,MaxUnavailableStatefulSet=false,MetricsCollectionProfiles=false,MinimumKubeletVersion=false,MixedCPUsAllocation=false,MultiArchInstallAWS=true,MultiArchInstallAzure=false,MultiArchInstallGCP=true,NetworkDiagnosticsConfig=true,NetworkLiveMigration=true,NetworkSegmentation=true,NewOLM=true,NodeDisruptionPolicy=true,NodeSwap=false,NutanixMultiSubnets=false,OVNObservability=false,OnClusterBuild=false,OpenShiftPodSecurityAdmission=false,PersistentIPsForVirtualization=true,PinnedImages=false,PlatformOperators=false,PrivateHostedZoneAWS=true,ProcMountType=false,RouteAdvertisements=false,RouteExternalCertificate=false,ServiceAccountTokenNodeBinding=false,SetEIPForNLBIngressController=true,SignatureStores=false,SigstoreImageVerification=false,TranslateStreamCloseWebsocketRequests=false,UpgradeStatus=false,UserNamespacesPodSecurityStandards=false,UserNamespacesSupport=false,VSphereControlPlaneMachineSet=true,VSphereDriverConfiguration=true,VSphereMultiNetworks=false,VSphereMultiVCenters=true,VSphereStaticIPs=true,ValidatingAdmissionPolicy=true,VolumeAttributesClass=false,VolumeGroupSnapshot=false
+      -v=2
+      --tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt
+      --tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key
+      --tls-cipher-suites=TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      --tls-min-version=VersionTLS12
+    State:       Waiting
+      Reason:    RunContainerError
+    Last State:  Terminated
+      Reason:    Error
+      Message:   r from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:12.001648       1 reflector.go:368] Caches populated for *v1.StatefulSet from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:12.259502       1 reflector.go:368] Caches populated for *v1.PersistentVolume from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:12.547293       1 reflector.go:368] Caches populated for *v1.ConfigMap from runtime/asm_amd64.s:1695
+I0411 14:00:15.344217       1 reflector.go:368] Caches populated for *v1.VolumeAttachment from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:19.869283       1 reflector.go:368] Caches populated for *v1.CSINode from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:22.528524       1 reflector.go:368] Caches populated for *v1.ConfigMap from runtime/asm_amd64.s:1695
+I0411 14:00:25.959023       1 reflector.go:368] Caches populated for *v1.Node from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:26.010210       1 reflector.go:368] Caches populated for *v1.StorageClass from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:28.122307       1 reflector.go:368] Caches populated for *v1.PersistentVolumeClaim from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:33.217433       1 reflector.go:368] Caches populated for *v1.ReplicationController from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:37.962041       1 reflector.go:368] Caches populated for *v1.Namespace from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:39.247538       1 reflector.go:368] Caches populated for *v1.CSIStorageCapacity from k8s.io/client-go/informers/factory.go:160
+I0411 14:00:57.370644       1 reflector.go:368] Caches populated for *v1.Pod from k8s.io/client-go/informers/factory.go:160
+E0411 14:00:57.382626       1 cache.go:539] "Pod updated on a different node than previously added to" podKey="7ad40c4c-5587-441c-97e6-bf9247b4a54b" pod="openshift-storage/noobaa-core-0"
+E0411 14:00:57.382654       1 cache.go:540] "scheduler cache is corrupted and can badly affect scheduling decisions"
+
+      Exit Code:    1
+      Started:      Sun, 12 Apr 2026 00:49:32 +0900
+      Finished:     Sat, 11 Apr 2026 23:00:57 +0900
+    Ready:          False
+    Restart Count:  52
+    Limits:
+      management.workload.openshift.io/cores:  15
+    Requests:
+      management.workload.openshift.io/cores:  15
+      memory:                                  50Mi
+    Liveness:                                  http-get https://:10259/healthz delay=45s timeout=1s period=10s #success=1 #failure=3
+    Readiness:                                 http-get https://:10259/healthz delay=45s timeout=1s period=10s #success=1 #failure=3
+    Environment:                               <none>
+    Mounts:
+      /etc/kubernetes/static-pod-certs from cert-dir (rw)
+      /etc/kubernetes/static-pod-resources from resource-dir (rw)
+  kube-scheduler-cert-syncer:
+    Container ID:  cri-o://252e14e22ac8eb2acebd765a3c15874d9cd4ff0e88ef4cb974cefa54c975e822
+    Image:         quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bb8765cef23ca4b57014119db091bf795ff845f9ae24e22223440f17208ff2c9
+    Image ID:      66b601f6a5049f1d064718de2e72317e7c20213df3b57e7fc3d709ddd28c3cc9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      cluster-kube-scheduler-operator
+      cert-syncer
+    Args:
+      --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig
+      --namespace=$(POD_NAMESPACE)
+      --destination-dir=/etc/kubernetes/static-pod-certs
+    State:          Running
+      Started:      Sat, 11 Apr 2026 23:28:21 +0900
+    Ready:          True
+    Restart Count:  8
+    Limits:
+      management.workload.openshift.io/cores:  5
+    Requests:
+      management.workload.openshift.io/cores:  5
+      memory:                                  50Mi
+    Environment:
+      POD_NAME:       openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local (v1:metadata.name)
+      POD_NAMESPACE:  openshift-kube-scheduler (v1:metadata.namespace)
+    Mounts:
+      /etc/kubernetes/static-pod-certs from cert-dir (rw)
+      /etc/kubernetes/static-pod-resources from resource-dir (rw)
+  kube-scheduler-recovery-controller:
+    Container ID:  cri-o://6a72e545049516409aed8f8c85a0f334c3d186c462b25ad617882725fa5f1ce9
+    Image:         quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bb8765cef23ca4b57014119db091bf795ff845f9ae24e22223440f17208ff2c9
+    Image ID:      66b601f6a5049f1d064718de2e72317e7c20213df3b57e7fc3d709ddd28c3cc9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -euxo
+      pipefail
+      -c
+    Args:
+      timeout 3m /bin/bash -exuo pipefail -c 'while [ -n "$(ss -Htanop \( sport = 11443 \))" ]; do sleep 1; done'
+
+      exec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2
+
+    State:          Running
+      Started:      Sat, 11 Apr 2026 23:28:22 +0900
+    Ready:          True
+    Restart Count:  24
+    Limits:
+      management.workload.openshift.io/cores:  5
+    Requests:
+      management.workload.openshift.io/cores:  5
+      memory:                                  50Mi
+    Environment:
+      POD_NAMESPACE:  openshift-kube-scheduler (v1:metadata.namespace)
+    Mounts:
+      /etc/kubernetes/static-pod-certs from cert-dir (rw)
+      /etc/kubernetes/static-pod-resources from resource-dir (rw)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       False
+  ContainersReady             False
+  PodScheduled                True
+Volumes:
+  resource-dir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /etc/kubernetes/static-pod-resources/kube-scheduler-pod-6
+    HostPathType:
+  cert-dir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /etc/kubernetes/static-pod-resources/kube-scheduler-certs
+    HostPathType:
+QoS Class:         Burstable
+Node-Selectors:    <none>
+Tolerations:       op=Exists
+Events:
+  Type    Reason  Age                     From     Message
+  ----    ------  ----                    ----     -------
+  Normal  Pulled  30s (x22253 over 3d8h)  kubelet  Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29bbfa694380fe78f0edb37ec2d8131f0f41a3646c57383d134446e6ad525361" already present on machine
+[root@bastion ~]# oc describe node master1
+Name:               master1.airtelvvt.samsungbsc.local
+Roles:              control-plane,master,worker
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    cluster.ocs.openshift.io/openshift-storage=
+                    feature.node.kubernetes.io/network-sriov.capable=true
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=master1.airtelvvt.samsungbsc.local
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node-role.kubernetes.io/master=
+                    node-role.kubernetes.io/worker=
+                    node.openshift.io/os_id=rhcos
+                    sriovnetwork.openshift.io/device-plugin=Enabled
+                    topology.rook.io/rack=rack1
+Annotations:        csi.volume.kubernetes.io/nodeid:
+                      {"openshift-storage.cephfs.csi.ceph.com":"master1.airtelvvt.samsungbsc.local","openshift-storage.rbd.csi.ceph.com":"master1.airtelvvt.sams...
+                    k8s.ovn.org/host-cidrs: ["20.1.30.150/24","20.1.30.160/32","2010:0:0:30::10/64","2010:0:0:30::15/128"]
+                    k8s.ovn.org/l3-gateway-config:
+                      {"default":{"mode":"shared","bridge-id":"br-ex","interface-id":"br-ex_master1.airtelvvt.samsungbsc.local","mac-address":"50:7c:6f:4b:9b:9c...
+                    k8s.ovn.org/node-chassis-id: 2c9eef22-6d22-4549-9cfa-28ee05dd3552
+                    k8s.ovn.org/node-gateway-router-lrp-ifaddrs: {"default":{"ipv4":"100.64.0.4/16","ipv6":"fd98::4/64"}}
+                    k8s.ovn.org/node-id: 4
+                    k8s.ovn.org/node-masquerade-subnet: {"ipv4":"169.254.0.0/17","ipv6":"fd69::/112"}
+                    k8s.ovn.org/node-primary-ifaddr: {"ipv4":"20.1.30.150/24","ipv6":"2010:0:0:30::10/64"}
+                    k8s.ovn.org/node-subnets: {"default":["10.30.2.0/24","fd01:0:0:3::/64"]}
+                    k8s.ovn.org/node-transit-switch-port-ifaddr: {"ipv4":"100.88.0.4/16","ipv6":"fd97::4/64"}
+                    k8s.ovn.org/remote-zone-migrated: master1.airtelvvt.samsungbsc.local
+                    k8s.ovn.org/zone-name: master1.airtelvvt.samsungbsc.local
+                    machine.openshift.io/machine: openshift-machine-api/airtelvvt-zqxbg-master-0
+                    machineconfiguration.openshift.io/controlPlaneTopology: HighlyAvailable
+                    machineconfiguration.openshift.io/currentConfig: rendered-master-0fc6d7305d49d26c15f89b00c28e98c5
+                    machineconfiguration.openshift.io/desiredConfig: rendered-master-0fc6d7305d49d26c15f89b00c28e98c5
+                    machineconfiguration.openshift.io/desiredDrain: uncordon-rendered-master-0fc6d7305d49d26c15f89b00c28e98c5
+                    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-0fc6d7305d49d26c15f89b00c28e98c5
+                    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: false
+                    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: 20331213
+                    machineconfiguration.openshift.io/post-config-action:
+                    machineconfiguration.openshift.io/reason:
+                    machineconfiguration.openshift.io/state: Done
+                    sriovnetwork.openshift.io/current-state: Idle
+                    sriovnetwork.openshift.io/state: Idle
+                    tuned.openshift.io/bootcmdline:
+                      skew_tick=1 tsc=reliable rcupdate.rcu_normal_after_boot=1 nohz=on rcu_nocbs=1-27,29-54,57-83,85-110 tuned.non_isolcpus=00008000,00100000,0...
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 11 Mar 2026 22:41:24 +0900
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  master1.airtelvvt.samsungbsc.local
+  AcquireTime:     <unset>
+  RenewTime:       Wed, 15 Apr 2026 07:30:22 +0900
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Wed, 15 Apr 2026 07:28:13 +0900   Sat, 11 Apr 2026 23:00:33 +0900   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Wed, 15 Apr 2026 07:28:13 +0900   Sat, 11 Apr 2026 23:00:33 +0900   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Wed, 15 Apr 2026 07:28:13 +0900   Sat, 11 Apr 2026 23:00:33 +0900   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Wed, 15 Apr 2026 07:28:13 +0900   Sat, 11 Apr 2026 23:00:33 +0900   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  20.1.30.150
+  InternalIP:  2010:0:0:30::10
+  Hostname:    master1.airtelvvt.samsungbsc.local
+Capacity:
+  cpu:                                     112
+  ephemeral-storage:                       936653792Ki
+  hugepages-1Gi:                           18Gi
+  hugepages-2Mi:                           0
+  management.workload.openshift.io/cores:  112k
+  memory:                                  791464760Ki
+  openshift.io/pci_sriov_net_bh0c:         5
+  openshift.io/pci_sriov_net_bh0c_1:       5
+  openshift.io/pci_sriov_net_bh0u:         4
+  openshift.io/pci_sriov_net_bh0u_1:       4
+  openshift.io/pci_sriov_net_bh0u_2:       4
+  openshift.io/pci_sriov_net_bh0u_2_1:     4
+  pods:                                    250
+Allocatable:
+  cpu:                                     106
+  ephemeral-storage:                       862146391454
+  hugepages-1Gi:                           18Gi
+  hugepages-2Mi:                           0
+  management.workload.openshift.io/cores:  112k
+  memory:                                  754150200Ki
+  openshift.io/pci_sriov_net_bh0c:         5
+  openshift.io/pci_sriov_net_bh0c_1:       5
+  openshift.io/pci_sriov_net_bh0u:         4
+  openshift.io/pci_sriov_net_bh0u_1:       4
+  openshift.io/pci_sriov_net_bh0u_2:       4
+  openshift.io/pci_sriov_net_bh0u_2_1:     4
+  pods:                                    250
+System Info:
+  Machine ID:                                       f90ad5a304bb4cbb938f0a3059a4e860
+  System UUID:                                      31353050-3237-4753-4831-33315332384e
+  Boot ID:                                          c8355155-6c07-4477-9597-be88e43ab2ad
+  Kernel Version:                                   5.14.0-427.72.1.el9_4.x86_64+rt
+  OS Image:                                         Red Hat Enterprise Linux CoreOS 418.94.202506030254-0
+  Operating System:                                 linux
+  Architecture:                                     amd64
+  Container Runtime Version:                        cri-o://1.31.8-4.rhaos4.18.git2d48ec9.el9
+  Kubelet Version:                                  v1.31.9
+  Kube-Proxy Version:                               v1.31.9
+ProviderID:                                         baremetalhost:///openshift-machine-api/master1.airtelvvt.samsungbsc.local/1acf2f4e-08a8-4820-a3e2-8ffd0664b114
+Non-terminated Pods:                                (103 in total)
+  Namespace                                         Name                                                                 CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                                         ----                                                                 ------------  ----------  ---------------  -------------  ---
+  cnf-bscf                                          bscf9901-bip0-76c5df9f8b-s6s5g                                       22 (20%)      22 (20%)    8Gi (1%)         8Gi (1%)       3d8h
+  cnf-bscf                                          bscf9901-bpp0-574b6c59dc-sbm4s                                       24 (22%)      24 (22%)    32Gi (4%)        32Gi (4%)      3d8h
+  cnf-bscf                                          bscf9901-bpp2-6d947d9f95-vvsgv                                       48 (45%)      48 (45%)    64Gi (8%)        64Gi (8%)      3d8h
+  cnf-bscf                                          bscf9901-cmp0-7fdfb79d7b-rxrff                                       2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       3d8h
+  openshift-apiserver-operator                      openshift-apiserver-operator-56888b8879-t8bmv                        0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-apiserver                               apiserver-74d584d8ff-lkfl5                                           0 (0%)        0 (0%)      250Mi (0%)       0 (0%)         3d8h
+  openshift-authentication                          oauth-openshift-57b46b89f7-k666h                                     0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         3d8h
+  openshift-catalogd                                catalogd-controller-manager-845fbcfc85-mlxph                         0 (0%)        0 (0%)      264Mi (0%)       0 (0%)         14h
+  openshift-cloud-controller-manager-operator       cluster-cloud-controller-manager-operator-5f5d7f96f6-7ztz8           0 (0%)        0 (0%)      95Mi (0%)        0 (0%)         14h
+  openshift-cloud-credential-operator               cloud-credential-operator-74b9d89574-mwctw                           0 (0%)        0 (0%)      40Mi (0%)        0 (0%)         14h
+  openshift-cluster-node-tuning-operator            cluster-node-tuning-operator-56678557f-wr4sk                         0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         14h
+  openshift-cluster-node-tuning-operator            tuned-xdjp9                                                          0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         34d
+  openshift-cluster-olm-operator                    cluster-olm-operator-66677756f4-8jg8t                                0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         14h
+  openshift-cluster-storage-operator                cluster-storage-operator-5fc5cbbf5c-hb7vb                            0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         14h
+  openshift-cluster-storage-operator                csi-snapshot-controller-7788dc4d8c-jwv2h                             0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         35h
+  openshift-cluster-storage-operator                csi-snapshot-controller-operator-74f4b8c5c7-8ggzl                    0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         14h
+  openshift-cluster-version                         cluster-version-operator-6b779bbb4-w5bnx                             0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-config-operator                         openshift-config-operator-5786d8b758-wg4mr                           0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-console-operator                        console-operator-7459b65f45-fmxck                                    0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         14h
+  openshift-console                                 console-6779f94445-q2q69                                             0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         35h
+  openshift-console                                 downloads-84c5c7f9d4-4g8v5                                           0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         35h
+  openshift-controller-manager-operator             openshift-controller-manager-operator-6f584cc468-2vklp               0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-controller-manager                      controller-manager-64b77ddcc-8mtsz                                   0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         25h
+  openshift-dns-operator                            dns-operator-7bdc655998-pc4mt                                        0 (0%)        0 (0%)      69Mi (0%)        0 (0%)         14h
+  openshift-dns                                     dns-default-55b5q                                                    0 (0%)        0 (0%)      110Mi (0%)       0 (0%)         21h
+  openshift-dns                                     node-resolver-2gnhq                                                  0 (0%)        0 (0%)      21Mi (0%)        0 (0%)         34d
+  openshift-etcd                                    etcd-guard-master1.airtelvvt.samsungbsc.local                        0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         2d8h
+  openshift-etcd                                    etcd-master1.airtelvvt.samsungbsc.local                              0 (0%)        0 (0%)      960Mi (0%)       0 (0%)         3d8h
+  openshift-image-registry                          cluster-image-registry-operator-64f4b46c45-th7k4                     0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-image-registry                          node-ca-plh6v                                                        0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         34d
+  openshift-ingress-canary                          ingress-canary-m6ljb                                                 0 (0%)        0 (0%)      20Mi (0%)        0 (0%)         6d8h
+  openshift-ingress-operator                        ingress-operator-7b9b484d4d-6cl8f                                    0 (0%)        0 (0%)      96Mi (0%)        0 (0%)         14h
+  openshift-ingress                                 router-default-584597895-wbg7x                                       0 (0%)        0 (0%)      256Mi (0%)       0 (0%)         3d8h
+  openshift-insights                                insights-operator-6c65d99768-ql5qq                                   0 (0%)        0 (0%)      54Mi (0%)        0 (0%)         3d7h
+  openshift-kni-infra                               coredns-master1.airtelvvt.samsungbsc.local                           200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         34d
+  openshift-kni-infra                               haproxy-master1.airtelvvt.samsungbsc.local                           200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         34d
+  openshift-kni-infra                               keepalived-master1.airtelvvt.samsungbsc.local                        200m (0%)     0 (0%)      400Mi (0%)       0 (0%)         34d
+  openshift-kube-apiserver-operator                 kube-apiserver-operator-76b769568d-c4plg                             0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-kube-apiserver                          kube-apiserver-guard-master1.airtelvvt.samsungbsc.local              0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         38h
+  openshift-kube-apiserver                          kube-apiserver-master1.airtelvvt.samsungbsc.local                    0 (0%)        0 (0%)      1224Mi (0%)      0 (0%)         12h
+  openshift-kube-controller-manager-operator        kube-controller-manager-operator-75555c868f-pkpk9                    0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-kube-controller-manager                 kube-controller-manager-guard-master1.airtelvvt.samsungbsc.local     0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         33d
+  openshift-kube-controller-manager                 kube-controller-manager-master1.airtelvvt.samsungbsc.local           0 (0%)        0 (0%)      500Mi (0%)       0 (0%)         21h
+  openshift-kube-scheduler-operator                 openshift-kube-scheduler-operator-84f7c9479b-8t2kw                   0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-kube-scheduler                          openshift-kube-scheduler-guard-master1.airtelvvt.samsungbsc.local    0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         6d8h
+  openshift-kube-scheduler                          openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local          0 (0%)        0 (0%)      150Mi (0%)       0 (0%)         11h
+  openshift-kube-storage-version-migrator-operator  kube-storage-version-migrator-operator-5794f9f48-j2qg6               0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-local-storage                           diskmaker-discovery-jt6tf                                            0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         3d6h
+  openshift-local-storage                           diskmaker-manager-z9f2q                                              0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         3d6h
+  openshift-local-storage                           local-storage-operator-cc4f6db59-qrt46                               0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-machine-api                             ironic-proxy-pk9dl                                                   0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         14h
+  openshift-machine-config-operator                 kube-rbac-proxy-crio-master1.airtelvvt.samsungbsc.local              0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         34d
+  openshift-machine-config-operator                 machine-config-controller-7b4585d594-nqrsp                           0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         14h
+  openshift-machine-config-operator                 machine-config-daemon-gc2pz                                          0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         34d
+  openshift-machine-config-operator                 machine-config-server-nk9gj                                          0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         34d
+  openshift-marketplace                             certified-operator-index-fpm72                                       10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         3d7h
+  openshift-marketplace                             marketplace-operator-84c64f6998-mlrgr                                0 (0%)        0 (0%)      5Mi (0%)         0 (0%)         14h
+  openshift-marketplace                             redhat-operator-index-wmnfs                                          10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         2d7h
+  openshift-monitoring                              alertmanager-main-0                                                  0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         3d7h
+  openshift-monitoring                              cluster-monitoring-operator-7754ddbd88-6qf79                         0 (0%)        0 (0%)      75Mi (0%)        0 (0%)         14h
+  openshift-monitoring                              kube-state-metrics-98fb55cfc-vztfs                                   0 (0%)        0 (0%)      110Mi (0%)       0 (0%)         3d7h
+  openshift-monitoring                              metrics-server-d97d7484d-6lhjq                                       0 (0%)        0 (0%)      40Mi (0%)        0 (0%)         14h
+  openshift-monitoring                              monitoring-plugin-7c5db89b7d-t27v6                                   0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         3d7h
+  openshift-monitoring                              node-exporter-psc8q                                                  0 (0%)        0 (0%)      47Mi (0%)        0 (0%)         34d
+  openshift-monitoring                              prometheus-k8s-0                                                     0 (0%)        0 (0%)      1099Mi (0%)      0 (0%)         3d7h
+  openshift-monitoring                              prometheus-operator-9d644c4cb-ssrlh                                  0 (0%)        0 (0%)      165Mi (0%)       0 (0%)         3d7h
+  openshift-monitoring                              prometheus-operator-admission-webhook-79cfd5b5d9-w5f4h               0 (0%)        0 (0%)      30Mi (0%)        0 (0%)         3d8h
+  openshift-monitoring                              thanos-querier-54f9675bbc-gt7gl                                      0 (0%)        0 (0%)      87Mi (0%)        0 (0%)         3d8h
+  openshift-multus                                  multus-additional-cni-plugins-x8xm6                                  0 (0%)        0 (0%)      10Mi (0%)        0 (0%)         34d
+  openshift-multus                                  multus-admission-controller-5786b74c4d-cqpcm                         0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         3d7h
+  openshift-multus                                  multus-lnm5k                                                         0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         21h
+  openshift-multus                                  network-metrics-daemon-jwzwl                                         0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         6d8h
+  openshift-network-console                         networking-console-plugin-769cfbcc6-bg6mb                            0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         3d7h
+  openshift-network-diagnostics                     network-check-source-764cd469b5-fpjxn                                0 (0%)        0 (0%)      40Mi (0%)        0 (0%)         3d7h
+  openshift-network-diagnostics                     network-check-target-sj69k                                           0 (0%)        0 (0%)      15Mi (0%)        0 (0%)         34d
+  openshift-network-node-identity                   network-node-identity-n8drl                                          0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         34d
+  openshift-network-operator                        iptables-alerter-dvmz9                                               0 (0%)        0 (0%)      65Mi (0%)        0 (0%)         34d
+  openshift-oauth-apiserver                         apiserver-7894d96bdf-7gtdg                                           0 (0%)        0 (0%)      200Mi (0%)       0 (0%)         3d8h
+  openshift-operator-lifecycle-manager              catalog-operator-7b89b4554c-6flwv                                    0 (0%)        0 (0%)      80Mi (0%)        0 (0%)         14h
+  openshift-operator-lifecycle-manager              olm-operator-774988ff44-775c4                                        0 (0%)        0 (0%)      160Mi (0%)       0 (0%)         14h
+  openshift-operator-lifecycle-manager              packageserver-598cff79bb-78rsp                                       0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         35h
+  openshift-ovn-kubernetes                          ovnkube-control-plane-7bd5c75758-fvlv7                               0 (0%)        0 (0%)      320Mi (0%)       0 (0%)         3d8h
+  openshift-ovn-kubernetes                          ovnkube-node-x5jmd                                                   0 (0%)        0 (0%)      1630Mi (0%)      0 (0%)         3d8h
+  openshift-ptp                                     linuxptp-daemon-8mlkx                                                0 (0%)        0 (0%)      70Mi (0%)        0 (0%)         3d6h
+  openshift-route-controller-manager                route-controller-manager-558446b6c5-cxlb5                            0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         25h
+  openshift-service-ca-operator                     service-ca-operator-7cdbc8dd99-xdxkz                                 0 (0%)        0 (0%)      80Mi (0%)        0 (0%)         14h
+  openshift-service-ca                              service-ca-5bc4568b7d-sgs5v                                          0 (0%)        0 (0%)      120Mi (0%)       0 (0%)         14h
+  openshift-sriov-network-operator                  network-resources-injector-tzb6h                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         21d
+  openshift-sriov-network-operator                  operator-webhook-9f9px                                               10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         21d
+  openshift-sriov-network-operator                  sriov-device-plugin-2f4jt                                            0 (0%)        0 (0%)      50Mi (0%)        0 (0%)         40h
+  openshift-sriov-network-operator                  sriov-network-config-daemon-n5hnh                                    0 (0%)        0 (0%)      100Mi (0%)       0 (0%)         3d6h
+  openshift-storage                                 csi-cephfsplugin-64zvv                                               0 (0%)        0 (0%)      0 (0%)           0 (0%)         3d8h
+  openshift-storage                                 csi-cephfsplugin-provisioner-7b7cb5988d-rd8cn                        0 (0%)        0 (0%)      0 (0%)           0 (0%)         3d8h
+  openshift-storage                                 csi-rbdplugin-9dwv7                                                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         16h
+  openshift-storage                                 csi-rbdplugin-provisioner-5489bb4b89-9qm4c                           0 (0%)        0 (0%)      0 (0%)           0 (0%)         16h
+  openshift-storage                                 ocs-metrics-exporter-5759d5dbbd-6h5b6                                150m (0%)     100m (0%)   130Mi (0%)       80Mi (0%)      14h
+  openshift-storage                                 odf-console-7484ccd4f7-8rpfz                                         100m (0%)     100m (0%)   512Mi (0%)       512Mi (0%)     3d7h
+  openshift-storage                                 rook-ceph-crashcollector-master1.airtelvvt.samsungbsc.loca5xmd5      100m (0%)     100m (0%)   60Mi (0%)        60Mi (0%)      37h
+  openshift-storage                                 rook-ceph-exporter-master1.airtelvvt.samsungbsc.local-5d74h6fmg      50m (0%)      50m (0%)    50Mi (0%)        128Mi (0%)     37h
+  openshift-storage                                 rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-65d59ffbjfp7b      3 (2%)        3 (2%)      8Gi (1%)         8Gi (1%)       2d8h
+  openshift-storage                                 rook-ceph-mgr-b-69cc6f7dcd-z74jj                                     1 (0%)        2 (1%)      1536Mi (0%)      3Gi (0%)       35h
+  openshift-storage                                 rook-ceph-mon-k-68cb8f4454-6j6rw                                     1 (0%)        1 (0%)      2Gi (0%)         2Gi (0%)       2d8h
+  openshift-storage                                 rook-ceph-osd-0-796f6b65d5-x7dz7                                     2 (1%)        2 (1%)      5Gi (0%)         5Gi (0%)       37h
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                                Requests        Limits
+  --------                                --------        ------
+  cpu                                     104040m (98%)   104350m (98%)
+  memory                                  140717Mi (19%)  129804Mi (17%)
+  ephemeral-storage                       0 (0%)          0 (0%)
+  hugepages-1Gi                           16Gi (88%)      16Gi (88%)
+  hugepages-2Mi                           0 (0%)          0 (0%)
+  management.workload.openshift.io/cores  2585            2585
+  openshift.io/pci_sriov_net_bh0c         2               2
+  openshift.io/pci_sriov_net_bh0c_1       2               2
+  openshift.io/pci_sriov_net_bh0u         1               1
+  openshift.io/pci_sriov_net_bh0u_1       1               1
+  openshift.io/pci_sriov_net_bh0u_2       1               1
+  openshift.io/pci_sriov_net_bh0u_2_1     1               1
+Events:                                   <none>
+
+[root@bastion ~]# oc get pods -n openshift-kube-scheduler -o wide
+NAME                                                                READY   STATUS              RESTARTS        AGE    IP            NODE                                 NOMINATED NODE   READINESS GATES
+openshift-kube-scheduler-guard-master1.airtelvvt.samsungbsc.local   1/1     Running             1               6d8h   10.30.2.4     master1.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-guard-master2.airtelvvt.samsungbsc.local   1/1     Running             2               33d    10.30.1.6     master2.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local   1/1     Running             1               38h    10.30.0.249   master3.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local         2/3     RunContainerError   84 (3d8h ago)   11h    20.1.30.150   master1.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master2.airtelvvt.samsungbsc.local         3/3     Running             66 (33h ago)    34d    20.1.30.151   master2.airtelvvt.samsungbsc.local   <none>           <none>
+openshift-kube-scheduler-master3.airtelvvt.samsungbsc.local         3/3     Running             42              38h    20.1.30.152   master3.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master1.airtelvvt.samsungbsc.local                0/1     Completed           0               33d    <none>        master1.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master2.airtelvvt.samsungbsc.local                0/1     Completed           1               33d    <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
+revision-pruner-6-master3.airtelvvt.samsungbsc.local                0/1     Completed           0               33d    <none>        master3.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion ~]# oc get pods -n openshift-ovn-kubernetes -o wide
+NAME                                     READY   STATUS             RESTARTS         AGE     IP            NODE                                 NOMINATED NODE   READINESS GATES
+ovnkube-control-plane-7bd5c75758-7mwkr   2/2     Running            12               33d     20.1.30.152   master3.airtelvvt.samsungbsc.local   <none>           <none>
+ovnkube-control-plane-7bd5c75758-fvlv7   2/2     Running            0                3d8h    20.1.30.150   master1.airtelvvt.samsungbsc.local   <none>           <none>
+ovnkube-node-pcjx5                       8/8     Running            217 (3d8h ago)   5d12h   20.1.30.151   master2.airtelvvt.samsungbsc.local   <none>           <none>
+ovnkube-node-x5jmd                       8/8     Running            0                3d8h    20.1.30.150   master1.airtelvvt.samsungbsc.local   <none>           <none>
+ovnkube-node-xt6c4                       7/8     CrashLoopBackOff   427 (16h ago)    3d8h    20.1.30.152   master3.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion ~]#
+[root@bastion ~]#
