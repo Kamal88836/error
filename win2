@@ -1,121 +1,199 @@
-sysadmin@controller-0:~$ kubectl describe po bscf236-bpp0-574b597fd4-p4wr4
-Name:             bscf236-bpp0-574b597fd4-p4wr4
-Namespace:        default
-Priority:         0
-Service Account:  bscf-sa
-Node:             <none>
-Labels:           app=bscf236-bpp0
-                  component=bscf236-bpp
-                  nename=bscf236
-                  pod-template-hash=574b597fd4
-                  release=bscf
-                  restart-on-reboot=true
-                  tech=gsm
-Annotations:      k8s.v1.cni.cncf.io/networks:
-                    [ { "name": "bscf-bh0u-nad", "interface": "bh0" }
-                    ]
-Status:           Pending
-IP:
-IPs:              <none>
-Controlled By:    ReplicaSet/bscf236-bpp0-574b597fd4
-Init Containers:
-  install:
-    Image:      sribharbor.sec.samsung.net/rel-ran/vos-bscf-init:SVR25ABSCVOSC44_RA00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      sh
-      -c
-      chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared; chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; echo 1 > /proc/sys/net/ipv4/conf/all/forwarding; echo 1 > /proc/sys/net/ipv6/conf/all/forwarding;
-    Limits:
-      hugepages-1Gi:                 8Gi
-      intel.com/pci_sriov_net_bh0u:  1
-      memory:                        48Gi
-      windriver.com/isolcpus:        28
-    Requests:
-      hugepages-1Gi:                 8Gi
-      intel.com/pci_sriov_net_bh0u:  1
-      memory:                        48Gi
-      windriver.com/isolcpus:        28
-    Environment:                     <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf236-bpp-log (rw)
-      /mnt/storage/shared from bscf236-bpp-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8zlvk (ro)
-Containers:
-  bpp:
-    Image:      sribharbor.sec.samsung.net/rel-ran/vos-bscf-bpp:SVR25ABSCVOSC44_RA00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    Limits:
-      hugepages-1Gi:                 8Gi
-      intel.com/pci_sriov_net_bh0u:  1
-      memory:                        48Gi
-      windriver.com/isolcpus:        28
-    Requests:
-      hugepages-1Gi:                 8Gi
-      intel.com/pci_sriov_net_bh0u:  1
-      memory:                        48Gi
-      windriver.com/isolcpus:        28
-    Liveness:                        http-get http://:8080/bpp_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                       http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:  UTC
-    Mounts:
-      /dev/shm from cshm (rw)
-      /etc/config from env (rw)
-      /hugepages from hugepage (rw)
-      /mnt/storage/log from bscf236-bpp-log (rw)
-      /mnt/storage/shared from bscf236-bpp-shared (rw)
-      /sys from sys (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8zlvk (ro)
-Conditions:
-  Type           Status
-  PodScheduled   False
-Volumes:
-  cshm:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:     Memory
-    SizeLimit:  <unset>
-  hugepage:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:     HugePages
-    SizeLimit:  <unset>
-  sys:
-    Type:          HostPath (bare host directory volume)
-    Path:          /sys
-    HostPathType:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf236-bpp0
-    Optional:  false
-  bscf236-bpp-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf236-log-pvc
-    ReadOnly:   false
-  bscf236-bpp-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf236-shared-pvc
-    ReadOnly:   false
-  kube-api-access-8zlvk:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-QoS Class:                   Burstable
-Node-Selectors:              <none>
-Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 30s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 30s
-Events:
-  Type     Reason            Age    From               Message
-  ----     ------            ----   ----               -------
-  Warning  FailedScheduling  3m34s  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  2m25s  default-scheduler  0/2 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
-sysadmin@controller-0:~$
+Perfect — this output gives the exact root cause 🎯 (no guessing now).
+
+
+---
+
+🔴 FINAL ISSUE (Confirmed)
+
+From Events:
+
+pod has unbound immediate PersistentVolumeClaims
+
+👉 Your pods are NOT scheduling because PVCs are NOT bound
+
+
+---
+
+📦 What’s happening
+
+Your pod requires:
+
+ClaimName:
+- bscf236-log-pvc
+- bscf236-shared-pvc
+
+But earlier you showed:
+
+kubectl get pv
+STATUS: Released ❌
+
+👉 That means:
+
+Old PVs exist
+
+But they are NOT bound to new PVCs
+
+Kubernetes cannot attach storage
+
+So pods stay Pending
+
+
+
+---
+
+🔴 Why PV = Released is a problem
+
+Released ≠ Available
+
+👉 Released means:
+
+Previously used by old PVC
+
+Still has old claim reference
+
+Kubernetes will NOT reuse automatically
+
+
+
+---
+
+✅ Fix (IMPORTANT – follow exactly)
+
+
+---
+
+✅ Step 1: Check PVC status
+
+kubectl get pvc
+
+👉 You will see:
+
+Pending ❌
+
+
+---
+
+✅ Step 2: Delete old PVCs (safe if fresh deployment)
+
+kubectl delete pvc bscf236-log-pvc
+kubectl delete pvc bscf236-shared-pvc
+kubectl delete pvc bscf236-db-pvc
+
+
+---
+
+✅ Step 3: Fix PVs (make them reusable)
+
+For each PV:
+
+kubectl patch pv <pv-name> -p '{"spec":{"claimRef": null}}'
+
+Example:
+
+kubectl patch pv pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd -p '{"spec":{"claimRef": null}}'
+kubectl patch pv pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719 -p '{"spec":{"claimRef": null}}'
+kubectl patch pv pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7 -p '{"spec":{"claimRef": null}}'
+
+
+---
+
+✅ Step 4: Verify PV becomes Available
+
+kubectl get pv
+
+Expected:
+
+STATUS: Available ✅
+
+
+---
+
+✅ Step 5: Recreate PVCs
+
+Just re-run Helm:
+
+helm upgrade bscf oci://sribharbor.sec.samsung.net/rel-ran/bscf -f local-values-25A.yaml
+
+
+---
+
+✅ Step 6: Verify binding
+
+kubectl get pvc
+
+Expected:
+
+STATUS: Bound ✅
+
+
+---
+
+✅ Step 7: Pods will schedule
+
+kubectl get po
+
+👉 Now pods should move from:
+
+Pending → ContainerCreating → Running
+
+
+---
+
+🚨 Important Note (WRCP)
+
+This issue happened because:
+
+You had old BSCF deployment
+
+PVs were reused
+
+WRCP uses CephFS
+
+PVC lifecycle was not cleaned properly
+
+
+
+---
+
+💡 Key takeaway
+
+👉 Your issue is NOT:
+
+❌ CPU
+
+❌ HugePages
+
+❌ DRBD
+
+
+👉 It is:
+
+> 🔥 Storage (PVC not bound due to Released PVs)
+
+
+
+
+---
+
+🚀 After this fix
+
+If pods still Pending → THEN we check:
+
+hugepages
+
+CPU isolation
+
+SR-IOV
+
+
+But first fix storage (this is blocking everything)
+
+
+---
+
+👉 Do this and tell me output:
+
+kubectl get pvc
+kubectl get pv
+
+I’ll confirm everything is clean 👍
