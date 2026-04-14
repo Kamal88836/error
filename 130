@@ -1,35 +1,238 @@
-[root@bastion ~]# oc delete  pods  openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local -n openshift-kube-scheduler
-pod "openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local" deleted
-[root@bastion ~]# oc get pods -n openshift-kube-scheduler -o wide
-NAME                                                                READY   STATUS              RESTARTS        AGE    IP            NODE                                 NOMINATED NODE   READINESS GATES
-openshift-kube-scheduler-guard-master1.airtelvvt.samsungbsc.local   1/1     Running             1               6d9h   10.30.2.4     master1.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-guard-master2.airtelvvt.samsungbsc.local   1/1     Running             2               33d    10.30.1.6     master2.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local   1/1     Running             1               38h    10.30.0.249   master3.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-master1.airtelvvt.samsungbsc.local         2/3     RunContainerError   84 (3d8h ago)   7s     20.1.30.150   master1.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-master2.airtelvvt.samsungbsc.local         3/3     Running             66 (33h ago)    34d    20.1.30.151   master2.airtelvvt.samsungbsc.local   <none>           <none>
-openshift-kube-scheduler-master3.airtelvvt.samsungbsc.local         3/3     Running             42              38h    20.1.30.152   master3.airtelvvt.samsungbsc.local   <none>           <none>
-revision-pruner-6-master1.airtelvvt.samsungbsc.local                0/1     Completed           0               33d    <none>        master1.airtelvvt.samsungbsc.local   <none>           <none>
-revision-pruner-6-master2.airtelvvt.samsungbsc.local                0/1     Completed           1               33d    <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
-revision-pruner-6-master3.airtelvvt.samsungbsc.local                0/1     Completed           0               33d    <none>        master3.airtelvvt.samsungbsc.local   <none>           <none>
-[root@bastion ~]# oc get po -o wide
-NAME                             READY   STATUS                        RESTARTS   AGE         IP            NODE                                 NOMINATED NODE   READINESS GATES
-bscf9901-bip0-76c5df9f8b-c27zh   0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
-bscf9901-bip0-76c5df9f8b-s6s5g   1/1     Terminating                   0          2d16h       10.30.2.59    master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bip1-55f89464d7-kw952   0/1     Init:0/2                      0          2m55s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bip1-55f89464d7-zltt2   1/1     Terminating                   0          81m         10.30.1.162   master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp0-574b6c59dc-hs4gq   0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
-bscf9901-bpp0-574b6c59dc-sbm4s   1/1     Terminating                   0          2d16h       10.30.2.49    master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp1-6cc5f66858-29jlz   0/1     Init:0/1                      0          2m53s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp1-6cc5f66858-79lgg   0/1     Init:ContainerStatusUnknown   0          2m55s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp1-6cc5f66858-dkjhv   0/1     Init:ContainerStatusUnknown   0          2m54s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp2-6d947d9f95-nchfq   0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
-bscf9901-bpp2-6d947d9f95-vvsgv   1/1     Terminating                   0          2d16h       10.30.2.51    master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-bpp3-6fb597b54-7v5rs    0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
-bscf9901-cmp0-7fdfb79d7b-d5lxk   0/1     Pending                       0          2m55s       <none>        <none>                               <none>           <none>
-bscf9901-cmp0-7fdfb79d7b-rxrff   1/1     Terminating                   0          2d16h       10.30.2.27    master1.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp1-79d4cbcf74-cqcfw   1/1     Terminating                   0          <invalid>   10.30.0.14    master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-cmp1-79d4cbcf74-kqgm2   0/1     Pending                       0          2m54s       <none>        <none>                               <none>           <none>
-bscf9901-dmp0-6fd9b97cc-9rhd7    0/1     Init:0/1                      0          2m54s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-pmp0-747f9cd8f7-jl4bl   1/1     Terminating                   0          <invalid>   10.30.0.12    master3.airtelvvt.samsungbsc.local   <none>           <none>
-bscf9901-pmp0-747f9cd8f7-v8rvm   0/1     Init:0/1                      0          2m54s       <none>        master2.airtelvvt.samsungbsc.local   <none>           <none>
-[root@bastion ~]#
+Alright — now the situation is very clear and more serious than before, but still recoverable 👍
+
+
+---
+
+🔴 CURRENT STATE (IMPORTANT)
+
+1. kube-scheduler still broken
+
+master1 → 2/3 RunContainerError ❌
+
+👉 Deleting pod didn’t help → means static pod revision itself is corrupted
+
+
+---
+
+2. Workloads are collapsing
+
+You now have:
+
+Pending
+
+Init:ContainerStatusUnknown
+
+Terminating (stuck)
+
+
+👉 This confirms: 💥 Scheduler + Network + CRI instability together
+
+
+---
+
+3. Cluster behavior
+
+Old pods → stuck Terminating
+
+New pods → not scheduling properly
+
+Some pods → unknown container state
+
+
+👉 This is control-plane inconsistency
+
+
+---
+
+🧠 ROOT CAUSE (FINAL)
+
+This line from earlier is the key:
+
+scheduler cache is corrupted
+
+👉 Combined with:
+
+CPU ~100% on masters
+
+OVN crash
+
+Storage issues
+
+
+➡️ Result: ❌ Scheduler state broken
+❌ CRI state inconsistent
+❌ Pod lifecycle stuck
+
+
+---
+
+✅ 🔥 FINAL RECOVERY PLAN (DO THIS EXACTLY)
+
+
+---
+
+🧨 STEP 1: Force NEW scheduler revision (MANDATORY)
+
+👉 This is the real fix (you haven’t done this yet)
+
+oc patch kubeScheduler cluster \
+  --type=merge \
+  -p '{"spec":{"forceRedeploymentReason":"recovery-1"}}'
+
+👉 Wait 1–2 mins, then check:
+
+oc get pods -n openshift-kube-scheduler
+
+✅ You should see new revision (like revision-7)
+
+
+---
+
+🧨 STEP 2: Hard reset container runtime (VERY IMPORTANT)
+
+👉 Do on ALL masters
+
+master1
+
+ssh core@master1
+sudo systemctl restart crio
+sudo systemctl restart kubelet
+
+master2
+
+ssh core@master2
+sudo systemctl restart crio
+sudo systemctl restart kubelet
+
+master3
+
+ssh core@master3
+sudo systemctl restart crio
+sudo systemctl restart kubelet
+
+👉 This clears:
+
+ContainerStatusUnknown
+
+Stuck Terminating pods
+
+CRI inconsistencies
+
+
+
+---
+
+🧨 STEP 3: Force delete stuck pods
+
+Now clean broken pods:
+
+oc delete pod -n cnf-bscf --all --force --grace-period=0
+
+
+---
+
+🧨 STEP 4: Fix OVN (network)
+
+oc delete pod -n openshift-ovn-kubernetes -l app=ovnkube-node
+
+Wait until:
+
+oc get pods -n openshift-ovn-kubernetes
+
+✅ All should be Running (8/8)
+
+
+---
+
+🧨 STEP 5: Check scheduler again
+
+oc get pods -n openshift-kube-scheduler
+
+Expected:
+
+3/3 Running on all masters ✅
+
+
+---
+
+🧨 STEP 6: Validate cluster
+
+oc get co
+
+Expected:
+
+kube-scheduler → True / False / False ✅
+network        → True / False / False ✅
+
+
+---
+
+🚨 VERY IMPORTANT WARNING
+
+Your masters are overloaded:
+
+From your node:
+
+CPU Requests: 98% 🔥
+HugePages: 88% 🔥
+
+👉 This is danger zone
+
+
+---
+
+💥 Why issue keeps coming back
+
+Because:
+
+CNF workloads running on masters
+
+Huge CPU + HugePages usage
+
+Control plane starving
+
+
+
+---
+
+✅ PERMANENT FIX (AFTER RECOVERY)
+
+🔹 Option 1 (BEST)
+
+✔ Add worker nodes
+✔ Move CNF workloads there
+
+
+---
+
+🔹 Option 2 (Temporary)
+
+oc adm cordon master1
+oc adm cordon master2
+
+
+---
+
+🚀 WHAT TO DO NOW
+
+👉 First execute:
+
+1. forceRedeploymentReason patch
+
+
+2. restart crio + kubelet on all masters
+
+
+
+
+---
+
+Then send me:
+
+oc get pods -n openshift-kube-scheduler
+oc get co
+
+
+---
+
+I’ll confirm if cluster is fully recovered or guide final tuning 👍
