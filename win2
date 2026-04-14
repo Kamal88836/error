@@ -1,166 +1,179 @@
-Good — you’re very close now 👍
-The problem is exactly what we expected, and your latest output confirms it 100%.
-
-
----
-
-🔴 FINAL ROOT CAUSE (CONFIRMED)
-
-You still have:
-
-PV STATUS: Released ❌
-PVC STATUS: Pending ❌
-Pods: Pending ❌
-
-👉 Kubernetes CANNOT bind PVC → PV
-
-Because:
-
-> 🔥 Released PVs still have old claimRef attached
-
-
-
-
----
-
-⚠️ Why your reinstall didn’t fix it
-
-Even after:
-
-helm uninstall bscf
-helm install bscf
-
-👉 PVs remain:
-
-STATUS: Released
-
-👉 Kubernetes will NOT reuse them automatically
-
-
----
-
-✅ FINAL FIX (DO THIS EXACTLY)
-
-
----
-
-🔥 Step 1: Clean old PV claim references
-
-Run these 3 commands:
-
-kubectl patch pv pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd -p '{"spec":{"claimRef": null}}'
-
-kubectl patch pv pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719 -p '{"spec":{"claimRef": null}}'
-
-kubectl patch pv pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7 -p '{"spec":{"claimRef": null}}'
-
-
----
-
-🔥 Step 2: Verify PV becomes Available
-
-kubectl get pv
-
-👉 You MUST see:
-
-STATUS: Available ✅
-
-
----
-
-🔥 Step 3: Delete current Pending PVCs
-
-kubectl delete pvc bscf236-db-pvc
-kubectl delete pvc bscf236-log-pvc
-kubectl delete pvc bscf236-shared-pvc
-
-
----
-
-🔥 Step 4: Recreate PVCs (Helm upgrade)
-
-helm upgrade bscf oci://sribharbor.sec.samsung.net/rel-ran/bscf -f local-values-25A.yaml
-
-
----
-
-🔥 Step 5: Verify binding
-
-kubectl get pvc
-
-👉 Expected:
-
-STATUS: Bound ✅
-
-
----
-
-🔥 Step 6: Pods will start scheduling
-
-kubectl get po
-
-👉 Expected:
-
-Pending → ContainerCreating → Running ✅
-
-
----
-
-💡 Why this happens (WRCP + CephFS)
-
-WRCP uses CephFS dynamic/static PVs
-
-Old PVC deleted → PV becomes Released
-
-But claimRef stays
-
-New PVC cannot bind → stuck forever
-
-
-
----
-
-🚀 Summary
-
-👉 Your issue is pure storage binding problem
-
-NOT:
-
-❌ DRBD
-
-❌ CPU
-
-❌ HugePages
-
-❌ SR-IOV
-
-
-👉 Only:
-
-> 🔥 PV stuck in Released state
-
-
-
-
----
-
-✅ After fix
-
-If pods still Pending → then we check:
-
-hugepages
-
-CPU isolation
-
-
-But right now PVC is blocking everything
-
-
----
-
-👉 Do this now and send output:
-
-kubectl get pv
-kubectl get pvc
-
-I’ll confirm it's fully fixed 👍
+sysadmin@controller-0:~$ kubectl get po
+NAME                            READY   STATUS     RESTARTS   AGE
+bscf236-bip0-54c5878bdd-gjrrv   0/1     Init:0/2   0          107s
+bscf236-bip1-7756f4b99f-rnsfx   0/1     Init:0/2   0          107s
+bscf236-bpp0-5b9745898c-pt7px   0/1     Init:0/1   0          107s
+bscf236-bpp1-6cb9f8c9c6-npp5v   0/1     Init:0/1   0          107s
+bscf236-bpp2-867458999b-vplcx   0/1     Init:0/1   0          107s
+bscf236-bpp3-566b857b7-r8fv5    0/1     Init:0/1   0          107s
+bscf236-bpp4-5f8745d4d7-fdztm   0/1     Init:0/1   0          107s
+bscf236-bpp5-78f59fdcdd-vfppk   0/1     Init:0/1   0          107s
+bscf236-cmp0-74f4f57d8f-24nq9   0/1     Init:0/1   0          107s
+bscf236-cmp1-554b69b4db-rhvfb   0/1     Init:0/1   0          107s
+bscf236-dmp0-69977d65bd-df8nq   0/1     Pending    0          107s
+bscf236-pmp0-5867d84c6b-6gk6n   0/1     Init:0/1   0          107s
+sysadmin@controller-0:~$ kubectl describe po bscf236-bpp1-6cb9f8c9c6-npp5v
+Name:             bscf236-bpp1-6cb9f8c9c6-npp5v
+Namespace:        default
+Priority:         0
+Service Account:  bscf-sa
+Node:             controller-1/feed:beef::3
+Start Time:       Tue, 14 Apr 2026 10:45:41 +0000
+Labels:           app=bscf236-bpp1
+                  component=bscf236-bpp
+                  nename=bscf236
+                  pod-template-hash=6cb9f8c9c6
+                  release=bscf
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.v1.cni.cncf.io/networks:
+                    [ { "name": "bscf-bh0u-nad", "interface": "bh0" }
+                    ]
+Status:           Pending
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/bscf236-bpp1-6cb9f8c9c6
+Init Containers:
+  install:
+    Container ID:
+    Image:         sribharbor.sec.samsung.net/rel-ran/vos-bscf-init:SVR25ABSCVOSC44_RA00
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared; chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        48Gi
+      windriver.com/isolcpus:        28
+    Requests:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        48Gi
+      windriver.com/isolcpus:        28
+    Environment:                     <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf236-bpp-log (rw)
+      /mnt/storage/shared from bscf236-bpp-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-659s6 (ro)
+Containers:
+  bpp:
+    Container ID:
+    Image:         sribharbor.sec.samsung.net/rel-ran/vos-bscf-bpp:SVR25ABSCVOSC44_RA00
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        48Gi
+      windriver.com/isolcpus:        28
+    Requests:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        48Gi
+      windriver.com/isolcpus:        28
+    Liveness:                        http-get http://:8080/bpp_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                       http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              UTC
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+    Mounts:
+      /dev/shm from cshm (rw)
+      /etc/config from env (rw)
+      /etc/ptp4l.conf from ptpconf (ro)
+      /hugepages from hugepage (rw)
+      /mnt/storage/log from bscf236-bpp-log (rw)
+      /mnt/storage/shared from bscf236-bpp-shared (rw)
+      /sys from sys (rw)
+      /var/host-run from ptp4l (ro)
+      /var/run/ptp from ptpdir (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-659s6 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False
+  Initialized                 False
+  Ready                       False
+  ContainersReady             False
+  PodScheduled                True
+Volumes:
+  cshm:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     Memory
+    SizeLimit:  <unset>
+  hugepage:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     HugePages
+    SizeLimit:  <unset>
+  sys:
+    Type:          HostPath (bare host directory volume)
+    Path:          /sys
+    HostPathType:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf236-bpp1
+    Optional:  false
+  ptpdir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/run/ptp
+    HostPathType:  DirectoryOrCreate
+  ptp4l:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/run
+    HostPathType:  Directory
+  ptpconf:
+    Type:          HostPath (bare host directory volume)
+    Path:          /etc/ptp4l.conf
+    HostPathType:  File
+  bscf236-bpp-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf236-log-pvc
+    ReadOnly:   false
+  bscf236-bpp-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf236-shared-pvc
+    ReadOnly:   false
+  kube-api-access-659s6:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 30s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 30s
+Events:
+  Type     Reason       Age                      From               Message
+  ----     ------       ----                     ----               -------
+  Normal   Scheduled    89s                      default-scheduler  Successfully assigned default/bscf236-bpp1-6cb9f8c9c6-npp5v to controller-1
+  Warning  FailedMount  <invalid> (x8 over 53s)  kubelet            MountVolume.SetUp failed for volume "ptpconf" : hostPath type check failed: /etc/ptp4l.conf is not a file
+  Warning  FailedMount  <invalid> (x4 over 51s)  kubelet            MountVolume.MountDevice failed for volume "pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0024-af8bd418-523c-4e28-ae87-019762cba549-0000000000000002-25c6f60f-bd85-4232-adce-7c9b4dbbedf5 already exists
+  Warning  FailedMount  <invalid> (x4 over 51s)  kubelet            MountVolume.MountDevice failed for volume "pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0024-af8bd418-523c-4e28-ae87-019762cba549-0000000000000002-d3b29445-e721-4d67-964a-2b4f38e06a7d already exists
+sysadmin@controller-0:~$ kubectl get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                        STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd   8Gi        RWX            Delete           Released   default/bscf236-db-pvc       cephfs         <unset>                          40d
+pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719   40Gi       RWX            Delete           Bound      default/bscf236-shared-pvc   cephfs         <unset>                          40d
+pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7   50Gi       RWX            Delete           Bound      default/bscf236-log-pvc      cephfs         <unset>                          40d
+sysadmin@controller-0:~$ kubectl get pvc
+NAME                 STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+bscf236-log-pvc      Bound    pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7   50Gi       RWX            cephfs         <unset>                 9m21s
+bscf236-shared-pvc   Bound    pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719   40Gi       RWX            cephfs         <unset>                 9m21s
+sysadmin@controller-0:~$
