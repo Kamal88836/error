@@ -1,49 +1,231 @@
-sysadmin@controller-1:~$ cat /proc/dr
-drbd    driver/
-sysadmin@controller-1:~$ cat /proc/drbd
-version: 8.4.11 (api:1/proto:86-101)
-srcversion: E101BCE78F2AA7247827232
- 0: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
-    ns:0 nr:3792 dw:8092 dr:25385 al:10 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:2496
- 1: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
-    ns:0 nr:832 dw:1472 dr:8149 al:8 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:620
- 2: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
-    ns:0 nr:908 dw:1908 dr:9157 al:10 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:724
+Now this is very clear and more serious than initial error 👇
 
- 5: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
-    ns:0 nr:0 dw:144 dr:7881 al:3 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:104
 
- 7: cs:WFConnection ro:Secondary/Unknown ds:Inconsistent/DUnknown C r-----
-    ns:0 nr:0 dw:0 dr:0 al:0 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:14124
- 8: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
-    ns:0 nr:0 dw:4 dr:7317 al:1 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:4
- 9: cs:WFConnection ro:Primary/Unknown ds:UpToDate/DUnknown C r-----
-    ns:0 nr:0 dw:7520 dr:13525 al:12 bm:0 lo:0 pe:0 ua:0 ap:0 ep:1 wo:f oos:6884
-sysadmin@controller-1:~$
+---
 
-sysadmin@controller-0:~$ cat /etc/drbd.
-drbd.conf  drbd.d/
-sysadmin@controller-0:~$ cat /proc/drbd
-version: 8.4.11 (api:1/proto:86-101)
-srcversion: E101BCE78F2AA7247827232
-sysadmin@controller-0:~$
+🔴 Actual Problem (Confirmed)
 
-sysadmin@controller-1:~$ drbdadm status
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-cephmon.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-dockerdistribution.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-etcd.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-extension.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-pgsql.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-platform.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-rabbit.res'.
-sysadmin@controller-1:~$
-sysadmin@controller-0:~$ drbdadm status
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-cephmon.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-dockerdistribution.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-etcd.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-extension.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-pgsql.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-platform.res'.
-/etc/drbd.conf:2: Failed to open include file '/etc/drbd.d/drbd-rabbit.res'.
-sysadmin@controller-0:~$
+You have two critical issues:
 
+1️⃣ DRBD not connecting at all
+
+From /proc/drbd:
+
+cs: WFConnection
+ro: Primary/Unknown
+ds: UpToDate/DUnknown
+
+👉 Means:
+
+Nodes cannot see each other
+
+DRBD replication is completely broken
+
+
+
+---
+
+2️⃣ DRBD configuration is MISSING ❌ (major issue)
+
+This is the real root cause:
+
+Failed to open include file '/etc/drbd.d/drbd-etcd.res'
+Failed to open include file '/etc/drbd.d/drbd-pgsql.res'
+...
+
+👉 This means:
+
+/etc/drbd.d/*.res files are deleted / missing
+
+DRBD does not know any resources
+
+But kernel still has old DRBD devices → causing mismatch
+
+
+
+---
+
+🧠 What happened (very likely)
+
+One of these occurred:
+
+❌ Node reprovision / partial reinstall
+
+❌ Disk reset / mount issue
+
+❌ Wind River platform service failed to generate DRBD configs
+
+❌ /etc/drbd.d/ accidentally deleted
+
+❌ Sync between controllers broken
+
+
+
+---
+
+🚨 Why this is critical
+
+You are running:
+
+👉 Wind River Controller cluster (likely 2-node or 3-node)
+
+DRBD is used for:
+
+etcd
+
+postgres
+
+platform services
+
+
+👉 Without .res files:
+
+DRBD cannot start properly
+
+Cluster will never become healthy
+
+
+
+---
+
+✅ Fix (based on your situation)
+
+✔️ Step 1: Check if files really missing
+
+Run:
+
+ls -l /etc/drbd.d/
+
+👉 If empty → confirmed issue
+
+
+---
+
+✔️ Step 2: Compare with working node
+
+Check on another controller (if exists):
+
+ls -l /etc/drbd.d/
+
+👉 If files exist there → copy them
+
+
+---
+
+✔️ Step 3: Restore config
+
+Option A (BEST): Copy from healthy node
+
+scp controller-0:/etc/drbd.d/* /etc/drbd.d/
+
+
+---
+
+Option B: Re-generate (Wind River way)
+
+Run:
+
+sudo config_controller
+
+OR (depending on version):
+
+sudo systemctl restart drbd
+sudo systemctl restart sm
+
+
+---
+
+✔️ Step 4: Restart DRBD
+
+drbdadm down all
+drbdadm up all
+
+
+---
+
+✔️ Step 5: Reconnect
+
+drbdadm connect all
+
+
+---
+
+✔️ Step 6: Verify
+
+cat /proc/drbd
+
+Expected:
+
+cs:Connected
+ds:UpToDate/UpToDate
+
+
+---
+
+⚠️ Important Observations
+
+🔹 controller-0 output is EMPTY
+
+cat /proc/drbd
+→ only version shown
+
+👉 Means:
+
+DRBD not even initialized on controller-0
+
+Config missing there too OR service not running
+
+
+
+---
+
+🔥 Final Diagnosis
+
+👉 Your cluster is in broken bootstrap state
+
+DRBD config missing
+
+Nodes not connected
+
+Services depending on DRBD will fail
+
+
+
+---
+
+🚀 Recommended Fix (Your Case)
+
+Since you are doing:
+
+> agent-based install / fresh setup
+
+
+
+👉 FASTEST & CLEANEST:
+
+🔥 Re-run controller configuration
+
+On BOTH nodes:
+
+sudo config_controller --force
+
+OR rebuild node if needed.
+
+
+---
+
+🧩 If you want minimal fix (no rebuild)
+
+Tell me:
+
+How many controllers? (2 or 3?)
+
+Is this fresh install or running cluster?
+
+Output of:
+
+
+ls /etc/drbd.d/
+systemctl status drbd
+
+I’ll give you exact recovery steps (no data loss) 👍
