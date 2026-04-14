@@ -1,173 +1,38 @@
-⚠️ Okay — 192 GB means this is serious.
-You have a large mirror stored inside container overlay, not on host.
-
-
----
-
-🚨 What this means (very important)
-
-👉 Your images (~192 GB) are currently:
-
-> ❌ Inside Podman internal storage
-❌ NOT in /datastorage on host
-❌ Will be LOST if containers are removed
-
-
-
-
----
-
-🎯 Your situation now
-
-Item	Status
-
-Images	⚠️ 192GB inside container
-Persistence	❌ Not safe
-Quay working	✅
-Cert expired	❌
-
-
-
----
-
-🚀 What should you do?
-
-You have 2 choices:
-
-
----
-
-✅ OPTION 1 — Safe (No Risk, Quick)
-
-👉 Do nothing risky now
-
-Continue using:
-
-podman login ... --tls-verify=false
-
-✔ No data loss
-✔ Registry works
-❌ TLS still expired
-
-
----
-
-🔥 OPTION 2 — Correct Fix (RECOMMENDED)
-
-👉 Move data to persistent storage (/datastorage)
-
-
----
-
-🔧 Step-by-step SAFE MIGRATION
-
-🔒 Step 1 — Create host directory
-
-mkdir -p /datastorage
-
-
----
-
-🔒 Step 2 — Copy data from container
-
-podman cp quay-app:/datastorage /datastorage
-
-👉 This may take time (192 GB)
-
-
----
-
-🔍 Step 3 — Verify
-
-du -sh /datastorage
-
-👉 Should also show ~192GB
-
-
----
-
-🔥 Step 4 — Reinstall mirror-registry (clean)
-
-mirror-registry uninstall
-
-Then:
-
-mirror-registry install \
-  --quayHostname bastion-sno.lab.ocp.lan \
-  --quayRoot /datastorage
-
-
----
-
-🔄 Step 5 — Verify
-
-curl -k https://bastion-sno.lab.ocp.lan:8443/health/instance
-podman login bastion-sno.lab.ocp.lan:8443
-
-
----
-
-🧠 Why this is BEST
-
-Benefit	Result
-
-Persistent storage	✅
-No data loss	✅
-Valid cert	✅
-Stable setup	✅
-
-
-
----
-
-⚠️ VERY IMPORTANT
-
-👉 Before running uninstall:
-
-✔ Ensure /datastorage has full data
-✔ Double-check size
-
-
----
-
-💡 Alternative (if copy is risky)
-
-You can also:
-
-Keep current setup temporarily
-
-Re-mirror later (if network allows)
-
-
-
----
-
-🚀 My recommendation (based on your case)
-
-👉 Since data is huge (192GB):
-
-> 🔥 FIRST copy data → THEN reinstall
-
-
-
-
----
-
-👉 Before proceeding
-
-Run this:
-
-podman exec quay-app du -sh /datastorage
-
-If it shows ~192GB → safe to copy 👍
-
-
----
-
-🧭 I can guide you live
-
-If you want safest approach, say:
-
-👉 “guide migration step-by-step”
-
-I’ll walk you with zero data loss 👍
+Events:
+  Type     Reason       Age                  From     Message
+  ----     ------       ----                 ----     -------
+  Warning  FailedMount  16h (x334 over 27h)  kubelet  MountVolume.MountDevice failed for volume "pvc-e0439e5b-9282-4600-bad2-3b383d15f30e" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-51c66a43-7bfe-4fbf-93bc-91bc6cf34be3 already exists
+[root@bastion ~]# oc get po -o wide
+NAME                             READY   STATUS     RESTARTS   AGE    IP            NODE                                 NOMINATED NODE   READINESS GATES
+bscf9901-bip0-76c5df9f8b-s6s5g   1/1     Running    0          3d7h   10.30.2.59    master1.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bip1-55f89464d7-zltt2   1/1     Running    0          16h    10.30.1.162   master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp0-574b6c59dc-sbm4s   1/1     Running    0          3d8h   10.30.2.49    master1.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp1-6cc5f66858-tcznf   1/1     Running    0          16h    10.30.1.163   master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp2-6d947d9f95-vvsgv   1/1     Running    0          3d8h   10.30.2.51    master1.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-bpp3-6fb597b54-f9rjr    1/1     Running    0          16h    10.30.1.164   master2.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-cmp0-7fdfb79d7b-rxrff   1/1     Running    0          3d8h   10.30.2.27    master1.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-cmp1-79d4cbcf74-cqcfw   1/1     Running    0          14h    10.30.0.14    master3.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-dmp0-6fd9b97cc-wl94d    0/1     Init:0/1   0          27h    <none>        master3.airtelvvt.samsungbsc.local   <none>           <none>
+bscf9901-pmp0-747f9cd8f7-jl4bl   1/1     Running    0          14h    10.30.0.12    master3.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion ~]# oc describe node master1 | grep -A5 "Allocated resources"
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                                Requests        Limits
+  --------                                --------        ------
+  cpu                                     104040m (98%)   104350m (98%)
+  memory                                  140717Mi (19%)  129804Mi (17%)
+[root@bastion ~]# oc describe node master2 | grep -A5 "Allocated resources"
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                                Requests        Limits
+  --------                                --------        ------
+  cpu                                     104255m (98%)   107100m (101%)
+  memory                                  137184Mi (18%)  128872Mi (17%)
+[root@bastion ~]# oc describe node master3 | grep -A5 "Allocated resources"
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                                Requests        Limits
+  --------                                --------        ------
+  cpu                                     14468m (13%)    24848m (23%)
+  memory                                  123670Mi (16%)  114352Mi (15%)
+[root@bastion ~]#
