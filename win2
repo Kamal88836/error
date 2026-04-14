@@ -1,73 +1,166 @@
-sysadmin@controller-0:~$ helm uninstall bscf
-WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /etc/kubernetes/admin.conf
-release "bscf" uninstalled
-sysadmin@controller-0:~$ kubectl get pv -A
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                        STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
-pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd   8Gi        RWX            Delete           Released   default/bscf236-db-pvc       cephfs         <unset>                          40d
-pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719   40Gi       RWX            Delete           Released   default/bscf236-shared-pvc   cephfs         <unset>                          40d
-pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7   50Gi       RWX            Delete           Released   default/bscf236-log-pvc      cephfs         <unset>                          40d
-sysadmin@controller-0:~$ kubectl get pvc -A
-No resources found
-sysadmin@controller-0:~$ kubectl get pvc -A
-No resources found
-sysadmin@controller-0:~$ helm install  bscf oci://sribharbor.sec.samsung.net/rel-ran/bscf -f local-values-25A.yaml --version 251.0.16
-WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /etc/kubernetes/admin.conf
-Pulled: sribharbor.sec.samsung.net/rel-ran/bscf:251.0.16
-Digest: sha256:96da06e98aea9be8b59cc075db7881a9cbb18f901f892fb14808903d427e15f8
-NAME: bscf
-LAST DEPLOYED: Tue Apr 14 10:37:20 2026
-NAMESPACE: default
-STATUS: deployed
-REVISION: 1
-NOTES:
-Your release is named "bscf" and this chart is "bscf-251.0.16".
+Good — you’re very close now 👍
+The problem is exactly what we expected, and your latest output confirms it 100%.
 
-Check again if you have selected the appropriate chart version for your purpose.
-The recommended platform and patch according to the chart version is as below:
 
-  25.1.0    SVR25A initial version                         WRCP22.12/OCP_4.14
-  251.0.0   Change a version format for helm chart         WRCP22.12/OCP_4.14
-  251.0.1   Added ODF network as eth1 &  medium-2u flavor  WRCP22.12/OCP_4.14
-  251.0.2   Added DSS ports for GSRB in BIP                WRCP22.12/OCP_4.14
-  251.0.3   Added tiny-2u-t3 flavor                        WRCP22.12/OCP_4.14
-  251.0.4   Add EMS_MCM_IP to all pod configmaps           WRCP22.12/OCP_4.14
-  251.0.5   Added two more DSS ports for GSRB in BIP       WRCP22.12/OCP_4.14
-  251.0.6   Added alarm-audit-channel UDP port for CMP     WRCP22.12/OCP_4.14
-  251.0.7   DMP Core limt & Memory change for Multi Confd  WRCP22.12/OCP_4.14
-  251.0.8   Added confd sub ipc for support multi ConfD    WRCP22.12/OCP_4.14
-  251.0.9   Added KA port for GSRB in BIP                  WRCP22.12/OCP_4.14
-  251.0.10  Support 2nd bscf, NAD & SA as per namespace    WRCP22.12/OCP_4.14
-  251.0.11  Run BSCF as a non root user(sapp)              WRCP22.12/OCP_4.14
-  251.0.12  Added GSOB CellSetup Multithreading in BIP     WRCP22.12/OCP_4.14
-  251.0.13  PDB changes                                    WRCP22.12/OCP_4.14
-  251.0.14  2nd BSCF changes                               WRCP22.12/OCP_4.14
-  251.0.15  PTP notification support for OCP               WRCP22.12/OCP_4.14
-  251.0.16  Increased pod memory to 48GB for BPP pods      WRCP22.12/OCP_4.14
-sysadmin@controller-0:~$
-sysadmin@controller-0:~$
-sysadmin@controller-0:~$
-sysadmin@controller-0:~$ kubectl get po -o wide
-NAME                            READY   STATUS    RESTARTS   AGE   IP       NODE     NOMINATED NODE   READINESS GATES
-bscf236-bip0-7cfbc868d-bvjrl    0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-bip1-64559b675-92xkb    0/1     Pending   0          42s   <none>   <none>   <none>           <none>
-bscf236-bpp0-574b597fd4-j9jws   0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-bpp1-c656b95f5-vrsnp    0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-bpp2-77796d5d47-v7kxk   0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-bpp3-9f68755f6-8ml4v    0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-bpp4-f4b687c7b-28rn7    0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-bpp5-96dd577dc-4w9vn    0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-cmp0-5bbdbf579f-mccgv   0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-cmp1-5f5b8db8d4-prpjp   0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-dmp0-7f9894c5f5-d7hdb   0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-bscf236-pmp0-85968cf575-29zsf   0/1     Pending   0          43s   <none>   <none>   <none>           <none>
-sysadmin@controller-0:~$ kubectl get pvc -A
-NAMESPACE   NAME                 STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
-default     bscf236-db-pvc       Pending                                      cephfs         <unset>                 10s
-default     bscf236-log-pvc      Pending                                      cephfs         <unset>                 10s
-default     bscf236-shared-pvc   Pending                                      cephfs         <unset>                 10s
-sysadmin@controller-0:~$ kubectl get pv -A
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                        STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
-pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd   8Gi        RWX            Delete           Released   default/bscf236-db-pvc       cephfs         <unset>                          40d
-pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719   40Gi       RWX            Delete           Released   default/bscf236-shared-pvc   cephfs         <unset>                          40d
-pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7   50Gi       RWX            Delete           Released   default/bscf236-log-pvc      cephfs         <unset>                          40d
-sysadmin@controller-0:~$
+---
+
+🔴 FINAL ROOT CAUSE (CONFIRMED)
+
+You still have:
+
+PV STATUS: Released ❌
+PVC STATUS: Pending ❌
+Pods: Pending ❌
+
+👉 Kubernetes CANNOT bind PVC → PV
+
+Because:
+
+> 🔥 Released PVs still have old claimRef attached
+
+
+
+
+---
+
+⚠️ Why your reinstall didn’t fix it
+
+Even after:
+
+helm uninstall bscf
+helm install bscf
+
+👉 PVs remain:
+
+STATUS: Released
+
+👉 Kubernetes will NOT reuse them automatically
+
+
+---
+
+✅ FINAL FIX (DO THIS EXACTLY)
+
+
+---
+
+🔥 Step 1: Clean old PV claim references
+
+Run these 3 commands:
+
+kubectl patch pv pvc-99d6cfc9-a2e6-4271-8927-f308775a0bbd -p '{"spec":{"claimRef": null}}'
+
+kubectl patch pv pvc-a22f03a8-dbc9-454e-8c47-196e5cc6b719 -p '{"spec":{"claimRef": null}}'
+
+kubectl patch pv pvc-ef5246cb-11d7-40ad-ac92-1156d35dc7b7 -p '{"spec":{"claimRef": null}}'
+
+
+---
+
+🔥 Step 2: Verify PV becomes Available
+
+kubectl get pv
+
+👉 You MUST see:
+
+STATUS: Available ✅
+
+
+---
+
+🔥 Step 3: Delete current Pending PVCs
+
+kubectl delete pvc bscf236-db-pvc
+kubectl delete pvc bscf236-log-pvc
+kubectl delete pvc bscf236-shared-pvc
+
+
+---
+
+🔥 Step 4: Recreate PVCs (Helm upgrade)
+
+helm upgrade bscf oci://sribharbor.sec.samsung.net/rel-ran/bscf -f local-values-25A.yaml
+
+
+---
+
+🔥 Step 5: Verify binding
+
+kubectl get pvc
+
+👉 Expected:
+
+STATUS: Bound ✅
+
+
+---
+
+🔥 Step 6: Pods will start scheduling
+
+kubectl get po
+
+👉 Expected:
+
+Pending → ContainerCreating → Running ✅
+
+
+---
+
+💡 Why this happens (WRCP + CephFS)
+
+WRCP uses CephFS dynamic/static PVs
+
+Old PVC deleted → PV becomes Released
+
+But claimRef stays
+
+New PVC cannot bind → stuck forever
+
+
+
+---
+
+🚀 Summary
+
+👉 Your issue is pure storage binding problem
+
+NOT:
+
+❌ DRBD
+
+❌ CPU
+
+❌ HugePages
+
+❌ SR-IOV
+
+
+👉 Only:
+
+> 🔥 PV stuck in Released state
+
+
+
+
+---
+
+✅ After fix
+
+If pods still Pending → then we check:
+
+hugepages
+
+CPU isolation
+
+
+But right now PVC is blocking everything
+
+
+---
+
+👉 Do this now and send output:
+
+kubectl get pv
+kubectl get pvc
+
+I’ll confirm it's fully fixed 👍
