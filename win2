@@ -1,130 +1,87 @@
-Nice — that confirms everything is working again 🎯
-
-You successfully authenticated and got:
-
-controller-0 → degraded  
-controller-1 → degraded
-
-
----
-
-✅ Current State Summary
-
-In your StarlingX cluster:
-
-✅ Keystone auth → FIXED
-
-✅ .CREDENTIAL → FIXED
-
-✅ controller-services → FIXED
-
-⚠️ Controllers → DEGRADED (not healthy yet)
-
-
-
----
-
-⚠️ What “degraded” means
-
-👉 System is running, but some services are still not fully OK.
-
-From your earlier output, the main suspect is:
-
-ceph-mon  enabling  failed
-
-👉 This is usually the reason controllers stay degraded.
-
-
----
-
-🔍 Next Check (very important)
-
-Run this on controller-0:
-
-sudo ceph -s
-
-
----
-
-📊 What to look for
-
-Healthy:
-
-HEALTH_OK
-
-Problem (likely your case):
-
-HEALTH_WARN / HEALTH_ERR
-mon down / quorum issue
-
-
----
-
-🔧 Also check alarms
-
-sudo fm alarm-list
-
-👉 This will show exactly why system is degraded.
-
-
----
-
-🚀 Quick Recovery Steps
-
-1. Restart Ceph MON (most common fix)
-
-sudo sm-restart service ceph-mon
-
-Then check:
-
-sm-dump | grep ceph-mon
-
-
----
-
-2. Re-check system health
-
-system host-list
-
-👉 Expect:
-
-availability → available ✅
-
-
----
-
-💡 Good news
-
-You are past the hardest part:
-
-Authentication issue ✔️
-
-Platform orchestration ✔️
-
-
-👉 Now it’s just service health cleanup
-
-
----
-
-🧠 Quick Tip (for future)
-
-Instead of always doing long command, you can use:
-
-alias stx='sudo -E bash -c "source /etc/platform/openrc && $1"'
-
-Then:
-
-stx system host-list
-
-
----
-
-🚀 Next step
-
-Run and share:
-
-sudo ceph -s
-sudo fm alarm-list
-
-I’ll tell you exact fix to remove degraded state 👍
+controller-0:~$ sudo -E bash -c "source /etc/platform/openrc && system host-list"
++----+--------------+-------------+----------------+-------------+--------------+
+| id | hostname     | personality | administrative | operational | availability |
++----+--------------+-------------+----------------+-------------+--------------+
+| 1  | controller-0 | controller  | unlocked       | enabled     | degraded     |
+| 2  | controller-1 | controller  | unlocked       | enabled     | degraded     |
++----+--------------+-------------+----------------+-------------+--------------+
+controller-0:~$ sudo ceph -s
+
+^C^Z
+[1]+  Stopped                 sudo ceph -s
+controller-0:~$ sm-dump | grep controller-services
+controller-services              active               go-active            failed
+controller-0:~$ sm-dump
+
+-Service_Groups------------------------------------------------------------------------
+oam-services                     active               active
+controller-services              active               go-active            failed
+cloud-services                   active               active
+patching-services                standby              standby
+directory-services               active               active
+web-services                     active               active
+storage-services                 active               active
+storage-monitoring-services      standby              standby
+vim-services                     active               active
+---------------------------------------------------------------------------------------
+
+-Services------------------------------------------------------------------------------
+oam-ipv4                         enabled-active       enabled-active
+management-ipv4                  enabled-active       enabled-active
+drbd-pg                          enabled-active       enabled-active
+drbd-rabbit                      enabled-active       enabled-active
+oam-ipv6                         enabled-active       enabled-active
+drbd-platform                    enabled-active       enabled-active
+pg-fs                            enabled-active       enabled-active
+rabbit-fs                        enabled-active       enabled-active
+nfs-mgmt                         enabled-active       enabled-active
+management-ipv6                  enabled-active       enabled-active
+platform-fs                      enabled-active       enabled-active
+postgres                         enabled-active       enabled-active
+rabbit                           enabled-active       enabled-active
+platform-export-fs               enabled-active       enabled-active
+sysinv-inv                       enabled-active       enabled-active
+sysinv-conductor                 enabled-active       enabled-active
+mtc-agent                        enabled-active       enabled-active
+hw-mon                           enabled-active       enabled-active
+dnsmasq                          enabled-active       enabled-active
+fm-mgr                           enabled-active       enabled-active
+keystone                         enabled-active       enabled-active
+open-ldap                        enabled-active       enabled-active
+lighttpd                         enabled-active       enabled-active
+horizon                          enabled-active       enabled-active
+patch-alarm-manager              enabled-standby      disabled
+mgr-restful-plugin               enabled-active       enabled-active
+ceph-manager                     enabled-standby      disabled
+vim                              enabled-active       enabled-active
+vim-api                          enabled-active       enabled-active
+vim-webserver                    enabled-active       enabled-active
+haproxy                          enabled-active       enabled-active
+pxeboot-ipv4                     enabled-active       enabled-active
+drbd-extension                   enabled-active       enabled-active
+extension-fs                     enabled-active       enabled-active
+extension-export-fs              enabled-active       enabled-active
+etcd                             enabled-active       enabled-active
+drbd-etcd                        enabled-active       enabled-active
+etcd-fs                          enabled-active       enabled-active
+barbican-api                     enabled-active       enabled-active
+barbican-keystone-listener       enabled-active       enabled-active
+barbican-worker                  enabled-active       enabled-active
+cluster-host-ipv4                enabled-active       enabled-active
+cluster-host-ipv6                enabled-active       enabled-active
+ipsec-config                     enabled-active       enabled-active
+docker-distribution              enabled-active       enabled-active
+dockerdistribution-fs            enabled-active       enabled-active
+drbd-dockerdistribution          enabled-active       enabled-active
+ceph-mon                         enabled-active       enabling             failed
+cephmon-fs                       enabled-active       enabled-active
+drbd-cephmon                     enabled-active       enabled-active
+ceph-osd                         enabled-active       enabled-active
+helmrepository-fs                enabled-active       enabled-active
+registry-token-server            enabled-active       enabled-active
+cert-mon                         enabled-active       enabled-active
+device-image-fs                  enabled-active       enabled-active
+cert-alarm                       enabled-active       enabled-active
+storage-networking               enabled-active       enabled-active
+------------------------------------------------------------------------------
+controller-0:~$
