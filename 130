@@ -1,111 +1,222 @@
-Good move 👍 — restarting is actually the right call at this stage.
+sysadmin@controller-1:~$ sm-dump
 
-Now let’s make sure you bring the cluster back correctly, otherwise it can fall back into the same standby loop.
+-Service_Groups------------------------------------------------------------------------
+oam-services                     active               active
+controller-services              active               go-active            failed
+cloud-services                   active               active
+patching-services                active               active
+directory-services               active               active
+web-services                     active               active
+storage-services                 active               active
+storage-monitoring-services      active               active
+vim-services                     active               active
+---------------------------------------------------------------------------------------
 
+-Services------------------------------------------------------------------------------
+oam-ipv4                         enabled-active       enabled-active
+management-ipv4                  enabled-active       enabled-active
+drbd-pg                          enabled-active       enabled-active
+drbd-rabbit                      enabled-active       enabled-active
+oam-ipv6                         enabled-active       enabled-active
+drbd-platform                    enabled-active       enabled-active
+pg-fs                            enabled-active       enabled-active
+rabbit-fs                        enabled-active       enabled-active
+nfs-mgmt                         enabled-active       enabled-active
+management-ipv6                  enabled-active       enabled-active
+platform-fs                      enabled-active       enabled-active
+postgres                         enabled-active       enabled-active
+rabbit                           enabled-active       enabled-active
+platform-export-fs               enabled-active       enabled-active
+sysinv-inv                       enabled-active       enabled-active
+sysinv-conductor                 enabled-active       enabled-active
+mtc-agent                        enabled-active       enabled-active
+hw-mon                           enabled-active       enabled-active
+dnsmasq                          enabled-active       enabled-active
+fm-mgr                           enabled-active       enabled-active
+keystone                         enabled-active       enabled-active
+open-ldap                        enabled-active       enabled-active
+lighttpd                         enabled-active       enabled-active
+horizon                          enabled-active       enabled-active
+patch-alarm-manager              enabled-active       enabled-active
+mgr-restful-plugin               enabled-active       enabled-active
+ceph-manager                     enabled-active       enabled-active
+vim                              enabled-active       enabled-active
+vim-api                          enabled-active       enabled-active
+vim-webserver                    enabled-active       enabled-active
+haproxy                          enabled-active       enabled-active
+pxeboot-ipv4                     enabled-active       enabled-active
+drbd-extension                   enabled-active       enabled-active
+extension-fs                     enabled-active       enabled-active
+extension-export-fs              enabled-active       enabled-active
+etcd                             enabled-active       enabled-active
+drbd-etcd                        enabled-active       enabled-active
+etcd-fs                          enabled-active       enabled-active
+barbican-api                     enabled-active       enabled-active
+barbican-keystone-listener       enabled-active       enabled-active
+barbican-worker                  enabled-active       enabled-active
+cluster-host-ipv4                enabled-active       enabled-active
+cluster-host-ipv6                enabled-active       enabled-active
+ipsec-config                     enabled-active       enabled-active
+docker-distribution              enabled-active       enabled-active
+dockerdistribution-fs            enabled-active       enabled-active
+drbd-dockerdistribution          enabled-active       enabled-active
+ceph-mon                         enabled-active       enabling             failed
+cephmon-fs                       enabled-active       enabled-active
+drbd-cephmon                     enabled-active       enabled-active
+ceph-osd                         enabled-active       enabled-active
+helmrepository-fs                enabled-active       enabled-active
+registry-token-server            enabled-active       enabled-active
+cert-mon                         enabled-active       enabled-active
+device-image-fs                  enabled-active       enabled-active
+cert-alarm                       enabled-active       enabled-active
+storage-networking               enabled-active       enabled-active
+------------------------------------------------------------------------------
+sysadmin@controller-1:~$ sm-dump
 
----
+-Service_Groups------------------------------------------------------------------------
+oam-services                     disabled             disabled
+controller-services              disabled             disabled             failed
+cloud-services                   disabled             disabled
+patching-services                active               active
+directory-services               active               active
+web-services                     active               active
+storage-services                 active               active
+storage-monitoring-services      active               active
+vim-services                     disabled             disabled
+---------------------------------------------------------------------------------------
 
-🚨 What to do AFTER reboot
+-Services------------------------------------------------------------------------------
+oam-ipv4                         disabled             disabled
+management-ipv4                  disabled             disabled
+drbd-pg                          disabled             disabled
+drbd-rabbit                      disabled             disabled
+oam-ipv6                         disabled             disabled
+drbd-platform                    disabled             disabled
+pg-fs                            disabled             disabled
+rabbit-fs                        disabled             disabled
+nfs-mgmt                         disabled             disabled
+management-ipv6                  disabled             disabled
+platform-fs                      disabled             disabled
+postgres                         disabled             disabled
+rabbit                           disabled             disabled
+platform-export-fs               disabled             disabled
+sysinv-inv                       disabled             disabled
+sysinv-conductor                 disabled             disabled
+mtc-agent                        disabled             disabled
+hw-mon                           disabled             disabled
+dnsmasq                          disabled             disabled
+fm-mgr                           disabled             disabled
+keystone                         disabled             disabled
+open-ldap                        enabled-active       enabled-active
+lighttpd                         enabled-active       enabled-active
+horizon                          enabled-active       enabled-active
+patch-alarm-manager              enabled-active       enabled-active
+mgr-restful-plugin               enabled-active       enabled-active
+ceph-manager                     enabled-active       enabled-active
+vim                              disabled             disabled
+vim-api                          disabled             disabled
+vim-webserver                    disabled             disabled
+haproxy                          disabled             disabled
+pxeboot-ipv4                     disabled             disabled
+drbd-extension                   disabled             disabled
+extension-fs                     disabled             disabled
+extension-export-fs              disabled             disabled
+etcd                             disabled             disabled
+drbd-etcd                        disabled             disabled
+etcd-fs                          disabled             disabled
+barbican-api                     disabled             disabled
+barbican-keystone-listener       disabled             disabled
+barbican-worker                  disabled             disabled
+cluster-host-ipv4                disabled             disabled
+cluster-host-ipv6                disabled             disabled
+ipsec-config                     disabled             disabled
+docker-distribution              disabled             disabled
+dockerdistribution-fs            disabled             disabled
+drbd-dockerdistribution          disabled             disabled
+ceph-mon                         disabled             disabled
+cephmon-fs                       disabled             disabled
+drbd-cephmon                     disabled             disabled
+ceph-osd                         enabled-active       enabled-active
+helmrepository-fs                disabled             disabled
+registry-token-server            disabled             disabled
+cert-mon                         disabled             disabled
+device-image-fs                  disabled             disabled
+cert-alarm                       disabled             disabled
+storage-networking               enabled-active       enabled-active
+------------------------------------------------------------------------------
 
-✅ Step 1: Check which node came up first
+sysadmin@controller-0:~$ sm-dump
 
-On both controllers, run:
+-Service_Groups------------------------------------------------------------------------
+oam-services                     standby              standby
+controller-services              standby              standby
+cloud-services                   standby              standby
+patching-services                standby              standby
+directory-services               disabled             disabled
+web-services                     disabled             disabled
+storage-services                 disabled             disabled
+storage-monitoring-services      standby              standby
+vim-services                     standby              standby
+---------------------------------------------------------------------------------------
 
-sm-dump | grep controller-services
+-Services------------------------------------------------------------------------------
+oam-ipv4                         enabled-standby      disabled
+management-ipv4                  enabled-standby      disabled
+drbd-pg                          enabled-standby      enabled-standby
+drbd-rabbit                      enabled-standby      enabled-standby
+oam-ipv6                         enabled-standby      disabled
+drbd-platform                    enabled-standby      enabled-standby
+pg-fs                            enabled-standby      disabled
+rabbit-fs                        enabled-standby      disabled
+nfs-mgmt                         enabled-standby      disabled
+management-ipv6                  enabled-standby      disabled
+platform-fs                      enabled-standby      disabled
+postgres                         enabled-standby      disabled
+rabbit                           enabled-standby      disabled
+platform-export-fs               enabled-standby      disabled
+sysinv-inv                       enabled-standby      disabled
+sysinv-conductor                 enabled-standby      disabled
+mtc-agent                        enabled-standby      disabled
+hw-mon                           enabled-standby      disabled
+dnsmasq                          enabled-standby      disabled
+fm-mgr                           enabled-standby      disabled
+keystone                         enabled-standby      disabled
+open-ldap                        disabled             disabled
+lighttpd                         disabled             disabled
+horizon                          disabled             disabled
+patch-alarm-manager              enabled-standby      disabled
+mgr-restful-plugin               disabled             disabled
+ceph-manager                     enabled-standby      disabled
+vim                              enabled-standby      disabled
+vim-api                          enabled-standby      disabled
+vim-webserver                    enabled-standby      disabled
+haproxy                          enabled-standby      disabled
+pxeboot-ipv4                     enabled-standby      disabled
+drbd-extension                   enabled-standby      enabled-standby
+extension-fs                     enabled-standby      disabled
+extension-export-fs              enabled-standby      disabled
+etcd                             enabled-standby      disabled
+drbd-etcd                        enabled-standby      enabled-standby
+etcd-fs                          enabled-standby      disabled
+barbican-api                     enabled-standby      disabled
+barbican-keystone-listener       enabled-standby      disabled
+barbican-worker                  enabled-standby      disabled
+cluster-host-ipv4                enabled-standby      disabled
+cluster-host-ipv6                enabled-standby      disabled
+ipsec-config                     enabled-standby      disabled
+docker-distribution              enabled-standby      disabled
+dockerdistribution-fs            enabled-standby      disabled
+drbd-dockerdistribution          enabled-standby      enabled-standby
+ceph-mon                         enabled-standby      disabled
+cephmon-fs                       enabled-standby      disabled
+drbd-cephmon                     enabled-standby      enabled-standby
+ceph-osd                         disabled             disabled
+helmrepository-fs                enabled-standby      disabled
+registry-token-server            enabled-standby      disabled
+cert-mon                         enabled-standby      disabled
+device-image-fs                  enabled-standby      disabled
+cert-alarm                       enabled-standby      disabled
+storage-networking               disabled             enabled-active
+------------------------------------------------------------------------------
+sysadmin@controller-0:~$
 
-👉 You want ONE node like this:
-
-controller-services active active ✅
-
-👉 And the other:
-
-standby standby
-
-
----
-
-🔴 If BOTH are still standby (very important)
-
-👉 Then you MUST force election again:
-
-On controller-1:
-
-sudo systemctl stop sm
-
-On controller-0:
-
-sudo systemctl restart sm
-
-
----
-
-✅ Step 2: Verify core services on ACTIVE node
-
-On the ACTIVE controller:
-
-sm-dump | egrep "postgres|keystone|sysinv"
-
-👉 Expected:
-
-enabled-active enabled-active
-
-
----
-
-✅ Step 3: Check Ceph (critical)
-
-sm-dump | grep ceph-mon
-
-👉 Should be:
-
-enabled-active enabled-active
-
-If not → we fix Ceph next.
-
-
----
-
-✅ Step 4: Test CLI
-
-sudo -E bash -c "source /etc/platform/openrc && system host-list"
-
-
----
-
-⚠️ Very Important
-
-After reboot:
-
-Sometimes both controllers try standby
-
-System waits forever → no recovery
-
-
-👉 That’s why forcing one node (step above) is key
-
-
----
-
-🧠 What success looks like
-
-Component	Expected
-
-controller-services	active/active
-postgres	active
-keystone	active
-ceph-mon	active
-system host-list	working
-
-
-
----
-
-🚀 Your next step
-
-Run and share:
-
-sm-dump | grep controller-services
-
-on both nodes.
-
-I’ll tell you immediately if cluster is recovered or what exact fix is next 👍
