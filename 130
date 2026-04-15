@@ -1,3 +1,24 @@
+sysadmin@controller-0:~$ sm-dump | grep controller-services
+controller-services              active               active
+sysadmin@controller-0:~$ ls -ltr /opt/platform/.keyring/24.09/
+total 4
+drwxr-xr-x 2 root sys_protected 4096 Aug 20  2025 python_keyring
+sysadmin@controller-0:~$ ls -ltra /opt/platform/.keyring/24.09/
+total 16
+drwxr-xr-x 3 root sys_protected 4096 Aug 20  2025 ..
+-rwxr-xr-x 1 root sys_protected   22 Aug 20  2025 .CREDENTIAL
+drwxr-xr-x 2 root sys_protected 4096 Aug 20  2025 python_keyring
+drwxr-xr-x 3 root sys_protected 4096 Aug 20  2025 .
+sysadmin@controller-0:~$ source /etc/platform/openrc
+Openstack Admin credentials can only be loaded from the active controller.
+controller-0:~$ echo @OS_PASSWORD
+@OS_PASSWORD
+controller-0:~$ echo $OS_PASSWORD
+
+controller-0:~$
+controller-0:~$ system host-list
+You must provide a password via either --os-password or via env[OS_PASSWORD]
+controller-0:~$
 Alright — now we finally have the complete picture and I’ll be very direct:
 
 👉 Your scheduler is NOT recovering because revision-6 itself is corrupted.
