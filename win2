@@ -1,125 +1,291 @@
-controller-0:~$ sudo crictl ps | grep ceph-mon
-controller-0:~$
-controller-0:~$ sudo sm-restart service ceph-mon
-Service (ceph-mon) is restarting.
-controller-0:~$ sudo crictl ps | grep ceph-mon
-controller-0:~$ sm-dump | hrep ceph-mon
--bash: hrep: command not found
-controller-0:~$ sm-dump | grep ceph-mon
-ceph-mon                         disabled             disabled
-controller-0:~$ sudo crictl ps | grep ceph-mon
-controller-0:~$ sudo journalctl -u sm | grep ceph
-No journal files were found.
-controller-0:~$
-controller-0:~$
-controller-0:~$ sudo tail -f /var/log/platform.log
-2026-04-15T05:50:30.678 controller-0 Received info command unlock from mtce
-2026-04-15T05:50:30.679 controller-0 sm-api info _do_modify_command sm_ack_dict: {'SM_API_MSG_VERSION': '1', 'SM_API_MSG_REVISION': '1', 'SM_API_MSG_SEQNO': '5', 'SM_API_MSG_TYPE': 'SET_NODE_ACK', 'SM_API_MSG_NODE_ACTION': 'unlock', 'SM_API_MSG_ORIGIN': 'sm', 'SM_API_MSG_NODE_NAME': 'controller-0', 'SM_API_MSG_NODE_ADMIN': 'unlocked', 'SM_API_MSG_NODE_OPER': 'enabled', 'SM_API_MSG_NODE_AVAIL': 'available'} ACK admin: unlocked oper: enabled avail: available.
-2026-04-15T05:50:36.161 controller-0 Received info command unlock from mtce
-2026-04-15T05:50:36.161 controller-0 sm-api info _do_modify_command sm_ack_dict: {'SM_API_MSG_VERSION': '1', 'SM_API_MSG_REVISION': '1', 'SM_API_MSG_SEQNO': '6', 'SM_API_MSG_TYPE': 'SET_NODE_ACK', 'SM_API_MSG_NODE_ACTION': 'unlock', 'SM_API_MSG_ORIGIN': 'sm', 'SM_API_MSG_NODE_NAME': 'controller-1', 'SM_API_MSG_NODE_ADMIN': 'unlocked', 'SM_API_MSG_NODE_OPER': 'enabled', 'SM_API_MSG_NODE_AVAIL': 'available'} ACK admin: unlocked oper: enabled avail: available.
-2026-04-15T05:59:55.121 controller-0 configassistant[213681] info /usr/local/bin/fm_db_sync_event_suppression.py:99     INFO [__main__] Converting events.yaml to dict:
-2026-04-15T05:59:57.193 controller-0 configassistant[213681] info /usr/local/bin/fm_db_sync_event_suppression.py:128     INFO [__main__] Parsing events.yaml and adding any new alarm to event_suppression table:
-2026-04-15T06:00:44.787 controller-0 Received info command unlock from mtce
-2026-04-15T06:00:44.788 controller-0 sm-api info _do_modify_command sm_ack_dict: {'SM_API_MSG_VERSION': '1', 'SM_API_MSG_REVISION': '1', 'SM_API_MSG_SEQNO': '7', 'SM_API_MSG_TYPE': 'SET_NODE_ACK', 'SM_API_MSG_NODE_ACTION': 'unlock', 'SM_API_MSG_ORIGIN': 'sm', 'SM_API_MSG_NODE_NAME': 'controller-0', 'SM_API_MSG_NODE_ADMIN': 'unlocked', 'SM_API_MSG_NODE_OPER': 'enabled', 'SM_API_MSG_NODE_AVAIL': 'available'} ACK admin: unlocked oper: enabled avail: available.
-2026-04-15T06:00:46.697 controller-0 Received info command unlock from mtce
-2026-04-15T06:00:46.698 controller-0 sm-api info _do_modify_command sm_ack_dict: {'SM_API_MSG_VERSION': '1', 'SM_API_MSG_REVISION': '1', 'SM_API_MSG_SEQNO': '8', 'SM_API_MSG_TYPE': 'SET_NODE_ACK', 'SM_API_MSG_NODE_ACTION': 'unlock', 'SM_API_MSG_ORIGIN': 'sm', 'SM_API_MSG_NODE_NAME': 'controller-1', 'SM_API_MSG_NODE_ADMIN': 'unlocked', 'SM_API_MSG_NODE_OPER': 'enabled', 'SM_API_MSG_NODE_AVAIL': 'available'} ACK admin: unlocked oper: enabled avail: available.
-^C
-controller-0:~$ sudo ceph-monstore-tool /var/lib/ceph/m
-mds/ mgr/ mon/
-controller-0:~$ sudo ceph-monstore-tool /var/lib/ceph/m
-mds/ mgr/ mon/
-controller-0:~$ sudo ceph-monstore-tool /var/lib/ceph/mon --print
-usage: ceph-monstore-tool <store-path> <cmd> [args|options]
+sysadmin@controller-1:~$ sudo ceph-monstore-tool /var/lib/ceph/mon/ceph-controller rebuild
+2026-04-15 08:44:47.353 7fd34e7e2300  0  set rocksdb option compression = kNoCompression
+2026-04-15 08:44:47.353 7fd34e7e2300  0  set rocksdb option level_compaction_dynamic_level_bytes = true
+2026-04-15 08:44:47.353 7fd34e7e2300  0  set rocksdb option write_buffer_size = 33554432
+2026-04-15 08:44:47.353 7fd34e7e2300  0  set rocksdb option compression = kNoCompression
+2026-04-15 08:44:47.353 7fd34e7e2300  0  set rocksdb option level_compaction_dynamic_level_bytes = true
+2026-04-15 08:44:47.353 7fd34e7e2300  0  set rocksdb option write_buffer_size = 33554432
+2026-04-15 08:44:47.354 7fd34e7e2300  1 rocksdb: do_open column families: [default]
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: RocksDB version: 6.1.2
 
-Commands:
-  store-copy PATH                 copies store to PATH
-  compact                         compacts the store
-  get monmap [-- options]         get monmap (version VER if specified)
-                                  (default: last committed)
-  get osdmap [-- options]         get osdmap (version VER if specified)
-                                  (default: last committed)
-  get mdsmap [-- options]         get mdsmap (version VER if specified)
-                                  (default: last committed)
-  get mgr [-- options]            get mgr map (version VER if specified)
-                                  (default: last committed)
-  get crushmap [-- options]       get crushmap (version VER if specified)
-                                  (default: last committed)
-  show-versions [-- options]      show the first&last committed version of map
-                                  (show-versions -- --help for more info)
-  dump-keys                       dumps store keys to FILE
-                                  (default: stdout)
-  dump-paxos [-- options]         dump paxos transactions
-                                  (dump-paxos -- --help for more info)
-  dump-trace FILE [-- options]    dump contents of trace file FILE
-                                  (dump-trace -- --help for more info)
-  replay-trace FILE [-- options]  replay trace from FILE
-                                  (replay-trace -- --help for more info)
-  random-gen [-- options]         add randomly generated ops to the store
-                                  (random-gen -- --help for more info)
-  rewrite-crush [-- options]      add a rewrite commit to the store
-                                  (rewrite-crush -- --help for more info)
-  rebuild                         rebuild store
-                                  (rebuild -- --help for more info)
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: Git sha rocksdb_build_git_sha:@0@
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: Compile date Jan 27 2025
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: DB SUMMARY
 
-Allowed options:
-  -h [ --help ]         produce help message
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: CURRENT file:  CURRENT
 
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: IDENTITY file:  IDENTITY
 
-Please Note:
-* Ceph-specific options should be in the format --option-name=VAL
-  (specifically, do not forget the '='!!)
-* Command-specific options need to be passed after a '--'
-  e.g., 'get monmap -- --version 10 --out /tmp/foo'
-controller-0:~$ sudo crictl ps | grep ceph-mon
-controller-0:~$ df -Th
-Filesystem                       Type      Size  Used Avail Use% Mounted on
-none                             devtmpfs  239G     0  239G   0% /dev
-tmpfs                            tmpfs     251G   22M  251G   1% /run
-/dev/mapper/cgts--vg-root--lv    ext4       20G  7.3G   12G  40% /sysroot
-/dev/sda3                        ext4      2.0G  258M  1.6G  15% /boot
-tmpfs                            tmpfs     251G  412K  251G   1% /dev/shm
-tmpfs                            tmpfs     5.0M     0  5.0M   0% /run/lock
-tmpfs                            tmpfs     4.0M     0  4.0M   0% /sys/fs/cgroup
-tmpfs                            tmpfs     1.0G  4.7M 1020M   1% /tmp
-/dev/sda2                        vfat      300M  7.8M  293M   3% /boot/efi
-/dev/mapper/cgts--vg-var--lv     ext4       20G  9.6G  9.0G  52% /var
-/dev/mapper/cgts--vg-log--lv     ext4       21G  8.2G   12G  42% /var/log
-/dev/sda1                        ext4       29G   24K   28G   1% /var/rootdirs/opt/platform-backup
-/dev/mapper/cgts--vg-docker--lv  xfs       250G  149G  102G  60% /var/lib/docker
-/dev/mapper/luks_encrypted_vault ext4      227M   27K  211M   1% /var/luks/stx/luks_fs
-/dev/mapper/cgts--vg-backup--lv  ext4       25G   24K   24G   1% /var/rootdirs/opt/backups
-/dev/mapper/cgts--vg-scratch--lv ext4       16G  6.8M   15G   1% /var/rootdirs/scratch
-/dev/mapper/cgts--vg-kubelet--lv ext4      9.8G  1.4M  9.3G   1% /var/lib/kubelet
-/dev/mapper/cgts--vg-ceph--lv    ext4       20G   50M   19G   1% /var/lib/ceph/data
-tmpfs                            tmpfs     399G     0  399G   0% /var/lib/kubelet/pods/901c8c00-1063-43b8-b25b-a927baa0e31c/volumes/kubernetes.io~empty-dir/keys-tmp-dir
-tmpfs                            tmpfs     399G     0  399G   0% /var/lib/kubelet/pods/aea5218d-e0a8-4b77-ad97-e9d75e7dca3c/volumes/kubernetes.io~empty-dir/socket-dir
-tmpfs                            tmpfs     399G     0  399G   0% /var/lib/kubelet/pods/f8d62901-ddd4-45de-b827-381bd62e9d1b/volumes/kubernetes.io~empty-dir/keys-tmp-dir
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/024ec810-bf5d-4d52-b611-99b07fb70cb3/volumes/kubernetes.io~secret/webhook-cert
-tmpfs                            tmpfs     399G     0  399G   0% /var/lib/kubelet/pods/6e0ee99b-6025-493a-a5e1-4d1e6c602d30/volumes/kubernetes.io~empty-dir/keys-tmp-dir
-tmpfs                            tmpfs     399G     0  399G   0% /var/lib/kubelet/pods/f8d62901-ddd4-45de-b827-381bd62e9d1b/volumes/kubernetes.io~empty-dir/socket-dir
-tmpfs                            tmpfs     399G     0  399G   0% /var/lib/kubelet/pods/aea5218d-e0a8-4b77-ad97-e9d75e7dca3c/volumes/kubernetes.io~empty-dir/keys-tmp-dir
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/6c7a01d2-b7d9-4eef-b4fd-722f2b50fedc/volumes/kubernetes.io~projected/kube-api-access-64b6z
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/5b4b7f36-0228-4057-af23-de3d1cd9e073/volumes/kubernetes.io~projected/kube-api-access-gpvvj
-tmpfs                            tmpfs     399G  4.0K  399G   1% /var/lib/kubelet/pods/f8d62901-ddd4-45de-b827-381bd62e9d1b/volumes/kubernetes.io~projected/oidc-token
-tmpfs                            tmpfs     200M   12K  200M   1% /var/lib/kubelet/pods/43cbde8d-b252-4255-b468-3116ca4d68d3/volumes/kubernetes.io~projected/kube-api-access-qr9qn
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/024ec810-bf5d-4d52-b611-99b07fb70cb3/volumes/kubernetes.io~projected/kube-api-access-sqkq8
-tmpfs                            tmpfs     399G  4.0K  399G   1% /var/lib/kubelet/pods/901c8c00-1063-43b8-b25b-a927baa0e31c/volumes/kubernetes.io~projected/oidc-token
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/901c8c00-1063-43b8-b25b-a927baa0e31c/volumes/kubernetes.io~projected/kube-api-access-6j7kw
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/6e0ee99b-6025-493a-a5e1-4d1e6c602d30/volumes/kubernetes.io~projected/kube-api-access-gdtrx
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/f0b80ff3-7199-4b80-98eb-da63dfcb0590/volumes/kubernetes.io~projected/kube-api-access-nk86r
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/5091da64-9d04-4b7c-b16e-175ae12211a0/volumes/kubernetes.io~projected/kube-api-access-58ffc
-tmpfs                            tmpfs     170M   12K  170M   1% /var/lib/kubelet/pods/a39f4348-ac28-48f5-be22-c6672b889bf3/volumes/kubernetes.io~projected/kube-api-access-nj9cb
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/aea5218d-e0a8-4b77-ad97-e9d75e7dca3c/volumes/kubernetes.io~projected/kube-api-access-tcz5n
-tmpfs                            tmpfs      50M   12K   50M   1% /var/lib/kubelet/pods/2d5357c6-fda6-4c83-af15-3ada42e1df44/volumes/kubernetes.io~projected/kube-api-access-rpnx2
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/d33fa472-066a-4146-adea-9a6a3f15c1d7/volumes/kubernetes.io~projected/kube-api-access-qk4ks
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/f8d62901-ddd4-45de-b827-381bd62e9d1b/volumes/kubernetes.io~projected/kube-api-access-6dmlb
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/12f77665-ee30-4042-874c-6224af43eb88/volumes/kubernetes.io~projected/kube-api-access-bh5mx
-tmpfs                            tmpfs     399G   12K  399G   1% /var/lib/kubelet/pods/a9bbcba8-e196-46db-9f3d-e72b52738599/volumes/kubernetes.io~projected/kube-api-access-qk8lp
-/dev/drbd9                       ext4       20G   62M   19G   1% /var/lib/ceph/mon
-/dev/drbd8                       ext4       16G  2.1G   13G  14% /var/lib/docker-distribution
-/dev/drbd7                       ext4      4.9G  486M  4.1G  11% /var/rootdirs/opt/etcd
-/dev/drbd2                       ext4      9.8G  3.8M  9.3G   1% /var/rootdirs/opt/platform
-/dev/drbd0                       ext4       20G  103M   19G   1% /var/lib/postgresql
-/dev/drbd1                       ext4      2.0G  322M  1.6G  18% /var/lib/rabbitmq
-/dev/drbd5                       ext4      990M   24K  923M   1% /var/rootdirs/opt/extension
-controller-0:~$
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: MANIFEST file:  MANIFEST-493004 size: 243 Bytes
+
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: SST files in /var/lib/ceph/mon/ceph-controller/store.db dir, Total Num: 3, files: 336098.sst 336100.sst 336106.sst
+
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: Write Ahead Log file in /var/lib/ceph/mon/ceph-controller/store.db: 493005.log size: 0 ;
+
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                         Options.error_if_exists: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                       Options.create_if_missing: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                         Options.paranoid_checks: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                                     Options.env: 0x5625a1948ba0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                                Options.info_log: 0x5625d534b420
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                Options.max_file_opening_threads: 16
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                              Options.statistics: (nil)
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                               Options.use_fsync: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                       Options.max_log_file_size: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                  Options.max_manifest_file_size: 1073741824
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                   Options.log_file_time_to_roll: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                       Options.keep_log_file_num: 1000
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                    Options.recycle_log_file_num: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                         Options.allow_fallocate: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                        Options.allow_mmap_reads: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                       Options.allow_mmap_writes: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                        Options.use_direct_reads: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                        Options.use_direct_io_for_flush_and_compaction: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:          Options.create_missing_column_families: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                              Options.db_log_dir:
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                                 Options.wal_dir: /var/lib/ceph/mon/ceph-controller/store.db
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                Options.table_cache_numshardbits: 6
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                      Options.max_subcompactions: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                  Options.max_background_flushes: -1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                         Options.WAL_ttl_seconds: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                       Options.WAL_size_limit_MB: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.manifest_preallocation_size: 4194304
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                     Options.is_fd_close_on_exec: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                   Options.advise_random_on_open: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                    Options.db_write_buffer_size: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                    Options.write_buffer_manager: 0x5625d534c780
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:         Options.access_hint_on_compaction_start: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:  Options.new_table_reader_for_compaction_inputs: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:           Options.random_access_max_buffer_size: 1048576
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                      Options.use_adaptive_mutex: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                            Options.rate_limiter: (nil)
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:     Options.sst_file_manager.rate_bytes_per_sec: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                       Options.wal_recovery_mode: 2
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                  Options.enable_thread_tracking: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                  Options.enable_pipelined_write: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:         Options.allow_concurrent_memtable_write: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:      Options.enable_write_thread_adaptive_yield: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.write_thread_max_yield_usec: 100
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:            Options.write_thread_slow_yield_usec: 3
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                               Options.row_cache: None
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                              Options.wal_filter: None
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.avoid_flush_during_recovery: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.allow_ingest_behind: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.preserve_deletes: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.two_write_queues: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.manual_wal_flush: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.atomic_flush: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.avoid_unnecessary_blocking_io: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.max_background_jobs: 2
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.max_background_compactions: -1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.avoid_flush_during_shutdown: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:           Options.writable_file_max_buffer_size: 1048576
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.delayed_write_rate : 16777216
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.max_total_wal_size: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:             Options.delete_obsolete_files_period_micros: 21600000000
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                   Options.stats_dump_period_sec: 600
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                 Options.stats_persist_period_sec: 600
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                 Options.stats_history_buffer_size: 1048576
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                          Options.max_open_files: -1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                          Options.bytes_per_sync: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:                      Options.wal_bytes_per_sync: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:       Options.compaction_readahead_size: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: Compression algorithms supported:
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:        kZSTDNotFinalCompression supported: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:        kZSTD supported: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:        kXpressCompression supported: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:        kLZ4HCCompression supported: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:        kLZ4Compression supported: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:        kBZip2Compression supported: 0
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:        kZlibCompression supported: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb:        kSnappyCompression supported: 1
+2026-04-15 08:44:47.355 7fd34e7e2300  4 rocksdb: Fast CRC32 supported: Supported on x86
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: [db/version_set.cc:3542] Recovering from manifest file: /var/lib/ceph/mon/ceph-controller/store.db/MANIFEST-493004
+
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: [db/column_family.cc:475] --------------- Options for column family [default]:
+
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:               Options.comparator: leveldb.BytewiseComparator
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:           Options.merge_operator:
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:        Options.compaction_filter: None
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:        Options.compaction_filter_factory: None
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:         Options.memtable_factory: SkipListFactory
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:            Options.table_factory: BlockBasedTable
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:            table_factory options:   flush_block_policy_factory: FlushBlockBySizePolicyFactory (0x5625d5297398)
+  cache_index_and_filter_blocks: 1
+  cache_index_and_filter_blocks_with_high_priority: 1
+  pin_l0_filter_and_index_blocks_in_cache: 0
+  pin_top_level_index_and_filter: 1
+  index_type: 0
+  data_block_index_type: 0
+  data_block_hash_table_util_ratio: 0.750000
+  hash_index_allow_collision: 1
+  checksum: 1
+  no_block_cache: 0
+  block_cache: 0x5625d52d0a10
+  block_cache_name: BinnedLRUCache
+  block_cache_options:
+    capacity : 536870912
+    num_shard_bits : 4
+    strict_capacity_limit : 0
+    high_pri_pool_ratio: 0.000
+  block_cache_compressed: (nil)
+  persistent_cache: (nil)
+  block_size: 4096
+  block_size_deviation: 10
+  block_restart_interval: 16
+  index_block_restart_interval: 1
+  metadata_block_size: 4096
+  partition_filters: 0
+  use_delta_encoding: 1
+  filter_policy: rocksdb.BuiltinBloomFilter
+  whole_key_filtering: 1
+  verify_compression: 0
+  read_amp_bytes_per_bit: 0
+  format_version: 2
+  enable_index_compression: 1
+  block_align: 0
+
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:        Options.write_buffer_size: 33554432
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:  Options.max_write_buffer_number: 2
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:          Options.compression: NoCompression
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                  Options.bottommost_compression: Disabled
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:       Options.prefix_extractor: nullptr
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:   Options.memtable_insert_with_hint_prefix_extractor: nullptr
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:             Options.num_levels: 7
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:        Options.min_write_buffer_number_to_merge: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:     Options.max_write_buffer_number_to_maintain: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:            Options.bottommost_compression_opts.window_bits: -14
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                  Options.bottommost_compression_opts.level: 32767
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:               Options.bottommost_compression_opts.strategy: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:         Options.bottommost_compression_opts.max_dict_bytes: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:         Options.bottommost_compression_opts.zstd_max_train_bytes: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                  Options.bottommost_compression_opts.enabled: false
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:            Options.compression_opts.window_bits: -14
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                  Options.compression_opts.level: 32767
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:               Options.compression_opts.strategy: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:         Options.compression_opts.max_dict_bytes: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:         Options.compression_opts.zstd_max_train_bytes: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                  Options.compression_opts.enabled: false
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:      Options.level0_file_num_compaction_trigger: 4
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:          Options.level0_slowdown_writes_trigger: 20
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:              Options.level0_stop_writes_trigger: 36
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                   Options.target_file_size_base: 67108864
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:             Options.target_file_size_multiplier: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                Options.max_bytes_for_level_base: 268435456
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.level_compaction_dynamic_level_bytes: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:          Options.max_bytes_for_level_multiplier: 10.000000
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.max_bytes_for_level_multiplier_addtl[0]: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.max_bytes_for_level_multiplier_addtl[1]: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.max_bytes_for_level_multiplier_addtl[2]: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.max_bytes_for_level_multiplier_addtl[3]: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.max_bytes_for_level_multiplier_addtl[4]: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.max_bytes_for_level_multiplier_addtl[5]: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.max_bytes_for_level_multiplier_addtl[6]: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:       Options.max_sequential_skip_in_iterations: 8
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                    Options.max_compaction_bytes: 1677721600
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                        Options.arena_block_size: 4194304
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:   Options.soft_pending_compaction_bytes_limit: 68719476736
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:   Options.hard_pending_compaction_bytes_limit: 274877906944
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:       Options.rate_limit_delay_max_milliseconds: 100
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                Options.disable_auto_compactions: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                        Options.compaction_style: kCompactionStyleLevel
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                          Options.compaction_pri: kMinOverlappingRatio
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.compaction_options_universal.size_ratio: 1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.compaction_options_universal.min_merge_width: 2
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.compaction_options_universal.max_merge_width: 4294967295
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.compaction_options_universal.max_size_amplification_percent: 200
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.compaction_options_universal.compression_size_percent: -1
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.compaction_options_universal.stop_style: kCompactionStopStyleTotalSize
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.compaction_options_fifo.max_table_files_size: 1073741824
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb: Options.compaction_options_fifo.allow_compaction: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                   Options.table_properties_collectors:
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                   Options.inplace_update_support: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                 Options.inplace_update_num_locks: 10000
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:               Options.memtable_prefix_bloom_size_ratio: 0.000000
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:               Options.memtable_whole_key_filtering: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:   Options.memtable_huge_page_size: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                           Options.bloom_locality: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                    Options.max_successive_merges: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                Options.optimize_filters_for_hits: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                Options.paranoid_file_checks: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                Options.force_consistency_checks: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                Options.report_bg_io_stats: 0
+2026-04-15 08:44:47.356 7fd34e7e2300  4 rocksdb:                               Options.ttl: 0
+2026-04-15 08:44:47.366 7fd34e7e2300  4 rocksdb: [db/version_set.cc:3747] Recovered from manifest file:/var/lib/ceph/mon/ceph-controller/store.db/MANIFEST-493004 succeeded,manifest_file_number is 493004, next_file_number is 493006, last_sequence is 136613034, log_number is 493003,prev_log_number is 0,max_column_family is 0,min_log_number_to_keep is 0
+
+2026-04-15 08:44:47.366 7fd34e7e2300  4 rocksdb: [db/version_set.cc:3763] Column family [default] (ID 0), log number is 493003
+
+2026-04-15 08:44:47.366 7fd34e7e2300  4 rocksdb: EVENT_LOG_v1 {"time_micros": 1776242687368064, "job": 1, "event": "recovery_started", "log_files": [493005]}
+2026-04-15 08:44:47.366 7fd34e7e2300  4 rocksdb: [db/db_impl_open.cc:581] Recovering log #493005 mode 2
+2026-04-15 08:44:47.367 7fd34e7e2300  4 rocksdb: [db/version_set.cc:3035] Creating manifest 493007
+
+2026-04-15 08:44:47.368 7fd34e7e2300  4 rocksdb: EVENT_LOG_v1 {"time_micros": 1776242687369679, "job": 1, "event": "recovery_finished"}
+2026-04-15 08:44:47.373 7fd34e7e2300  4 rocksdb: DB pointer 0x5625d5374400
+2026-04-15 08:44:47.375 7fd344d55700  4 rocksdb: [db/db_impl.cc:776] ------- DUMPING STATS -------
+2026-04-15 08:44:47.375 7fd344d55700  4 rocksdb: [db/db_impl.cc:778]
+** DB Stats **
+Uptime(secs): 0.0 total, 0.0 interval
+Cumulative writes: 0 writes, 0 keys, 0 commit groups, 0.0 writes per commit group, ingest: 0.00 GB, 0.00 MB/s
+Cumulative WAL: 0 writes, 0 syncs, 0.00 writes per sync, written: 0.00 GB, 0.00 MB/s
+Cumulative stall: 00:00:0.000 H:M:S, 0.0 percent
+Interval writes: 0 writes, 0 keys, 0 commit groups, 0.0 writes per commit group, ingest: 0.00 MB, 0.00 MB/s
+Interval WAL: 0 writes, 0 syncs, 0.00 writes per sync, written: 0.00 MB, 0.00 MB/s
+Interval stall: 00:00:0.000 H:M:S, 0.0 percent
+
+** Compaction Stats [default] **
+Level    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  L0      2/0   13.71 MB   0.5      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0
+  L6      1/0   43.57 MB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0
+ Sum      3/0   57.29 MB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0
+ Int      0/0    0.00 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0
+
+** Compaction Stats [default] **
+Priority    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Uptime(secs): 0.0 total, 0.0 interval
+Flush(GB): cumulative 0.000, interval 0.000
+AddFile(GB): cumulative 0.000, interval 0.000
+AddFile(Total Files): cumulative 0, interval 0
+AddFile(L0 Files): cumulative 0, interval 0
+AddFile(Keys): cumulative 0, interval 0
+Cumulative compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Interval compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Stalls(count): 0 level0_slowdown, 0 level0_slowdown_with_compaction, 0 level0_numfiles, 0 level0_numfiles_with_compaction, 0 stop for pending_compaction_bytes, 0 slowdown for pending_compaction_bytes, 0 memtable_compaction, 0 memtable_slowdown, interval 0 total count
+
+** File Read Latency Histogram By Level [default] **
+
+** Compaction Stats [default] **
+Level    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  L0      2/0   13.71 MB   0.5      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0
+  L6      1/0   43.57 MB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0
+ Sum      3/0   57.29 MB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0
+ Int      0/0    0.00 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0
+
+** Compaction Stats [default] **
+Priority    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Uptime(secs): 0.0 total, 0.0 interval
+Flush(GB): cumulative 0.000, interval 0.000
+AddFile(GB): cumulative 0.000, interval 0.000
+AddFile(Total Files): cumulative 0, interval 0
+AddFile(L0 Files): cumulative 0, interval 0
+AddFile(Keys): cumulative 0, interval 0
+Cumulative compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Interval compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Stalls(count): 0 level0_slowdown, 0 level0_slowdown_with_compaction, 0 level0_numfiles, 0 level0_numfiles_with_compaction, 0 stop for pending_compaction_bytes, 0 slowdown for pending_compaction_bytes, 0 memtable_compaction, 0 memtable_slowdown, interval 0 total count
+
+** File Read Latency Histogram By Level [default] **
+
+update_mkfs generating seed initial monmap
+epoch 0
+fsid af8bd418-523c-4e28-ae87-019762cba549
+last_changed 2026-04-15 08:44:47.566882
+created 2026-04-15 08:44:47.566882
+min_mon_release 0 (unknown)
+0: [v2:[face::1]:3300/0,v1:[face::1]:6789/0] mon.a
+1: [v2:[face::2]:3300/0,v1:[face::2]:6789/0] mon.b
+2: [v2:[face::3]:3300/0,v1:[face::3]:6789/0] mon.c
+2026-04-15 08:44:47.566 7fd34e7e2300  4 rocksdb: [db/db_impl.cc:389] Shutdown: canceling all background work
+2026-04-15 08:44:47.566 7fd34e7e2300  4 rocksdb: [db/db_impl.cc:563] Shutdown complete
+sysadmin@controller-1:~$
