@@ -1,242 +1,126 @@
-sysadmin@controller-1:~$ sm-dump
+sysadmin@controller-1:~$ cat /etc/ceph/ceph.conf
+[global]
+        # Unique ID for the cluster.
+        fsid = af8bd418-523c-4e28-ae87-019762cba549
+        # Public network where the monitor is connected to, i.e, 128.224.0.0/16
+        #public network = 127.0.0.1/24
+        # For version 0.55 and beyond, you must explicitly enable
+        # or disable authentication with "auth" entries in [global].
+        auth_cluster_required = none
+        auth_service_required = none
+        auth_client_required = none
+        osd_journal_size = 1024
 
--Service_Groups------------------------------------------------------------------------
-oam-services                     active               active
-controller-services              active               go-active
-cloud-services                   active               active
-patching-services                active               active
-directory-services               active               active
-web-services                     active               active
-storage-services                 active               go-active            degraded
-storage-monitoring-services      active               active
-vim-services                     active               active
----------------------------------------------------------------------------------------
+        # Uncomment the following line if you are mounting with ext4
+        # filestore xattr use omap = true
 
--Services------------------------------------------------------------------------------
-oam-ipv4                         enabled-active       enabled-active
-management-ipv4                  enabled-active       enabled-active
-drbd-pg                          enabled-active       enabled-active
-drbd-rabbit                      enabled-active       enabled-active
-oam-ipv6                         enabled-active       enabled-active
-drbd-platform                    enabled-active       enabled-active
-pg-fs                            enabled-active       enabled-active
-rabbit-fs                        enabled-active       enabled-active
-nfs-mgmt                         enabled-active       enabled-active
-management-ipv6                  enabled-active       enabled-active
-platform-fs                      enabled-active       enabled-active
-postgres                         enabled-active       enabled-active
-rabbit                           enabled-active       enabled-active
-platform-export-fs               enabled-active       enabled-active
-sysinv-inv                       enabled-active       enabled-active
-sysinv-conductor                 enabled-active       enabled-active
-mtc-agent                        enabled-active       enabled-active
-hw-mon                           enabled-active       enabled-active
-dnsmasq                          enabled-active       enabled-active
-fm-mgr                           enabled-active       enabled-active
-keystone                         enabled-active       enabled-active
-open-ldap                        enabled-active       enabled-active
-lighttpd                         enabled-active       enabled-active
-horizon                          enabled-active       enabled-active
-patch-alarm-manager              enabled-active       enabled-active
-mgr-restful-plugin               enabled-active       enabled-active
-ceph-manager                     enabled-active       enabled-active
-vim                              enabled-active       enabled-active
-vim-api                          enabled-active       enabled-active
-vim-webserver                    enabled-active       enabled-active
-haproxy                          enabled-active       enabled-active
-pxeboot-ipv4                     enabled-active       enabled-active
-drbd-extension                   enabled-active       enabled-active
-extension-fs                     enabled-active       enabled-active
-extension-export-fs              enabled-active       enabled-active
-etcd                             enabled-active       enabled-active
-drbd-etcd                        enabled-active       enabled-active
-etcd-fs                          enabled-active       enabled-active
-barbican-api                     enabled-active       enabled-active
-barbican-keystone-listener       enabled-active       enabled-active
-barbican-worker                  enabled-active       enabled-active
-cluster-host-ipv4                enabled-active       enabled-active
-cluster-host-ipv6                enabled-active       enabled-active
-ipsec-config                     enabled-active       enabled-active
-docker-distribution              enabled-active       enabled-active
-dockerdistribution-fs            enabled-active       enabled-active
-drbd-dockerdistribution          enabled-active       enabled-active
-ceph-mon                         enabled-active       enabling-throttle
-cephmon-fs                       enabled-active       enabled-active
-drbd-cephmon                     enabled-active       enabled-active
-ceph-osd                         enabled-active       enabled-active
-helmrepository-fs                enabled-active       enabled-active
-registry-token-server            enabled-active       enabled-active
-cert-mon                         enabled-active       enabled-active
-device-image-fs                  enabled-active       enabled-active
-cert-alarm                       enabled-active       enabled-active
-storage-networking               enabled-active       disabled             failed
-------------------------------------------------------------------------------
-sysadmin@controller-1:~$ sm-dump | grep ceph-mon
-ceph-mon                         enabled-active       enabling-throttle
-sysadmin@controller-1:~$ crictl ps -a
-CONTAINER           IMAGE               CREATED             STATE               NAME                          ATTEMPT             POD ID
-8a754de9f236e       35552c08bec16       42 seconds ago      Running             ceph-pools-audit-ceph-store   1                   bcf40c10fb4b5
-cd6110335f6af       5bb42776a4daa       2 minutes ago       Running             cert-manager-cainjector       57                  87ceb98db7596
-1d1e0f21ed9c6       435c7098044a1       3 minutes ago       Running             manager                       165                 3159511c658cf
-eca0a49905835       35552c08bec16       5 minutes ago       Exited              ceph-pools-audit-ceph-store   0                   bcf40c10fb4b5
-544e6e04019df       5bb42776a4daa       7 minutes ago       Exited              cert-manager-cainjector       56                  87ceb98db7596
-ce9802c195df2       8a9000f98a528       7 minutes ago       Running             kube-apiserver                5417                ef23fbedfde1d
-49dc525d9e4e7       428d92b022539       7 minutes ago       Running             calico-kube-controllers       54                  78bcf34d7c147
-c95129e13f260       428d92b022539       8 minutes ago       Exited              calico-kube-controllers       53                  78bcf34d7c147
-3cfd447fb2412       435c7098044a1       8 minutes ago       Exited              manager                       164                 3159511c658cf
-ced38b9e1161f       8a9000f98a528       13 minutes ago      Exited              kube-apiserver                5416                ef23fbedfde1d
-fdcb9accbd054       f1943017294a6       13 minutes ago      Running             cert-manager-controller       39                  0ceaf710d05d4
-c10435be46afb       0405c12e6fa45       14 minutes ago      Running             dm-monitor                    28                  b3f1af1eb5c5f
-91a5efa391223       6cc68fe8a5f5d       15 minutes ago      Running             csi-provisioner               100                 769322806fce9
-89c14e5d12edb       6cc68fe8a5f5d       15 minutes ago      Running             csi-provisioner               98                  53e6eed2a79db
-1646449641a76       dd171820739d3       15 minutes ago      Running             csi-snapshotter               105                 769322806fce9
-a6c666e781bc8       0bc2cd2fc9f26       15 minutes ago      Running             csi-resizer                   106                 53e6eed2a79db
-91e9e7cc0a618       0bc2cd2fc9f26       15 minutes ago      Running             csi-resizer                   102                 769322806fce9
-6b13fc5d53b22       dd171820739d3       15 minutes ago      Running             csi-snapshotter               106                 53e6eed2a79db
-f670253cb93ab       aefda5b840a96       15 minutes ago      Running             csi-attacher                  99                  769322806fce9
-6416820a1e966       71365c57d18d9       15 minutes ago      Running             csi-rbdplugin-controller      101                 769322806fce9
-05d2e36ee4318       0405c12e6fa45       19 minutes ago      Exited              dm-monitor                    27                  b3f1af1eb5c5f
-b1899dbac8fbc       0bc2cd2fc9f26       54 minutes ago      Exited              csi-resizer                   101                 769322806fce9
-043445b1a57f7       0bc2cd2fc9f26       54 minutes ago      Exited              csi-resizer                   105                 53e6eed2a79db
-02e994f4e3ecb       aefda5b840a96       54 minutes ago      Exited              csi-attacher                  98                  769322806fce9
-49cf9c9dda497       f1943017294a6       2 hours ago         Exited              cert-manager-controller       38                  0ceaf710d05d4
-7c9ac9115f81a       e1914a396e720       2 hours ago         Running             manager                       152                 a218f52e260c5
-05080ad09f723       71365c57d18d9       2 hours ago         Exited              csi-rbdplugin-controller      100                 769322806fce9
-67effa191b0cd       dd171820739d3       2 hours ago         Exited              csi-snapshotter               104                 769322806fce9
-069ff87ce9202       dd171820739d3       2 hours ago         Exited              csi-snapshotter               105                 53e6eed2a79db
-f3dc00807bccd       6cc68fe8a5f5d       2 hours ago         Exited              csi-provisioner               99                  769322806fce9
-289c04a62394b       6cc68fe8a5f5d       2 hours ago         Exited              csi-provisioner               97                  53e6eed2a79db
-f0750859d0345       6fc5e6b7218c7       2 hours ago         Running             kube-scheduler                331                 ff3635bd00615
-ccf1245c371a9       138fb5a3a2e34       2 hours ago         Running             kube-controller-manager       333                 6ea531e68f1db
-7681393ecfb31       b572095c12f71       2 hours ago         Running             driver-registrar              50                  7fe79fba11a8e
-37db39ae0e0d7       71365c57d18d9       2 hours ago         Running             csi-cephfsplugin              47                  7fe79fba11a8e
-19ba0c3b94f22       b572095c12f71       2 hours ago         Running             driver-registrar              49                  ba261c0dff6f4
-709a2d14c454a       71365c57d18d9       2 hours ago         Running             csi-rbdplugin                 46                  ba261c0dff6f4
-01295e84b455b       c0e8690ae66a1       2 hours ago         Running             kube-multus                   25                  082c848fd6146
-fbf40312d3fde       c0e8690ae66a1       2 hours ago         Exited              install-multus-binary         4                   082c848fd6146
-79230d9e18639       e1914a396e720       2 hours ago         Exited              manager                       151                 a218f52e260c5
-98d0df69e8cbe       2ea3482343630       2 hours ago         Running             kube-sriov-cni                10                  c7de97fa8e83e
-c9651a3556d3b       a24c7c057ec87       2 hours ago         Running             metrics-server                1                   156955491f52c
-ad0c5cf6b1e4f       38f36d116bef9       2 hours ago         Running             manager                       1                   8f7e49731b73d
-ad130d7496790       6beb071efc815       2 hours ago         Running             cert-manager-webhook          1                   815640e2a61ad
-be4e9f4ffdc8e       eb5a02daef2fe       2 hours ago         Running             kube-rbac-proxy               1                   8f7e49731b73d
-beda96150884f       71365c57d18d9       2 hours ago         Running             csi-cephfsplugin              1                   53e6eed2a79db
-a188ca42f3c09       71365c57d18d9       2 hours ago         Running             csi-rbdplugin                 1                   769322806fce9
-437269b8fd86a       aa61ee9c70bc4       2 hours ago         Running             volume-snapshot-controller    1                   57ab4a722c3dd
-e7dca40eb0d53       cbb01a7bd410d       2 hours ago         Running             coredns                       1                   ec970f8c10da9
-18c83a12363b6       4e42b6f329bc1       2 hours ago         Running             calico-node                   28                  89b5fd32f0d51
-ca25ac0742c30       4e42b6f329bc1       2 hours ago         Exited              mount-bpffs                   0                   89b5fd32f0d51
-aa2d459682830       107014d9f4c89       2 hours ago         Exited              install-cni                   0                   89b5fd32f0d51
-ed8f7af7d0dae       b572095c12f71       2 hours ago         Exited              driver-registrar              48                  ba261c0dff6f4
-835fefa1be716       b572095c12f71       2 hours ago         Exited              driver-registrar              49                  7fe79fba11a8e
-ee96c56c3fa8c       107014d9f4c89       2 hours ago         Exited              upgrade-ipam                  1                   89b5fd32f0d51
-ff90edd71aca1       9344fce2372f8       2 hours ago         Running             kube-proxy                    29                  e80971202c5e6
-8452420de96ac       5a3c471280784       2 hours ago         Running             controller                    27                  f666ba3f09e47
-f18a98d53e17a       813ffa8dde438       2 hours ago         Running             kube-sriovdp                  15                  8c5ea6068dcb2
-1bf2839fa8928       71365c57d18d9       2 hours ago         Exited              csi-rbdplugin                 45                  ba261c0dff6f4
-c1862ecfaf9b5       71365c57d18d9       2 hours ago         Exited              csi-cephfsplugin              46                  7fe79fba11a8e
-929b65c13f8c5       138fb5a3a2e34       2 hours ago         Exited              kube-controller-manager       332                 6ea531e68f1db
-b3b2a0e340256       6fc5e6b7218c7       2 hours ago         Exited              kube-scheduler                330                 ff3635bd00615
-d3794521ad05d       38f36d116bef9       19 hours ago        Exited              manager                       0                   dcfb1bbb2c576
-164699490807b       eb5a02daef2fe       19 hours ago        Exited              kube-rbac-proxy               0                   dcfb1bbb2c576
-de18b96f1c5ef       a24c7c057ec87       19 hours ago        Exited              metrics-server                0                   1ddd463a57d80
-4ddd0adce11a2       71365c57d18d9       19 hours ago        Exited              csi-rbdplugin                 0                   c7f01e961e43f
-7d992dbbd6c85       aa61ee9c70bc4       19 hours ago        Exited              volume-snapshot-controller    0                   d4958655deb49
-67c820ca9e253       cbb01a7bd410d       19 hours ago        Exited              coredns                       0                   429e788016831
-425b525f4f2d1       71365c57d18d9       19 hours ago        Exited              csi-cephfsplugin              0                   6442b000fcd26
-9a0aa14804a74       6beb071efc815       19 hours ago        Exited              cert-manager-webhook          0                   3b0336d8cfcb3
-99210485ab739       c0e8690ae66a1       19 hours ago        Exited              kube-multus                   24                  eb9c7c71dec1f
-4f394f5f63565       2ea3482343630       19 hours ago        Exited              kube-sriov-cni                9                   5fd868d811b85
-1e3f3cac53e9f       4e42b6f329bc1       19 hours ago        Exited              calico-node                   27                  da7901c1f1d2c
-b095d004f0608       9344fce2372f8       19 hours ago        Exited              kube-proxy                    28                  f1f48adcc759c
-115b46596a49f       813ffa8dde438       19 hours ago        Exited              kube-sriovdp                  14                  79ef992f8bab8
-6a99a0d8210b3       5a3c471280784       19 hours ago        Exited              controller                    26                  3bfaa7488d301
-sysadmin@controller-1:~$ sm-dump | grep ceph-mon
-ceph-mon                         enabled-active       enabling-throttle
-sysadmin@controller-1:~$ sm-dump
+        # Number of replicas of objects. Write an object 2 times.
+        # Cluster cannot reach an active + clean state until there's enough OSDs
+        # to handle the number of copies of an object. In this case, it requires
+        # at least 2 OSDs
+        osd_pool_default_size = 2
 
--Service_Groups------------------------------------------------------------------------
-oam-services                     active               active
-controller-services              active               go-active
-cloud-services                   active               active
-patching-services                active               active
-directory-services               active               active
-web-services                     active               active
-storage-services                 active               go-active            degraded
-storage-monitoring-services      active               active
-vim-services                     active               active
----------------------------------------------------------------------------------------
+        # Allow writing one copy in a degraded state.
+        osd_pool_default_min_size = 1
 
--Services------------------------------------------------------------------------------
-oam-ipv4                         enabled-active       enabled-active
-management-ipv4                  enabled-active       enabled-active
-drbd-pg                          enabled-active       enabled-active
-drbd-rabbit                      enabled-active       enabled-active
-oam-ipv6                         enabled-active       enabled-active
-drbd-platform                    enabled-active       enabled-active
-pg-fs                            enabled-active       enabled-active
-rabbit-fs                        enabled-active       enabled-active
-nfs-mgmt                         enabled-active       enabled-active
-management-ipv6                  enabled-active       enabled-active
-platform-fs                      enabled-active       enabled-active
-postgres                         enabled-active       enabled-active
-rabbit                           enabled-active       enabled-active
-platform-export-fs               enabled-active       enabled-active
-sysinv-inv                       enabled-active       enabled-active
-sysinv-conductor                 enabled-active       enabled-active
-mtc-agent                        enabled-active       enabled-active
-hw-mon                           enabled-active       enabled-active
-dnsmasq                          enabled-active       enabled-active
-fm-mgr                           enabled-active       enabled-active
-keystone                         enabled-active       enabled-active
-open-ldap                        enabled-active       enabled-active
-lighttpd                         enabled-active       enabled-active
-horizon                          enabled-active       enabled-active
-patch-alarm-manager              enabled-active       enabled-active
-mgr-restful-plugin               enabled-active       enabled-active
-ceph-manager                     enabled-active       enabled-active
-vim                              enabled-active       enabled-active
-vim-api                          enabled-active       enabled-active
-vim-webserver                    enabled-active       enabled-active
-haproxy                          enabled-active       enabled-active
-pxeboot-ipv4                     enabled-active       enabled-active
-drbd-extension                   enabled-active       enabled-active
-extension-fs                     enabled-active       enabled-active
-extension-export-fs              enabled-active       enabled-active
-etcd                             enabled-active       enabled-active
-drbd-etcd                        enabled-active       enabled-active
-etcd-fs                          enabled-active       enabled-active
-barbican-api                     enabled-active       enabled-active
-barbican-keystone-listener       enabled-active       enabled-active
-barbican-worker                  enabled-active       enabled-active
-cluster-host-ipv4                enabled-active       enabled-active
-cluster-host-ipv6                enabled-active       enabled-active
-ipsec-config                     enabled-active       enabled-active
-docker-distribution              enabled-active       enabled-active
-dockerdistribution-fs            enabled-active       enabled-active
-drbd-dockerdistribution          enabled-active       enabled-active
-ceph-mon                         enabled-active       enabling-throttle
-cephmon-fs                       enabled-active       enabled-active
-drbd-cephmon                     enabled-active       enabled-active
-ceph-osd                         enabled-active       enabled-active
-helmrepository-fs                enabled-active       enabled-active
-registry-token-server            enabled-active       enabled-active
-cert-mon                         enabled-active       enabled-active
-device-image-fs                  enabled-active       enabled-active
-cert-alarm                       enabled-active       enabled-active
-storage-networking               enabled-active       enabling             failed
-------------------------------------------------------------------------------
+        # Ensure you have a realistic number of placement groups. We recommend
+        # approximately 100 per OSD. E.g., total number of OSDs multiplied by 100
+        # divided by the number of replicas (i.e., osd pool default size). So for
+        # 2 OSDs and osd pool default size = 2, we'd recommend approximately
+        # (100 * 2) / 2 = 100.
+        osd_pool_default_pg_num = 64
+        osd_pool_default_pgp_num = 64
+        osd_crush_chooseleaf_type = 1
+        setuser match path = /var/lib/ceph/$type/$cluster-$id
+
+        # Override Jewel default of 2 reporters. StarlingX has replication factor 2
+        mon_osd_min_down_reporters = 1
+
+        # Use Hammer's report interval default value
+        osd_mon_report_interval_max = 120
+
+    # Configure max PGs per OSD to cover worst-case scenario of all possible
+    # StarlingX deployments i.e. AIO-SX with one OSD. Otherwise using
+    # the default value provided by Ceph Mimic leads to "too many PGs per OSD"
+    # health warning as the pools needed by stx-openstack are being created.
+    mon_max_pg_per_osd = 2048
+    osd_max_pg_per_osd_hard_ratio = 1.2
+ mon_initial_members = controller
+ mon_host = [face::1],[face::2],[face::3]
+ ms_bind_ipv6 = true
+ ms_bind_ipv4 = false
+ auth_supported = none
+
+[osd]
+        osd_mkfs_type = xfs
+        osd_mkfs_options_xfs = "-f"
+        osd_mount_options_xfs = "rw,noatime,inode64,logbufs=8,logbsize=256k"
+
+[mon]
+    mon warn on legacy crush tunables = false
+    # Quiet new warnings on move to Hammer
+    mon pg warn max per osd = 2048
+    mon pg warn max object skew = 0
+    mgr initial modules = restful
+    mon warn on insecure global id reclaim = false
+    mon warn on insecure global id reclaim allowed = false
+    auth allow insecure global id reclaim = true
+    mon clock drift allowed = .1
+
+[mon.controller]
+host = controller
+public_addr = face::1
+
+[mon.controller-0]
+host = controller-0
+public_addr = face::2
+
+[mon.controller-1]
+host = controller-1
+public_addr = face::3
+
+[mgr.controller-1]
+public_addr = face::3
+
+[mds.controller-1]
+host = controller-1
+public_addr = face::3
+
+[osd.1]
+devs = /dev/disk/by-path/pci-0000:65:00.0-scsi-0:2:1:0-part1
+sysadmin@controller-1:~$ ls -ltra /etc/ceph/
+total 36
+-rw-r-----   1 root root             92 Aug 20  2025 rbdmap
+-rwxr-x---   1 root root           1320 Aug 20  2025 ceph-mds.conf.pmon
+-rwxr-xr-x   1 root root           1349 Aug 20  2025 ceph-fixed-mon.conf.pmon
+-rwxr-x---   1 root root           1324 Aug 20  2025 ceph.conf.pmon
+-rw-r-----   1 root sys_protected  2903 Aug 20  2025 ceph.conf
+-rw-r--r--   1 root root              0 Aug 20  2025 ceph.client.admin.keyring
+drwxr-xr-x   2 root root           4096 Aug 20  2025 .
+drwxr-xr-x 182 root root          12288 Apr 15 07:07 ..
+sysadmin@controller-1:~$ sudo sm-restart service ceph-mon
+Service (ceph-mon) is restarting.
 sysadmin@controller-1:~$ crictl ps -a | grep ceph
-8a754de9f236e       35552c08bec16       About a minute ago   Running             ceph-pools-audit-ceph-store   1                   bcf40c10fb4b5
-eca0a49905835       35552c08bec16       6 minutes ago        Exited              ceph-pools-audit-ceph-store   0                   bcf40c10fb4b5
-37db39ae0e0d7       71365c57d18d9       2 hours ago          Running             csi-cephfsplugin              47                  7fe79fba11a8e
-beda96150884f       71365c57d18d9       2 hours ago          Running             csi-cephfsplugin              1                   53e6eed2a79db
-c1862ecfaf9b5       71365c57d18d9       2 hours ago          Exited              csi-cephfsplugin              46                  7fe79fba11a8e
-425b525f4f2d1       71365c57d18d9       19 hours ago         Exited              csi-cephfsplugin              0                   6442b000fcd26
-sysadmin@controller-1:~$ sm-dump | grep controller-services
-controller-services              active               go-active
-sysadmin@controller-1:~$ sm-dump | grep ceph-mon
-ceph-mon                         enabled-active       enabling-throttle
+c6cef0ad257bd       35552c08bec16       2 minutes ago       Running             ceph-pools-audit-ceph-store   2                   bcf40c10fb4b5
+8a754de9f236e       35552c08bec16       7 minutes ago       Exited              ceph-pools-audit-ceph-store   1                   bcf40c10fb4b5
+37db39ae0e0d7       71365c57d18d9       2 hours ago         Running             csi-cephfsplugin              47                  7fe79fba11a8e
+beda96150884f       71365c57d18d9       2 hours ago         Running             csi-cephfsplugin              1                   53e6eed2a79db
+c1862ecfaf9b5       71365c57d18d9       2 hours ago         Exited              csi-cephfsplugin              46                  7fe79fba11a8e
+425b525f4f2d1       71365c57d18d9       19 hours ago        Exited              csi-cephfsplugin              0                   6442b000fcd26
+sysadmin@controller-1:~$ crictl ps -a | grep ceph
+c6cef0ad257bd       35552c08bec16       2 minutes ago       Running             ceph-pools-audit-ceph-store   2                   bcf40c10fb4b5
+8a754de9f236e       35552c08bec16       7 minutes ago       Exited              ceph-pools-audit-ceph-store   1                   bcf40c10fb4b5
+37db39ae0e0d7       71365c57d18d9       2 hours ago         Running             csi-cephfsplugin              47                  7fe79fba11a8e
+beda96150884f       71365c57d18d9       2 hours ago         Running             csi-cephfsplugin              1                   53e6eed2a79db
+c1862ecfaf9b5       71365c57d18d9       2 hours ago         Exited              csi-cephfsplugin              46                  7fe79fba11a8e
+425b525f4f2d1       71365c57d18d9       19 hours ago        Exited              csi-cephfsplugin              0                   6442b000fcd26
+sysadmin@controller-1:~$ crictl ps -a | grep ceph
+c6cef0ad257bd       35552c08bec16       2 minutes ago       Running             ceph-pools-audit-ceph-store   2                   bcf40c10fb4b5
+8a754de9f236e       35552c08bec16       7 minutes ago       Exited              ceph-pools-audit-ceph-store   1                   bcf40c10fb4b5
+37db39ae0e0d7       71365c57d18d9       2 hours ago         Running             csi-cephfsplugin              47                  7fe79fba11a8e
+beda96150884f       71365c57d18d9       2 hours ago         Running             csi-cephfsplugin              1                   53e6eed2a79db
+c1862ecfaf9b5       71365c57d18d9       2 hours ago         Exited              csi-cephfsplugin              46                  7fe79fba11a8e
+425b525f4f2d1       71365c57d18d9       19 hours ago        Exited              csi-cephfsplugin              0                   6442b000fcd26
 sysadmin@controller-1:~$ sm-dump | grep -E "ceph-mon|controller-services"
 controller-services              active               go-active
 ceph-mon                         enabled-active       enabling-throttle
