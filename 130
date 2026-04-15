@@ -1,229 +1,151 @@
-sysadmin@controller-1:~$ vi /etc/ceph/
-ceph.client.admin.keyring  ceph.conf                  ceph.conf.pmon             ceph-fixed-mon.conf.pmon   ceph-mds.conf.pmon         rbdmap
-sysadmin@controller-1:~$ vi /etc/ceph/ceph.conf
-sysadmin@controller-1:~$ sudo vi /etc/ceph/ceph.conf
-Password:
-sysadmin@controller-1:~$ sudo systemctl restart sm
-sysadmin@controller-1:~$ sm-dump
+------------------------------------------------------------------------------
+sysadmin@controller-0:~$ sm-dump
 
 -Service_Groups------------------------------------------------------------------------
-oam-services                     active               initial
-controller-services              active               initial
-cloud-services                   active               initial
-patching-services                active               initial
-directory-services               active               initial
-web-services                     active               initial
-storage-services                 active               initial
-storage-monitoring-services      active               initial
-vim-services                     active               initial
+oam-services                     initial              initial
+controller-services              initial              initial
+cloud-services                   initial              initial
+patching-services                initial              initial
+directory-services               initial              initial
+web-services                     initial              initial
+storage-services                 initial              initial
+storage-monitoring-services      initial              initial
+vim-services                     initial              initial
 ---------------------------------------------------------------------------------------
 
 -Services------------------------------------------------------------------------------
-oam-ipv4                         enabled-active       initial
-management-ipv4                  enabled-active       initial
-drbd-pg                          enabled-active       initial
-drbd-rabbit                      enabled-active       initial
-oam-ipv6                         enabled-active       initial
-drbd-platform                    enabled-active       initial
-pg-fs                            enabled-active       initial
-rabbit-fs                        enabled-active       initial
-nfs-mgmt                         enabled-active       initial
-management-ipv6                  enabled-active       initial
-platform-fs                      enabled-active       initial
-postgres                         enabled-active       initial
-rabbit                           enabled-active       initial
-platform-export-fs               enabled-active       initial
-sysinv-inv                       enabled-active       initial
-sysinv-conductor                 enabled-active       initial
-mtc-agent                        enabled-active       initial
-hw-mon                           enabled-active       initial
-dnsmasq                          enabled-active       initial
-fm-mgr                           enabled-active       initial
-keystone                         enabled-active       unknown
-open-ldap                        enabled-active       unknown
-lighttpd                         enabled-active       unknown
-horizon                          enabled-active       unknown
-patch-alarm-manager              enabled-active       unknown
-mgr-restful-plugin               enabled-active       unknown
-ceph-manager                     enabled-active       unknown
-vim                              enabled-active       unknown
-vim-api                          enabled-active       unknown
-vim-webserver                    enabled-active       unknown
-haproxy                          enabled-active       unknown
-pxeboot-ipv4                     enabled-active       unknown
-drbd-extension                   enabled-active       unknown
-extension-fs                     enabled-active       unknown
-extension-export-fs              enabled-active       unknown
-etcd                             enabled-active       unknown
-drbd-etcd                        enabled-active       unknown
-etcd-fs                          enabled-active       unknown
-barbican-api                     enabled-active       unknown
-barbican-keystone-listener       enabled-active       unknown
-barbican-worker                  enabled-active       unknown
-cluster-host-ipv4                enabled-active       unknown
-cluster-host-ipv6                enabled-active       unknown
-ipsec-config                     enabled-active       unknown
-docker-distribution              enabled-active       unknown
-dockerdistribution-fs            enabled-active       unknown
-drbd-dockerdistribution          enabled-active       unknown
-ceph-mon                         enabled-active       unknown
-cephmon-fs                       enabled-active       unknown
-drbd-cephmon                     enabled-active       unknown
-ceph-osd                         enabled-active       unknown
-helmrepository-fs                enabled-active       unknown
-registry-token-server            enabled-active       unknown
-cert-mon                         enabled-active       unknown
-device-image-fs                  enabled-active       unknown
-cert-alarm                       enabled-active       unknown
-storage-networking               enabled-active       unknown
+oam-ipv4                         initial              initial
+management-ipv4                  initial              initial
+drbd-pg                          initial              initial
+drbd-rabbit                      initial              initial
+oam-ipv6                         initial              initial
+drbd-platform                    initial              initial
+pg-fs                            initial              initial
+rabbit-fs                        initial              initial
+nfs-mgmt                         initial              initial
+management-ipv6                  initial              initial
+platform-fs                      initial              initial
+postgres                         initial              initial
+rabbit                           initial              initial
+platform-export-fs               initial              initial
+sysinv-inv                       initial              initial
+sysinv-conductor                 initial              initial
+mtc-agent                        initial              initial
+hw-mon                           initial              initial
+dnsmasq                          initial              initial
+fm-mgr                           initial              initial
+keystone                         initial              initial
+open-ldap                        initial              initial
+lighttpd                         initial              initial
+horizon                          initial              initial
+patch-alarm-manager              initial              initial
+mgr-restful-plugin               initial              initial
+ceph-manager                     initial              initial
+vim                              initial              initial
+vim-api                          initial              initial
+vim-webserver                    initial              initial
+haproxy                          initial              initial
+pxeboot-ipv4                     initial              initial
+drbd-extension                   initial              initial
+extension-fs                     initial              initial
+extension-export-fs              initial              initial
+etcd                             initial              initial
+drbd-etcd                        initial              initial
+etcd-fs                          initial              initial
+barbican-api                     initial              initial
+barbican-keystone-listener       initial              initial
+barbican-worker                  initial              initial
+cluster-host-ipv4                initial              initial
+cluster-host-ipv6                initial              initial
+ipsec-config                     initial              initial
+docker-distribution              initial              initial
+dockerdistribution-fs            initial              initial
+drbd-dockerdistribution          initial              initial
+ceph-mon                         initial              initial
+cephmon-fs                       initial              initial
+drbd-cephmon                     initial              initial
+ceph-osd                         initial              initial
+helmrepository-fs                initial              initial
+registry-token-server            initial              initial
+cert-mon                         initial              initial
+device-image-fs                  initial              initial
+cert-alarm                       initial              initial
+storage-networking               initial              initial
 ------------------------------------------------------------------------------
-sysadmin@controller-1:~$ sm-dump
+sysadmin@controller-0:~$
+[sysadmin@controller-1 ~(keystone_admin)]$ sm-dump
 
 -Service_Groups------------------------------------------------------------------------
-oam-services                     active               active
-controller-services              active               go-active
-cloud-services                   active               active
+oam-services                     disabled             disabled
+controller-services              disabled             disabled             failed
+cloud-services                   disabled             disabled
 patching-services                active               active
 directory-services               active               active
 web-services                     active               active
-storage-services                 active               go-active            degraded
+storage-services                 active               active
 storage-monitoring-services      active               active
-vim-services                     active               active
+vim-services                     disabled             disabled
 ---------------------------------------------------------------------------------------
 
 -Services------------------------------------------------------------------------------
-oam-ipv4                         enabled-active       enabled-active
-management-ipv4                  enabled-active       enabled-active
-drbd-pg                          enabled-active       enabled-active
-drbd-rabbit                      enabled-active       enabled-active
-oam-ipv6                         enabled-active       enabled-active
-drbd-platform                    enabled-active       enabled-active
-pg-fs                            enabled-active       enabled-active
-rabbit-fs                        enabled-active       enabled-active
-nfs-mgmt                         enabled-active       enabled-active
-management-ipv6                  enabled-active       enabled-active
-platform-fs                      enabled-active       enabled-active
-postgres                         enabled-active       enabled-active
-rabbit                           enabled-active       enabled-active
-platform-export-fs               enabled-active       enabled-active
-sysinv-inv                       enabled-active       enabled-active
-sysinv-conductor                 enabled-active       enabled-active
-mtc-agent                        enabled-active       enabled-active
-hw-mon                           enabled-active       enabled-active
-dnsmasq                          enabled-active       enabled-active
-fm-mgr                           enabled-active       enabled-active
-keystone                         enabled-active       enabled-active
+oam-ipv4                         disabled             disabled
+management-ipv4                  disabled             disabled
+drbd-pg                          disabled             disabled
+drbd-rabbit                      disabled             disabled
+oam-ipv6                         disabled             disabled
+drbd-platform                    disabled             disabled
+pg-fs                            disabled             disabled
+rabbit-fs                        disabled             disabled
+nfs-mgmt                         disabled             disabled
+management-ipv6                  disabled             disabled
+platform-fs                      disabled             disabled
+postgres                         disabled             disabled
+rabbit                           disabled             disabled
+platform-export-fs               disabled             disabled
+sysinv-inv                       disabled             disabled
+sysinv-conductor                 disabled             disabled
+mtc-agent                        disabled             disabled
+hw-mon                           disabled             disabled
+dnsmasq                          disabled             disabled
+fm-mgr                           disabled             disabled
+keystone                         disabled             disabled
 open-ldap                        enabled-active       enabled-active
 lighttpd                         enabled-active       enabled-active
 horizon                          enabled-active       enabled-active
 patch-alarm-manager              enabled-active       enabled-active
 mgr-restful-plugin               enabled-active       enabled-active
 ceph-manager                     enabled-active       enabled-active
-vim                              enabled-active       enabled-active
-vim-api                          enabled-active       enabled-active
-vim-webserver                    enabled-active       enabled-active
-haproxy                          enabled-active       enabled-active
-pxeboot-ipv4                     enabled-active       enabled-active
-drbd-extension                   enabled-active       enabled-active
-extension-fs                     enabled-active       enabled-active
-extension-export-fs              enabled-active       enabled-active
-etcd                             enabled-active       enabled-active
-drbd-etcd                        enabled-active       enabled-active
-etcd-fs                          enabled-active       enabled-active
-barbican-api                     enabled-active       enabled-active
-barbican-keystone-listener       enabled-active       enabled-active
-barbican-worker                  enabled-active       enabled-active
-cluster-host-ipv4                enabled-active       enabled-active
-cluster-host-ipv6                enabled-active       enabled-active
-ipsec-config                     enabled-active       enabled-active
-docker-distribution              enabled-active       enabled-active
-dockerdistribution-fs            enabled-active       enabled-active
-drbd-dockerdistribution          enabled-active       enabled-active
-ceph-mon                         enabled-active       enabling-throttle
-cephmon-fs                       enabled-active       enabled-active
-drbd-cephmon                     enabled-active       enabled-active
+vim                              disabled             disabled
+vim-api                          disabled             disabled
+vim-webserver                    disabled             disabled
+haproxy                          disabled             disabled
+pxeboot-ipv4                     disabled             disabled
+drbd-extension                   disabled             disabled
+extension-fs                     disabled             disabled
+extension-export-fs              disabled             disabled
+etcd                             disabled             disabled
+drbd-etcd                        disabled             disabled
+etcd-fs                          disabled             disabled
+barbican-api                     disabled             disabled
+barbican-keystone-listener       disabled             disabled
+barbican-worker                  disabled             disabled
+cluster-host-ipv4                disabled             disabled
+cluster-host-ipv6                disabled             disabled
+ipsec-config                     disabled             disabled
+docker-distribution              disabled             disabled
+dockerdistribution-fs            disabled             disabled
+drbd-dockerdistribution          disabled             disabled
+ceph-mon                         disabled             disabled
+cephmon-fs                       disabled             disabled
+drbd-cephmon                     disabled             disabled
 ceph-osd                         enabled-active       enabled-active
-helmrepository-fs                enabled-active       enabled-active
-registry-token-server            enabled-active       enabled-active
-cert-mon                         enabled-active       enabled-active
-device-image-fs                  enabled-active       enabled-active
-cert-alarm                       enabled-active       enabled-active
-storage-networking               enabled-active       disabled             failed
+helmrepository-fs                disabled             disabled
+registry-token-server            disabled             disabled
+cert-mon                         disabled             disabled
+device-image-fs                  disabled             disabled
+cert-alarm                       disabled             disabled
+storage-networking               enabled-active       enabled-active
 ------------------------------------------------------------------------------
-sysadmin@controller-1:~$ sm-dump
+[sysadmin@controller-1 ~(keystone_admin)]$
 
--Service_Groups------------------------------------------------------------------------
-oam-services                     active               active
-controller-services              active               go-active
-cloud-services                   active               active
-patching-services                active               active
-directory-services               active               active
-web-services                     active               active
-storage-services                 active               go-active            degraded
-storage-monitoring-services      active               active
-vim-services                     active               active
----------------------------------------------------------------------------------------
 
--Services------------------------------------------------------------------------------
-oam-ipv4                         enabled-active       enabled-active
-management-ipv4                  enabled-active       enabled-active
-drbd-pg                          enabled-active       enabled-active
-drbd-rabbit                      enabled-active       enabled-active
-oam-ipv6                         enabled-active       enabled-active
-drbd-platform                    enabled-active       enabled-active
-pg-fs                            enabled-active       enabled-active
-rabbit-fs                        enabled-active       enabled-active
-nfs-mgmt                         enabled-active       enabled-active
-management-ipv6                  enabled-active       enabled-active
-platform-fs                      enabled-active       enabled-active
-postgres                         enabled-active       enabled-active
-rabbit                           enabled-active       enabled-active
-platform-export-fs               enabled-active       enabled-active
-sysinv-inv                       enabled-active       enabled-active
-sysinv-conductor                 enabled-active       enabled-active
-mtc-agent                        enabled-active       enabled-active
-hw-mon                           enabled-active       enabled-active
-dnsmasq                          enabled-active       enabled-active
-fm-mgr                           enabled-active       enabled-active
-keystone                         enabled-active       enabled-active
-open-ldap                        enabled-active       enabled-active
-lighttpd                         enabled-active       enabled-active
-horizon                          enabled-active       enabled-active
-patch-alarm-manager              enabled-active       enabled-active
-mgr-restful-plugin               enabled-active       enabled-active
-ceph-manager                     enabled-active       enabled-active
-vim                              enabled-active       enabled-active
-vim-api                          enabled-active       enabled-active
-vim-webserver                    enabled-active       enabled-active
-haproxy                          enabled-active       enabled-active
-pxeboot-ipv4                     enabled-active       enabled-active
-drbd-extension                   enabled-active       enabled-active
-extension-fs                     enabled-active       enabled-active
-extension-export-fs              enabled-active       enabled-active
-etcd                             enabled-active       enabled-active
-drbd-etcd                        enabled-active       enabled-active
-etcd-fs                          enabled-active       enabled-active
-barbican-api                     enabled-active       enabled-active
-barbican-keystone-listener       enabled-active       enabled-active
-barbican-worker                  enabled-active       enabled-active
-cluster-host-ipv4                enabled-active       enabled-active
-cluster-host-ipv6                enabled-active       enabled-active
-ipsec-config                     enabled-active       enabled-active
-docker-distribution              enabled-active       enabled-active
-dockerdistribution-fs            enabled-active       enabled-active
-drbd-dockerdistribution          enabled-active       enabled-active
-ceph-mon                         enabled-active       enabling-throttle
-cephmon-fs                       enabled-active       enabled-active
-drbd-cephmon                     enabled-active       enabled-active
-ceph-osd                         enabled-active       enabled-active
-helmrepository-fs                enabled-active       enabled-active
-registry-token-server            enabled-active       enabled-active
-cert-mon                         enabled-active       enabled-active
-device-image-fs                  enabled-active       enabled-active
-cert-alarm                       enabled-active       enabled-active
-storage-networking               enabled-active       disabled             failed
-------------------------------------------------------------------------------
-sysadmin@controller-1:~$ sm-dump | grep ceph-mon
-ceph-mon                         enabled-active       enabling-throttle
-sysadmin@controller-1:~$ crictl ps | grep ceph-mon
-sysadmin@controller-1:~$
