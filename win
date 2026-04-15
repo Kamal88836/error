@@ -148,3 +148,154 @@ storage-networking               enabled-active       enabled-active
 ------------------------------------------------------------------------------
 controller-0:~$
 
+
+controller-0:~$ sudo systemctl status sm
+Password:
+● sm.service - Service Management Unit
+     Loaded: loaded (/lib/systemd/system/sm.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2026-04-14 14:05:54 UTC; 15h ago
+   Main PID: 25190 (sm)
+      Tasks: 718 (limit: 585985)
+     Memory: 2.6G
+        CPU: 8h 21min 1.282s
+     CGroup: /system.slice/sm.service
+             ├─  25190 /usr/bin/sm
+             ├─  25204 /usr/bin/sm
+             ├─  29387 /usr/bin/python /etc/init.d/mgr-restful-plugin start
+             ├─  29395 /usr/bin/python /etc/init.d/mgr-restful-plugin start
+             ├─  29408 /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+             ├─  31523 /bin/python /usr/bin/gunicorn --preload --bind localhost:8008 --worker-class eventlet --workers 2 --timeout 200 --log-syslog --config /usr/share/openstack-dashboard/guni_config.py -->
+             ├─  31565 /bin/python /usr/bin/gunicorn --preload --bind localhost:8008 --worker-class eventlet --workers 2 --timeout 200 --log-syslog --config /usr/share/openstack-dashboard/guni_config.py -->
+             ├─  31566 /bin/python /usr/bin/gunicorn --preload --bind localhost:8008 --worker-class eventlet --workers 2 --timeout 200 --log-syslog --config /usr/share/openstack-dashboard/guni_config.py -->
+             ├─  37010 /usr/lib/erlang/erts-11.1.8/bin/epmd -daemon
+             ├─ 860110 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─ 871030 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─ 881944 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─ 939434 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─ 949912 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─ 957195 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─ 967430 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─ 978015 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─ 989271 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1046545 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1056484 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1067328 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1078420 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1089422 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1100159 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1158169 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1168907 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1179479 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1190521 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1199740 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1208581 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1264204 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1274454 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1285054 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1296285 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1307024 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1317995 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1370795 /usr/sbin/dnsmasq
+             ├─1370796 /usr/sbin/dnsmasq
+             ├─1371394 /usr/lib/postgresql/13/bin/postgres -D /var/lib/postgresql/24.09 -c config_file=/etc/postgresql/postgresql.conf
+             ├─1371445 postgres: 13/main: checkpointer
+             ├─1371446 postgres: 13/main: background writer
+             ├─1371450 postgres: 13/main: walwriter
+             ├─1371451 postgres: 13/main: autovacuum launcher
+             ├─1371452 postgres: 13/main: stats collector
+             ├─1371453 postgres: 13/main: logical replication launcher
+             ├─1371821 /usr/bin/python3 /bin/sysinv-conductor --config-file=/etc/sysinv/sysinv.conf
+             ├─1371861 /usr/local/bin/fmManager -c /etc/fm/fm.conf
+             ├─1371946 /usr/bin/python3 /bin/sysinv-api --config-file=/etc/sysinv/sysinv.conf
+
+controller-0:~$ cat /etc/platform/.initial_config_complete
+controller-0:~$ ls -ltr /opt/platform/.keyring/
+total 4
+drwxr-xr-x 3 root sys_protected 4096 Aug 20  2025 24.09
+controller-0:~$ ls -ltr /opt/platform/.keyring/24.09/
+total 4
+drwxr-xr-x 2 root sys_protected 4096 Aug 20  2025 python_keyring
+controller-0:~$ ls -ltr /opt/platform/.keyring/24.09/python_keyring/
+total 8
+-rw-r----- 1 root sys_protected    0 Aug 20  2025 keyring_pass.cfg
+-rwxrwx--- 1 root sys_protected    0 Aug 20  2025 keyringlock
+-rw-r----- 1 root sys_protected 5393 Aug 20  2025 crypted_pass.cfg
+controller-0:~$
+
+
+controller-1:~$ sudo systemctl status sm
+● sm.service - Service Management Unit
+     Loaded: loaded (/lib/systemd/system/sm.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2026-04-14 13:58:32 UTC; 15h ago
+    Process: 23221 ExecStart=/etc/init.d/sm start (code=exited, status=0/SUCCESS)
+   Main PID: 23543 (sm)
+      Tasks: 565 (limit: 585985)
+     Memory: 1.6G
+        CPU: 15h 1.546s
+     CGroup: /system.slice/sm.service
+             ├─  23543 /usr/bin/sm
+             ├─  23557 /usr/bin/sm
+             ├─  25872 /usr/bin/python /etc/init.d/mgr-restful-plugin start
+             ├─  25972 /usr/bin/python /etc/init.d/mgr-restful-plugin start
+             ├─  26139 /usr/bin/python3 /usr/bin/ceph-manager --log-file=/var/log/ceph-manager.log --config-file=/etc/sysinv/sysinv.conf
+             ├─  26331 /usr/bin/python3 /usr/bin/patch-alarm-manager start
+             ├─  26523 /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+             ├─  29752 /bin/python /usr/bin/gunicorn --preload --bind localhost:8008 --worker-class eventlet --workers 2 --timeout 200 --log-syslog --config /usr/share/openstack-dashboard/guni_config.py -->
+             ├─  30249 /bin/python /usr/bin/gunicorn --preload --bind localhost:8008 --worker-class eventlet --workers 2 --timeout 200 --log-syslog --config /usr/share/openstack-dashboard/guni_config.py -->
+             ├─  30256 /usr/lib/erlang/erts-11.1.8/bin/epmd -daemon
+             ├─  30257 /bin/python /usr/bin/gunicorn --preload --bind localhost:8008 --worker-class eventlet --workers 2 --timeout 200 --log-syslog --config /usr/share/openstack-dashboard/guni_config.py -->
+             ├─1738343 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1762236 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1763741 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1775528 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1780660 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1784305 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1795973 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1798197 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1804987 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1812637 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1813501 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1852957 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1883770 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1889691 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1896101 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1904608 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1907052 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1913411 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1924015 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1924742 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1932671 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1943262 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─1979359 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2002749 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2003573 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2013058 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2017902 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2021881 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2033624 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2035723 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2042204 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2052893 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2054053 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2091759 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2111835 /usr/bin/python3 /usr/bin/ceph restful list-keys
+             ├─2118175 /usr/bin/python3 /usr/bin/ceph restful list-keys
+
+controller-1:~$ ^M
+-bash: $'\r': command not found
+controller-1:~$
+controller-1:~$ cat /etc/platform/.initial_con
+.initial_config_complete             .initial_controller_config_complete
+controller-1:~$ cat /etc/platform/.initial_config_complete
+controller-1:~$ ls -ltr /opt/platform/.keyring/
+total 4
+drwxr-xr-x 3 root sys_protected 4096 Aug 20  2025 24.09
+controller-1:~$  ls -ltr /opt/platform/.keyring/24.09/python_keyring/
+total 8
+-rw-r----- 1 root sys_protected    0 Aug 20  2025 keyring_pass.cfg
+-rwxrwx--- 1 root sys_protected    0 Aug 20  2025 keyringlock
+-rw-r----- 1 root sys_protected 5393 Aug 20  2025 crypted_pass.cfg
+controller-1:~$
+
+
+
