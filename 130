@@ -1,216 +1,222 @@
-sysadmin@controller-0:~$ sm-dump | grep controller-services
-controller-services              active               active
-sysadmin@controller-0:~$ ls -ltr /opt/platform/.keyring/24.09/
-total 4
-drwxr-xr-x 2 root sys_protected 4096 Aug 20  2025 python_keyring
-sysadmin@controller-0:~$ ls -ltra /opt/platform/.keyring/24.09/
-total 16
-drwxr-xr-x 3 root sys_protected 4096 Aug 20  2025 ..
--rwxr-xr-x 1 root sys_protected   22 Aug 20  2025 .CREDENTIAL
-drwxr-xr-x 2 root sys_protected 4096 Aug 20  2025 python_keyring
-drwxr-xr-x 3 root sys_protected 4096 Aug 20  2025 .
-sysadmin@controller-0:~$ source /etc/platform/openrc
-Openstack Admin credentials can only be loaded from the active controller.
-controller-0:~$ echo @OS_PASSWORD
-@OS_PASSWORD
-controller-0:~$ echo $OS_PASSWORD
+sysadmin@controller-1:~$ sm-dump
 
+-Service_Groups------------------------------------------------------------------------
+oam-services                     disabled             disabled
+controller-services              disabled             disabling            failed
+cloud-services                   disabled             disabled
+patching-services                active               active
+directory-services               active               active
+web-services                     active               active
+storage-services                 active               active
+storage-monitoring-services      active               active
+vim-services                     disabled             disabled
+---------------------------------------------------------------------------------------
+
+-Services------------------------------------------------------------------------------
+oam-ipv4                         disabled             disabled
+management-ipv4                  disabled             disabled
+drbd-pg                          disabled             disabled
+drbd-rabbit                      disabled             disabled
+oam-ipv6                         disabled             disabled
+drbd-platform                    disabled             disabled
+pg-fs                            disabled             disabled
+rabbit-fs                        disabled             disabled
+nfs-mgmt                         disabled             disabled
+management-ipv6                  disabled             disabled
+platform-fs                      disabled             disabled
+postgres                         disabled             disabled
+rabbit                           disabled             disabled
+platform-export-fs               disabled             disabled
+sysinv-inv                       disabled             disabled
+sysinv-conductor                 disabled             disabled
+mtc-agent                        disabled             disabled
+hw-mon                           disabled             disabled
+dnsmasq                          disabled             disabled
+fm-mgr                           disabled             disabled
+keystone                         disabled             disabled
+open-ldap                        enabled-active       enabled-active
+lighttpd                         enabled-active       enabled-active
+horizon                          enabled-active       enabled-active
+patch-alarm-manager              enabled-active       enabled-active
+mgr-restful-plugin               enabled-active       enabled-active
+ceph-manager                     enabled-active       enabled-active
+vim                              disabled             disabled
+vim-api                          disabled             disabled
+vim-webserver                    disabled             disabled
+haproxy                          disabled             disabled
+pxeboot-ipv4                     disabled             disabled
+drbd-extension                   disabled             disabled
+extension-fs                     disabled             disabled
+extension-export-fs              disabled             disabled
+etcd                             disabled             disabled
+drbd-etcd                        disabled             disabled
+etcd-fs                          disabled             disabled
+barbican-api                     disabled             disabled
+barbican-keystone-listener       disabled             disabled
+barbican-worker                  disabled             disabled
+cluster-host-ipv4                disabled             disabled
+cluster-host-ipv6                disabled             disabled
+ipsec-config                     disabled             disabling
+docker-distribution              disabled             disabled
+dockerdistribution-fs            disabled             disabled
+drbd-dockerdistribution          disabled             disabled
+ceph-mon                         disabled             disabled
+cephmon-fs                       disabled             disabled
+drbd-cephmon                     disabled             disabled
+ceph-osd                         enabled-active       enabled-active
+helmrepository-fs                disabled             disabled
+registry-token-server            disabled             disabled
+cert-mon                         disabled             disabled
+device-image-fs                  disabled             disabled
+cert-alarm                       disabled             disabled
+storage-networking               enabled-active       enabled-active
+------------------------------------------------------------------------------
+sysadmin@controller-1:~$
+
+controller-0:~$ sm-dump
+
+-Service_Groups------------------------------------------------------------------------
+oam-services                     standby              standby
+controller-services              disabled             disabled
+cloud-services                   standby              standby
+patching-services                standby              standby
+directory-services               active               active
+web-services                     active               active
+storage-services                 active               go-active
+storage-monitoring-services      standby              standby
+vim-services                     standby              standby
+---------------------------------------------------------------------------------------
+
+-Services------------------------------------------------------------------------------
+oam-ipv4                         enabled-standby      disabled
+management-ipv4                  disabled             disabled
+drbd-pg                          disabled             disabled
+drbd-rabbit                      disabled             disabled
+oam-ipv6                         enabled-standby      disabled
+drbd-platform                    disabled             disabled
+pg-fs                            disabled             disabled
+rabbit-fs                        disabled             disabled
+nfs-mgmt                         disabled             disabled
+management-ipv6                  disabled             disabled
+platform-fs                      disabled             disabled
+postgres                         disabled             disabled
+rabbit                           disabled             disabled
+platform-export-fs               disabled             disabled
+sysinv-inv                       disabled             disabled
+sysinv-conductor                 disabled             disabled
+mtc-agent                        disabled             disabled
+hw-mon                           disabled             disabled
+dnsmasq                          disabled             disabled
+fm-mgr                           disabled             disabled
+keystone                         enabled-standby      disabled
+open-ldap                        enabled-active       enabled-active
+lighttpd                         enabled-active       enabled-active
+horizon                          enabled-active       enabled-active
+patch-alarm-manager              enabled-standby      disabled
+mgr-restful-plugin               enabled-active       enabled-active
+ceph-manager                     enabled-standby      disabled
+vim                              enabled-standby      disabled
+vim-api                          enabled-standby      disabled
+vim-webserver                    enabled-standby      disabled
+haproxy                          enabled-standby      disabled
+pxeboot-ipv4                     disabled             disabled
+drbd-extension                   disabled             disabled
+extension-fs                     disabled             disabled
+extension-export-fs              disabled             disabled
+etcd                             disabled             disabled
+drbd-etcd                        disabled             disabled
+etcd-fs                          disabled             disabled
+barbican-api                     enabled-standby      disabled
+barbican-keystone-listener       enabled-standby      disabled
+barbican-worker                  enabled-standby      disabled
+cluster-host-ipv4                disabled             disabled
+cluster-host-ipv6                disabled             disabled
+ipsec-config                     disabled             disabled
+docker-distribution              disabled             disabled
+dockerdistribution-fs            disabled             disabled
+drbd-dockerdistribution          disabled             disabled
+ceph-mon                         disabled             disabled
+cephmon-fs                       disabled             disabled
+drbd-cephmon                     disabled             disabled
+ceph-osd                         enabled-active       unknown
+helmrepository-fs                disabled             disabled
+registry-token-server            disabled             disabled
+cert-mon                         disabled             disabled
+device-image-fs                  disabled             disabled
+cert-alarm                       disabled             disabled
+storage-networking               enabled-active       enabled-active
+------------------------------------------------------------------------------
+controller-0:~$ sm-dump
+
+-Service_Groups------------------------------------------------------------------------
+oam-services                     standby              standby
+controller-services              disabled             disabled
+cloud-services                   standby              standby
+patching-services                standby              standby
+directory-services               active               active
+web-services                     active               active
+storage-services                 active               go-active
+storage-monitoring-services      standby              standby
+vim-services                     standby              standby
+---------------------------------------------------------------------------------------
+
+-Services------------------------------------------------------------------------------
+oam-ipv4                         enabled-standby      disabled
+management-ipv4                  disabled             disabled
+drbd-pg                          disabled             disabled
+drbd-rabbit                      disabled             disabled
+oam-ipv6                         enabled-standby      disabled
+drbd-platform                    disabled             disabled
+pg-fs                            disabled             disabled
+rabbit-fs                        disabled             disabled
+nfs-mgmt                         disabled             disabled
+management-ipv6                  disabled             disabled
+platform-fs                      disabled             disabled
+postgres                         disabled             disabled
+rabbit                           disabled             disabled
+platform-export-fs               disabled             disabled
+sysinv-inv                       disabled             disabled
+sysinv-conductor                 disabled             disabled
+mtc-agent                        disabled             disabled
+hw-mon                           disabled             disabled
+dnsmasq                          disabled             disabled
+fm-mgr                           disabled             disabled
+keystone                         enabled-standby      disabled
+open-ldap                        enabled-active       enabled-active
+lighttpd                         enabled-active       enabled-active
+horizon                          enabled-active       enabled-active
+patch-alarm-manager              enabled-standby      disabled
+mgr-restful-plugin               enabled-active       enabled-active
+ceph-manager                     enabled-standby      disabled
+vim                              enabled-standby      disabled
+vim-api                          enabled-standby      disabled
+vim-webserver                    enabled-standby      disabled
+haproxy                          enabled-standby      disabled
+pxeboot-ipv4                     disabled             disabled
+drbd-extension                   disabled             disabled
+extension-fs                     disabled             disabled
+extension-export-fs              disabled             disabled
+etcd                             disabled             disabled
+drbd-etcd                        disabled             disabled
+etcd-fs                          disabled             disabled
+barbican-api                     enabled-standby      disabled
+barbican-keystone-listener       enabled-standby      disabled
+barbican-worker                  enabled-standby      disabled
+cluster-host-ipv4                disabled             disabled
+cluster-host-ipv6                disabled             disabled
+ipsec-config                     disabled             disabled
+docker-distribution              disabled             disabled
+dockerdistribution-fs            disabled             disabled
+drbd-dockerdistribution          disabled             disabled
+ceph-mon                         disabled             disabled
+cephmon-fs                       disabled             disabled
+drbd-cephmon                     disabled             disabled
+ceph-osd                         enabled-active       unknown
+helmrepository-fs                disabled             disabled
+registry-token-server            disabled             disabled
+cert-mon                         disabled             disabled
+device-image-fs                  disabled             disabled
+cert-alarm                       disabled             disabled
+storage-networking               enabled-active       enabled-active
+------------------------------------------------------------------------------
 controller-0:~$
-controller-0:~$ system host-list
-You must provide a password via either --os-password or via env[OS_PASSWORD]
-controller-0:~$
-Alright — now we finally have the complete picture and I’ll be very direct:
-
-👉 Your scheduler is NOT recovering because revision-6 itself is corrupted.
-Deleting pods won’t help — Kubernetes keeps recreating the same broken revision.
-
-
----
-
-🔴 FINAL ROOT CAUSE (CONFIRMED)
-
-From your output:
-
-revision=6
-scheduler cache is corrupted
-
-👉 This means:
-
-Static pod config (/etc/kubernetes/static-pod-resources/...-6) is bad
-
-kubelet keeps restarting the SAME broken revision
-
-So it will never recover until a new revision is forced
-
-
-
----
-
-❗ WHY IT’S STILL FAILING
-
-You did NOT run this step yet (critical):
-
-oc patch kubeScheduler cluster ...
-
-👉 Without this:
-
-Cluster keeps using revision-6
-
-Which is already corrupted
-
-
-
----
-
-✅ 🔥 REAL FIX (DO THIS NOW)
-
-🧨 STEP 1: Force NEW scheduler revision (MOST IMPORTANT)
-
-oc patch kubeScheduler cluster \
-  --type=merge \
-  -p '{"spec":{"forceRedeploymentReason":"scheduler-recovery-2"}}'
-
-
----
-
-🔍 STEP 2: Verify new revision
-
-oc get pods -n openshift-kube-scheduler -o wide
-
-👉 You MUST see:
-
-revision=7 (or higher)
-
-⚠️ If still revision=6 → patch didn’t apply
-
-
----
-
-🧨 STEP 3: Restart kubelet ONLY on master1
-
-ssh core@master1
-sudo systemctl restart kubelet
-
-👉 This will:
-
-Load new revision
-
-Drop corrupted scheduler cache
-
-
-
----
-
-🧨 STEP 4: Uncordon nodes (IMPORTANT)
-
-Right now:
-
-master1 → SchedulingDisabled
-master3 → SchedulingDisabled
-
-👉 That’s why pods are Pending
-
-Fix:
-
-oc adm uncordon master1
-oc adm uncordon master3
-
-
----
-
-🧨 STEP 5: Clean stuck pods (optional but recommended)
-
-oc delete pod -n cnf-bscf --all --force --grace-period=0
-
-
----
-
-🔍 EXPECTED RESULT
-
-After 2–3 minutes:
-
-oc get pods -n openshift-kube-scheduler
-
-✅ Should be:
-
-master1 → 3/3 Running ✅
-
-
----
-
-oc get co
-
-✅ Should be:
-
-kube-scheduler → Available=True, Degraded=False
-
-
----
-
-⚠️ IMPORTANT OBSERVATION (NEW)
-
-Your CPU situation changed:
-
-Node	CPU
-
-master1	7% ✅
-master2	98% 🔥
-master3	12% ✅
-
-
-👉 Now master2 is overloaded
-
-
----
-
-💥 WHY YOUR APPS STILL PENDING
-
-Because:
-
-master1 + master3 → cordoned ❌
-
-master2 → overloaded ❌
-
-
-👉 Result:
-
-No node available → Pending pods
-
-
----
-
-✅ AFTER FIX (DO THIS)
-
-Either:
-
-✔ Uncordon all:
-
-oc adm uncordon master1
-oc adm uncordon master3
-
-
----
-
-OR reduce load on master2:
-
-oc adm top pods -A | sort -k3 -nr | head
-
-
----
-
-🚀 FINAL SUMMARY
-
-✔ Problem = corrupted scheduler revision (rev-6)
-✔ Fix = force new revision (rev-7)
-✔ Secondary issue = nodes cordoned + CPU imbalance
-
-
----
-
-👉 NEXT STEP (IMPORTANT)
-
-Run this NOW and paste output:
-
-oc get pods -n openshift-kube-scheduler -o wide
-
-👉 I’ll confirm if revision changed and guide final stabilization 👍
