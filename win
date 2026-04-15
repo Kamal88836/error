@@ -1,8 +1,153 @@
-controller-0:~$ id
-uid=42425(sysadmin) gid=345(sys_protected) groups=345(sys_protected),0(root)
-controller-0:~$
+Great — now we have the exact root cause pinned down 👍
 
-controller-0:~$ sudo /opt/platform/.keyring/24.09/.CREDENTIAL
-Password:
+You proved this:
+
+sudo /opt/platform/.keyring/24.09/.CREDENTIAL  ✅ works
+/opt/platform/.keyring/24.09/.CREDENTIAL       ❌ not working as sysadmin
+
+
+---
+
+🎯 Root Cause
+
+Even though:
+
+sysadmin is in sys_protected group ✅
+
+File exists and is executable ✅
+
+
+👉 The .CREDENTIAL binary requires elevated privileges (root) to read the encrypted keyring.
+
+So:
+
+OS_PASSWORD=`/opt/platform/.keyring/.../.CREDENTIAL`
+
+fails silently → results in:
+
+OS_PASSWORD=
+
+
+---
+
+✅ Fix (Correct & Standard in StarlingX)
+
+🔥 Use sudo -E when sourcing openrc
+
+Run this:
+
+sudo -E bash -c "source /etc/platform/openrc && system host-list"
+
+👉 This works because:
+
+sudo allows .CREDENTIAL to execute properly
+
+-E preserves environment variables
+
+
+
+---
+
+✅ Better Working Method (Recommended)
+
+Step 1: Get password manually (you already did)
+
+sudo /opt/platform/.keyring/24.09/.CREDENTIAL
+
+Output:
+
 W!ndR00tUser
-controller-0:~$ sudo /opt/platform/.keyring/24.09/.CREDENTIAL
+
+
+---
+
+Step 2: Export manually
+
+export OS_USERNAME=admin
+export OS_PASSWORD='W!ndR00tUser'
+export OS_PROJECT_NAME=admin
+export OS_AUTH_URL=http://127.0.0.1:5000/v3
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_DOMAIN_NAME=Default
+
+
+---
+
+Step 3: Run commands
+
+system host-list
+system application-list
+
+
+---
+
+💡 Why openrc still fails
+
+Your openrc uses:
+
+TERM=linux /opt/platform/.keyring/.../.CREDENTIAL
+
+👉 But:
+
+It does NOT use sudo
+
+So it cannot decrypt password
+
+
+
+---
+
+🔥 Permanent Fix Option (Optional)
+
+Edit openrc to use sudo:
+
+sudo vi /etc/platform/openrc
+
+Change:
+
+export OS_PASSWORD=`TERM=linux /opt/platform/.keyring/.../.CREDENTIAL`
+
+👉 To:
+
+export OS_PASSWORD=`sudo /opt/platform/.keyring/.../.CREDENTIAL`
+
+
+---
+
+⚠️ Only do this if allowed by your environment policy.
+
+
+---
+
+🧠 Final Understanding
+
+Component	Status
+
+controller-services	✅ fixed
+keyring	✅ present
+credential file	✅ working
+openrc	❌ lacks privilege
+workaround	✅ manual export / sudo
+
+
+
+---
+
+🚀 Fastest Working Command
+
+export OS_PASSWORD=$(sudo /opt/platform/.keyring/24.09/.CREDENTIAL)
+system host-list
+
+
+---
+
+If you want, I can help you:
+
+Fix openrc cleanly (production-safe way)
+
+Diagnose why .CREDENTIAL needs sudo (depends on build/version)
+
+Automate login for future sessions
+
+
+Just tell 👍
