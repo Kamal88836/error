@@ -1,8 +1,130 @@
-controller-0:~$ sudo -E bash -c "source /etc/platform/openrc && system host-list"
-+----+--------------+-------------+----------------+-------------+--------------+
-| id | hostname     | personality | administrative | operational | availability |
-+----+--------------+-------------+----------------+-------------+--------------+
-| 1  | controller-0 | controller  | unlocked       | enabled     | degraded     |
-| 2  | controller-1 | controller  | unlocked       | enabled     | degraded     |
-+----+--------------+-------------+----------------+-------------+--------------+
-controller-0:~$
+Nice — that confirms everything is working again 🎯
+
+You successfully authenticated and got:
+
+controller-0 → degraded  
+controller-1 → degraded
+
+
+---
+
+✅ Current State Summary
+
+In your StarlingX cluster:
+
+✅ Keystone auth → FIXED
+
+✅ .CREDENTIAL → FIXED
+
+✅ controller-services → FIXED
+
+⚠️ Controllers → DEGRADED (not healthy yet)
+
+
+
+---
+
+⚠️ What “degraded” means
+
+👉 System is running, but some services are still not fully OK.
+
+From your earlier output, the main suspect is:
+
+ceph-mon  enabling  failed
+
+👉 This is usually the reason controllers stay degraded.
+
+
+---
+
+🔍 Next Check (very important)
+
+Run this on controller-0:
+
+sudo ceph -s
+
+
+---
+
+📊 What to look for
+
+Healthy:
+
+HEALTH_OK
+
+Problem (likely your case):
+
+HEALTH_WARN / HEALTH_ERR
+mon down / quorum issue
+
+
+---
+
+🔧 Also check alarms
+
+sudo fm alarm-list
+
+👉 This will show exactly why system is degraded.
+
+
+---
+
+🚀 Quick Recovery Steps
+
+1. Restart Ceph MON (most common fix)
+
+sudo sm-restart service ceph-mon
+
+Then check:
+
+sm-dump | grep ceph-mon
+
+
+---
+
+2. Re-check system health
+
+system host-list
+
+👉 Expect:
+
+availability → available ✅
+
+
+---
+
+💡 Good news
+
+You are past the hardest part:
+
+Authentication issue ✔️
+
+Platform orchestration ✔️
+
+
+👉 Now it’s just service health cleanup
+
+
+---
+
+🧠 Quick Tip (for future)
+
+Instead of always doing long command, you can use:
+
+alias stx='sudo -E bash -c "source /etc/platform/openrc && $1"'
+
+Then:
+
+stx system host-list
+
+
+---
+
+🚀 Next step
+
+Run and share:
+
+sudo ceph -s
+sudo fm alarm-list
+
+I’ll tell you exact fix to remove degraded state 👍
