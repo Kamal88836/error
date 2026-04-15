@@ -1,78 +1,14 @@
-------------------------------------------------------------------------------
-sysadmin@controller-0:~$ sm-dump
+[sysadmin@controller-1 ~(keystone_admin)]$ system host-list
+Must provide Keystone credentials or user-defined endpoint and token, error was: Unable to establish connection to http://[face::1]:5000/v3/auth/tokens: HTTPConnectionPool(host='face::1', port=5000): Max retries exceeded with url: /v3/auth/tokens (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f535e148fd0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[sysadmin@controller-1 ~(keystone_admin)]$ system host-list
+Must provide Keystone credentials or user-defined endpoint and token, error was: Unable to establish connection to http://[face::1]:5000/v3/auth/tokens: HTTPConnectionPool(host='face::1', port=5000): Max retries exceeded with url: /v3/auth/tokens (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fee8a3a6f40>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[sysadmin@controller-1 ~(keystone_admin)]$ date
+Wednesday 15 April 2026 02:01:37 PM UTC
+[sysadmin@controller-1 ~(keystone_admin)]$ system host-list
 
--Service_Groups------------------------------------------------------------------------
-oam-services                     initial              initial
-controller-services              initial              initial
-cloud-services                   initial              initial
-patching-services                initial              initial
-directory-services               initial              initial
-web-services                     initial              initial
-storage-services                 initial              initial
-storage-monitoring-services      initial              initial
-vim-services                     initial              initial
----------------------------------------------------------------------------------------
 
--Services------------------------------------------------------------------------------
-oam-ipv4                         initial              initial
-management-ipv4                  initial              initial
-drbd-pg                          initial              initial
-drbd-rabbit                      initial              initial
-oam-ipv6                         initial              initial
-drbd-platform                    initial              initial
-pg-fs                            initial              initial
-rabbit-fs                        initial              initial
-nfs-mgmt                         initial              initial
-management-ipv6                  initial              initial
-platform-fs                      initial              initial
-postgres                         initial              initial
-rabbit                           initial              initial
-platform-export-fs               initial              initial
-sysinv-inv                       initial              initial
-sysinv-conductor                 initial              initial
-mtc-agent                        initial              initial
-hw-mon                           initial              initial
-dnsmasq                          initial              initial
-fm-mgr                           initial              initial
-keystone                         initial              initial
-open-ldap                        initial              initial
-lighttpd                         initial              initial
-horizon                          initial              initial
-patch-alarm-manager              initial              initial
-mgr-restful-plugin               initial              initial
-ceph-manager                     initial              initial
-vim                              initial              initial
-vim-api                          initial              initial
-vim-webserver                    initial              initial
-haproxy                          initial              initial
-pxeboot-ipv4                     initial              initial
-drbd-extension                   initial              initial
-extension-fs                     initial              initial
-extension-export-fs              initial              initial
-etcd                             initial              initial
-drbd-etcd                        initial              initial
-etcd-fs                          initial              initial
-barbican-api                     initial              initial
-barbican-keystone-listener       initial              initial
-barbican-worker                  initial              initial
-cluster-host-ipv4                initial              initial
-cluster-host-ipv6                initial              initial
-ipsec-config                     initial              initial
-docker-distribution              initial              initial
-dockerdistribution-fs            initial              initial
-drbd-dockerdistribution          initial              initial
-ceph-mon                         initial              initial
-cephmon-fs                       initial              initial
-drbd-cephmon                     initial              initial
-ceph-osd                         initial              initial
-helmrepository-fs                initial              initial
-registry-token-server            initial              initial
-cert-mon                         initial              initial
-device-image-fs                  initial              initial
-cert-alarm                       initial              initial
-storage-networking               initial              initial
-------------------------------------------------------------------------------
-sysadmin@controller-0:~$
+
+^Ccaught: KeyboardInterrupt(), aborting
 [sysadmin@controller-1 ~(keystone_admin)]$ sm-dump
 
 -Service_Groups------------------------------------------------------------------------
@@ -146,6 +82,48 @@ device-image-fs                  disabled             disabled
 cert-alarm                       disabled             disabled
 storage-networking               enabled-active       enabled-active
 ------------------------------------------------------------------------------
+[sysadmin@controller-1 ~(keystone_admin)]$ system host-list
+Must provide Keystone credentials or user-defined endpoint and token, error was: Unable to establish connection to http://[face::1]:5000/v3/auth/tokens: HTTPConnectionPool(host='face::1', port=5000): Max retries exceeded with url: /v3/auth/tokens (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f8e875734c0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[sysadmin@controller-1 ~(keystone_admin)]$ system host-list
+^Ccaught: KeyboardInterrupt(), aborting
+[sysadmin@controller-1 ~(keystone_admin)]$ drbd-overview
+
+[sysadmin@controller-1 ~(keystone_admin)]$ sudo systemctl status etcd
+Password:
+Sorry, try again.
+Password:
+Sorry, try again.
+Password:
+sudo: 3 incorrect password attempts
+[sysadmin@controller-1 ~(keystone_admin)]$ sudo systemctl status etcd
+Password:
+● etcd.service - etcd - highly-available key value store
+     Loaded: loaded (/etc/init.d/etcd; generated)
+    Drop-In: /etc/systemd/system/etcd.service.d
+             └─etcd-override.conf
+     Active: inactive (dead) since Wed 2026-04-15 14:06:25 UTC; 2min 30s ago
+       Docs: man:systemd-sysv-generator(8)
+             https://etcd.io/docs
+             man:etcd
+    Process: 941134 ExecStart=/bin/bash -c GOMAXPROCS=3 /usr/bin/etcd (code=killed, signal=TERM)
+    Process: 943133 ExecStartPost=/bin/bash -c echo $MAINPID >/var/run/etcd.pid (code=exited, status=0/SUCCESS)
+    Process: 947129 ExecStopPost=/bin/bash -c rm -f /var/run/etcd.pid (code=exited, status=0/SUCCESS)
+   Main PID: 941134 (code=killed, signal=TERM)
+        CPU: 2.893s
+[sysadmin@controller-1 ~(keystone_admin)]$ sudo systemctl start etcd
+Job for etcd.service failed because the service did not take the steps required by its unit configuration.
+See "systemctl status etcd.service" and "journalctl -xe" for details.
+[sysadmin@controller-1 ~(keystone_admin)]$ sudo tail 10  /var/log/sm.log
+tail: cannot open '10' for reading: No such file or directory
+==> /var/log/sm.log <==
+2026-04-15T14:09:45.873 controller-1 sm: debug time[26178.579] log<67856> INFO: sm[2542233]: sm_node_swact_monitor.cpp(29): Swact has started, host will be standby
+2026-04-15T14:09:46.072 controller-1 sm: debug time[26178.778] log<67857> INFO: sm[2542233]: sm_thread_health.c(205): WARNING: thread (sm_alarm) delayed for 170089
+2026-04-15T14:09:47.095 controller-1 sm: debug time[26179.800] log<67858> INFO: sm[2542233]: sm_thread_health.c(205): WARNING: thread (sm_alarm) delayed for 171111
+2026-04-15T14:09:48.112 controller-1 sm: debug time[26180.817] log<67859> INFO: sm[2542233]: sm_thread_health.c(205): WARNING: thread (sm_alarm) delayed for 172128
+2026-04-15T14:09:48.880 controller-1 sm: debug time[26181.586] log<67860> INFO: sm[2542233]: sm_service_domain_filter.c(338): Uncontrolled swact start
+2026-04-15T14:09:48.880 controller-1 sm: debug time[26181.586] log<67861> INFO: sm[2542233]: sm_node_swact_monitor.cpp(23): Start of swact: affining tasks to idle cores...
+2026-04-15T14:09:48.880 controller-1 sm: debug time[26181.586] log<67862> INFO: sm[2542233]: sm_service_enable.c(67): Additional cores check enabled
+2026-04-15T14:09:48.880 controller-1 sm: debug time[26181.586] log<67863> INFO: sm[2542233]: sm_node_swact_monitor.cpp(29): Swact has started, host will be standby
+2026-04-15T14:09:49.115 controller-1 sm: debug time[26181.821] log<67864> INFO: sm[2542233]: sm_thread_health.c(205): WARNING: thread (sm_alarm) delayed for 173132
+2026-04-15T14:09:50.135 controller-1 sm: debug time[26182.841] log<67865> INFO: sm[2542233]: sm_thread_health.c(205): WARNING: thread (sm_alarm) delayed for 174152
 [sysadmin@controller-1 ~(keystone_admin)]$
-
-
