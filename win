@@ -1,65 +1,21 @@
-sysadmin@controller-1:~$ source /etc/platform/openrc
-Openstack Admin credentials can only be loaded from the active controller.
-controller-1:~$ system application-list
-You must provide a password via either --os-password or via env[OS_PASSWORD]
-controller-1:~$ source /etc/platform/openrc
-Openstack Admin credentials can only be loaded from the active controller.
-controller-1:~$ cat /etc/platform/openrc
-# Usage: source this file with parameter "--no_credentials" to avoid exporting
-# user and password. Also, PS1 variable is not set.
-
-if [[ "${1:-}" == "--no_credentials" ]]; then
-    no_credentials=true
-else
-    no_credentials=false
-fi
-
-unset OS_SERVICE_TOKEN
-
-export OS_ENDPOINT_TYPE=internalURL
-export CINDER_ENDPOINT_TYPE=internalURL
-
-if [[ "${no_credentials}" == false ]]; then
-    export OS_USERNAME=admin
-    export OS_PASSWORD=`TERM=linux /opt/platform/.keyring/24.09/.CREDENTIAL 2>/dev/null`
-fi
-export OS_AUTH_TYPE=password
-export OS_AUTH_URL=http://[face::1]:5000/v3
-
-export OS_PROJECT_NAME=admin
-export OS_USER_DOMAIN_NAME=Default
-export OS_PROJECT_DOMAIN_NAME=Default
-export OS_IDENTITY_API_VERSION=3
-export OS_REGION_NAME=0a526d6958c1436faf2b8866af32b297
-export OS_INTERFACE=internal
-
-if [[ "${no_credentials}" == false ]]; then
-    if [ ! -z "${OS_PASSWORD}" ]; then
-        export PS1='[\u@\h \W(keystone_$OS_USERNAME)]\$ '
-    else
-        if [ ! -e /opt/platform/.keyring/24.09/.CREDENTIAL ]; then
-            echo 'Openstack Admin credentials can only be loaded from the active controller.'
-        else
-            echo 'Not enough privileges to read keyring password.'
-        fi
-        export PS1='\h:\w\$ '
-        return 1
-    fi
-else
-    if [ ! -e /opt/platform/.keyring/24.09/.CREDENTIAL ]; then
-        echo 'This file should only be loaded from the active controller.'
-        return 1
-    fi
-fi
-
-return 0
-controller-1:~$ cat /opt/platform/.keyring/24.09/.CREDENTIAL
-cat: /opt/platform/.keyring/24.09/.CREDENTIAL: No such file or directory
-controller-1:~$ ls -ltr  /opt/platform/.keyring/24.09/
-ls: cannot access '/opt/platform/.keyring/24.09/': No such file or directory
-controller-1:~$ sudo ls -ltr  /opt/platform/.keyring/24.09/
-ls: cannot access '/opt/platform/.keyring/24.09/': No such file or directory
 controller-1:~$ source /etc/platform/openrc
 Openstack Admin credentials can only be loaded from the active controller.
 controller-1:~$ system application-list
 You must provide a password via either --os-password or via env[OS_PASSWORD]
+controller-1:~$
+controller-1:~$ system host-list
+You must provide a password via either --os-password or via env[OS_PASSWORD]
+controller-1:~$ env | grep OS_PASSWORD
+OS_PASSWORD=
+controller-1:~$
+
+sysadmin@controller-0:~$ source /etc/platform/openrc
+Openstack Admin credentials can only be loaded from the active controller.
+controller-0:~$ system application-list
+You must provide a password via either --os-password or via env[OS_PASSWORD]
+controller-0:~$ system host-list
+You must provide a password via either --os-password or via env[OS_PASSWORD]
+controller-0:~$ env | grep OS_PASSWORD
+OS_PASSWORD=
+controller-0:~$
+
