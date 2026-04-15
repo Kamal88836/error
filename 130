@@ -1,4 +1,111 @@
-sysadmin@controller-1:~$ sudo systemctl stop sm
-Password:
-Job for sm.service canceled.
-sysadmin@controller-1:~$
+Good move 👍 — restarting is actually the right call at this stage.
+
+Now let’s make sure you bring the cluster back correctly, otherwise it can fall back into the same standby loop.
+
+
+---
+
+🚨 What to do AFTER reboot
+
+✅ Step 1: Check which node came up first
+
+On both controllers, run:
+
+sm-dump | grep controller-services
+
+👉 You want ONE node like this:
+
+controller-services active active ✅
+
+👉 And the other:
+
+standby standby
+
+
+---
+
+🔴 If BOTH are still standby (very important)
+
+👉 Then you MUST force election again:
+
+On controller-1:
+
+sudo systemctl stop sm
+
+On controller-0:
+
+sudo systemctl restart sm
+
+
+---
+
+✅ Step 2: Verify core services on ACTIVE node
+
+On the ACTIVE controller:
+
+sm-dump | egrep "postgres|keystone|sysinv"
+
+👉 Expected:
+
+enabled-active enabled-active
+
+
+---
+
+✅ Step 3: Check Ceph (critical)
+
+sm-dump | grep ceph-mon
+
+👉 Should be:
+
+enabled-active enabled-active
+
+If not → we fix Ceph next.
+
+
+---
+
+✅ Step 4: Test CLI
+
+sudo -E bash -c "source /etc/platform/openrc && system host-list"
+
+
+---
+
+⚠️ Very Important
+
+After reboot:
+
+Sometimes both controllers try standby
+
+System waits forever → no recovery
+
+
+👉 That’s why forcing one node (step above) is key
+
+
+---
+
+🧠 What success looks like
+
+Component	Expected
+
+controller-services	active/active
+postgres	active
+keystone	active
+ceph-mon	active
+system host-list	working
+
+
+
+---
+
+🚀 Your next step
+
+Run and share:
+
+sm-dump | grep controller-services
+
+on both nodes.
+
+I’ll tell you immediately if cluster is recovered or what exact fix is next 👍
