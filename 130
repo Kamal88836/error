@@ -1,11 +1,205 @@
-sno7@haproxy:~/ocp-agentSNO$ sudo apt install -y nmstate
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-E: Unable to locate package nmstate
-sno7@haproxy:~/ocp-agentSNO$ sudo apt install -y nmstatectl
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-E: Unable to locate package nmstatectl
-sno7@haproxy:~/ocp-agentSNO$
+Alright — let’s do this properly and practically for your setup 👍
+You’re on Ubuntu 24.04 + disconnected environment, so normal apt install won’t work.
+
+
+---
+
+🧩 What you’re trying to install
+
+You need the CLI:
+
+nmstatectl
+(from the NMState project)
+
+
+👉 This is only required for validation on bastion, not for the cluster itself.
+
+
+---
+
+✅ Method 1 — Recommended (Virtual Environment)
+
+This works cleanly on Ubuntu 24.04.
+
+
+---
+
+🔧 Step 1: Install venv support (if DNS works)
+
+sudo apt install -y python3-venv
+
+👉 If DNS is broken, skip this and go to Method 2
+
+
+---
+
+🔧 Step 2: Create virtual environment
+
+python3 -m venv nmstate-venv
+
+
+---
+
+🔧 Step 3: Activate
+
+source nmstate-venv/bin/activate
+
+
+---
+
+🔧 Step 4: Install nmstate
+
+pip install nmstate
+
+
+---
+
+🔧 Step 5: Verify
+
+nmstatectl --version
+
+
+---
+
+🔧 Step 6: Export path (IMPORTANT)
+
+export PATH=$PWD/nmstate-venv/bin:$PATH
+
+
+---
+
+🔁 Now retry OpenShift command
+
+./openshift-install agent create cluster-manifests
+
+
+---
+
+❌ But your case = DISCONNECTED
+
+Your logs show:
+
+Temporary failure resolving archive.ubuntu.com
+
+👉 So pip also won’t work online.
+
+
+---
+
+✅ Method 2 — Offline Installation (Best for you)
+
+💻 On a machine with internet:
+
+pip3 download nmstate
+
+This downloads:
+
+.whl files
+
+
+
+---
+
+📦 Copy to bastion
+
+Use scp / USB:
+
+scp *.whl sno7@haproxy:~/nmstate/
+
+
+---
+
+🔧 On bastion:
+
+cd ~/nmstate
+python3 -m venv nmstate-venv
+source nmstate-venv/bin/activate
+pip install *.whl
+
+
+---
+
+✅ Verify
+
+nmstatectl --version
+
+
+---
+
+⚡ Method 3 — Quick Force Install (not recommended)
+
+sudo pip3 install nmstate --break-system-packages
+
+👉 Works fast
+⚠️ Can break system Python
+
+
+---
+
+🚀 Method 4 — Skip Installation (MOST USED in labs)
+
+Since you're doing:
+
+SNO
+
+Agent-based
+
+Disconnected
+
+
+👉 You can skip nmstate completely:
+
+export NMSTATECTL_PATH=/bin/true
+
+Then:
+
+./openshift-install agent create cluster-manifests
+
+
+---
+
+🧠 What I recommend for YOU
+
+Given your setup:
+
+👉 Best option:
+
+Use Method 4 (skip validation)
+✔ Fast
+✔ No internet needed
+✔ Widely used in disconnected labs
+
+
+
+---
+
+⚠️ Important warning
+
+If you skip nmstate:
+
+👉 Your agent-config.yaml must be correct:
+
+Interface name (ens192 vs eth0)
+
+MAC address
+
+Static IP
+
+
+
+---
+
+📌 Final Summary
+
+Method	When to use
+
+venv + pip	If internet available
+offline pip	Disconnected production
+skip validation	Fast lab setup ✅
+
+
+
+---
+
+If you want, paste your agent-config.yaml
+I’ll validate it manually so you can safely skip nmstate 👍
