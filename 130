@@ -1,205 +1,136 @@
-Alright — let’s do this properly and practically for your setup 👍
-You’re on Ubuntu 24.04 + disconnected environment, so normal apt install won’t work.
 
-
----
-
-🧩 What you’re trying to install
-
-You need the CLI:
-
-nmstatectl
-(from the NMState project)
-
-
-👉 This is only required for validation on bastion, not for the cluster itself.
-
-
----
-
-✅ Method 1 — Recommended (Virtual Environment)
-
-This works cleanly on Ubuntu 24.04.
-
-
----
-
-🔧 Step 1: Install venv support (if DNS works)
-
-sudo apt install -y python3-venv
-
-👉 If DNS is broken, skip this and go to Method 2
-
-
----
-
-🔧 Step 2: Create virtual environment
-
-python3 -m venv nmstate-venv
-
-
----
-
-🔧 Step 3: Activate
-
-source nmstate-venv/bin/activate
-
-
----
-
-🔧 Step 4: Install nmstate
-
-pip install nmstate
-
-
----
-
-🔧 Step 5: Verify
-
-nmstatectl --version
-
-
----
-
-🔧 Step 6: Export path (IMPORTANT)
-
-export PATH=$PWD/nmstate-venv/bin:$PATH
-
-
----
-
-🔁 Now retry OpenShift command
-
-./openshift-install agent create cluster-manifests
-
-
----
-
-❌ But your case = DISCONNECTED
-
-Your logs show:
-
-Temporary failure resolving archive.ubuntu.com
-
-👉 So pip also won’t work online.
-
-
----
-
-✅ Method 2 — Offline Installation (Best for you)
-
-💻 On a machine with internet:
-
-pip3 download nmstate
-
-This downloads:
-
-.whl files
-
-
-
----
-
-📦 Copy to bastion
-
-Use scp / USB:
-
-scp *.whl sno7@haproxy:~/nmstate/
-
-
----
-
-🔧 On bastion:
-
-cd ~/nmstate
-python3 -m venv nmstate-venv
-source nmstate-venv/bin/activate
-pip install *.whl
-
-
----
-
-✅ Verify
-
-nmstatectl --version
-
-
----
-
-⚡ Method 3 — Quick Force Install (not recommended)
-
-sudo pip3 install nmstate --break-system-packages
-
-👉 Works fast
-⚠️ Can break system Python
-
-
----
-
-🚀 Method 4 — Skip Installation (MOST USED in labs)
-
-Since you're doing:
-
-SNO
-
-Agent-based
-
-Disconnected
-
-
-👉 You can skip nmstate completely:
-
-export NMSTATECTL_PATH=/bin/true
-
-Then:
-
-./openshift-install agent create cluster-manifests
-
-
----
-
-🧠 What I recommend for YOU
-
-Given your setup:
-
-👉 Best option:
-
-Use Method 4 (skip validation)
-✔ Fast
-✔ No internet needed
-✔ Widely used in disconnected labs
-
-
-
----
-
-⚠️ Important warning
-
-If you skip nmstate:
-
-👉 Your agent-config.yaml must be correct:
-
-Interface name (ens192 vs eth0)
-
-MAC address
-
-Static IP
-
-
-
----
-
-📌 Final Summary
-
-Method	When to use
-
-venv + pip	If internet available
-offline pip	Disconnected production
-skip validation	Fast lab setup ✅
-
-
-
----
-
-If you want, paste your agent-config.yaml
-I’ll validate it manually so you can safely skip nmstate 👍
+sno7@haproxy:~/ocp-agentSNO$ sudo apt install -y python3-venv
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  python3-pip-whl python3-setuptools-whl python3.12-venv
+The following NEW packages will be installed:
+  python3-pip-whl python3-setuptools-whl python3-venv python3.12-venv
+0 upgraded, 4 newly installed, 0 to remove and 230 not upgraded.
+Need to get 2,430 kB of archives.
+After this operation, 2,783 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3-pip-whl all 24.0+dfsg-1ubuntu1.3 [1,707 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3-setuptools-whl all 68.1.2-2ubuntu1.2 [716 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3.12-venv amd64 3.12.3-1ubuntu0.12 [5,666 B]
+Get:4 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3-venv amd64 3.12.3-0ubuntu2.1 [1,032 B]
+Fetched 2,430 kB in 1min 28s (27.7 kB/s)
+Selecting previously unselected package python3-pip-whl.
+(Reading database ... 199012 files and directories currently installed.)
+Preparing to unpack .../python3-pip-whl_24.0+dfsg-1ubuntu1.3_all.deb ...
+Unpacking python3-pip-whl (24.0+dfsg-1ubuntu1.3) ...
+Selecting previously unselected package python3-setuptools-whl.
+Preparing to unpack .../python3-setuptools-whl_68.1.2-2ubuntu1.2_all.deb ...
+Unpacking python3-setuptools-whl (68.1.2-2ubuntu1.2) ...
+Selecting previously unselected package python3.12-venv.
+Preparing to unpack .../python3.12-venv_3.12.3-1ubuntu0.12_amd64.deb ...
+Unpacking python3.12-venv (3.12.3-1ubuntu0.12) ...
+Selecting previously unselected package python3-venv.
+Preparing to unpack .../python3-venv_3.12.3-0ubuntu2.1_amd64.deb ...
+Unpacking python3-venv (3.12.3-0ubuntu2.1) ...
+Setting up python3-setuptools-whl (68.1.2-2ubuntu1.2) ...
+Setting up python3-pip-whl (24.0+dfsg-1ubuntu1.3) ...
+Setting up python3.12-venv (3.12.3-1ubuntu0.12) ...
+Setting up python3-venv (3.12.3-0ubuntu2.1) ...
+sno7@haproxy:~/ocp-agentSNO$ python3 -m venv nmstate-venv
+sno7@haproxy:~/ocp-agentSNO$ source nmstate-venv/bin/activate
+(nmstate-venv) sno7@haproxy:~/ocp-agentSNO$ pip install nmstate
+Collecting nmstate
+  Downloading nmstate-2.0.0-py3-none-any.whl.metadata (5.3 kB)
+Collecting PyGObject (from nmstate)
+  Downloading pygobject-3.56.2.tar.gz (1.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 12.7 MB/s eta 0:00:00
+  Installing build dependencies ... error
+  error: subprocess-exited-with-error
+
+  × pip subprocess to install build dependencies did not run successfully.
+  │ exit code: 1
+  ╰─> [77 lines of output]
+      Collecting meson-python>=0.12.1
+        Downloading meson_python-0.19.0-py3-none-any.whl.metadata (2.1 kB)
+      Collecting pycairo>=1.16
+        Downloading pycairo-1.29.0.tar.gz (665 kB)
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 665.9/665.9 kB 9.1 MB/s eta 0:00:00
+        Installing build dependencies: started
+        Installing build dependencies: finished with status 'done'
+        Getting requirements to build wheel: started
+        Getting requirements to build wheel: finished with status 'done'
+        Installing backend dependencies: started
+        Installing backend dependencies: finished with status 'done'
+        Preparing metadata (pyproject.toml): started
+        Preparing metadata (pyproject.toml): finished with status 'error'
+        error: subprocess-exited-with-error
+
+        × Preparing metadata (pyproject.toml) did not run successfully.
+        │ exit code: 1
+        ╰─> [49 lines of output]
+            + meson setup /tmp/pip-install-fkje3vvx/pycairo_33f167cafb994edbac73d095b459df3b /tmp/pip-install-fkje3vvx/pycairo_33f167cafb994edbac73d095b459df3b/.mesonpy-3g5qizu9 -Dbuildtype=release -Db_ndebug=if-release -Db_vscrt=md -Dwheel=true -Dtests=false --native-file=/tmp/pip-install-fkje3vvx/pycairo_33f167cafb994edbac73d095b459df3b/.mesonpy-3g5qizu9/meson-python-native-file.ini
+            The Meson build system
+            Version: 1.11.0
+            Source dir: /tmp/pip-install-fkje3vvx/pycairo_33f167cafb994edbac73d095b459df3b
+            Build dir: /tmp/pip-install-fkje3vvx/pycairo_33f167cafb994edbac73d095b459df3b/.mesonpy-3g5qizu9
+            Build type: native build
+            Project name: pycairo
+            Project version: 1.29.0
+            C compiler for the host machine: cc (gcc 13.3.0 "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0")
+            C linker for the host machine: cc ld.bfd 2.42
+            Host machine cpu family: x86_64
+            Host machine cpu: x86_64
+            Program python3 found: YES (/home/sno7/ocp-agentSNO/nmstate-venv/bin/python3)
+            Compiler for C supports arguments -Wall: YES
+            Compiler for C supports arguments -Warray-bounds: YES
+            Compiler for C supports arguments -Wcast-align: YES
+            Compiler for C supports arguments -Wconversion: YES
+            Compiler for C supports arguments -Wextra: YES
+            Compiler for C supports arguments -Wformat=2: YES
+            Compiler for C supports arguments -Wformat-nonliteral: YES
+            Compiler for C supports arguments -Wformat-security: YES
+            Compiler for C supports arguments -Wimplicit-function-declaration: YES
+            Compiler for C supports arguments -Winit-self: YES
+            Compiler for C supports arguments -Wmissing-format-attribute: YES
+            Compiler for C supports arguments -Wmissing-noreturn: YES
+            Compiler for C supports arguments -Wnested-externs: YES
+            Compiler for C supports arguments -Wold-style-definition: YES
+            Compiler for C supports arguments -Wpacked: YES
+            Compiler for C supports arguments -Wpointer-arith: YES
+            Compiler for C supports arguments -Wreturn-type: YES
+            Compiler for C supports arguments -Wshadow: YES
+            Compiler for C supports arguments -Wsign-compare: YES
+            Compiler for C supports arguments -Wstrict-aliasing: YES
+            Compiler for C supports arguments -Wundef: YES
+            Compiler for C supports arguments -Wunused-but-set-variable: YES
+            Compiler for C supports arguments -Wswitch-default: YES
+            Compiler for C supports arguments -Wno-missing-field-initializers: YES
+            Compiler for C supports arguments -Wno-unused-parameter: YES
+            Compiler for C supports arguments -fno-strict-aliasing: YES
+            Compiler for C supports arguments -fvisibility=hidden: YES
+            Did not find pkg-config by name 'pkg-config'
+            Found pkg-config: NO
+            Did not find CMake 'cmake'
+            Found CMake: NO
+            Run-time dependency cairo found: NO
+
+            ../cairo/meson.build:31:12: ERROR: Dependency lookup for cairo with method 'pkg-config' failed: Pkg-config for machine host machine not found. Giving up.
+
+            A full log can be found at /tmp/pip-install-fkje3vvx/pycairo_33f167cafb994edbac73d095b459df3b/.mesonpy-3g5qizu9/meson-logs/meson-log.txt
+            [end of output]
+
+        note: This error originates from a subprocess, and is likely not a problem with pip.
+      error: metadata-generation-failed
+
+      × Encountered error while generating package metadata.
+      ╰─> See above for output.
+
+      note: This is an issue with the package mentioned above, not pip.
+      hint: See above for details.
+      [end of output]
+
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error
+
+× pip subprocess to install build dependencies did not run successfully.
+│ exit code: 1
+╰─> See above for output.
+
+note: This error originates from a subprocess, and is likely not a problem with pip.
+(nmstate-venv) sno7@haproxy:~/ocp-agentSNO$
