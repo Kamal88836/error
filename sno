@@ -1,24 +1,227 @@
+Got it — that detail changes the direction completely.
 
-[root@ocp-sno ~]# systemctl status kubelet
-○ kubelet.service - Kubernetes Kubelet
-     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
-    Drop-In: /etc/systemd/system/kubelet.service.d
-             └─01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
-     Active: inactive (dead)
-[root@ocp-sno ~]# systemctl status crio
-○ crio.service - Container Runtime Interface for OCI (CRI-O)
-     Loaded: loaded (/usr/lib/systemd/system/crio.service; enabled; preset: disabled)
-    Drop-In: /etc/systemd/system/crio.service.d
-             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
-     Active: inactive (dead)
-       Docs: https://github.com/cri-o/cri-o
-[root@ocp-sno ~]# ^C
+This is very likely a broken payload / mirror issue after upgrade, not a generic kubelet failure.
 
-sno6@haproxy:~/ocp-install$ oc get no
-E0420 05:07:06.504529    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
-E0420 05:07:16.526224    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
-E0420 05:07:26.553546    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
-E0420 05:07:36.571351    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
-E0420 05:07:46.594409    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
+When you say:
+
+> “after upgrading the mirror”
+
+
+
+👉 In disconnected SNO, if the release image / mirror content is inconsistent, the node cannot:
+
+pull new images
+
+start CRI-O properly
+
+launch kubelet static pods (API, etcd, etc.)
+
+
+That’s why everything is dead (crio + kubelet inactive) and API returns EOF.
+
+
+---
+
+🎯 What likely went wrong
+
+After mirror update, one of these happened:
+
+❌ 1. Missing release payload images
+
+New OpenShift version images not fully mirrored
+
+Or wrong repository path
+
+
+❌ 2. Broken ImageDigestMirrorSet (IDMS)
+
+pointing to wrong mirror
+
+digest mismatch
+
+
+❌ 3. Registry unreachable / cert issue
+
+node cannot pull images → CRI-O fails silently
+
+
+
+---
+
+🔍 Validate quickly (important)
+
+1. Check CRI-O logs (this will confirm mirror issue)
+
+journalctl -u crio -xe | grep -i pull
+
+👉 If you see:
+
+image not found
+
+manifest unknown
+
+x509 certificate
+
+connection refused
+
+
+➡️ Then 100% mirror issue
+
+
+---
+
+2. Check release image configured on node
+
+cat /etc/os-release
+
+and:
+
+rpm-ostree status
+
+Look for current OCP version.
+
+
+---
+
+3. Check IDMS / mirror config on node
+
+cat /etc/containers/registries.conf
+
+and:
+
+cat /etc/containers/registries.conf.d/*
+
+👉 Verify:
+
+mirror URL correct
+
+no typo in repo path
+
+correct port (8443 etc.)
+
+
+
+---
+
+4. Test image pull manually (critical test)
+
+Try pulling release image:
+
+podman pull <your-mirror>/openshift/release:<tag>
+
+Example:
+
+podman pull bastion2025.lab.ocp.lan:8443/ocp4/openshift4/openshift/release:4.xx.x
+
+👉 If this fails → mirror is broken
+
+
+---
+
+🔥 Most common real issue (seen in SNO upgrades)
+
+After mirror refresh:
+
+👉 Missing release image digest
+
+You mirrored using:
+
+oc mirror
+
+But:
+
+didn’t include release payload
+
+or used wrong ImageSetConfiguration
+
+
+
+---
+
+⚡ Quick recovery options
+
+✅ Option 1: Fix mirror (BEST)
+
+Re-run mirror properly:
+
+oc mirror --config=imageset-config.yaml docker://<your-registry>
+
+Make sure:
+
+includes platform: openshift
+
+correct version
+
+no partial mirror
+
+
+
+---
+
+✅ Option 2: Temporarily bypass mirror (for recovery)
+
+Edit on node:
+
+vi /etc/containers/registries.conf
+
+Remove mirror override → allow pull from:
+
+quay.io
+
+Then:
+
+systemctl restart crio
+systemctl restart kubelet
+
+👉 If cluster comes up → mirror confirmed broken
+
+
+---
+
+✅ Option 3: Rollback (if rpm-ostree staged)
+
+rpm-ostree rollback
+reboot
+
+
+---
+
+🧠 Why kubelet & crio are "inactive"
+
+Because in OpenShift:
+
+kubelet depends on valid container runtime + images
+
+if CRI-O fails → kubelet doesn't stay up
+
+if release payload missing → static pods never start
+
+
+
+---
+
+🚨 Key insight
+
+Your error:
+
 Unable to connect to the server: EOF
-sno6@haproxy:~/ocp-install$
+
+Combined with:
+
+kubelet inactive
+crio inactive
+
+👉 Classic disconnected upgrade failure due to bad mirror
+
+
+---
+
+👉 What I need from you
+
+Send me:
+
+journalctl -u crio -n 100
+cat /etc/containers/registries.conf
+podman pull <your-release-image>
+
+I’ll pinpoint exactly what’s broken (mirror path, digest, cert, or missing images).
