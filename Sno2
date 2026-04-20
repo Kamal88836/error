@@ -1,114 +1,18 @@
-Now the error is very clear — your variables for the source image are empty, so the command is expanding to:
-
-quay.io//:4.14.46-x86_64
-
-👉 That means:
-
-${PRODUCT_REPO} = ❌ empty
-
-${RELEASE_NAME} = ❌ empty
-
-
-
----
-
-🔥 Root cause
-
-You didn’t export these two variables (or they got unset in this shell).
-
-
----
-
-✅ Fix immediately
-
-Run:
-
-export PRODUCT_REPO="openshift-release-dev/ocp-release"
-export RELEASE_NAME="release"
-
-
----
-
-✅ Verify before running (important)
-
-Check all variables:
-
-echo ${PRODUCT_REPO}
+[root@bastion-sno mirror-openshift-install]# export PRODUCT_REPO="openshift-release-dev/ocp-release"
+[root@bastion-sno mirror-openshift-install]# export RELEASE_NAME="release"
+[root@bastion-sno mirror-openshift-install]# echo ${PRODUCT_REPO}
 echo ${RELEASE_NAME}
 echo ${OCP_RELEASE}
 echo ${ARCHITECTURE}
-
-Expected:
-
 openshift-release-dev/ocp-release
 release
 4.14.46
 x86_64
-
-
----
-
-✅ Then run mirror again
-
-oc adm release mirror \
+[root@bastion-sno mirror-openshift-install]# oc adm release mirror \
   -a ${LOCAL_SECRET_JSON} \
   --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} \
   --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} \
   --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-
-
----
-
-⚠️ About the warning
-
-Flag --print-mirror-instructions's value 'icsp' has been deprecated
-
-👉 Ignore this — it’s not your failure.
-Just means newer OpenShift prefers IDMS instead of ICSP (you’re already using IDMS, so you're fine).
-
-
----
-
-🧠 Why this caused your SNO outage
-
-Because your earlier mirror likely:
-
-❌ didn’t actually mirror anything (due to bad command)
-
-or mirrored incomplete content
-
-
-So the node:
-
-tries to pull release image
-
-fails → CRI-O fails → kubelet down → API EOF
-
-
-
----
-
-🚀 After mirror completes
-
-On SNO node:
-
-systemctl restart crio
-systemctl restart kubelet
-
-Then check:
-
-oc get nodes
-
-
----
-
-👉 If you want extra safety
-
-Test image exists in registry:
-
-podman pull bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
-
-
----
-
-If anything fails in mirroring or pull, paste the error — I’ll pinpoint it quickly.
+Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
+error: unable to retrieve release image info: unable to read image quay.io/openshift-release-dev/ocp-release/release:4.14.46-x86_64: unauthorized: access to the requested resource is not authorized
+[root@bastion-sno mirror-openshift-install]#
