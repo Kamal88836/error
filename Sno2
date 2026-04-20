@@ -1,18 +1,44 @@
-[root@bastion-sno mirror-openshift-install]# export PRODUCT_REPO="openshift-release-dev/ocp-release"
-[root@bastion-sno mirror-openshift-install]# export RELEASE_NAME="release"
-[root@bastion-sno mirror-openshift-install]# echo ${PRODUCT_REPO}
-echo ${RELEASE_NAME}
-echo ${OCP_RELEASE}
-echo ${ARCHITECTURE}
-openshift-release-dev/ocp-release
-release
-4.14.46
-x86_64
-[root@bastion-sno mirror-openshift-install]# oc adm release mirror \
-  -a ${LOCAL_SECRET_JSON} \
-  --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} \
-  --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} \
-  --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
-error: unable to retrieve release image info: unable to read image quay.io/openshift-release-dev/ocp-release/release:4.14.46-x86_64: unauthorized: access to the requested resource is not authorized
-[root@bastion-sno mirror-openshift-install]#
+2026/04/20 05:46:21  [WARN]   : ⚠️  --v2 flag identified, flow redirected to the oc-mirror v2 version. This is Tech Preview, it is still under development and it is not production ready.
+2026/04/20 05:46:21  [INFO]   : 👋 Hello, welcome to oc-mirror
+2026/04/20 05:46:21  [INFO]   : ⚙️  setting up the environment for you...
+2026/04/20 05:46:21  [INFO]   : 🔀 workflow mode: diskToMirror
+2026/04/20 05:46:21  [INFO]   : 🕵️  going to discover the necessary images...
+2026/04/20 05:46:21  [INFO]   : 🔍 collecting release images...
+2026/04/20 05:46:21  [INFO]   : 🔍 collecting operator images...
+2026/04/20 05:48:36  [INFO]   : 🔍 collecting additional images...
+2026/04/20 05:48:36  [INFO]   : 🚀 Start copying the images...
+2026/04/20 05:48:36  [INFO]   : === Overall Progress - copying image 1 / 826 ===
+2026/04/20 05:48:36  [INFO]   : copying release image 1 / 760
+2026/04/20 05:48:36  [INFO]   : copying operator image 0 / 66
+2026/04/20 05:48:36  [INFO]   : copying additional image 0 / 0
+2026/04/20 05:48:36  [INFO]   : ================================================
+2026/04/20 05:48:36  [INFO]   : === Overall Progress - copying image 2 / 826 (1 errors)===
+2026/04/20 05:48:36  [INFO]   : copying release image 2 / 760 (1 errors)
+2026/04/20 05:48:36  [INFO]   : copying operator image 0 / 66
+2026/04/20 05:48:36  [INFO]   : copying additional image 0 / 0
+2026/04/20 05:48:36  [INFO]   : ==========================================================
+2026/04/20 05:48:36  [INFO]   : === Overall Progress - copying image 3 / 826 (2 errors)===
+2026/04/20 05:48:36  [INFO]   : copying release image 3 / 760 (2 errors)
+2026/04/20 05:48:36  [INFO]   : copying operator image 0 / 66
+2026/04/20 05:48:36  [INFO]   : copying additional image 0 / 0
+2026/04/20 05:48:36  [INFO]   : ==========================================================
+2026/04/20 05:48:36  [INFO]   : === Overall Progress - copying image 4 / 826 (3 errors)===
+2026/04/20 05:48:36  [INFO]   : copying release image 4 / 760 (3 errors)
+2026/04/20 05:48:36  [INFO]   : copying operator image 0 / 66
+2026/04/20 05:48:36  [INFO]   : copying additional image 0 / 0
+2026/04/20 05:48:36  [INFO]   : ==========================================================
+
+
+
+2026/04/20 05:48:38  [INFO]   : Images mirrored 0 / 760: Some release images failed to mirror ❌ - please check the logs
+2026/04/20 05:48:38  [INFO]   : Images mirrored 0 / 66: Some operator images failed to mirror ❌ - please check the logs
+2026/04/20 05:48:38  [INFO]   : All additional images mirrored successfully 0 / 0 ✅
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image docker://quay.io/openshift-release-dev/ocp-release:4.14.43-x86_64 error: initializing source docker://localhost:55000/openshift-release-dev/ocp-release:4.14.43-x86_64: reading manifest 4.14.43-x86_64 in localhost:55000/openshift-release-dev/ocp-release: manifest unknown
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image docker://quay.io/openshift-release-dev/ocp-release:4.14.46-x86_64 error: initializing source docker://localhost:55000/openshift-release-dev/ocp-release:4.14.46-x86_64: reading manifest 4.14.46-x86_64 in localhost:55000/openshift-release-dev/ocp-release: manifest unknown
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image docker://quay.io/openshift-release-dev/ocp-release:4.14.43-x86_64 error: initializing source docker://localhost:55000/openshift-release-dev/ocp-release:4.14.43-x86_64: reading manifest 4.14.43-x86_64 in localhost:55000/openshift-release-dev/ocp-release: manifest unknown
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image docker://quay.io/openshift-release-dev/ocp-release:4.14.46-x86_64 error: initializing source docker://localhost:55000/openshift-release-dev/ocp-release:4.14.46-x86_64: reading manifest 4.14.46-x86_64 in localhost:55000/openshift-release-dev/ocp-release: manifest unknown
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:92a58e11b37708b339379132d8c43ba170fe5ed99b6c81444f9267fab842c21d error: initializing source docker://localhost:55000/openshift-release-dev/ocp-v4.0-art-dev@sha256:92a58e11b37708b339379132d8c43ba170fe5ed99b6c81444f9267fab842c21d: reading manifest sha256:92a58e11b37708b339379132d8c43ba170fe5ed99b6c81444f9267fab842c21d in localhost:55000/openshift-release-dev/ocp-v4.0-art-dev: manifest unknown
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bb418b35f89a4822ab15bbb7017a28cd497d849312f5d9e05b69f54d22000446 error: initializing source docker://localhost:55000/openshift-release-dev/ocp-v4.0-art-dev@sha256:bb418b35f89a4822ab15bbb7017a28cd497d849312f5d9e05b69f54d22000446: reading manifest sha256:bb418b35f89a4822ab15bbb7017a28cd497d849312f5d9e05b69f54d22000446 in localhost:55000/openshift-release-dev/ocp-v4.0-art-dev: manifest unknown
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2d9dce93a1299424fd4c0c7109822e2812a085c4c9c49a529eb7e68d8b134c9a error: initializing source docker://localhost:55000/openshift-release-dev/ocp-v4.0-art-dev@sha256:2d9dce93a1299424fd4c0c7109822e2812a085c4c9c49a529eb7e68d8b134c9a: reading manifest sha256:2d9dce93a1299424fd4c0c7109822e2812a085c4c9c49a529eb7e68d8b134c9a in localhost:55000/openshift-release-dev/ocp-v4.0-art-dev: manifest unknown
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:739db8c14530b8b7ccbf3e21f8af2998064f693b949c687169b882c4850a489d error: initializing source docker://localhost:55000/openshift-release-dev/ocp-v4.0-art-dev@sha256:739db8c14530b8b7ccbf3e21f8af2998064f693b949c687169b882c4850a489d: reading manifest sha256:739db8c14530b8b7ccbf3e21f8af2998064f693b949c687169b882c4850a489d in localhost:55000/openshift-release-dev/ocp-v4.0-art-dev: manifest unknown
+2026/04/20 05:48:38  [ERROR]  : [Worker] error mirroring image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b969ca3403e82cf202ab0abe3402c0db1bff1b02ffb3c7daa8b8392df37e12f1 error: initializing source docker://localhost:55000/openshift-release-dev/ocp-v4.0-art-dev@sha256:b969ca3403e82cf202ab0abe3402c0db1bff1b02ffb3c7daa8b8392df37e12f1: reading manifest sha256:b969ca3403e82cf202ab0abe3402c0db1bff1b02ffb3c7daa8b8392df37e12f1 in localhost:55000/openshift-release-dev/ocp-v4.0-art-dev: manifest unknown
