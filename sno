@@ -1,1 +1,24 @@
 
+[root@ocp-sno ~]# systemctl status kubelet
+○ kubelet.service - Kubernetes Kubelet
+     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/kubelet.service.d
+             └─01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
+     Active: inactive (dead)
+[root@ocp-sno ~]# systemctl status crio
+○ crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: inactive (dead)
+       Docs: https://github.com/cri-o/cri-o
+[root@ocp-sno ~]# ^C
+
+sno6@haproxy:~/ocp-install$ oc get no
+E0420 05:07:06.504529    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
+E0420 05:07:16.526224    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
+E0420 05:07:26.553546    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
+E0420 05:07:36.571351    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
+E0420 05:07:46.594409    9432 memcache.go:265] couldn't get current server API group list: Get "https://api.lab6.ocp.lan:6443/api?timeout=32s": EOF
+Unable to connect to the server: EOF
+sno6@haproxy:~/ocp-install$
