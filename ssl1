@@ -1,62 +1,47 @@
-[root@ocp-sno bastion-sno.lab.ocp.lan:8443]# curl -vk https://bastion-sno.lab.ocp.lan:8443/v2/
-*   Trying 72.1.0.172:8443...
-* Connected to bastion-sno.lab.ocp.lan (72.1.0.172) port 8443 (#0)
-* ALPN, offering h2
-* ALPN, offering http/1.1
-*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
-* TLSv1.0 (OUT), TLS header, Certificate Status (22):
-* TLSv1.3 (OUT), TLS handshake, Client hello (1):
-* TLSv1.2 (IN), TLS header, Certificate Status (22):
-* TLSv1.3 (IN), TLS handshake, Server hello (2):
-* TLSv1.2 (IN), TLS header, Finished (20):
-* TLSv1.2 (IN), TLS header, Unknown (23):
-* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
-* TLSv1.2 (IN), TLS header, Unknown (23):
-* TLSv1.3 (IN), TLS handshake, Certificate (11):
-* TLSv1.2 (IN), TLS header, Unknown (23):
-* TLSv1.3 (IN), TLS handshake, CERT verify (15):
-* TLSv1.2 (IN), TLS header, Unknown (23):
-* TLSv1.3 (IN), TLS handshake, Finished (20):
-* TLSv1.2 (OUT), TLS header, Finished (20):
-* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
-* TLSv1.2 (OUT), TLS header, Unknown (23):
-* TLSv1.3 (OUT), TLS handshake, Finished (20):
-* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
-* ALPN, server accepted to use h2
-* Server certificate:
-*  subject: CN=quay-enterprise
-*  start date: Apr  9 09:32:57 2026 GMT
-*  expire date: Mar 31 09:32:57 2027 GMT
-*  issuer: C=US; ST=VA; L=New York; O=Quay; OU=Division; CN=bastion-sno.lab.ocp.lan
-*  SSL certificate verify ok.
-* Using HTTP2, server supports multi-use
-* Connection state changed (HTTP/2 confirmed)
-* Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
-* TLSv1.2 (OUT), TLS header, Unknown (23):
-* TLSv1.2 (OUT), TLS header, Unknown (23):
-* TLSv1.2 (OUT), TLS header, Unknown (23):
-* Using Stream ID: 1 (easy handle 0x55a291b6b030)
-* TLSv1.2 (OUT), TLS header, Unknown (23):
-> GET /v2/ HTTP/2
-> Host: bastion-sno.lab.ocp.lan:8443
-> user-agent: curl/7.76.1
-> accept: */*
->
-* TLSv1.2 (IN), TLS header, Unknown (23):
-* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
-* TLSv1.2 (IN), TLS header, Unknown (23):
-* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
-* old SSL session ID is stale, removing
-* TLSv1.2 (IN), TLS header, Unknown (23):
-* Connection state changed (MAX_CONCURRENT_STREAMS == 128)!
-* TLSv1.2 (OUT), TLS header, Unknown (23):
-* TLSv1.2 (IN), TLS header, Unknown (23):
-< HTTP/2 401
-< server: nginx/1.20.1
-< date: Mon, 20 Apr 2026 07:49:27 GMT
-< content-type: text/html; charset=utf-8
-< content-length: 4
-< www-authenticate: Bearer realm="https://bastion-sno.lab.ocp.lan:8443/v2/auth",service="bastion-sno.lab.ocp.lan:8443"
-< docker-distribution-api-version: registry/2.0
-<
-* Connection #0 to host bastion-sno.lab.ocp.lan left intact
+I mean there is no libcjson in any pod.
+it should be added in dockerfile
+
+[소병윤 (BS)] 04-20-2026 11:36
+cjson is needed to be included to all pod which has ncm.
+
+by07@by07-vdi:~/p4ws_hdd/by07.so_SVR26B_INTEG/Columbus/Build/dockerfile$ grep -r ncm .
+./bscf-bin/Dockerfile.bip:      Output/ne/bin/ncm.xcg \
+./bscf-bin/Dockerfile.bpp:      Output/ne/bin/ncm.xcg \
+./uadpf-arm-bin/Dockerfile.dpp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.aca Output/ne/bin/ncm.aca \
+./uadpf-arm-bin/Dockerfile.rmp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.aca Output/ne/bin/ncm.aca \
+./uadpf-arm-bin/Dockerfile.vamp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.aca Output/ne/bin/ncm.aca \
+./uadpf-arm-bin/Dockerfile.dip:COPY --chown=sapp:sgroup Output/ne/bin/dsh.aca Output/ne/bin/ncm.aca \
+./uadpf-arm-bin/Dockerfile.dip:#TECH : LTE : Output/ne/bin/ncmb.lte.aca /pkg/bin
+./aupf-bin/Dockerfile.usp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./aupf-bin/Dockerfile.upp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./uadpf-bin/Dockerfile.dpp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./uadpf-bin/Dockerfile.ipp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./uadpf-bin/Dockerfile.rmp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./uadpf-bin/Dockerfile.iip:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./uadpf-bin/Dockerfile.vamp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./uadpf-bin/Dockerfile.vamp:#TECH : LTE : Output/ne/bin/ncmb.lte.xcg /pkg/bin
+./uadpf-bin/Dockerfile.dip:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./uadpf-bin/Dockerfile.dip:#TECH : LTE : Output/ne/bin/ncmb.lte.xcg /pkg/bin
+./factory/adpf/Dockerfile.dpp:COPY --chown=sapp:sgroup  Output/ne/bin/dsh.xcg                   Output/ne/bin/ncm.xcg \
+./factory/adpf/Dockerfile.rmp:COPY --chown=sapp:sgroup  Output/ne/bin/dsh.xcg           Output/ne/bin/ncm.xcg \
+./factory/adpf/Dockerfile.dip:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg                    Output/ne/bin/ncm.xcg \
+./Dockerfile_Template:COPY Output/ne/bin/ncm.xcg Output/ne/bin/iim.xcg \
+./acpf-bin/Dockerfile.ipp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+./acpf-bin/Dockerfile.csp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
+by07@by07-vdi:~/p4ws_hdd/by07.so_SVR26B_INTEG/Columbus/Build/dockerfile$
+
+[소병윤 (BS)] 04-20-2026 11:36
+there is arm arch like aca..
+
+[소병윤 (BS)] 04-20-2026 11:39
+maybe "dnf install gperf cjson cjson-devel" can be used in dockerfiles
+
+[소병윤 (BS)] 04-20-2026 11:41
+I found dnf command on dockekfiles for cu and du
+
+[소병윤 (BS)] 04-20-2026 12:01
+if dnf is not working, I think this can be possilbe..
+
+1. put the libcjosn Columbus/Build/dockerfile/utils/libcjson/arm/ and Columbus/Build/dockerfile/utils/libcjson/x86/ (new directories)
+2. copy libcjson to the docker context root in Columbus/Build/util/docker_build_for_pbs.sh (refer to sftpgo case)
+3. copy that libcjson to the /lib64/ in all dockerfiles including ncm
