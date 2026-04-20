@@ -225,3 +225,14 @@ cat /etc/containers/registries.conf
 podman pull <your-release-image>
 
 I’ll pinpoint exactly what’s broken (mirror path, digest, cert, or missing images).
+
+
+
+[root@bastion-sno mirror-openshift-install]# export OCP_RELEASE="4.14.46"
+[root@bastion-sno mirror-openshift-install]#  export LOCAL_REGISTRY=" bastion-sno.lab.ocp.lan:8443"
+[root@bastion-sno mirror-openshift-install]# export LOCAL_REPOSITORY="ocp4/openshift4"
+[root@bastion-sno mirror-openshift-install]# export ARCHITECTURE="x86_64"
+[root@bastion-sno mirror-openshift-install]# export LOCAL_SECRET_JSON="/root/mirror-reg/mirror-openshift-install_4.20.14/pull_secret.json"
+[root@bastion-sno mirror-openshift-install]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
+error: only one argument is accepted
+[root@bastion-sno mirror-openshift-install]#
