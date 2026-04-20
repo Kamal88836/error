@@ -1,47 +1,120 @@
-I mean there is no libcjson in any pod.
-it should be added in dockerfile
+Ah — that changes things. If your base image is Ubuntu, then dnf will never work. You need to use apt, not dnf.
 
-[소병윤 (BS)] 04-20-2026 11:36
-cjson is needed to be included to all pod which has ncm.
 
-by07@by07-vdi:~/p4ws_hdd/by07.so_SVR26B_INTEG/Columbus/Build/dockerfile$ grep -r ncm .
-./bscf-bin/Dockerfile.bip:      Output/ne/bin/ncm.xcg \
-./bscf-bin/Dockerfile.bpp:      Output/ne/bin/ncm.xcg \
-./uadpf-arm-bin/Dockerfile.dpp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.aca Output/ne/bin/ncm.aca \
-./uadpf-arm-bin/Dockerfile.rmp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.aca Output/ne/bin/ncm.aca \
-./uadpf-arm-bin/Dockerfile.vamp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.aca Output/ne/bin/ncm.aca \
-./uadpf-arm-bin/Dockerfile.dip:COPY --chown=sapp:sgroup Output/ne/bin/dsh.aca Output/ne/bin/ncm.aca \
-./uadpf-arm-bin/Dockerfile.dip:#TECH : LTE : Output/ne/bin/ncmb.lte.aca /pkg/bin
-./aupf-bin/Dockerfile.usp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./aupf-bin/Dockerfile.upp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./uadpf-bin/Dockerfile.dpp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./uadpf-bin/Dockerfile.ipp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./uadpf-bin/Dockerfile.rmp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./uadpf-bin/Dockerfile.iip:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./uadpf-bin/Dockerfile.vamp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./uadpf-bin/Dockerfile.vamp:#TECH : LTE : Output/ne/bin/ncmb.lte.xcg /pkg/bin
-./uadpf-bin/Dockerfile.dip:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./uadpf-bin/Dockerfile.dip:#TECH : LTE : Output/ne/bin/ncmb.lte.xcg /pkg/bin
-./factory/adpf/Dockerfile.dpp:COPY --chown=sapp:sgroup  Output/ne/bin/dsh.xcg                   Output/ne/bin/ncm.xcg \
-./factory/adpf/Dockerfile.rmp:COPY --chown=sapp:sgroup  Output/ne/bin/dsh.xcg           Output/ne/bin/ncm.xcg \
-./factory/adpf/Dockerfile.dip:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg                    Output/ne/bin/ncm.xcg \
-./Dockerfile_Template:COPY Output/ne/bin/ncm.xcg Output/ne/bin/iim.xcg \
-./acpf-bin/Dockerfile.ipp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-./acpf-bin/Dockerfile.csp:COPY --chown=sapp:sgroup Output/ne/bin/dsh.xcg Output/ne/bin/ncm.xcg \
-by07@by07-vdi:~/p4ws_hdd/by07.so_SVR26B_INTEG/Columbus/Build/dockerfile$
+---
 
-[소병윤 (BS)] 04-20-2026 11:36
-there is arm arch like aca..
+✅ Correct fix for Ubuntu-based Dockerfiles
 
-[소병윤 (BS)] 04-20-2026 11:39
-maybe "dnf install gperf cjson cjson-devel" can be used in dockerfiles
+In all Dockerfiles that include ncm, add:
 
-[소병윤 (BS)] 04-20-2026 11:41
-I found dnf command on dockekfiles for cu and du
+RUN apt-get update && \
+    apt-get install -y \
+        libcjson-dev \
+        libcjson1 \
+    && rm -rf /var/lib/apt/lists/*
 
-[소병윤 (BS)] 04-20-2026 12:01
-if dnf is not working, I think this can be possilbe..
 
-1. put the libcjosn Columbus/Build/dockerfile/utils/libcjson/arm/ and Columbus/Build/dockerfile/utils/libcjson/x86/ (new directories)
-2. copy libcjson to the docker context root in Columbus/Build/util/docker_build_for_pbs.sh (refer to sftpgo case)
-3. copy that libcjson to the /lib64/ in all dockerfiles including ncm
+---
+
+🔍 Why both packages?
+
+libcjson1 → runtime library (libcjson.so)
+
+libcjson-dev → headers (only needed if compiling, but safe to include)
+
+
+If you're not compiling inside container, you can reduce to:
+
+RUN apt-get update && \
+    apt-get install -y libcjson1 && \
+    rm -rf /var/lib/apt/lists/*
+
+
+---
+
+🧪 Verify inside container
+
+After build:
+
+ldd /path/to/ncm.xcg | grep cjson
+
+Expected:
+
+libcjson.so.1 => /usr/lib/x86_64-linux-gnu/libcjson.so.1
+
+
+---
+
+⚠️ If apt is NOT available
+
+Some minimal Ubuntu images (like scratch-based or stripped ones) may not have package repos configured.
+
+Then fallback to your earlier approach:
+
+Manual copy (Ubuntu paths differ!)
+
+Instead of /lib64, use:
+
+COPY libcjson/ /usr/lib/x86_64-linux-gnu/
+
+For ARM:
+
+COPY libcjson/ /usr/lib/aarch64-linux-gnu/
+
+Then:
+
+RUN ldconfig
+
+
+---
+
+🚨 Architecture handling (important in your case)
+
+Since you mentioned ACA (ARM):
+
+x86 → /usr/lib/x86_64-linux-gnu/
+
+ARM → /usr/lib/aarch64-linux-gnu/
+
+
+Mixing these will break the container.
+
+
+---
+
+🔥 Best practice (strongly recommended)
+
+Instead of modifying 15+ Dockerfiles:
+
+👉 Create a base Ubuntu image with libcjson preinstalled
+
+FROM ubuntu:22.04
+
+RUN apt-get update && \
+    apt-get install -y libcjson1 && \
+    rm -rf /var/lib/apt/lists/*
+
+Then update all Dockerfiles:
+
+FROM your-custom-ubuntu-base
+
+
+---
+
+💡 Quick decision guide
+
+Situation	Best approach
+
+Internet access + apt works	✅ apt install libcjson1
+Air-gapped	✅ Manual .so copy
+Many Dockerfiles	✅ Custom base image
+
+
+
+---
+
+If you want, I can:
+
+Generate a script to auto-patch all your Dockerfiles
+
+Or check if your ncm binary needs specific libcjson version (important sometimes)
