@@ -1,236 +1,35 @@
-Got it — that detail changes the direction completely.
-
-This is very likely a broken payload / mirror issue after upgrade, not a generic kubelet failure.
-
-When you say:
-
-> “after upgrading the mirror”
-
-
-
-👉 In disconnected SNO, if the release image / mirror content is inconsistent, the node cannot:
-
-pull new images
-
-start CRI-O properly
-
-launch kubelet static pods (API, etcd, etc.)
-
-
-That’s why everything is dead (crio + kubelet inactive) and API returns EOF.
-
-
----
-
-🎯 What likely went wrong
-
-After mirror update, one of these happened:
-
-❌ 1. Missing release payload images
-
-New OpenShift version images not fully mirrored
-
-Or wrong repository path
-
-
-❌ 2. Broken ImageDigestMirrorSet (IDMS)
-
-pointing to wrong mirror
-
-digest mismatch
-
-
-❌ 3. Registry unreachable / cert issue
-
-node cannot pull images → CRI-O fails silently
-
-
-
----
-
-🔍 Validate quickly (important)
-
-1. Check CRI-O logs (this will confirm mirror issue)
-
-journalctl -u crio -xe | grep -i pull
-
-👉 If you see:
-
-image not found
-
-manifest unknown
-
-x509 certificate
-
-connection refused
-
-
-➡️ Then 100% mirror issue
-
-
----
-
-2. Check release image configured on node
-
-cat /etc/os-release
-
-and:
-
-rpm-ostree status
-
-Look for current OCP version.
-
-
----
-
-3. Check IDMS / mirror config on node
-
-cat /etc/containers/registries.conf
-
-and:
-
-cat /etc/containers/registries.conf.d/*
-
-👉 Verify:
-
-mirror URL correct
-
-no typo in repo path
-
-correct port (8443 etc.)
-
-
-
----
-
-4. Test image pull manually (critical test)
-
-Try pulling release image:
-
-podman pull <your-mirror>/openshift/release:<tag>
-
-Example:
-
-podman pull bastion2025.lab.ocp.lan:8443/ocp4/openshift4/openshift/release:4.xx.x
-
-👉 If this fails → mirror is broken
-
-
----
-
-🔥 Most common real issue (seen in SNO upgrades)
-
-After mirror refresh:
-
-👉 Missing release image digest
-
-You mirrored using:
-
-oc mirror
-
-But:
-
-didn’t include release payload
-
-or used wrong ImageSetConfiguration
-
-
-
----
-
-⚡ Quick recovery options
-
-✅ Option 1: Fix mirror (BEST)
-
-Re-run mirror properly:
-
-oc mirror --config=imageset-config.yaml docker://<your-registry>
-
-Make sure:
-
-includes platform: openshift
-
-correct version
-
-no partial mirror
-
-
-
----
-
-✅ Option 2: Temporarily bypass mirror (for recovery)
-
-Edit on node:
-
-vi /etc/containers/registries.conf
-
-Remove mirror override → allow pull from:
-
-quay.io
-
-Then:
-
-systemctl restart crio
-systemctl restart kubelet
-
-👉 If cluster comes up → mirror confirmed broken
-
-
----
-
-✅ Option 3: Rollback (if rpm-ostree staged)
-
-rpm-ostree rollback
-reboot
-
-
----
-
-🧠 Why kubelet & crio are "inactive"
-
-Because in OpenShift:
-
-kubelet depends on valid container runtime + images
-
-if CRI-O fails → kubelet doesn't stay up
-
-if release payload missing → static pods never start
-
-
-
----
-
-🚨 Key insight
-
-Your error:
-
-Unable to connect to the server: EOF
-
-Combined with:
-
-kubelet inactive
-crio inactive
-
-👉 Classic disconnected upgrade failure due to bad mirror
-
-
----
-
-👉 What I need from you
-
-Send me:
-
-journalctl -u crio -n 100
-cat /etc/containers/registries.conf
-podman pull <your-release-image>
-
-I’ll pinpoint exactly what’s broken (mirror path, digest, cert, or missing images).
-
-
-
-[root@bastion-sno mirror-openshift-install]# export LOCAL_REGISTRY="bastion-sno.lab.ocp.lan:8443"
-[root@bastion-sno mirror-openshift-install]# oc adm release mirror -a ${LOCAL_SECRET_JSON} --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE}-${ARCHITECTURE} --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}-${ARCHITECTURE}
-Flag --print-mirror-instructions's value 'icsp' has been deprecated. Use 'idms' instead to allow the printing of instructions for ImageDigestSources and ImageDigestMirrorSet.
-error: unable to retrieve release image info: "quay.io//:4.14.46-x86_64" is not a valid image reference: invalid reference format
-[root@bastion-sno mirror-openshift-install]#
-
+[root@ocp-sno ~]# cd  /etc/pki/
+[root@ocp-sno pki]# ll
+total 0
+drwxr-xr-x. 4 root root  73 Dec 11  2024 ca-trust
+lrwxrwxrwx. 1 root root  37 Dec 11  2024 entitlement-host -> ../../run/secrets/etc-pki-entitlement
+drwxr-xr-x. 2 root root 111 Dec 11  2024 fwupd
+drwxr-xr-x. 2 root root 111 Dec 11  2024 fwupd-metadata
+drwxr-xr-x. 2 root root  21 Dec 11  2024 java
+drwxr-xr-x. 2 root root  21 Dec 11  2024 product-default
+drwxr-xr-x. 2 root root 104 Dec 11  2024 rpm-gpg
+drwxr-xr-x. 3 root root  16 Dec 11  2024 swid
+drwxr-xr-x. 5 root root 126 Dec 11  2024 tls
+[root@ocp-sno pki]# cd ca-trust/
+[root@ocp-sno ca-trust]# ll
+total 8
+-rw-r--r--. 1 root root 166 Dec 11  2024 README
+-rw-r--r--. 1 root root 980 Dec 11  2024 ca-legacy.conf
+drwxr-xr-x. 6 root root  70 Dec 11  2024 extracted
+drwxr-xr-x. 4 root root  80 Dec 11  2024 source
+[root@ocp-sno ca-trust]# cd source/
+[root@ocp-sno source]# ll
+total 4
+-rw-r--r--. 1 root root 932 Dec 11  2024 README
+drwxr-xr-x. 2 root root 141 Apr 17 07:10 anchors
+drwxr-xr-x. 2 root root   6 Dec 11  2024 blocklist
+lrwxrwxrwx. 1 root root  59 Dec 11  2024 ca-bundle.legacy.crt -> /usr/share/pki/ca-trust-legacy/ca-bundle.legacy.default.crt
+[root@ocp-sno source]# cd anchors/
+[root@ocp-sno anchors]# ll
+total 20
+-rw-r--r--. 1 root root 2074 Jul 18  2025 ca.crt
+-rw-r--r--. 1 root root 2741 Jul 28  2025 mirror-ca.crt
+-rw-r--r--. 1 root root 1419 Apr 17 05:46 mirror-ca_updated.crt
+-rw-------. 1 root root 1419 Dec 11  2024 openshift-config-user-ca-bundle.crt
+-rw-r--r--. 1 root root 2742 Apr 17 07:10 ssl-cert_updated.crt
+[root@ocp-sno anchors]#
