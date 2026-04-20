@@ -1,0 +1,153 @@
+That directory output is normal — nothing is “missing” there 👍
+
+/etc/pki/tls/certs/
+
+only contains system CA bundle symlinks, not your custom registry cert.
+
+
+---
+
+🧠 Important clarification
+
+You’re currently looking in the wrong place for fixing the issue.
+
+👉 The cert must be in two places:
+
+1️⃣ System trust (you already have something here)
+
+/etc/pki/ca-trust/source/anchors/
+
+2️⃣ ❗ CRITICAL (you likely don’t have this)
+
+/etc/containers/certs.d/bastion-sno.lab.ocp.lan:8443/ca.crt
+
+👉 This second one is what actually fixes CRI-O image pulls.
+
+
+---
+
+🚨 Your current problem
+
+You said:
+
+> “Still I didn’t copy new certificate”
+
+
+
+👉 So right now:
+
+Node does NOT trust your registry ❌
+
+CRI-O cannot pull ❌
+
+kubelet stays down ❌
+
+
+
+---
+
+✅ Do THIS now (don’t explore folders anymore)
+
+🔹 Step 1: Get cert from registry (bastion)
+
+On bastion:
+
+openssl s_client -connect bastion-sno.lab.ocp.lan:8443 -showcerts
+
+Copy the full certificate block:
+
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+
+Save as:
+
+/root/rootCA.pem
+
+
+---
+
+🔹 Step 2: Copy to SNO node
+
+scp rootCA.pem root@ocp-sno:/etc/pki/ca-trust/source/anchors/
+
+
+---
+
+🔹 Step 3: Update system trust
+
+update-ca-trust
+
+
+---
+
+🔹 Step 4: MOST IMPORTANT (don’t skip)
+
+mkdir -p /etc/containers/certs.d/bastion-sno.lab.ocp.lan:8443
+
+cp /etc/pki/ca-trust/source/anchors/rootCA.pem \
+   /etc/containers/certs.d/bastion-sno.lab.ocp.lan:8443/ca.crt
+
+
+---
+
+🔍 Verify immediately
+
+curl -vk https://bastion-sno.lab.ocp.lan:8443/v2/
+
+👉 Expected:
+
+No x509 error
+
+401 Unauthorized is OK
+
+
+
+---
+
+🔥 Final test (this is the real check)
+
+podman pull bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
+
+
+---
+
+🚀 Then restart services
+
+systemctl restart crio
+systemctl restart kubelet
+
+
+---
+
+🧠 Why you were stuck
+
+You were checking:
+
+/etc/pki/tls/certs/
+
+👉 But the actual fix is:
+
+/etc/containers/certs.d/<registry>/
+
+
+---
+
+🎯 Bottom line
+
+Until this file exists:
+
+/etc/containers/certs.d/bastion-sno.lab.ocp.lan:8443/ca.crt
+
+👉 Your cluster will not recover, no matter what else you fix.
+
+
+---
+
+👉 Next step
+
+After doing this, run:
+
+podman pull bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
+
+Paste output — I’ll confirm if you're fully unblocked 👍
