@@ -1,31 +1,78 @@
-Success
-Update image:  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
-Mirror prefix: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-Mirror prefix: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
+[core@ocp-sno ~]$ journalctl -u crio -n 50
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.130775578Z" level=info msg="Using default capabilities: CAP_CHOWN, CAP_DAC_OVERRIDE, CAP_FSETID, CAP_FOWNER, CAP_SETGID, CAP_SETU>
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.133885737Z" level=info msg="Checkpoint/restore support disabled"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.133906313Z" level=info msg="Using seccomp default profile when unspecified: true"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.133913108Z" level=info msg="Using the internal default seccomp profile"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.133919016Z" level=info msg="AppArmor is disabled by the system or at CRI-O build-time"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.133924606Z" level=info msg="No blockio config file specified, blockio not configured"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.133929937Z" level=info msg="RDT not available in the host system"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.136914430Z" level=info msg="Conmon does support the --sync option"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.136924827Z" level=info msg="Conmon does support the --log-global-size-max option"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.138931078Z" level=info msg="Conmon does support the --sync option"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.138940351Z" level=info msg="Conmon does support the --log-global-size-max option"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.140795057Z" level=info msg="Conmon does support the --sync option"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.140809898Z" level=info msg="Conmon does support the --log-global-size-max option"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.140862680Z" level=info msg="Updated default CNI network name to "
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.141182945Z" level=info msg="Attempting to restore irqbalance config from /etc/sysconfig/orig_irq_banned_cpus"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.141248459Z" level=info msg="Restore irqbalance config: nothing to do"
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan crio[30128]: time="2026-04-14 06:45:01.144011879Z" level=fatal msg="Failed to start streaming server: listen tcp [2405:100:200:72:fa34:2fc3:ea3d:4a5a]:0: bind: cannot a>
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan systemd[1]: crio.service: Main process exited, code=exited, status=1/FAILURE
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan systemd[1]: crio.service: Failed with result 'exit-code'.
+Apr 14 06:45:01 ocp-sno.lab6.ocp.lan systemd[1]: Failed to start Container Runtime Interface for OCI (CRI-O).
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan systemd[1]: crio.service: Scheduled restart job, restart counter is at 43349.
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan systemd[1]: Stopped Container Runtime Interface for OCI (CRI-O).
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan systemd[1]: Starting Container Runtime Interface for OCI (CRI-O)...
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.358373270Z" level=info msg="Starting CRI-O, version: 1.27.7-4.rhaos4.14.gitceaac6e.el9, git: unknown(clean)"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.363331985Z" level=info msg="Node configuration value for hugetlb cgroup is true"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.363349318Z" level=info msg="Node configuration value for pid cgroup is true"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.363361747Z" level=info msg="Node configuration value for memoryswap cgroup is true"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.363367704Z" level=info msg="Node configuration value for cgroup v2 is false"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.369305033Z" level=info msg="Node configuration value for systemd CollectMode is true"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.374944359Z" level=info msg="Node configuration value for systemd AllowedCPUs is true"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.385542134Z" level=info msg="Using default capabilities: CAP_CHOWN, CAP_DAC_OVERRIDE, CAP_FSETID, CAP_FOWNER, CAP_SETGID, CAP_SETU>
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.388711578Z" level=info msg="Checkpoint/restore support disabled"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.388732204Z" level=info msg="Using seccomp default profile when unspecified: true"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.388738687Z" level=info msg="Using the internal default seccomp profile"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.388744989Z" level=info msg="AppArmor is disabled by the system or at CRI-O build-time"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.388752028Z" level=info msg="No blockio config file specified, blockio not configured"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.388757801Z" level=info msg="RDT not available in the host system"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.390756066Z" level=info msg="Conmon does support the --sync option"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.390780014Z" level=info msg="Conmon does support the --log-global-size-max option"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.392805261Z" level=info msg="Conmon does support the --sync option"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.392865511Z" level=info msg="Conmon does support the --log-global-size-max option"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.395056339Z" level=info msg="Conmon does support the --sync option"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.395067315Z" level=info msg="Conmon does support the --log-global-size-max option"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.395118962Z" level=info msg="Updated default CNI network name to "
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.395423697Z" level=info msg="Attempting to restore irqbalance config from /etc/sysconfig/orig_irq_banned_cpus"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.395483777Z" level=info msg="Restore irqbalance config: nothing to do"
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan crio[32637]: time="2026-04-14 06:45:11.398806292Z" level=fatal msg="Failed to start streaming server: listen tcp [2405:100:200:72:fa34:2fc3:ea3d:4a5a]:0: bind: cannot a>
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan systemd[1]: crio.service: Main process exited, code=exited, status=1/FAILURE
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan systemd[1]: crio.service: Failed with result 'exit-code'.
+Apr 14 06:45:11 ocp-sno.lab6.ocp.lan systemd[1]: Failed to start Container Runtime Interface for OCI (CRI-O).
 
-To use the new mirrored repository to install, add the following section to the install-config.yaml:
 
-imageContentSources:
-- mirrors:
-  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-  source: quay.io/openshift-release-dev/ocp-release
-- mirrors:
-  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+[root@ocp-sno ~]# systemctl status crio
+○ crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: inactive (dead)
+       Docs: https://github.com/cri-o/cri-o
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]# vi /etc/containers/registries.conf
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]# systemctl daemon-reexec
+[root@ocp-sno ~]# systemctl status crio
+○ crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: inactive (dead)
+       Docs: https://github.com/cri-o/cri-o
+[root@ocp-sno ~]# systemctl restart crio
+^C
+[root@ocp-sno ~]# systemctl start  crio
 
-
-To use the new mirrored repository for upgrades, use the following to create an ImageContentSourcePolicy:
-
-apiVersion: operator.openshift.io/v1alpha1
-kind: ImageContentSourcePolicy
-metadata:
-  name: example
-spec:
-  repositoryDigestMirrors:
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-    source: quay.io/openshift-release-dev/ocp-release
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-[root@bastion-sno ~]#
