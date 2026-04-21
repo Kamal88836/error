@@ -1,61 +1,172 @@
-[root@bastion-sno ocp_4_14_46]# cat /root/ocp_4_14_46/working-dir/cluster-resources/idms-oc-mirror.yaml
+Nice — this confirms your mirror ran successfully, but there’s a subtle mismatch you need to be aware of before proceeding.
+
+
 ---
-apiVersion: config.openshift.io/v1
-kind: ImageDigestMirrorSet
-metadata:
-  name: idms-release-0
-spec:
-  imageDigestMirrors:
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev
-    source: quay.io/openshift-release-dev
-status: {}
+
+🔍 What your IDMS shows
+
+source: quay.io/openshift-release-dev
+mirrors:
+- bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev
+
+👉 That means your mirror layout is:
+
+bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev/...
+
+
 ---
-apiVersion: config.openshift.io/v1
-kind: ImageDigestMirrorSet
-metadata:
-  name: idms-operator-0
-spec:
-  imageDigestMirrors:
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift4
-    source: registry.redhat.io/openshift4
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/odf4
-    source: registry.redhat.io/odf4
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/rhel8
-    source: registry.redhat.io/rhel8
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-logging
-    source: registry.redhat.io/openshift-logging
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/rhceph
-    source: registry.redhat.io/rhceph
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/lvms4
-    source: registry.redhat.io/lvms4
-status: {}
-[root@bastion-sno ocp_4_14_46]# cat /root/ocp_4_14_46/working-dir/cluster-resources/itms-oc-mirror.yaml
+
+⚠️ Important mismatch to your earlier commands
+
+Earlier you were testing with:
+
+bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
+
+👉 That is NOT correct for oc-mirror layout
+
+
 ---
-apiVersion: config.openshift.io/v1
-kind: ImageTagMirrorSet
-metadata:
-  name: itms-release-0
-spec:
-  imageTagMirrors:
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev
-    source: quay.io/openshift-release-dev
-status: {}
-[root@bastion-sno ocp_4_14_46]# cat /root/ocp_4_14_46/working-dir/cluster-resources/cs-redhat-operator-index-v4-14.yaml
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: cs-redhat-operator-index-v4-14
-  namespace: openshift-marketplace
-spec:
-  image: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.14
-  sourceType: grpc
-status: {}
-[root@bastion-sno ocp_4_14_46]#
+
+✅ Correct image path (based on your IDMS)
+
+You should test with:
+
+podman pull bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev/ocp-release:4.14.46-x86_64
+
+
+---
+
+🎯 This is CRITICAL
+
+Because:
+
+Wrong path	Result
+
+ocp4/openshift4:tag	❌ manifest unknown
+ocp4/openshift4/openshift-release-dev/...	✅ correct
+
+
+
+---
+
+🚨 Why your cluster is still down
+
+Even though mirror is complete:
+
+👉 Node is likely trying to pull from:
+
+ocp4/openshift4
+
+But mirror actually stored under:
+
+ocp4/openshift4/openshift-release-dev
+
+👉 So pulls fail → CRI-O fails → kubelet down
+
+
+---
+
+🧠 Now comes the key point
+
+Since your cluster is DOWN, IDMS is NOT applied yet
+
+So node only uses:
+
+/etc/containers/registries.conf
+
+
+---
+
+✅ Fix NOW (temporary recovery fix)
+
+Edit on SNO node:
+
+vi /etc/containers/registries.conf
+
+Update to:
+
+[[registry]]
+prefix = ""
+location = "quay.io/openshift-release-dev"
+mirror-by-digest-only = true
+
+[[registry.mirror]]
+location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev"
+
+
+---
+
+🔥 This aligns node with your mirror structure
+
+
+---
+
+✅ Then test again
+
+podman pull bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev/ocp-release:4.14.46-x86_64
+
+
+---
+
+✅ Restart services
+
+systemctl daemon-reexec
+systemctl restart crio
+systemctl restart kubelet
+
+
+---
+
+🔍 Check API
+
+ss -lntp | grep 6443
+
+
+---
+
+🚀 Once cluster is UP
+
+Then apply:
+
+oc apply -f idms-oc-mirror.yaml
+
+
+---
+
+🧠 Big takeaway (important)
+
+You used:
+
+oc-mirror → creates nested repo structure
+
+
+Not:
+
+oc adm release mirror → flat structure
+
+
+👉 That’s why paths differ.
+
+
+---
+
+🎯 Summary
+
+Item	Status
+
+Mirror content	✅ correct
+Mirror path	⚠️ needs alignment
+Node config	❌ mismatch
+Fix	update registries.conf
+
+
+
+---
+
+👉 Next step
+
+Run this EXACT command on node:
+
+podman pull bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev/ocp-release:4.14.46-x86_64
+
+Paste output — if that works, your cluster will come back 👍
