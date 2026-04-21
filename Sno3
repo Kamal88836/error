@@ -1,33 +1,137 @@
-info: Mirroring completed in 18m9.77s (19.49MB/s)
-
-Success
-Update image:  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
-Mirror prefix: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-Mirror prefix: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
-
-To use the new mirrored repository to install, add the following section to the install-config.yaml:
-
-imageContentSources:
-- mirrors:
-  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-  source: quay.io/openshift-release-dev/ocp-release
-- mirrors:
-  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+Yes — exactly 👍
+For your current mirror layout, you should keep only that minimal config.
 
 
-To use the new mirrored repository for upgrades, use the following to create an ImageContentSourcePolicy:
+---
 
-apiVersion: operator.openshift.io/v1alpha1
-kind: ImageContentSourcePolicy
-metadata:
-  name: example
-spec:
-  repositoryDigestMirrors:
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-    source: quay.io/openshift-release-dev/ocp-release
-  - mirrors:
-    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-[root@bastion-sno ~]#
+✅ Final answer (clear and direct)
+
+👉 KEEP ONLY this:
+
+unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
+
+[[registry]]
+  prefix = ""
+  location = "quay.io/openshift-release-dev/ocp-release"
+
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
+    pull-from-mirror = "digest-only"
+
+[[registry]]
+  prefix = ""
+  location = "quay.io/openshift-release-dev/ocp-v4.0-art-dev"
+
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
+    pull-from-mirror = "digest-only"
+
+
+---
+
+❌ REMOVE EVERYTHING ELSE
+
+Delete:
+
+❌ all registry.redhat.io/... mirror blocks
+
+❌ all /openshift/release entries
+
+❌ all /release-images entries
+
+❌ any extra mirror paths
+
+❌ any duplicate or old configs
+
+
+👉 Basically:
+your file should contain ONLY the above 2 registry mappings
+
+
+---
+
+🧠 Why this is important
+
+Right now:
+
+extra entries = CRI-O tries wrong paths
+
+wrong paths = image pull fails
+
+image pull fails = kubelet + API never start
+
+
+
+---
+
+🧪 After updating file
+
+1. Test mirror mapping
+
+podman pull quay.io/openshift-release-dev/ocp-release:4.14.46-x86_64
+
+👉 Must succeed
+👉 Must NOT hit internet
+
+
+---
+
+2. Restart services
+
+systemctl daemon-reexec
+systemctl restart crio
+systemctl restart kubelet
+
+
+---
+
+3. Check
+
+systemctl status crio
+
+
+---
+
+⚠️ One more important thing
+
+👉 Check this directory:
+
+ls /etc/containers/registries.conf.d/
+
+If any files exist:
+
+👉 they can override your config
+
+
+---
+
+If present → temporarily move them
+
+mkdir /root/backup-registry
+mv /etc/containers/registries.conf.d/* /root/backup-registry/
+
+
+---
+
+🎯 Final goal
+
+CRI-O should start ✅
+
+kubelet should start ✅
+
+API should come up ✅
+
+
+
+---
+
+If CRI-O still fails after this, then we debug that IPv6 binding error next (you already have that in logs).
+
+
+---
+
+👉 Do this and tell me result of:
+
+systemctl status crio
+
+We’ll finish it.
