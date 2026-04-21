@@ -1,49 +1,61 @@
-[root@bastion-sno ocp_4_14_46]# oc mirror -c imageset-config.yaml --from file:///root/ocp_4_14_46/  docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
-
-2026/04/20 14:09:04  [WARN]   : ⚠️  --v2 flag identified, flow redirected to the oc-mirror v2 version. This is Tech Preview, it is still under development and it is not production ready.
-2026/04/20 14:09:04  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/04/20 14:09:04  [INFO]   : ⚙️  setting up the environment for you...
-2026/04/20 14:09:04  [INFO]   : 🔀 workflow mode: diskToMirror
-2026/04/20 14:13:32  [INFO]   : 🕵️  going to discover the necessary images...
-2026/04/20 14:13:32  [INFO]   : 🔍 collecting release images...
-2026/04/20 14:13:32  [INFO]   : 🔍 collecting operator images...
-2026/04/20 14:21:13  [INFO]   : 🔍 collecting additional images...
-2026/04/20 14:21:13  [INFO]   : 🚀 Start copying the images...
-2026/04/20 14:21:13  [INFO]   : === Overall Progress - copying image 1 / 826 ===
-2026/04/20 14:21:13  [INFO]   : copying release image 1 / 760
-2026/04/20 14:21:13  [INFO]   : copying operator image 0 / 66
-2026/04/20 14:21:13  [INFO]   : copying additional image 0 / 0
-2026/04/20 14:21:13  [INFO]   : ================================================
-2026/04/20 14:21:14  [INFO]   : === Overall Progress - copying image 2 / 826 ===
-2026/04/20 14:21:14  [INFO]   : copying release image 2 / 760
-2026/04/20 14:21:14  [INFO]   : copying operator image 0 / 66
-2026/04/20 14:21:14  [INFO]   : copying additional image 0 / 0
-2026/04/20 14:21:14  [INFO]   : ================================================
-2026/04/20 14:21:16  [INFO]   : === Overall Progress - copying image 3 / 826 ===
-2026/04/20 14:21:16  [INFO]   : copying release image 3 / 760
-2026/04/20 14:21:16  [INFO]   : copying operator image 0 / 66
-2026/04/20 14:21:16  [INFO]   : copying additional image 0 / 0
-2026/04/20 14:21:16  [INFO]   : ================================================
-2026/04/20 14:21:16  [INFO]   : === Overall Progress - copying image 4 / 826 ===
-
-
-2026/04/20 14:37:00  [INFO]   : ==================================================
-2026/04/20 14:37:01  [INFO]   : === Overall Progress - copying image 826 / 826 ===
-2026/04/20 14:37:01  [INFO]   : copying release image 760 / 760
-2026/04/20 14:37:01  [INFO]   : copying operator image 66 / 66
-2026/04/20 14:37:01  [INFO]   : copying additional image 0 / 0
-2026/04/20 14:37:01  [INFO]   : ==================================================
-2026/04/20 14:37:01  [INFO]   : === Results ===
-2026/04/20 14:37:01  [INFO]   : All release images mirrored successfully 760 / 760 ✅
-2026/04/20 14:37:01  [INFO]   : All operator images mirrored successfully 66 / 66 ✅
-2026/04/20 14:37:01  [INFO]   : All additional images mirrored successfully 0 / 0 ✅
-2026/04/20 14:37:01  [INFO]   : 📄 Generating IDMS file...
-2026/04/20 14:37:01  [INFO]   : /root/ocp_4_14_46/working-dir/cluster-resources/idms-oc-mirror.yaml file created
-2026/04/20 14:37:01  [INFO]   : 📄 Generating ITMS file...
-2026/04/20 14:37:01  [INFO]   : /root/ocp_4_14_46/working-dir/cluster-resources/itms-oc-mirror.yaml file created
-2026/04/20 14:37:01  [INFO]   : 📄 Generating CatalogSource file...
-2026/04/20 14:37:01  [INFO]   : /root/ocp_4_14_46/working-dir/cluster-resources/cs-redhat-operator-index-v4-14.yaml file created
-2026/04/20 14:37:01  [INFO]   : mirror time     : 27m57.065955493s
-2026/04/20 14:37:01  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+[root@bastion-sno ocp_4_14_46]# cat /root/ocp_4_14_46/working-dir/cluster-resources/idms-oc-mirror.yaml
+---
+apiVersion: config.openshift.io/v1
+kind: ImageDigestMirrorSet
+metadata:
+  name: idms-release-0
+spec:
+  imageDigestMirrors:
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev
+    source: quay.io/openshift-release-dev
+status: {}
+---
+apiVersion: config.openshift.io/v1
+kind: ImageDigestMirrorSet
+metadata:
+  name: idms-operator-0
+spec:
+  imageDigestMirrors:
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift4
+    source: registry.redhat.io/openshift4
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/odf4
+    source: registry.redhat.io/odf4
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/rhel8
+    source: registry.redhat.io/rhel8
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-logging
+    source: registry.redhat.io/openshift-logging
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/rhceph
+    source: registry.redhat.io/rhceph
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/lvms4
+    source: registry.redhat.io/lvms4
+status: {}
+[root@bastion-sno ocp_4_14_46]# cat /root/ocp_4_14_46/working-dir/cluster-resources/itms-oc-mirror.yaml
+---
+apiVersion: config.openshift.io/v1
+kind: ImageTagMirrorSet
+metadata:
+  name: itms-release-0
+spec:
+  imageTagMirrors:
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev
+    source: quay.io/openshift-release-dev
+status: {}
+[root@bastion-sno ocp_4_14_46]# cat /root/ocp_4_14_46/working-dir/cluster-resources/cs-redhat-operator-index-v4-14.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: cs-redhat-operator-index-v4-14
+  namespace: openshift-marketplace
+spec:
+  image: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.14
+  sourceType: grpc
+status: {}
 [root@bastion-sno ocp_4_14_46]#
-
