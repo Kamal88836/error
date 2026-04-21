@@ -1,0 +1,33 @@
+000-shortnames.conf                 002-rhel-shortnames-overrides.conf
+[root@ocp-sno ~]# ls /etc/containers/registries.conf.d/
+000-shortnames.conf  002-rhel-shortnames-overrides.conf
+[root@ocp-sno ~]# vi /etc/containers/registries.conf
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]# vi /etc/containers/registries.conf
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]# systemctl daemon-reexec
+[root@ocp-sno ~]# systemctl restart crio
+
+
+^C
+[root@ocp-sno ~]# ^C
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]# systemctl restart kubelet
+^C
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]# systemctl status crio
+○ crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: inactive (dead)
+       Docs: https://github.com/cri-o/cri-o
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
+[root@ocp-sno ~]#
