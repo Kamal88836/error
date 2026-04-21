@@ -1,141 +1,161 @@
-[root@ocp-sno ~]# podman login bastion-sno.lab.ocp.lan:8443 -u sysadmin -p samsung123
-Login Succeeded!
-[root@ocp-sno ~]# cat /root/.
-./             ../            .bash_history  .bash_logout   .bash_profile  .bashrc        .lesshst       .ssh/
-[root@ocp-sno ~]# podman pull bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev/ocp-release:4.14.46-x86_64
-Trying to pull bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev/ocp-release:4.14.46-x86_64...
-Getting image source signatures
-Copying blob ed5f810bf646 done
-Copying blob 34ae3aa5d006 done
-Copying blob 328d6a0edb33 done
-Copying blob f7f833720fe1 done
-Copying blob c7965aa70860 done
-Copying config b72e218d11 done
-Writing manifest to image destination
-Storing signatures
-b72e218d118bdf1d9b0de4827ec58264254805e20f04f057115bc93efd55a0c8
-[root@ocp-sno ~]# vi /etc/containers/registries.conf
-[root@ocp-sno ~]# cat /etc/containers/registries.conf
-unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
-short-name-mode = ""
+You’ve done 90% of the hard work — nice 👍
+The reason your cluster is still down is now very precise and clear:
+
+
+---
+
+🚨 Problem in your registries.conf
+
+Right now you have:
+
+location = "quay.io/openshift-release-dev/ocp-release"
+
+[[registry.mirror]]
+location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
+
+👉 But your mirror (from oc-mirror) actually lives at:
+
+bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev/ocp-release
+
+
+---
+
+❌ Why this breaks things
+
+Node tries:
+
+quay.io/openshift-release-dev/ocp-release
+→ mirror → bastion/.../ocp4/openshift4
+
+👉 But image is actually deeper:
+
+.../ocp4/openshift4/openshift-release-dev/ocp-release
+
+➡️ So CRI-O cannot find it → kubelet stays down
+
+
+---
+
+✅ Correct fix (VERY IMPORTANT)
+
+Edit your file:
+
+vi /etc/containers/registries.conf
+
+
+---
+
+🔥 Replace ONLY the first block with this:
 
 [[registry]]
   prefix = ""
-  location = "quay.io/openshift-release-dev/ocp-release"
+  location = "quay.io/openshift-release-dev"
 
   [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
+    location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev"
     pull-from-mirror = "digest-only"
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/openshift/release-images"
-    pull-from-mirror = "digest-only"
 
-[[registry]]
-  prefix = ""
-  location = "quay.io/openshift-release-dev/ocp-v4.0-art-dev"
+---
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
-    pull-from-mirror = "digest-only"
+❗ REMOVE this incorrect part:
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/openshift/release"
-    pull-from-mirror = "digest-only"
+location = "quay.io/openshift-release-dev/ocp-release"
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/lvms4"
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/lvms4"
-    pull-from-mirror = "digest-only"
+---
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/ocp-tools-4-tech-preview"
+🧠 Why this works
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/ocp-tools-4-tech-preview"
-    pull-from-mirror = "digest-only"
+Now mapping becomes:
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/odf4"
+quay.io/openshift-release-dev
+→ bastion/.../openshift-release-dev
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/odf4"
-    pull-from-mirror = "digest-only"
+So:
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/openshift-logging"
+ocp-release → resolves correctly ✅
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/openshift-logging"
-    pull-from-mirror = "digest-only"
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/openshift-serverless-1"
+---
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/openshift-serverless-1"
-    pull-from-mirror = "digest-only"
+🔥 Keep this in mind
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/openshift-serverless-1-tech-preview"
+oc-mirror → nested repo structure
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/openshift-serverless-1-tech-preview"
-    pull-from-mirror = "digest-only"
+so you MUST map at parent level, not full image path
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/openshift-service-mesh"
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/openshift-service-mesh"
-    pull-from-mirror = "digest-only"
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/openshift4"
+---
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/openshift4"
-    pull-from-mirror = "digest-only"
+✅ After fixing
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/rhceph"
+Test redirect (VERY IMPORTANT)
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/rhceph"
-    pull-from-mirror = "digest-only"
+podman pull quay.io/openshift-release-dev/ocp-release:4.14.46-x86_64
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/rhel8"
+👉 It should pull from your mirror automatically
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/rhel8"
-    pull-from-mirror = "digest-only"
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/source-to-image"
+---
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/source-to-image"
-    pull-from-mirror = "digest-only"
+🚀 Then restart cluster components
 
-[[registry]]
-  prefix = ""
-  location = "registry.redhat.io/ubi8"
+systemctl daemon-reexec
+systemctl restart crio
+systemctl restart kubelet
 
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/ubi8"
-    pull-from-mirror = "digest-only"
-[root@ocp-sno ~]#
+
+---
+
+🔍 Check recovery
+
+ss -lntp | grep 6443
+
+Then:
+
+oc get nodes
+
+
+---
+
+🎯 Expected result
+
+Your cluster should now:
+
+start CRI-O ✅
+
+start kubelet ✅
+
+bring API back ✅
+
+
+
+---
+
+🧠 Final insight
+
+You had:
+
+Mirror ✔
+
+Auth ✔
+
+Cert ✔
+
+❌ Wrong mirror mapping
+
+
+👉 This is a classic oc-mirror vs oc-adm mismatch issue
+
+
+---
+
+👉 Next step
+
+After editing, run:
+
+podman pull quay.io/openshift-release-dev/ocp-release:4.14.46-x86_64
+
+If that works → your cluster will come back 👍
