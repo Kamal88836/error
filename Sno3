@@ -1,161 +1,31 @@
-You’ve done 90% of the hard work — nice 👍
-The reason your cluster is still down is now very precise and clear:
-
-
----
-
-🚨 Problem in your registries.conf
-
-Right now you have:
-
-location = "quay.io/openshift-release-dev/ocp-release"
-
-[[registry.mirror]]
-location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
-
-👉 But your mirror (from oc-mirror) actually lives at:
-
-bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev/ocp-release
-
-
----
-
-❌ Why this breaks things
-
-Node tries:
-
-quay.io/openshift-release-dev/ocp-release
-→ mirror → bastion/.../ocp4/openshift4
-
-👉 But image is actually deeper:
-
-.../ocp4/openshift4/openshift-release-dev/ocp-release
-
-➡️ So CRI-O cannot find it → kubelet stays down
-
-
----
-
-✅ Correct fix (VERY IMPORTANT)
-
-Edit your file:
-
-vi /etc/containers/registries.conf
-
-
----
-
-🔥 Replace ONLY the first block with this:
-
-[[registry]]
-  prefix = ""
-  location = "quay.io/openshift-release-dev"
-
-  [[registry.mirror]]
-    location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift-release-dev"
-    pull-from-mirror = "digest-only"
-
-
----
-
-❗ REMOVE this incorrect part:
-
-location = "quay.io/openshift-release-dev/ocp-release"
-
-
----
-
-🧠 Why this works
-
-Now mapping becomes:
-
-quay.io/openshift-release-dev
-→ bastion/.../openshift-release-dev
-
-So:
-
-ocp-release → resolves correctly ✅
-
-
----
-
-🔥 Keep this in mind
-
-oc-mirror → nested repo structure
-
-so you MUST map at parent level, not full image path
-
-
-
----
-
-✅ After fixing
-
-Test redirect (VERY IMPORTANT)
-
-podman pull quay.io/openshift-release-dev/ocp-release:4.14.46-x86_64
-
-👉 It should pull from your mirror automatically
-
-
----
-
-🚀 Then restart cluster components
-
-systemctl daemon-reexec
-systemctl restart crio
-systemctl restart kubelet
-
-
----
-
-🔍 Check recovery
-
-ss -lntp | grep 6443
-
-Then:
-
-oc get nodes
-
-
----
-
-🎯 Expected result
-
-Your cluster should now:
-
-start CRI-O ✅
-
-start kubelet ✅
-
-bring API back ✅
-
-
-
----
-
-🧠 Final insight
-
-You had:
-
-Mirror ✔
-
-Auth ✔
-
-Cert ✔
-
-❌ Wrong mirror mapping
-
-
-👉 This is a classic oc-mirror vs oc-adm mismatch issue
-
-
----
-
-👉 Next step
-
-After editing, run:
-
-podman pull quay.io/openshift-release-dev/ocp-release:4.14.46-x86_64
-
-If that works → your cluster will come back 👍
+Success
+Update image:  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
+Mirror prefix: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
+Mirror prefix: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4:4.14.46-x86_64
+
+To use the new mirrored repository to install, add the following section to the install-config.yaml:
+
+imageContentSources:
+- mirrors:
+  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-release
+- mirrors:
+  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+
+
+To use the new mirrored repository for upgrades, use the following to create an ImageContentSourcePolicy:
+
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: example
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
+    source: quay.io/openshift-release-dev/ocp-release
+  - mirrors:
+    - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+[root@bastion-sno ~]#
