@@ -1,181 +1,124 @@
-Good — this log finally shows the real issue clearly. Not CRI-O crash anymore.
-
-
----
-
-🎯 What your logs prove
-
-👉 CRI-O IS starting
-👉 But image pull is failing repeatedly
-
-Key line:
-
-bastion-sno.lab.ocp.lan:8443/openshift/release@sha256:...
-
-❗❗❗ THIS is the problem
-
-
----
-
-🚨 Root Cause (100% confirmed)
-
-Your node is trying to pull from:
-
-bastion-sno.lab.ocp.lan:8443/openshift/release
-
-But your mirror is:
-
-bastion-sno.lab.ocp.lan:8443/ocp4/openshift4
-
-👉 Mismatch
-
-
----
-
-🧠 Why this is happening
-
-Even though you edited:
-
-/etc/containers/registries.conf
-
-👉 There is STILL some config telling CRI-O:
-
-use /openshift/release
-
-This comes from:
-
-❗ Either:
-
-1. Old registries.conf.d files
-
-
-2. Old MachineConfig (very likely in SNO)
-
-
-3. Cached config from previous install
-
-
-
-
----
-
-🔥 Proof from your log
-
-Trying to pull quay.io/...@sha256...
-→ redirected to bastion.../openshift/release ❌
-
-👉 That redirect is NOT coming from your new config
-
-
----
-
-✅ Fix (THIS is the real solution)
-
-Step 1: Check hidden configs
-
-ls /etc/containers/registries.conf.d/
-
-
----
-
-Step 2: If files exist → REMOVE temporarily
-
-mkdir /root/backup-reg
-mv /etc/containers/registries.conf.d/* /root/backup-reg/
-
-
----
-
-Step 3: Verify ONLY your config is used
-
-cat /etc/containers/registries.conf
-
-👉 Should contain ONLY:
+[root@ocp-sno ~]# cat /etc/containers/registries.conf
+unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
+short-name-mode = ""
 
 [[registry]]
-location = "quay.io/openshift-release-dev/ocp-release"
-mirror → bastion.../ocp4/openshift4
+  prefix = ""
+  location = "quay.io/openshift-release-dev/ocp-release"
 
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
+    pull-from-mirror = "digest-only"
 
----
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/openshift/release-images"
+    pull-from-mirror = "digest-only"
 
-Step 4: Clear old CRI-O state (IMPORTANT)
+[[registry]]
+  prefix = ""
+  location = "quay.io/openshift-release-dev/ocp-v4.0-art-dev"
 
-rm -rf /var/lib/containers/storage/*
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
+    pull-from-mirror = "digest-only"
 
-⚠️ safe in your case (cluster already down)
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/openshift/release"
+    pull-from-mirror = "digest-only"
 
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/lvms4"
 
----
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/lvms4"
+    pull-from-mirror = "digest-only"
 
-Step 5: Restart
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/ocp-tools-4-tech-preview"
 
-systemctl daemon-reexec
-systemctl restart crio
-systemctl restart kubelet
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/ocp-tools-4-tech-preview"
+    pull-from-mirror = "digest-only"
 
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/odf4"
 
----
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/odf4"
+    pull-from-mirror = "digest-only"
 
-🧪 Step 6: Test again
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift-logging"
 
-podman pull quay.io/openshift-release-dev/ocp-release:4.14.46-x86_64
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/openshift-logging"
+    pull-from-mirror = "digest-only"
 
-👉 It MUST go to:
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift-serverless-1"
 
-bastion.../ocp4/openshift4 ✅
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/openshift-serverless-1"
+    pull-from-mirror = "digest-only"
 
-NOT:
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift-serverless-1-tech-preview"
 
-bastion.../openshift/release ❌
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/openshift-serverless-1-tech-preview"
+    pull-from-mirror = "digest-only"
 
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift-service-mesh"
 
----
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/openshift-service-mesh"
+    pull-from-mirror = "digest-only"
 
-🧠 What actually broke your cluster
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/openshift4"
 
-Not mirror
-Not cert
-Not auth
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/openshift4"
+    pull-from-mirror = "digest-only"
 
-👉 Old mirror path still active in node config
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/rhceph"
 
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/rhceph"
+    pull-from-mirror = "digest-only"
 
----
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/rhel8"
 
-🎯 Final understanding
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/rhel8"
+    pull-from-mirror = "digest-only"
 
-Expected	Current
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/source-to-image"
 
-ocp4/openshift4	openshift/release ❌
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/source-to-image"
+    pull-from-mirror = "digest-only"
 
+[[registry]]
+  prefix = ""
+  location = "registry.redhat.io/ubi8"
 
-
----
-
-🚀 After fix
-
-Once correct path is used:
-
-images will pull ✅
-
-kubelet will start static pods ✅
-
-API will come up ✅
-
-
-
----
-
-👉 If still fails
-
-Then run:
-
-grep -r openshift/release /etc/containers/
-
-👉 That will show exactly where old config is coming from
-
-
----
-
-You are very close now — this is the final mismatch 👍
+  [[registry.mirror]]
+    location = "bastion-sno.lab.ocp.lan:8443/ubi8"
+    pull-from-mirror = "digest-only"
+[root@ocp-sno ~]#
