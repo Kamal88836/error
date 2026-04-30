@@ -1,1 +1,361 @@
-https://developers.redhat.com/articles/2025/02/14/image-based-installation-easier-and-faster#
+Great — let’s connect this image-based installation with your real setup (disconnected + selective operator mirroring) and make it practical.
+
+I’ll walk you through a real-world workflow you can actually use 👇
+
+
+---
+
+🧩 Overall Architecture (your case)
+
+You already have:
+
+✅ Disconnected registry (mirror)
+
+✅ Selective operator images mirrored
+
+✅ Experience with SNO / Agent-based install
+
+
+Now we combine that with image-based install:
+
+👉 Flow becomes:
+
+Seed Cluster  →  Create Image  →  Generate ISO  →  Deploy many SNOs
+        (connected or mirrored)       (offline ready)
+
+
+---
+
+🏗️ STEP 1 — Build your “Golden SNO Cluster”
+
+This is the most important step.
+
+👉 Install one SNO normally (Agent / ISO / UPI — your choice)
+
+Then configure EVERYTHING you want baked into all future clusters:
+
+🔧 Must include:
+
+Pull secret pointing to your mirror
+
+ICSP / IDMS (mirror configs)
+
+Operators (from your mirrored catalog)
+
+Storage / network configs
+
+Any base apps
+
+
+👉 Example things you already worked on:
+
+IDMS (ImageDigestMirrorSet)
+
+ITMS (if used)
+
+Local registry (quay or custom)
+
+
+
+---
+
+📦 STEP 2 — Install Lifecycle Agent (LCA)
+
+On that running cluster:
+
+oc apply -f https://raw.githubusercontent.com/openshift-kni/lifecycle-agent/main/config/install.yaml
+
+Verify:
+
+oc get pods -n openshift-lifecycle-agent
+
+
+---
+
+🧱 STEP 3 — Create Seed Image
+
+Now generate the reusable image.
+
+Create Image CR
+
+apiVersion: lca.openshift.io/v1
+kind: SeedGenerator
+metadata:
+  name: seedimage
+spec:
+  image: <your-registry>/seed/sno:latest
+
+Apply:
+
+oc apply -f seed.yaml
+
+
+---
+
+What happens here:
+
+Cluster snapshot is taken
+
+Stored as OCI image
+
+Pushed to your local registry (mirror)
+
+
+👉 This is key for disconnected:
+
+> Your seed image lives inside your mirror registry ✅
+
+
+
+
+---
+
+📀 STEP 4 — Create Installation ISO
+
+On your bastion:
+
+openshift-install image-based create image \
+  --seed-image <your-registry>/seed/sno:latest \
+  --dir ./ib-install
+
+This generates:
+
+rhcos-live.x86_64.iso
+
+
+
+---
+
+⚙️ STEP 5 — Create Node-specific Config
+
+Each node still needs identity.
+
+Create install-config.yaml (minimal now):
+
+apiVersion: v1
+baseDomain: example.com
+metadata:
+  name: sno1
+pullSecret: '<your-mirror-pull-secret>'
+sshKey: 'ssh-rsa AAAA...'
+
+Then generate config ISO:
+
+openshift-install image-based create config-image \
+  --dir ./ib-install
+
+
+---
+
+🖥️ STEP 6 — Deploy New Node
+
+Boot target server with:
+
+Installation ISO
+
+Config ISO
+
+
+👉 Process:
+
+1. Boot
+
+
+2. Disk gets flashed with seed image
+
+
+3. Config applied
+
+
+4. Certificates regenerated
+
+
+5. Cluster comes up
+
+
+
+⏱️ ~10–15 minutes typically
+
+
+---
+
+🔄 STEP 7 — What happens internally (important)
+
+lca-cli writes image → disk
+
+recert regenerates:
+
+API certs
+
+kubeconfig
+
+node identity
+
+
+Cluster becomes unique
+
+
+👉 So no conflicts even though same base image
+
+
+---
+
+🧠 HOW THIS FITS YOUR MIRROR SETUP
+
+This is the part most people miss 👇
+
+✅ Your mirror is reused automatically if:
+
+Your seed cluster already had:
+
+IDMS / ICSP configured
+
+Operators installed from mirror
+
+
+👉 Then:
+
+> Every new cluster ALSO uses your mirror — no extra work
+
+
+
+
+---
+
+🔥 Important rule
+
+👉 Whatever is in seed cluster = present in all new clusters
+
+So:
+
+Component	Must be in seed?
+
+Release images	✅ Yes
+Operator catalogs	✅ Yes
+IDMS/ICSP	✅ Yes
+Custom CA certs	✅ Yes
+
+
+
+---
+
+⚠️ Common mistakes (you should avoid)
+
+❌ Mistake 1: Seed without mirror config
+
+→ New cluster tries internet → FAIL
+
+
+---
+
+❌ Mistake 2: Adding operators later
+
+→ defeats purpose
+
+👉 Install operators BEFORE creating seed image
+
+
+---
+
+❌ Mistake 3: Wrong registry path
+
+→ mismatch between seed + mirror
+
+
+---
+
+🧪 Practical Example (your scenario)
+
+You said:
+
+> “I only mirror selective operators”
+
+
+
+Perfect 👍
+
+Your flow:
+
+1. Mirror only required operators via oc mirror
+
+
+2. Install them in seed cluster
+
+
+3. Create seed image
+
+
+4. Deploy multiple SNOs
+
+
+
+👉 Result:
+
+No need to mirror again
+
+No need to install operators again
+
+
+
+---
+
+🚀 When this becomes VERY powerful
+
+You can:
+
+Deploy 50+ SNO clusters quickly
+
+Replace failed node in minutes
+
+Standardize cluster builds
+
+Avoid repeated operator installs
+
+
+
+---
+
+💡 Pro tip (advanced)
+
+Maintain multiple seed images:
+
+sno-base:v1 → minimal
+
+sno-telco:v1 → with CNF operators
+
+sno-ai:v1 → with GPU stack
+
+
+
+---
+
+🧭 Where this fits in OpenShift ecosystem
+
+Replaces heavy ZTP workflows
+
+Works great with edge
+
+Future direction of SNO deployment
+
+
+
+---
+
+👉 If you want next step:
+
+I can show you:
+
+1. Exact SeedGenerator YAML with registry + auth
+
+
+2. How to integrate with your existing oc-mirror directory structure
+
+
+3. Debug commands (very important in real setups)
+
+
+4. How to update seed image (day-2 upgrades)
+
+
+
+Just tell me 👍
