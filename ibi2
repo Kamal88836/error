@@ -1,1 +1,173 @@
-https://canonical-subiquity.readthedocs-hosted.com/en/latest/tutorial/creating-autoinstall-configuration.html
+I can give you a complete ready‑to‑use script + systemd unit you can embed directly into your image.
+
+Here is a **complete, ready‑to‑use script + systemd unit** that you can embed directly into your Ubuntu image. It will:
+
+- Apply a static IP (adjustable).
+- Regenerate machine‑ID and SSH keys.
+- Install K3s as a **single‑node server** with that static IP.
+
+***
+
+### 1. Step 1 – Place these files in your image
+
+Create directories (if they don’t exist):
+
+```bash
+sudo mkdir -p /opt/scripts
+```
+
+#### File 1: First‑boot script (`/opt/scripts/first-boot.sh`)
+
+```bash
+#!/bin/bash
+#
+# Run once on first boot: regenerate IDs, set hostname, install K3s
+#
+
+set -euo pipefail
+
+script_dir="/opt/scripts"
+installed_flag="$script_dir/.first-boot-done"
+
+# Only run once
+if [ -f "$installed_flag" ]; then
+    exit 0
+fi
+
+# 1) Regenerate machine ID
+rm -f /etc/machine-id /var/lib/dbus/machine-id
+systemd-machine-id-setup
+
+# 2) Regenerate SSH host keys
+rm -f /etc/ssh/ssh_host_*
+dpkg-reconfigure openssh-server
+
+# 3) Set hostname (optional)
+new_hostname="k3s-single-node-$(date +%s)"
+hostnamectl set-hostname "$new_hostname"
+
+# 4) Configure K3s
+# EDIT THESE FOR YOUR NETWORK:
+STATIC_IP="192.168.1.100"
+GATEWAY="192.168.1.1"
+NAMESERVER="8.8.8.8"
+
+K3S_EXEC="server \
+  --no-deploy=traefik \
+  --disable=local-storage \
+  --node-external-ip=$STATIC_IP \
+  --node-ip=$STATIC_IP"
+
+# Install K3s
+curl -sfL https://get.k3s.io | \
+  K3S_KUBECONFIG_MODE="644" \
+  INSTALL_K3S_EXEC="$K3S_EXEC" \
+  sh -
+
+# 5) Mark as done
+touch "$installed_flag"
+
+echo "First boot setup completed. K3s single‑node server ready."
+echo "SSH: $STATIC_IP"
+echo "kubeconfig: /etc/rancher/k3s/k3s.yaml"
+```
+
+Make it executable:
+
+```bash
+sudo chmod +x /opt/scripts/first-boot.sh
+```
+
+***
+
+#### File 2: Systemd unit (`/etc/systemd/system/first-boot.service`)
+
+```ini
+[Unit]
+Description=One‑time first‑boot setup for K3s single‑node static IP
+After=network.target
+ConditionPathExists=!/opt/scripts/.first-boot-done
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/scripts/first-boot.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable it so it runs on first boot:
+
+```bash
+sudo systemctl enable first-boot.service
+```
+
+***
+
+### 2. Step 2 – Configure static IP (netplan)
+
+Edit `/etc/netplan/01-netcfg.yaml` (or similar) to match your network:
+
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: false
+      addresses:
+        - 192.168.1.100/24
+      gateway4: 192.168.1.1
+      nameservers:
+        addresses: [8.8.8.8, 1.1.1.1]
+```
+
+Run:
+
+```bash
+sudo netplan apply
+```
+
+You can change `192.168.1.100/24` and `192.168.1.1` to match your subnet.
+
+***
+
+### 3. Step 3 – How to use this in your image
+
+On your **golden server**:
+
+1. Set up the Ubuntu base + static‑IP file + `/opt/scripts/first-boot.sh` + `first-boot.service`.
+2. Create the image:
+
+   ```bash
+   sudo dd if=/dev/sda of=/path/to/ubuntu-k3s-single-node.img bs=4M
+   ```
+
+3. On each new physical server:
+
+   - Flash the image:
+     ```bash
+     sudo dd if=ubuntu-k3s-single-node.img of=/dev/sda bs=4M
+     ```
+   - Boot the server.
+   - It will:
+     - Use the static IP.
+     - Regenerate SSH keys and machine‑ID.
+     - Install K3s as a single‑node cluster.
+
+***
+
+### 4. After boot – verify K3s
+
+Once the server is up:
+
+```bash
+sudo kubectl get nodes
+sudo kubectl get pods -A
+```
+
+You now have a **hardware‑independent, image‑based single‑node K3s server with static IP** that you can reuse on any compatible physical server.
+
+If you paste your actual subnet (e.g., `10.10.10.0/24`), I can give you a version of this script with **your exact IP and gateway** already filled in.
+
