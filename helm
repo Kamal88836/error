@@ -1,220 +1,179 @@
-sno7@haproxy:~$ oc describe po bscf141-bip0-6b7b849db4-5fnzm
-Name:             bscf141-bip0-6b7b849db4-5fnzm
-Namespace:        bscf
-Priority:         0
-Service Account:  bscf-sa
-Node:             sno7.lab7.ocp.lan/72.1.1.142
-Start Time:       Tue, 05 May 2026 08:00:06 +0000
-Labels:           app=bscf141-bip0
-                  component=bscf141-bip
-                  nename=bscf141
-                  pod-template-hash=6b7b849db4
-                  release=bscf
-                  restart-on-reboot=true
-                  tech=gsm
-Annotations:      k8s.ovn.org/pod-networks:
-                    {"default":{"ip_addresses":["10.128.0.181/23","fd01:0:0:1::b5/64"],"mac_address":"0a:58:0a:80:00:b5","gateway_ips":["10.128.0.1","fd01:0:0...
-                  k8s.v1.cni.cncf.io/network-status:
-                    [{
-                        "name": "ovn-kubernetes",
-                        "interface": "eth0",
-                        "ips": [
-                            "10.128.0.181",
-                            "fd01:0:0:1::b5"
-                        ],
-                        "mac": "0a:58:0a:80:00:b5",
-                        "default": true,
-                        "dns": {}
-                    },{
-                        "name": "bscf/bscf-bh0c-nad",
-                        "interface": "bh0",
-                        "mac": "b2:fe:66:58:cf:9d",
-                        "mtu": 1500,
-                        "dns": {},
-                        "device-info": {
-                            "type": "pci",
-                            "version": "1.1.0",
-                            "pci": {
-                                "pci-address": "0000:26:02.5"
-                            }
-                        }
-                    },{
-                        "name": "bscf/bscf-bh0c-nad",
-                        "interface": "bh1",
-                        "mac": "9a:07:9a:72:7e:57",
-                        "mtu": 1500,
-                        "dns": {},
-                        "device-info": {
-                            "type": "pci",
-                            "version": "1.1.0",
-                            "pci": {
-                                "pci-address": "0000:26:02.6"
-                            }
-                        }
-                    },{
-                        "name": "bscf/bscf-bh0c-1-nad",
-                        "interface": "bh2",
-                        "mac": "16:f5:5d:c5:d9:8b",
-                        "mtu": 1500,
-                        "dns": {},
-                        "device-info": {
-                            "type": "pci",
-                            "version": "1.1.0",
-                            "pci": {
-                                "pci-address": "0000:26:19.5"
-                            }
-                        }
-                    }]
-                  k8s.v1.cni.cncf.io/networks:
-                    [{ "name": "bscf-bh0c-nad", "interface": "bh0" }, { "name": "bscf-bh0c-nad", "interface": "bh1" },{ "name": "bscf-bh0c-1-nad", "interface"...
-                  openshift.io/scc: privileged
-Status:           Pending
-IP:               10.128.0.181
-IPs:
-  IP:           10.128.0.181
-  IP:           fd01:0:0:1::b5
-Controlled By:  ReplicaSet/bscf141-bip0-6b7b849db4
-Init Containers:
-  sleepy:
-    Container ID:
-    Image:         sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-      echo Sleepy has come && sleep 15
-    State:          Waiting
-      Reason:       ImagePullBackOff
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:     500m
-      memory:  256Mi
-    Requests:
-      cpu:        500m
-      memory:     256Mi
-    Environment:  <none>
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-52v5d (ro)
-  install:
-    Container ID:
-    Image:         sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-    Args:
-      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:                                500m
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Requests:
-      cpu:                                500m
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Environment:                          <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf141-bip-log (rw)
-      /mnt/storage/shared from bscf141-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-52v5d (ro)
-Containers:
-  bip:
-    Container ID:
-    Image:         sribharbor.sec.samsung.net/integ-ran/utd-bscf-bip:SVR26BBSCUTDD29_I00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:                                22
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Requests:
-      cpu:                                22
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Liveness:                             http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:              UTC
-      THIS_NODE_NAME:   (v1:spec.nodeName)
-    Mounts:
-      /etc/config from env (rw)
-      /etc/podnetinfo from podnetinfo (ro)
-      /mnt/storage/log from bscf141-bip-log (rw)
-      /mnt/storage/shared from bscf141-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-52v5d (ro)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   True
-  Initialized                 False
-  Ready                       False
-  ContainersReady             False
-  PodScheduled                True
-Volumes:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf141-bip0
-    Optional:  false
-  bscf141-bip-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf141-log-pvc
-    ReadOnly:   false
-  bscf141-bip-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf141-shared-pvc
-    ReadOnly:   false
-  kube-api-access-52v5d:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-  podnetinfo:
-    Type:  DownwardAPI (a volume populated by information about the pod)
-    Items:
-      metadata.labels -> labels
-      metadata.annotations -> annotations
-QoS Class:       Guaranteed
-Node-Selectors:  <none>
-Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type     Reason          Age                    From               Message
-  ----     ------          ----                   ----               -------
-  Normal   Scheduled       83m                    default-scheduler  Successfully assigned bscf/bscf141-bip0-6b7b849db4-5fnzm to sno7.lab7.ocp.lan
-  Normal   AddedInterface  82m                    multus             Add eth0 [10.128.0.181/23 fd01:0:0:1::b5/64] from ovn-kubernetes
-  Normal   AddedInterface  82m                    multus             Add bh0 [] from bscf/bscf-bh0c-nad
-  Normal   AddedInterface  82m                    multus             Add bh1 [] from bscf/bscf-bh0c-nad
-  Normal   AddedInterface  82m                    multus             Add bh2 [] from bscf/bscf-bh0c-1-nad
-  Warning  Failed          81m (x6 over 82m)      kubelet            Error: ImagePullBackOff
-  Normal   Pulling         81m (x4 over 82m)      kubelet            Pulling image "sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00"
-  Warning  Failed          81m (x4 over 82m)      kubelet            Failed to pull image "sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00": initializing source docker://sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00: reading manifest SVR26BBSCUTDD29_I00 in sribharbor.sec.samsung.net/integ-ran/utd-bscf-init: unknown: artifact integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00 not found
-  Warning  Failed          81m (x4 over 82m)      kubelet            Error: ErrImagePull
-  Normal   BackOff         2m35s (x353 over 82m)  kubelet            Back-off pulling image "sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00"
-sno7@haproxy:~$
+Your pod is stuck in Pending → Init:ImagePullBackOff, and the root cause is clearly visible in the events:
+
+> ❌ artifact ... not found
+
+
+
+
+---
+
+🔍 What’s actually failing
+
+The init container sleepy cannot pull this image:
+
+sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
+
+Error:
+
+unknown: artifact ... not found
+
+👉 This means the image/tag does NOT exist in the registry, not a network/auth issue.
+
+
+---
+
+⚠️ Key observation
+
+Pod is NOT progressing past init container
+
+Second init container (install) and main container (bip) are waiting
+
+Condition:
+
+Initialized: False
+
+So everything is blocked by this image pull failure
+
+
+
+---
+
+🧠 Possible reasons
+
+1. ❌ Wrong image tag
+
+Most common issue.
+
+Check if tag exists:
+
+podman pull sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
+
+If this fails → tag is invalid
+
+
+---
+
+2. ❌ Image not pushed to Harbor
+
+Maybe CI/CD didn’t push this version.
+
+Check in Harbor UI or via API:
+
+Project: integ-ran
+
+Repo: utd-bscf-init
+
+Tag: SVR26BBSCUTDD29_I00
+
+
+
+---
+
+3. ❌ Wrong repository path
+
+Maybe actual path is slightly different, like:
+
+integ-ran/utd-bscf-init-init
+integ-ran/bscf-init
+
+
+---
+
+4. ❌ Case-sensitive mismatch
+
+Harbor is strict:
+
+SVR26BBSCUTDD29_I00 ≠ svr26bbscutdd29_i00
+
+
+---
+
+5. ❌ Disconnected / mirror issue (very likely in your setup)
+
+Since you're working in disconnected OpenShift, check:
+
+Is this image mirrored to your local registry?
+
+Does your cluster have access to sribharbor.sec.samsung.net?
+
+
+If not → image pull will fail even if it exists remotely
+
+
+---
+
+✅ How to fix
+
+✔️ Step 1: Verify image exists
+
+From any node:
+
+podman login sribharbor.sec.samsung.net
+podman pull sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
+
+
+---
+
+✔️ Step 2: If image missing → fix tag
+
+Update your Helm values / deployment:
+
+image:
+  repository: sribharbor.sec.samsung.net/integ-ran/utd-bscf-init
+  tag: <correct-tag>
+
+Then:
+
+helm upgrade ...
+
+
+---
+
+✔️ Step 3: If using disconnected cluster
+
+You must mirror the image:
+
+oc image mirror \
+sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00 \
+<your-local-registry>/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
+
+And ensure:
+
+ImageContentSourcePolicy (ICSP) OR
+
+ImageDigestMirrorSet (IDMS)
+
+
+is configured correctly
+
+
+---
+
+✔️ Step 4: Restart pod
+
+oc delete pod bscf141-bip0-6b7b849db4-5fnzm -n bscf
+
+
+---
+
+🔥 Quick diagnosis summary
+
+Check	Status
+
+Scheduling	✅ OK
+Networking (Multus/SR-IOV)	✅ OK
+PVC mounts	✅ OK
+Init container	❌ FAIL
+Root cause	❌ Image not found
+
+
+
+---
+
+🚀 What you should do next
+
+Start with this:
+
+podman pull sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
+
+👉 Tell me the output — I’ll pinpoint exact fix (tag vs mirror vs path).
