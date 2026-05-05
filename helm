@@ -1,13 +1,6 @@
-sno7@haproxy:~/ocp-helm$ helm install bscf-pre oci://sribharbor.sec.samsung.net/integ-ran/bscf-pre -f local-values-pre.yaml --version 261.0.1
-Pulled: sribharbor.sec.samsung.net/integ-ran/bscf-pre:261.0.1
-Digest: sha256:bee50820db8686c8822158bcfef859c401181345251f9cfcd65d81087694e1a4
-Error: INSTALLATION FAILED: failed to create typed patch object (openshift-sriov-network-operator/bscf-bh0u-2-1-nad; sriovnetwork.openshift.io/v1, Kind=SriovNetwork): .spec.inkState: field not declared in schema
-failed to create typed patch object (openshift-sriov-network-operator/bscf-bh0c-1-nad; sriovnetwork.openshift.io/v1, Kind=SriovNetwork): .spec.inkState: field not declared in schema
-failed to create typed patch object (openshift-sriov-network-operator/bscf-bh0c-nad; sriovnetwork.openshift.io/v1, Kind=SriovNetwork): .spec.inkState: field not declared in schema
-failed to create typed patch object (openshift-sriov-network-operator/bscf-bh0c-2-nad; sriovnetwork.openshift.io/v1, Kind=SriovNetwork): .spec.inkState: field not declared in schema
-failed to create typed patch object (openshift-sriov-network-operator/bscf-bh0c-2-1-nad; sriovnetwork.openshift.io/v1, Kind=SriovNetwork): .spec.inkState: field not declared in schema
-failed to create typed patch object (openshift-sriov-network-operator/bscf-bh0u-nad; sriovnetwork.openshift.io/v1, Kind=SriovNetwork): .spec.inkState: field not declared in schema
-failed to create typed patch object (openshift-sriov-network-operator/bscf-bh0u-1-nad; sriovnetwork.openshift.io/v1, Kind=SriovNetwork): .spec.inkState: field not declared in schema
-failed to create typed patch object (openshift-sriov-network-operator/bscf-bh0u-2-nad; sriovnetwork.openshift.io/v1, Kind=SriovNetwork): .spec.inkState: field not declared in schema
-sno7@haproxy:~/ocp-helm$ helm install bscf-pre integ-ran/bscf-pre -f local-values-pre.yaml --version 261.0.1
-Error: INSTALLATION FAILED: file '/home/sno7/.cache/helm/content/a6/a6247f293264283cccf67d37ff8abd21ea50cadac166ab3adca91923cfaacea6.chart' does not appear to be a gzipped archive; got 'text/html; charset=utf-8'
+sno7@haproxy:~$ oc get crd sriovnetworks.sriovnetwork.openshift.io -o yaml | grep -i inkstate
+              linkState:
+sno7@haproxy:~$ oc get csv -n openshift-sriov-network-operator
+NAME                                          DISPLAY                   VERSION               REPLACES   PHASE
+sriov-network-operator.v4.18.0-202604141055   SR-IOV Network Operator   4.18.0-202604141055              Succeeded
+sno7@haproxy:~$
