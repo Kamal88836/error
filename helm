@@ -1,6 +1,30 @@
-sno7@haproxy:~$ oc get crd sriovnetworks.sriovnetwork.openshift.io -o yaml | grep -i inkstate
-              linkState:
-sno7@haproxy:~$ oc get csv -n openshift-sriov-network-operator
-NAME                                          DISPLAY                   VERSION               REPLACES   PHASE
-sriov-network-operator.v4.18.0-202604141055   SR-IOV Network Operator   4.18.0-202604141055              Succeeded
-sno7@haproxy:~$
+sno7@haproxy:~/ocp-helm$ cat local-values-pre.yaml
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+#################################################################
+# Operator configuration.
+#################################################################
+
+namespace: "bscf"
+neType: "bscf"
+second_bscf: "disable"
+accessPolicy: "limited" # "limited, full"
+bondingEnable: "true"
+platform: "ocp" # "wrcp or ocp or aws"
+targetFlavor: "tiny-2u-t1"
+
+# The vlan id of the sriov interface must be set according to the network environment to be installed.
+sriov:
+  devicePrefix: "intel.com"
+  networkType: "flat" # "flat or vlan"
+  bpp:
+    bh0u: "406"  #vlan id
+    bh0u_1: "406"
+    bh0u_2: "406"      #vlan id if networkType is vlan
+    bh0u_2_1: "406"    #vlan id if networkType is vlan
+  bip:
+    bh0c: "402"  #vlan id
+    bh0c_1: "402"
+    bh0c_2: "402"
+    bh0c_2_1: "402"
