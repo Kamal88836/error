@@ -1,11 +1,192 @@
-sno7@haproxy:~/ocp-helm$ oc get sriovnetworknodepolicy  -n openshift-sriov-network-operator
-NAME                     AGE
-policy-ens2f0-bh0c       6d23h
-policy-ens2f0-bh0u       6d23h
-policy-ens2f3-bh0c-1     6d23h
-policy-ens2f3-bh0u-1     6d23h
-policy-ens4f0-bh0c-2-1   6d23h
-policy-ens4f0-bh0u-2-1   6d23h
-policy-ens5f0-bh0c-2     6d23h
-policy-ens5f0-bh0u-2     6d23h
-sno7@haproxy:~/ocp-helm$
+Perfect — this confirms the issue 100%.
+
+
+---
+
+🔴 Final Diagnosis
+
+You DO NOT have any policy for bh0u_3.
+
+From your policies:
+
+policy-ens2f0-bh0u        → bh0u
+policy-ens2f3-bh0u-1      → bh0u_1
+policy-ens5f0-bh0u-2      → bh0u_2
+policy-ens4f0-bh0u-2-1    → bh0u_2_1
+
+🚨 Missing:
+
+bh0u_3 ❌
+
+
+---
+
+💥 Why your pod is failing
+
+You created:
+
+bscf-bh0u-3-nad
+
+But there is:
+
+❌ No SriovNetworkNodePolicy
+
+❌ No VF allocation
+
+❌ No node resource
+
+
+👉 So scheduler says:
+
+Insufficient openshift.io/pci_sriov_net_bh0u_3
+
+
+---
+
+🧠 Key Insight
+
+👉 NAD alone is useless without NodePolicy
+
+Think of it like:
+
+Layer	Status
+
+NodePolicy (creates VFs)	❌ Missing
+SriovNetwork (NAD)	✅ Exists
+Pod	❌ Fails
+
+
+
+---
+
+🛠️ What should you do?
+
+✅ Option 1 (RECOMMENDED – fastest fix)
+
+👉 Stop using bh0u_3 completely
+
+Change your pod + NAD to existing working ones:
+
+Use:
+
+bscf-bh0u-nad
+
+and in pod:
+
+resources:
+  requests:
+    openshift.io/pci_sriov_net_bh0u: 1
+
+
+---
+
+⚠️ Option 2 (If bh0u_3 is mandatory)
+
+Then you must:
+
+1️⃣ Create new NodePolicy
+
+Example:
+
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-ensX-bh0u-3
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: bh0u_3
+  numVfs: 4
+  nicSelector:
+    pfNames:
+      - ensX   # choose correct NIC
+  nodeSelector:
+    kubernetes.io/hostname: sno7.lab7.ocp.lan
+  deviceType: netdevice
+
+
+---
+
+⚠️ But here is the catch (important)
+
+You already used many PFs:
+
+PF	Used
+
+ens2f0	bh0u
+ens2f3	bh0u_1
+ens5f0	bh0u_2
+ens4f0	bh0u_2_1
+
+
+👉 You need:
+
+Free NIC
+
+OR reconfigure existing PF
+
+
+
+---
+
+🚀 My Strong Recommendation (for SNO)
+
+👉 Don’t complicate infra.
+
+✔ Use existing working resources:
+
+bh0u / bh0u_1 / bh0u_2
+
+❌ Avoid creating new ones unless absolutely required.
+
+
+---
+
+🔍 One more hidden issue (important)
+
+From your node:
+
+openshift.io/pci_sriov_net_bh0u      1 used / 4 total
+openshift.io/pci_sriov_net_bh0u_2    1 used / 4 total
+
+👉 You still have free VFs available
+So switching resource will immediately fix scheduling.
+
+
+---
+
+✅ Final Action Plan (Do this now)
+
+1. Edit your deployment / Helm values
+
+
+2. Replace:
+
+bh0u_3 → bh0u
+
+
+3. Replace NAD:
+
+bscf-bh0u-3-nad → bscf-bh0u-nad
+
+
+4. Redeploy
+
+
+
+
+---
+
+🧠 Final Summary
+
+Problem	Status
+
+bh0u_3 NAD	✅ Exists
+bh0u_3 NodePolicy	❌ Missing
+bh0u_3 resource on node	❌ Missing
+Scheduler	❌ Blocked
+
+
+
+---
+
+If you paste your Helm values or pod spec, I’ll fix it exactly (including SR-IOV + hugepages alignment so it won’t fail again).
