@@ -1,155 +1,241 @@
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens2f1-bh0u
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0u
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens2f1#0-3"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
+Here’s the exact sequence you should follow now.
+
+Your remaining issue is:
+
+could not find network attachment definition 'cnf/bscf-bh0c_1-nad'
+
+So you must:
+
+1. Apply SR-IOV policies
+
+
+2. Create SriovNetwork objects
+
+
+3. Verify NADs are created
+
+
+4. Restart deployment
+
+
+
+
 ---
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens2f3-bh0u-1
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0u_1
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens2f3#0-3"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
+
+STEP 1 — Apply Your SR-IOV Policy File
+
+Run:
+
+oc apply -f sriov-node-network.yaml
+
+
 ---
+
+STEP 2 — Wait for SR-IOV Reconciliation
+
+Run:
+
+watch oc get sriovnetworknodestate -n openshift-sriov-network-operator
+
+Wait until:
+
+Sync Status: Succeeded
+
+for your node.
+
+Press Ctrl+C after success.
+
+
+---
+
+STEP 3 — Verify New Resources Exist
+
+Run:
+
+oc describe node master.bscf5000.samsung.local | grep openshift.io/pci
+
+You MUST see:
+
+openshift.io/pci_sriov_net_bh0c_2
+openshift.io/pci_sriov_net_bh0c_2_1
+
+If not → reconciliation failed.
+
+
+---
+
+STEP 4 — Create SriovNetwork Objects
+
+Create file:
+
+vi sriov-network.yaml
+
+Paste THIS EXACT CONTENT:
+
 apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
+kind: SriovNetwork
 metadata:
-  name: policy-ens2f1-bh0c
+  name: bscf-bh0c-nad
   namespace: openshift-sriov-network-operator
 spec:
   resourceName: pci_sriov_net_bh0c
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens2f1#4-8"]
-  deviceType: netdevice
-  isRdma: false
+  networkNamespace: cnf
+  ipam: |
+    {}
+
 ---
 apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
+kind: SriovNetwork
 metadata:
-  name: policy-ens2f3-bh0c-1
+  name: bscf-bh0c_1-nad
   namespace: openshift-sriov-network-operator
 spec:
   resourceName: pci_sriov_net_bh0c_1
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens2f3#4-8"]
-  deviceType: netdevice
-  isRdma: false
+  networkNamespace: cnf
+  ipam: |
+    {}
+
 ---
 apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
+kind: SriovNetwork
 metadata:
-  name: policy-ens5f0-bh0u-2
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0u_2
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens5f0#0-3"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
----
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens5f2-bh0u-2-1
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0u_2_1
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens5f2#0-3"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
----
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens2f1-bh0c-2
+  name: bscf-bh0c_2-nad
   namespace: openshift-sriov-network-operator
 spec:
   resourceName: pci_sriov_net_bh0c_2
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens5f0#4-7"]
-  deviceType: netdevice
-  isRdma: false
+  networkNamespace: cnf
+  ipam: |
+    {}
+
 ---
 apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
+kind: SriovNetwork
 metadata:
-  name: policy-ens5f2-bh0c-2-1
+  name: bscf-bh0c_2_1-nad
   namespace: openshift-sriov-network-operator
 spec:
   resourceName: pci_sriov_net_bh0c_2_1
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens5f2#4-7"]
-  deviceType: netdevice
-  isRdma: false
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u_1-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u_1
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u_2-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u_2
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u_2_1-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u_2_1
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+
+---
+
+STEP 5 — Apply SriovNetwork Objects
+
+Run:
+
+oc apply -f sriov-network.yaml
+
+
+---
+
+STEP 6 — Verify NADs Created
+
+Run:
+
+oc get net-attach-def -n cnf
+
+You MUST see:
+
+bscf-bh0c_1-nad
+bscf-bh0c_2-nad
+bscf-bh0u_2_1-nad
+...
+
+This is the most important verification.
+
+
+---
+
+STEP 7 — Restart Failed Deployment
+
+Run:
+
+oc rollout restart deploy bscf5000-bip1 -n cnf
+
+and:
+
+oc rollout restart deploy bscf5000-bip0 -n cnf
+
+
+---
+
+STEP 8 — Watch Pods
+
+Run:
+
+oc get po -w
+
+You should now see:
+
+Init
+
+Running
+
+Ready 1/1
+
+
+instead of FailedCreate.
+
+
+---
+
+If Still Failing
+
+Immediately run:
+
+oc describe rs bscf5000-bip1-xxxxx
+
+and share latest events.
+
+You are now extremely close to complete deployment success.
