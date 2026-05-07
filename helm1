@@ -1,64 +1,143 @@
-[root@bastion ~]# oc describe node master.bscf5000.samsung.local | grep -i huge -A5
-  hugepages-1Gi:                        27Gi
-  hugepages-2Mi:                        0
-  memory:                               527558660Ki
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
---
-  hugepages-1Gi:                        27Gi
-  hugepages-2Mi:                        0
-  memory:                               480806916Ki
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
---
-  hugepages-1Gi                        16Gi (59%)      16Gi (59%)
-  hugepages-2Mi                        0 (0%)          0 (0%)
-  openshift.io/pci_sriov_net_bh0c      0               0
-  openshift.io/pci_sriov_net_bh0c_1    0               0
-  openshift.io/pci_sriov_net_bh0u      1               1
-  openshift.io/pci_sriov_net_bh0u_1    1               1
-  openshift.io/pci_sriov_net_bh0u_2    1               1
-[root@bastion ~]# oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- ip link
-Defaulted container "cmp" out of: cmp, install (init)
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0@if223: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default
-    link/ether 0a:58:0a:0a:00:8a brd ff:ff:ff:ff:ff:ff link-netnsid 0
-[root@bastion ~]# oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- dpdk-devbind.py -s
-Defaulted container "cmp" out of: cmp, install (init)
-2026-05-07T06:29:29.621290Z: executable file `dpdk-devbind.py` not found in $PATH: No such file or directory
-command terminated with exit code 1
-[root@bastion ~]# cat /var/lib/kubelet/config.yaml | grep cpuManagerPolicy
-cat: /var/lib/kubelet/config.yaml: No such file or directory
-[root@bastion ~]# oc debug node/master.bscf5000.samsung.local
-Temporary namespace openshift-debug-4kr2p is created for debugging node...
-Starting pod/masterbscf5000samsunglocal-debug-l5nqf ...
-To use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.
-Pod IP: 128.68.1.155
-If you don't see a command prompt, try pressing enter.
-sh-5.1# cat /sys/devices/system/cpu/isolated
-
-sh-5.1#
-sh-5.1# sudo -i
-sh: sudo: command not found
-sh-5.1#
-exit
-
-Removing debug pod ...
-Temporary namespace openshift-debug-4kr2p was removed.
-[root@bastion ~]# oc debug node/master.bscf5000.samsung.local
-Temporary namespace openshift-debug-jdt7v is created for debugging node...
-Starting pod/masterbscf5000samsunglocal-debug-4rcg4 ...
-To use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.
-Pod IP: 128.68.1.155
-If you don't see a command prompt, try pressing enter.
-sh-5.1# chroot /host
-sh-5.1# cat /sys/devices/system/cpu/isolated
-
-sh-5.1# cat /var/lib/kubelet/config.yaml | grep cpuManagerPolicy
-cat: /var/lib/kubelet/config.yaml: No such file or directory
-sh-5.1#
+[root@bastion ~]# oc get deploy
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+bscf5000-bip0   0/1     0            0           27m
+bscf5000-bip1   0/1     0            0           27m
+bscf5000-bpp0   1/1     1            1           27m
+bscf5000-bpp1   1/1     1            1           27m
+bscf5000-cmp0   1/1     1            1           27m
+bscf5000-cmp1   1/1     1            1           27m
+bscf5000-dmp0   1/1     1            1           27m
+bscf5000-pmp0   1/1     1            1           27m
+[root@bastion ~]# oc describe deploy bscf5000-bip1
+Name:               bscf5000-bip1
+Namespace:          cnf
+CreationTimestamp:  Thu, 07 May 2026 06:19:32 +0000
+Labels:             app=bscf5000-bip1
+                    app.kubernetes.io/managed-by=Helm
+                    chart=bip-1.0.0
+                    heritage=Helm
+                    nename=bscf5000
+                    release=bscf
+Annotations:        deployment.kubernetes.io/revision: 1
+                    meta.helm.sh/release-name: bscf
+                    meta.helm.sh/release-namespace: cnf
+Selector:           app=bscf5000-bip1
+Replicas:           1 desired | 0 updated | 0 total | 0 available | 1 unavailable
+StrategyType:       Recreate
+MinReadySeconds:    0
+Pod Template:
+  Labels:           app=bscf5000-bip1
+                    component=bscf5000-bip
+                    nename=bscf5000
+                    release=bscf
+                    restart-on-reboot=true
+                    tech=gsm
+  Annotations:      k8s.v1.cni.cncf.io/networks:
+                      [{ "name": "bscf-bh0c-nad", "interface": "bh0c" }, { "name": "bscf-bh0c-nad", "interface": "" },{ "name": "bscf-bh0c_1-nad", "interface": ...
+  Service Account:  bscf-sa
+  Init Containers:
+   sleepy:
+    Image:      srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+      echo Sleepy has come && sleep 15
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:        500m
+      memory:     256Mi
+    Environment:  <none>
+    Mounts:       <none>
+   install:
+    Image:      srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+    Args:
+      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
+    Limits:
+      cpu:                                  500m
+      memory:                               8Gi
+      openshift.io/pci_sriov_net_bh0c:      2
+      openshift.io/pci_sriov_net_bh0c_1:    2
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Requests:
+      cpu:                                  500m
+      memory:                               8Gi
+      openshift.io/pci_sriov_net_bh0c:      2
+      openshift.io/pci_sriov_net_bh0c_1:    2
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Environment:                            <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf5000-bip-log (rw)
+      /mnt/storage/shared from bscf5000-bip-shared (rw)
+  Containers:
+   bip:
+    Image:      srv-harbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR26ABSCUTDD20_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    Limits:
+      cpu:                                  22
+      memory:                               8Gi
+      openshift.io/pci_sriov_net_bh0c:      2
+      openshift.io/pci_sriov_net_bh0c_1:    2
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Requests:
+      cpu:                                  22
+      memory:                               8Gi
+      openshift.io/pci_sriov_net_bh0c:      2
+      openshift.io/pci_sriov_net_bh0c_1:    2
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Liveness:                               http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                              http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              Asia/Kolkata
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf5000-bip-log (rw)
+      /mnt/storage/shared from bscf5000-bip-shared (rw)
+  Volumes:
+   env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf5000-bip1
+    Optional:  false
+   bscf5000-bip-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf5000-log-pvc
+    ReadOnly:   false
+   bscf5000-bip-shared:
+    Type:          PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:     bscf5000-shared-pvc
+    ReadOnly:      false
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type             Status  Reason
+  ----             ------  ------
+  Available        False   MinimumReplicasUnavailable
+  ReplicaFailure   True    FailedCreate
+  Progressing      False   ProgressDeadlineExceeded
+OldReplicaSets:    <none>
+NewReplicaSet:     bscf5000-bip1-5c96c7bb87 (0/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  28m   deployment-controller  Scaled up replica set bscf5000-bip1-5c96c7bb87 from 0 to 1
+[root@bastion ~]#
