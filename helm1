@@ -1,221 +1,155 @@
-This file is much better and more consistent than the previous one.
-But it still will NOT completely solve your current BIP deployment issue by itself.
-
-Here’s the breakdown.
-
-
----
-
-What This File Fixes
-
-This correctly creates SR-IOV resource pools for:
-
-Resource	PF
-
-pci_sriov_net_bh0u	ens2f1
-pci_sriov_net_bh0u_1	ens2f3
-pci_sriov_net_bh0c	ens2f1
-pci_sriov_net_bh0c_1	ens2f3
-pci_sriov_net_bh0u_2	ens5f0
-pci_sriov_net_bh0u_2_1	ens5f2
-
-
-So:
-
-resource naming is now aligned ✅
-
-PF ranges look cleaner ✅
-
-bh0c/bh0u mapping is consistent ✅
-
-
-
----
-
-But Your Current Failure Is STILL
-
-could not find network attachment definition 'cnf/bscf-bh0c_1-nad'
-
-This YAML creates only:
-
-SriovNetworkNodePolicy
-
-
-It does NOT create:
-
-NetworkAttachmentDefinition (NAD)
-
-
-
----
-
-You ALSO Need SriovNetwork Objects
-
-Example:
-
 apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetwork
+kind: SriovNetworkNodePolicy
 metadata:
-  name: bscf-bh0c_1-nad
+  name: policy-ens2f1-bh0u
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens2f1#0-3"]
+  deviceType: vfio-pci
+  needVhostNet: true
+  isRdma: false
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-ens2f3-bh0u-1
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u_1
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens2f3#0-3"]
+  deviceType: vfio-pci
+  needVhostNet: true
+  isRdma: false
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-ens2f1-bh0c
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0c
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens2f1#4-8"]
+  deviceType: netdevice
+  isRdma: false
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-ens2f3-bh0c-1
   namespace: openshift-sriov-network-operator
 spec:
   resourceName: pci_sriov_net_bh0c_1
-  networkNamespace: cnf
-  ipam: |
-    {}
-
-This is what creates the NAD in namespace cnf.
-
-
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens2f3#4-8"]
+  deviceType: netdevice
+  isRdma: false
 ---
-
-Current Deployment Expectation
-
-Your pod annotation expects:
-
-bscf-bh0c_1-nad
-
-So your generated NAD name MUST match exactly.
-
-
----
-
-Very Important
-
-You still DO NOT define:
-
-pci_sriov_net_bh0c_2
-pci_sriov_net_bh0c_2_1
-
-But your BIP deployment requests them.
-
-From earlier:
-
-openshift.io/pci_sriov_net_bh0c_2: 2
-openshift.io/pci_sriov_net_bh0c_2_1: 2
-
-So after NAD issue is fixed, scheduler may fail again due missing resources.
-
-
----
-
-Recommended Action
-
-Step 1 — Apply This Policy File
-
-Yes, apply it:
-
-oc apply -f sriov-node-network.yaml
-
-Then wait:
-
-oc get sriovnetworknodestate -n openshift-sriov-network-operator
-
-Ensure sync succeeds.
-
-
----
-
-Step 2 — Create SriovNetwork Objects
-
-Example:
-
 apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetwork
+kind: SriovNetworkNodePolicy
 metadata:
-  name: bscf-bh0c_1-nad
+  name: policy-ens5f0-bh0u-2
   namespace: openshift-sriov-network-operator
 spec:
-  resourceName: pci_sriov_net_bh0c_1
-  networkNamespace: cnf
-  ipam: |
-    {}
-
-Need similar objects for:
-
-bh0c
-
-bh0c_1
-
-bh0u
-
-bh0u_1
-
-bh0u_2
-
-bh0u_2_1
-
-
-
+  resourceName: pci_sriov_net_bh0u_2
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens5f0#0-3"]
+  deviceType: vfio-pci
+  needVhostNet: true
+  isRdma: false
 ---
-
-Step 3 — Verify NAD Creation
-
-Run:
-
-oc get net-attach-def -n cnf
-
-You should see:
-
-bscf-bh0c_1-nad
-
-
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-ens5f2-bh0u-2-1
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u_2_1
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens5f2#0-3"]
+  deviceType: vfio-pci
+  needVhostNet: true
+  isRdma: false
 ---
-
-Step 4 — Fix Missing bh0c_2 Resources
-
-Your BIP deployment still requests:
-
-bh0c_2
-bh0c_2_1
-
-But this file does not create them.
-
-So either:
-
-create additional policies OR
-
-reduce deployment requirements
-
-
-
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-ens2f1-bh0c-2
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0c_2
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens5f0#4-7"]
+  deviceType: netdevice
+  isRdma: false
 ---
-
-One More Important Detail
-
-These PF ranges:
-
-pfNames: ["ens2f1#4-8"]
-
-require NIC firmware/VF count supporting those VF indexes.
-
-Verify:
-
-cat /sys/class/net/ens2f1/device/sriov_numvfs
-
-and:
-
-ip link show ens2f1
-
-
----
-
-Final Assessment
-
-This file is structurally correct for:
-
-SR-IOV policy creation
-
-resource exposure
-
-
-But you still additionally need:
-
-1. SriovNetwork objects (for NAD creation)
-
-
-2. bh0c_2 resources or Helm adjustment
-
-
-
-You are now very close to resolving the deployment completely.
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-ens5f2-bh0c-2-1
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0c_2_1
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens5f2#4-7"]
+  deviceType: netdevice
+  isRdma: false
