@@ -1,35 +1,238 @@
-[root@bastion ~]# oc get po
-NAME                             READY   STATUS        RESTARTS   AGE
-bscf5000-bpp0-b485c4876-fqg2x    0/1     Running       0          11s
-bscf5000-bpp1-5f4cb88cdb-plrh9   0/1     Terminating   0          25s
-bscf5000-bpp1-5f4cb88cdb-r5xbs   0/1     Init:0/1      0          1s
-bscf5000-cmp0-5b6c4f589b-4zbtr   1/1     Running       0          5m24s
-bscf5000-cmp1-5596559f9b-xsbp2   1/1     Running       0          5m24s
-bscf5000-dmp0-855f47469f-cfzvm   1/1     Running       0          5m24s
-bscf5000-pmp0-7fd457f85f-6j5qw   1/1     Running       0          5m24s
-[root@bastion ~]# oc logs -f bscf5000-bpp0-b485c4876-fqg2x
-Defaulted container "bpp" out of: bpp, install (init)
-[0507|11:54:50.077|APPSTART|LIB_LOG|0001IINFO|6] app coremask is not ready
-[0507|11:54:51.079|APPSTART|LIB_LOG|0002IINFO|6] app coremask is not ready
-[0507|11:54:51.495|APPSTART|LIB_LOG|0003IINFO|6] Start
-[0507|11:54:51.693|APPSTART|LIB_LOG|0004IINFO|6] kernel.randomize_va_space = 1
-[0507|11:54:52.097|APPSTART|LIB_LOG|0005IINFO|6] execute 'taskset 0x20000000000000006 /pkg/bin/setLabels.sh'
-[0507|11:54:52.512|SETLABELS|LIB_LOG|0033|EMRG|0] [NE_TYPE] isn't 'acpf'/'aupf'/'uadpf'/'adpf'
-[0507|11:54:52.905|APPSTART|LIB_LOG|0007IINFO|6] execute 'taskset 0x20000000000000006 /pkg/bin/getLabels.sh'
-[0507|11:54:53.104|APPSTART|LIB_LOG|0008IINFO|6] execute 'taskset 0x20000000000000006 /pkg/bin/keepCatdAlive.sh'
-[0507|11:54:53.304|APPSTART|LIB_LOG|0009IINFO|6] execute 'taskset 0x20000000000000006 /pkg/bin/swmWd.sh'
-[0507|11:54:53.503|APPSTART|LIB_LOG|0010IINFO|6] execute '/pkg/bin/Gspb_Instance.sh'
-[0507|11:54:53.702|APPSTART|LIB_LOG|0011IINFO|6] check the flavour tiny-2u-t1
-[0507|11:54:53.900|APPSTART|LIB_LOG|0012IINFO|6] Pod id 0
-[0507|11:54:54.099|APPSTART|LIB_LOG|0013IINFO|6] else:Open file descriptor (fd) 3 for read/write on a text file.
-[0507|11:54:53.357|SWMWD|LIB_LOG|0021|EMRG|0] execute '/pkg/bin/swm.xcg'
-[0507|11:54:54.789|APPSTART|LIB_LOG|0015IINFO|6] kernel.randomize_va_space = 0
-[0507|11:54:57.640|APPSTART|LIB_LOG|0016IINFO|6] EAL: Maximum logical cores by configuration: 128
-[0507|11:54:57.844|APPSTART|LIB_LOG|0017IINFO|6] EAL: Detected CPU lcores: 128
-[0507|11:54:58.043|APPSTART|LIB_LOG|0018IINFO|6] EAL: Detected NUMA nodes: 2
-[0507|11:54:58.242|APPSTART|LIB_LOG|0019IINFO|6] EAL: Detected static linkage of DPDK
-[0507|11:54:58.441|APPSTART|LIB_LOG|0020IINFO|6] EAL: Multi-process socket /var/run/dpdk/0/mp_socket_291_3051338e655
-[0507|11:54:58.641|APPSTART|LIB_LOG|0021IINFO|6] EAL: Selected IOVA mode 'VA'
-[0507|11:54:58.839|APPSTART|LIB_LOG|0022IINFO|6] EAL: VFIO support initialized
-[0507|11:55:12.626|APPSTART|LIB_LOG|0023IINFO|6] /pkg/bin/appStart.sh: line 454:   144 Terminated              $SWM_WD_EXE
-[root@bastion ~]#
+Now the root cause is much clearer.
+
+The important failure is:
+
+/pkg/bin/appStart.sh: line 454:   144 Terminated $SWM_WD_EXE
+
+This means the watchdog/background process (swmWd.sh or swm.xcg) is getting terminated, and then the main startup script exits, causing the pod restart.
+
+Also this is suspicious:
+
+app coremask is not ready
+
+and later:
+
+EAL: Detected NUMA nodes: 2
+EAL: VFIO support initialized
+
+So DPDK initialized partially, but something related to CPU pinning/coremask/watchdog is failing.
+
+
+---
+
+Most Likely Causes
+
+1. CPU Coremask mismatch (VERY likely)
+
+You requested:
+
+cpu: 26
+
+and app is trying:
+
+taskset 0x20000000000000006
+
+This is a very large CPU mask.
+
+If isolated CPUs / PerformanceProfile do not match expected topology, app exits.
+
+
+---
+
+Verify CPU Allocation
+
+Run:
+
+oc describe node master.bscf5000.samsung.local | egrep -i "cpu|huge"
+
+Then:
+
+oc debug node/master.bscf5000.samsung.local
+
+Inside debug shell:
+
+chroot /host
+cat /sys/devices/system/cpu/isolated
+
+and:
+
+lscpu
+
+
+---
+
+2. Hugepages issue
+
+Your pod requires:
+
+hugepages-1Gi: 8Gi
+
+Verify node has enough:
+
+oc describe node master.bscf5000.samsung.local | grep -i huge -A5
+
+Expected something like:
+
+hugepages-1Gi: 8Gi
+Allocatable:
+hugepages-1Gi: 8Gi
+
+
+---
+
+3. SR-IOV VF issue
+
+You have:
+
+0000:8a:01.2
+0000:8a:11.2
+
+DPDK/VFIO initialized, but app may fail binding interfaces.
+
+Check:
+
+oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- ip link
+
+and:
+
+oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- dpdk-devbind.py -s
+
+(if available)
+
+
+---
+
+4. NUMA topology mismatch
+
+Your node has:
+
+Detected NUMA nodes: 2
+
+Telecom CNFs often require:
+
+CPUs
+
+Hugepages
+
+SRIOV VF
+
+
+all from SAME NUMA socket.
+
+If:
+
+VF from NUMA1
+
+CPUs from NUMA0
+
+hugepages from NUMA0
+
+
+then app exits silently.
+
+
+---
+
+VERY IMPORTANT
+
+This line:
+
+check the flavour tiny-2u-t1
+
+suggests the app expects a predefined hardware flavor/profile.
+
+Your server topology may not match expected flavor.
+
+
+---
+
+Check Performance Profile
+
+Run:
+
+oc get performanceprofile
+
+Then:
+
+oc get performanceprofile -o yaml
+
+Need to verify:
+
+isolated CPUs
+
+reserved CPUs
+
+hugepages config
+
+
+
+---
+
+Check Pod CPU Pinning
+
+Run:
+
+oc describe pod bscf5000-bpp0-b485c4876-fqg2x | grep -i cpu
+
+and:
+
+oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- cat /proc/self/status | grep Cpus_allowed_list
+
+
+---
+
+Strong Suspicion
+
+The strongest clue is:
+
+app coremask is not ready
+
+This usually means:
+
+required isolated CPUs unavailable
+
+wrong CPU manager policy
+
+missing guaranteed QoS alignment
+
+NUMA mismatch
+
+PerformanceProfile mismatch
+
+
+
+---
+
+Verify CPU Manager
+
+On node:
+
+cat /var/lib/kubelet/config.yaml | grep cpuManagerPolicy
+
+Expected:
+
+cpuManagerPolicy: static
+
+
+---
+
+Immediate Next Commands
+
+Please run these:
+
+oc get performanceprofile -o yaml
+
+oc describe node master.bscf5000.samsung.local | grep -i huge -A5
+
+oc debug node/master.bscf5000.samsung.local
+
+Inside:
+
+chroot /host
+cat /sys/devices/system/cpu/isolated
+
+and:
+
+cat /var/lib/kubelet/config.yaml | grep cpuManagerPolicy
+
+These will identify the exact infrastructure mismatch.
