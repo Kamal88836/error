@@ -1,29 +1,192 @@
-[root@bastion ocp-config]# oc describe node master.bscf5000.samsung.local | grep openshift.io/pci
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0c_2:    4
-  openshift.io/pci_sriov_net_bh0c_2_1:  4
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
-  openshift.io/pci_sriov_net_bh0u_2:    4
-  openshift.io/pci_sriov_net_bh0u_2_1:  4
-  openshift.io/pci_sriov_net_bh0u_3:    0
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0c_2:    4
-  openshift.io/pci_sriov_net_bh0c_2_1:  4
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
-  openshift.io/pci_sriov_net_bh0u_2:    4
-  openshift.io/pci_sriov_net_bh0u_2_1:  4
-  openshift.io/pci_sriov_net_bh0u_3:    0
-  openshift.io/pci_sriov_net_bh0c      0               0
-  openshift.io/pci_sriov_net_bh0c_1    0               0
-  openshift.io/pci_sriov_net_bh0c_2    0               0
-  openshift.io/pci_sriov_net_bh0c_2_1  0               0
-  openshift.io/pci_sriov_net_bh0u      1               1
-  openshift.io/pci_sriov_net_bh0u_1    1               1
-  openshift.io/pci_sriov_net_bh0u_2    2               2
-  openshift.io/pci_sriov_net_bh0u_2_1  2               2
-  openshift.io/pci_sriov_net_bh0u_3    0               0
-[root@bastion ocp-config]#
+Perfect.
+Now the SR-IOV resource pools are correctly exposed on the node. ✅
+
+You now have:
+
+openshift.io/pci_sriov_net_bh0c_2
+openshift.io/pci_sriov_net_bh0c_2_1
+
+So the resource issue is solved.
+
+
+---
+
+Now ONLY Remaining Blocker
+
+You still need the NADs (NetworkAttachmentDefinitions).
+
+Without them, BIP pods cannot be created.
+
+
+---
+
+Do This NOW
+
+1. Create SriovNetwork YAML
+
+Create file:
+
+vi sriov-network.yaml
+
+Paste this EXACT content:
+
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0c-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0c
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0c_1-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0c_1
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0c_2-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0c_2
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0c_2_1-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0c_2_1
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u_1-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u_1
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u_2-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u_2
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u_2_1-nad
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0u_2_1
+  networkNamespace: cnf
+  ipam: |
+    {}
+
+
+---
+
+2. Apply It
+
+Run:
+
+oc apply -f sriov-network.yaml
+
+
+---
+
+3. Verify NAD Creation
+
+Run:
+
+oc get net-attach-def -n cnf
+
+You MUST see:
+
+bscf-bh0c_1-nad
+bscf-bh0c_2-nad
+bscf-bh0u_2_1-nad
+...
+
+
+---
+
+4. Restart BIP Deployments
+
+Run:
+
+oc rollout restart deploy bscf5000-bip0 -n cnf
+
+oc rollout restart deploy bscf5000-bip1 -n cnf
+
+
+---
+
+5. Watch Pods
+
+Run:
+
+oc get po -w
+
+Expected:
+
+pods created successfully
+
+no FailedCreate
+
+interfaces attached
+
+containers start
+
+
+
+---
+
+Important
+
+Do NOT recreate SR-IOV policies again now.
+That part is already successful.
+
+You are now in the final NAD creation step only.
