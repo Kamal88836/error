@@ -1,143 +1,203 @@
-[root@bastion ~]# oc get deploy
-NAME            READY   UP-TO-DATE   AVAILABLE   AGE
-bscf5000-bip0   0/1     0            0           27m
-bscf5000-bip1   0/1     0            0           27m
-bscf5000-bpp0   1/1     1            1           27m
-bscf5000-bpp1   1/1     1            1           27m
-bscf5000-cmp0   1/1     1            1           27m
-bscf5000-cmp1   1/1     1            1           27m
-bscf5000-dmp0   1/1     1            1           27m
-bscf5000-pmp0   1/1     1            1           27m
-[root@bastion ~]# oc describe deploy bscf5000-bip1
-Name:               bscf5000-bip1
-Namespace:          cnf
-CreationTimestamp:  Thu, 07 May 2026 06:19:32 +0000
-Labels:             app=bscf5000-bip1
-                    app.kubernetes.io/managed-by=Helm
-                    chart=bip-1.0.0
-                    heritage=Helm
-                    nename=bscf5000
-                    release=bscf
-Annotations:        deployment.kubernetes.io/revision: 1
-                    meta.helm.sh/release-name: bscf
-                    meta.helm.sh/release-namespace: cnf
-Selector:           app=bscf5000-bip1
-Replicas:           1 desired | 0 updated | 0 total | 0 available | 1 unavailable
-StrategyType:       Recreate
-MinReadySeconds:    0
-Pod Template:
-  Labels:           app=bscf5000-bip1
-                    component=bscf5000-bip
-                    nename=bscf5000
-                    release=bscf
-                    restart-on-reboot=true
-                    tech=gsm
-  Annotations:      k8s.v1.cni.cncf.io/networks:
-                      [{ "name": "bscf-bh0c-nad", "interface": "bh0c" }, { "name": "bscf-bh0c-nad", "interface": "" },{ "name": "bscf-bh0c_1-nad", "interface": ...
-  Service Account:  bscf-sa
-  Init Containers:
-   sleepy:
-    Image:      srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      sh
-      -c
-      echo Sleepy has come && sleep 15
-    Limits:
-      cpu:     500m
-      memory:  256Mi
-    Requests:
-      cpu:        500m
-      memory:     256Mi
-    Environment:  <none>
-    Mounts:       <none>
-   install:
-    Image:      srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      sh
-      -c
-    Args:
-      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
-    Limits:
-      cpu:                                  500m
-      memory:                               8Gi
-      openshift.io/pci_sriov_net_bh0c:      2
-      openshift.io/pci_sriov_net_bh0c_1:    2
-      openshift.io/pci_sriov_net_bh0c_2:    2
-      openshift.io/pci_sriov_net_bh0c_2_1:  2
-    Requests:
-      cpu:                                  500m
-      memory:                               8Gi
-      openshift.io/pci_sriov_net_bh0c:      2
-      openshift.io/pci_sriov_net_bh0c_1:    2
-      openshift.io/pci_sriov_net_bh0c_2:    2
-      openshift.io/pci_sriov_net_bh0c_2_1:  2
-    Environment:                            <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf5000-bip-log (rw)
-      /mnt/storage/shared from bscf5000-bip-shared (rw)
-  Containers:
-   bip:
-    Image:      srv-harbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR26ABSCUTDD20_R00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    Limits:
-      cpu:                                  22
-      memory:                               8Gi
-      openshift.io/pci_sriov_net_bh0c:      2
-      openshift.io/pci_sriov_net_bh0c_1:    2
-      openshift.io/pci_sriov_net_bh0c_2:    2
-      openshift.io/pci_sriov_net_bh0c_2_1:  2
-    Requests:
-      cpu:                                  22
-      memory:                               8Gi
-      openshift.io/pci_sriov_net_bh0c:      2
-      openshift.io/pci_sriov_net_bh0c_1:    2
-      openshift.io/pci_sriov_net_bh0c_2:    2
-      openshift.io/pci_sriov_net_bh0c_2_1:  2
-    Liveness:                               http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                              http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:              Asia/Kolkata
-      THIS_NODE_NAME:   (v1:spec.nodeName)
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf5000-bip-log (rw)
-      /mnt/storage/shared from bscf5000-bip-shared (rw)
-  Volumes:
-   env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf5000-bip1
-    Optional:  false
-   bscf5000-bip-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf5000-log-pvc
-    ReadOnly:   false
-   bscf5000-bip-shared:
-    Type:          PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:     bscf5000-shared-pvc
-    ReadOnly:      false
-  Node-Selectors:  <none>
-  Tolerations:     <none>
-Conditions:
-  Type             Status  Reason
-  ----             ------  ------
-  Available        False   MinimumReplicasUnavailable
-  ReplicaFailure   True    FailedCreate
-  Progressing      False   ProgressDeadlineExceeded
-OldReplicaSets:    <none>
-NewReplicaSet:     bscf5000-bip1-5c96c7bb87 (0/1 replicas created)
-Events:
-  Type    Reason             Age   From                   Message
-  ----    ------             ----  ----                   -------
-  Normal  ScalingReplicaSet  28m   deployment-controller  Scaled up replica set bscf5000-bip1-5c96c7bb87 from 0 to 1
-[root@bastion ~]#
+Now BPP is healthy, but BIP is failing before pod creation.
+
+The key line is:
+
+ReplicaFailure   True    FailedCreate
+
+and:
+
+0/1 replicas created
+
+This means Kubernetes cannot even create the pod object successfully.
+
+
+---
+
+Root Cause
+
+Your BIP deployment is requesting too many SR-IOV resources.
+
+Look carefully:
+
+openshift.io/pci_sriov_net_bh0c:      2
+openshift.io/pci_sriov_net_bh0c_1:    2
+openshift.io/pci_sriov_net_bh0c_2:    2
+openshift.io/pci_sriov_net_bh0c_2_1:  2
+
+That is:
+
+2 VFs from bh0c
+
+2 VFs from bh0c_1
+
+2 VFs from bh0c_2
+
+2 VFs from bh0c_2_1
+
+
+Total = 8 SR-IOV VFs requested.
+
+
+---
+
+But Your Node Has
+
+From your node allocatable:
+
+openshift.io/pci_sriov_net_bh0c:      5
+openshift.io/pci_sriov_net_bh0c_1:    5
+
+But notice:
+
+You did NOT show:
+
+openshift.io/pci_sriov_net_bh0c_2
+openshift.io/pci_sriov_net_bh0c_2_1
+
+So those resources likely:
+
+do not exist OR
+
+are exhausted OR
+
+SRIOV policy not created
+
+
+Hence pod creation fails.
+
+
+---
+
+Confirm Exact Error
+
+Run:
+
+oc describe rs bscf5000-bip1-5c96c7bb87
+
+OR:
+
+oc get events --sort-by=.metadata.creationTimestamp
+
+You will likely see:
+
+Insufficient openshift.io/pci_sriov_net_bh0c_2
+
+or similar.
+
+
+---
+
+Verify Existing SR-IOV Resources
+
+Run:
+
+oc describe node master.bscf5000.samsung.local | grep openshift.io/pci
+
+Need full output.
+
+
+---
+
+Very Likely Issue
+
+Your SR-IOV policies exist only for:
+
+bh0c
+
+bh0c_1
+
+bh0u
+
+bh0u_1
+
+bh0u_2
+
+bh0u_2_1
+
+
+but NOT:
+
+bh0c_2
+
+bh0c_2_1
+
+
+
+---
+
+Verify SR-IOV Policies
+
+Run:
+
+oc get sriovnetworknodepolicy -A
+
+
+---
+
+Also Verify NADs
+
+Run:
+
+oc get network-attachment-definition -n cnf
+
+You should see:
+
+bscf-bh0c_2-nad
+
+bscf-bh0c_2_1-nad
+
+
+If missing → deployment references nonexistent resources.
+
+
+---
+
+Why BPP Works
+
+BPP only requests:
+
+openshift.io/pci_sriov_net_bh0u_2
+openshift.io/pci_sriov_net_bh0u_2_1
+
+which exist and are allocatable.
+
+BIP requests additional VF pools that are unavailable.
+
+
+---
+
+Most Likely Final Fix
+
+You need one of these:
+
+Option 1
+
+Create missing SR-IOV policies:
+
+bh0c_2
+
+bh0c_2_1
+
+
+Option 2
+
+Reduce VF count in Helm values
+
+Option 3
+
+Correct wrong NAD/resource names
+
+
+---
+
+Next Commands
+
+Run these:
+
+oc describe rs bscf5000-bip1-5c96c7bb87
+
+oc get sriovnetworknodepolicy -A
+
+oc describe node master.bscf5000.samsung.local | grep openshift.io/pci
+
+That will confirm the exact missing resource.
