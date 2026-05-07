@@ -1,238 +1,64 @@
-Now the root cause is much clearer.
-
-The important failure is:
-
-/pkg/bin/appStart.sh: line 454:   144 Terminated $SWM_WD_EXE
-
-This means the watchdog/background process (swmWd.sh or swm.xcg) is getting terminated, and then the main startup script exits, causing the pod restart.
-
-Also this is suspicious:
-
-app coremask is not ready
-
-and later:
-
-EAL: Detected NUMA nodes: 2
-EAL: VFIO support initialized
-
-So DPDK initialized partially, but something related to CPU pinning/coremask/watchdog is failing.
-
-
----
-
-Most Likely Causes
-
-1. CPU Coremask mismatch (VERY likely)
-
-You requested:
-
-cpu: 26
-
-and app is trying:
-
-taskset 0x20000000000000006
-
-This is a very large CPU mask.
-
-If isolated CPUs / PerformanceProfile do not match expected topology, app exits.
-
-
----
-
-Verify CPU Allocation
-
-Run:
-
-oc describe node master.bscf5000.samsung.local | egrep -i "cpu|huge"
-
-Then:
-
-oc debug node/master.bscf5000.samsung.local
-
-Inside debug shell:
-
-chroot /host
-cat /sys/devices/system/cpu/isolated
-
-and:
-
-lscpu
-
-
----
-
-2. Hugepages issue
-
-Your pod requires:
-
-hugepages-1Gi: 8Gi
-
-Verify node has enough:
-
-oc describe node master.bscf5000.samsung.local | grep -i huge -A5
-
-Expected something like:
-
-hugepages-1Gi: 8Gi
-Allocatable:
-hugepages-1Gi: 8Gi
-
-
----
-
-3. SR-IOV VF issue
-
-You have:
-
-0000:8a:01.2
-0000:8a:11.2
-
-DPDK/VFIO initialized, but app may fail binding interfaces.
-
-Check:
-
-oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- ip link
-
-and:
-
-oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- dpdk-devbind.py -s
-
-(if available)
-
-
----
-
-4. NUMA topology mismatch
-
-Your node has:
-
-Detected NUMA nodes: 2
-
-Telecom CNFs often require:
-
-CPUs
-
-Hugepages
-
-SRIOV VF
-
-
-all from SAME NUMA socket.
-
-If:
-
-VF from NUMA1
-
-CPUs from NUMA0
-
-hugepages from NUMA0
-
-
-then app exits silently.
-
-
----
-
-VERY IMPORTANT
-
-This line:
-
-check the flavour tiny-2u-t1
-
-suggests the app expects a predefined hardware flavor/profile.
-
-Your server topology may not match expected flavor.
-
-
----
-
-Check Performance Profile
-
-Run:
-
-oc get performanceprofile
-
-Then:
-
-oc get performanceprofile -o yaml
-
-Need to verify:
-
-isolated CPUs
-
-reserved CPUs
-
-hugepages config
-
-
-
----
-
-Check Pod CPU Pinning
-
-Run:
-
-oc describe pod bscf5000-bpp0-b485c4876-fqg2x | grep -i cpu
-
-and:
-
-oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- cat /proc/self/status | grep Cpus_allowed_list
-
-
----
-
-Strong Suspicion
-
-The strongest clue is:
-
-app coremask is not ready
-
-This usually means:
-
-required isolated CPUs unavailable
-
-wrong CPU manager policy
-
-missing guaranteed QoS alignment
-
-NUMA mismatch
-
-PerformanceProfile mismatch
-
-
-
----
-
-Verify CPU Manager
-
-On node:
-
-cat /var/lib/kubelet/config.yaml | grep cpuManagerPolicy
-
-Expected:
-
-cpuManagerPolicy: static
-
-
----
-
-Immediate Next Commands
-
-Please run these:
-
-oc get performanceprofile -o yaml
-
-oc describe node master.bscf5000.samsung.local | grep -i huge -A5
-
-oc debug node/master.bscf5000.samsung.local
-
-Inside:
-
-chroot /host
-cat /sys/devices/system/cpu/isolated
-
-and:
-
-cat /var/lib/kubelet/config.yaml | grep cpuManagerPolicy
-
-These will identify the exact infrastructure mismatch.
+[root@bastion ~]# oc describe node master.bscf5000.samsung.local | grep -i huge -A5
+  hugepages-1Gi:                        27Gi
+  hugepages-2Mi:                        0
+  memory:                               527558660Ki
+  openshift.io/pci_sriov_net_bh0c:      5
+  openshift.io/pci_sriov_net_bh0c_1:    5
+  openshift.io/pci_sriov_net_bh0u:      4
+  openshift.io/pci_sriov_net_bh0u_1:    4
+--
+  hugepages-1Gi:                        27Gi
+  hugepages-2Mi:                        0
+  memory:                               480806916Ki
+  openshift.io/pci_sriov_net_bh0c:      5
+  openshift.io/pci_sriov_net_bh0c_1:    5
+  openshift.io/pci_sriov_net_bh0u:      4
+  openshift.io/pci_sriov_net_bh0u_1:    4
+--
+  hugepages-1Gi                        16Gi (59%)      16Gi (59%)
+  hugepages-2Mi                        0 (0%)          0 (0%)
+  openshift.io/pci_sriov_net_bh0c      0               0
+  openshift.io/pci_sriov_net_bh0c_1    0               0
+  openshift.io/pci_sriov_net_bh0u      1               1
+  openshift.io/pci_sriov_net_bh0u_1    1               1
+  openshift.io/pci_sriov_net_bh0u_2    1               1
+[root@bastion ~]# oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- ip link
+Defaulted container "cmp" out of: cmp, install (init)
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0@if223: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1400 qdisc noqueue state UP mode DEFAULT group default
+    link/ether 0a:58:0a:0a:00:8a brd ff:ff:ff:ff:ff:ff link-netnsid 0
+[root@bastion ~]# oc exec -it bscf5000-cmp0-5b6c4f589b-4zbtr -- dpdk-devbind.py -s
+Defaulted container "cmp" out of: cmp, install (init)
+2026-05-07T06:29:29.621290Z: executable file `dpdk-devbind.py` not found in $PATH: No such file or directory
+command terminated with exit code 1
+[root@bastion ~]# cat /var/lib/kubelet/config.yaml | grep cpuManagerPolicy
+cat: /var/lib/kubelet/config.yaml: No such file or directory
+[root@bastion ~]# oc debug node/master.bscf5000.samsung.local
+Temporary namespace openshift-debug-4kr2p is created for debugging node...
+Starting pod/masterbscf5000samsunglocal-debug-l5nqf ...
+To use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.
+Pod IP: 128.68.1.155
+If you don't see a command prompt, try pressing enter.
+sh-5.1# cat /sys/devices/system/cpu/isolated
+
+sh-5.1#
+sh-5.1# sudo -i
+sh: sudo: command not found
+sh-5.1#
+exit
+
+Removing debug pod ...
+Temporary namespace openshift-debug-4kr2p was removed.
+[root@bastion ~]# oc debug node/master.bscf5000.samsung.local
+Temporary namespace openshift-debug-jdt7v is created for debugging node...
+Starting pod/masterbscf5000samsunglocal-debug-4rcg4 ...
+To use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.
+Pod IP: 128.68.1.155
+If you don't see a command prompt, try pressing enter.
+sh-5.1# chroot /host
+sh-5.1# cat /sys/devices/system/cpu/isolated
+
+sh-5.1# cat /var/lib/kubelet/config.yaml | grep cpuManagerPolicy
+cat: /var/lib/kubelet/config.yaml: No such file or directory
+sh-5.1#
