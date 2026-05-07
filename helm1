@@ -1,0 +1,240 @@
+[root@bastion ocp-config]# oc get po
+NAME                             READY   STATUS    RESTARTS   AGE
+bscf5000-bpp0-b485c4876-ncgjd    0/1     Running   0          7s
+bscf5000-bpp1-5f4cb88cdb-vsq4v   0/1     Running   0          20s
+bscf5000-cmp0-5b6c4f589b-7rxsj   1/1     Running   0          119s
+bscf5000-cmp1-5596559f9b-km6qw   1/1     Running   0          119s
+bscf5000-dmp0-855f47469f-klp9l   1/1     Running   0          119s
+bscf5000-pmp0-7fd457f85f-vr597   1/1     Running   0          119s
+[root@bastion ocp-config]# oc describe po bscf5000-bpp1-5f4cb88cdb-vsq4v
+Name:             bscf5000-bpp1-5f4cb88cdb-vsq4v
+Namespace:        cnf
+Priority:         0
+Service Account:  bscf-sa
+Node:             master.bscf5000.samsung.local/128.68.1.155
+Start Time:       Thu, 07 May 2026 06:10:45 +0000
+Labels:           app=bscf5000-bpp1
+                  component=bscf5000-bpp
+                  nename=bscf5000
+                  pod-template-hash=5f4cb88cdb
+                  release=bscf
+                  restart-on-reboot=true
+                  role=active
+                  tech=gsm
+Annotations:      k8s.ovn.org/pod-networks:
+                    {"default":{"ip_addresses":["10.10.0.105/24","fd01:0:0:1::69/64"],"mac_address":"0a:58:0a:0a:00:69","gateway_ips":["10.10.0.1","fd01:0:0:1...
+                  k8s.v1.cni.cncf.io/network-status:
+                    [{
+                        "name": "ovn-kubernetes",
+                        "interface": "eth0",
+                        "ips": [
+                            "10.10.0.105",
+                            "fd01:0:0:1::69"
+                        ],
+                        "mac": "0a:58:0a:0a:00:69",
+                        "default": true,
+                        "dns": {}
+                    },{
+                        "name": "cnf/bscf-bh0u-2-nad",
+                        "interface": "bh0_0",
+                        "mac": "4e:21:d9:af:73:39",
+                        "mtu": 9000,
+                        "dns": {},
+                        "device-info": {
+                            "type": "pci",
+                            "version": "1.1.0",
+                            "pci": {
+                                "pci-address": "0000:8a:01.2"
+                            }
+                        }
+                    },{
+                        "name": "cnf/bscf-bh0u-2-1-nad",
+                        "interface": "bh0_1",
+                        "mac": "9a:fb:0c:8c:06:47",
+                        "mtu": 9000,
+                        "dns": {},
+                        "device-info": {
+                            "type": "pci",
+                            "version": "1.1.0",
+                            "pci": {
+                                "pci-address": "0000:8a:11.2"
+                            }
+                        }
+                    }]
+                  k8s.v1.cni.cncf.io/networks:
+                    [ { "name": "bscf-bh0u-2-nad", "interface": "bh0_0" }, { "name": "bscf-bh0u-2-1-nad", "interface": "bh0_1" }
+                    ]
+                  openshift.io/scc: privileged
+                  security.openshift.io/validated-scc-subject-type: serviceaccount
+Status:           Succeeded
+IP:               10.10.0.105
+IPs:
+  IP:           10.10.0.105
+  IP:           fd01:0:0:1::69
+Controlled By:  ReplicaSet/bscf5000-bpp1-5f4cb88cdb
+Init Containers:
+  install:
+    Container ID:  cri-o://bab4edec555aa058bfd11a81b03e130e11788138829b1421a87c14327bf5830d
+    Image:         srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
+    Image ID:      srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init@sha256:ed4beeb49ceed7ef66de55959b9240e9774802ce1808edcefba91f4261f3c171
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared; chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Thu, 07 May 2026 06:10:49 +0000
+      Finished:     Thu, 07 May 2026 06:10:49 +0000
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:                                  500m
+      hugepages-1Gi:                        8Gi
+      memory:                               0
+      openshift.io/pci_sriov_net_bh0u_2:    1
+      openshift.io/pci_sriov_net_bh0u_2_1:  1
+    Requests:
+      cpu:                                  500m
+      hugepages-1Gi:                        8Gi
+      memory:                               0
+      openshift.io/pci_sriov_net_bh0u_2:    1
+      openshift.io/pci_sriov_net_bh0u_2_1:  1
+    Environment:                            <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf5000-bpp-log (rw)
+      /mnt/storage/shared from bscf5000-bpp-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5gmrg (ro)
+Containers:
+  bpp:
+    Container ID:  cri-o://1b112fe29d67850f08bf866e98f3834648f556ed22566721455f99f201dc7240
+    Image:         srv-harbor.sec.samsung.net/rel-ran/utd-bscf-bpp:SVR26ABSCUTDD20_R00
+    Image ID:      srv-harbor.sec.samsung.net/rel-ran/utd-bscf-bpp@sha256:a086c946714d2dbfeb8c3ad1671f8848f018b9d5d9537a871cf61e82a2c5d504
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    State:      Terminated
+      Reason:   Completed
+      Message:  gste.gsm.xcg
+
+      Exit Code:    0
+      Started:      Thu, 07 May 2026 06:10:50 +0000
+      Finished:     Thu, 07 May 2026 06:11:14 +0000
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:                                  26
+      hugepages-1Gi:                        8Gi
+      memory:                               48Gi
+      openshift.io/pci_sriov_net_bh0u_2:    1
+      openshift.io/pci_sriov_net_bh0u_2_1:  1
+    Requests:
+      cpu:                                  26
+      hugepages-1Gi:                        8Gi
+      memory:                               48Gi
+      openshift.io/pci_sriov_net_bh0u_2:    1
+      openshift.io/pci_sriov_net_bh0u_2_1:  1
+    Liveness:                               http-get http://:8080/bpp_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                              http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              Asia/Kolkata
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+      CONTAINER_NAME:  bpp
+    Mounts:
+      /dev/shm from cshm (rw)
+      /etc/config from env (rw)
+      /etc/podnetinfo from podnetinfo (ro)
+      /etc/ptp4l.conf from ptpconf (ro)
+      /hugepages from hugepage (rw)
+      /mnt/storage/log from bscf5000-bpp-log (rw)
+      /mnt/storage/shared from bscf5000-bpp-shared (rw)
+      /sys from sys (rw)
+      /var/host-run from ptp4l (ro)
+      /var/run/ptp from ptpdir (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5gmrg (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False
+  Initialized                 True
+  Ready                       False
+  ContainersReady             False
+  PodScheduled                True
+Volumes:
+  cshm:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     Memory
+    SizeLimit:  <unset>
+  hugepage:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     HugePages
+    SizeLimit:  <unset>
+  sys:
+    Type:          HostPath (bare host directory volume)
+    Path:          /sys
+    HostPathType:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf5000-bpp1
+    Optional:  false
+  ptpdir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/run/ptp
+    HostPathType:  DirectoryOrCreate
+  ptp4l:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/run
+    HostPathType:  Directory
+  ptpconf:
+    Type:          HostPath (bare host directory volume)
+    Path:          /etc/ptp4l.conf
+    HostPathType:  File
+  bscf5000-bpp-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf5000-log-pvc
+    ReadOnly:   false
+  bscf5000-bpp-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf5000-shared-pvc
+    ReadOnly:   false
+  kube-api-access-5gmrg:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    Optional:                false
+  podnetinfo:
+    Type:  DownwardAPI (a volume populated by information about the pod)
+    Items:
+      metadata.labels -> labels
+      metadata.annotations -> annotations
+      requests.hugepages-1Gi -> hugepages_1G_request_bpp
+      limits.hugepages-1Gi -> hugepages_1G_limit_bpp
+QoS Class:       Burstable
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason          Age   From               Message
+  ----    ------          ----  ----               -------
+  Normal  Scheduled       32s   default-scheduler  Successfully assigned cnf/bscf5000-bpp1-5f4cb88cdb-vsq4v to master.bscf5000.samsung.local
+  Normal  AddedInterface  29s   multus             Add eth0 [10.10.0.105/24 fd01:0:0:1::69/64] from ovn-kubernetes
+  Normal  AddedInterface  29s   multus             Add bh0_0 [] from cnf/bscf-bh0u-2-nad
+  Normal  AddedInterface  29s   multus             Add bh0_1 [] from cnf/bscf-bh0u-2-1-nad
+  Normal  Pulled          29s   kubelet            Container image "srv-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00" already present on machine
+  Normal  Created         28s   kubelet            Created container: install
+  Normal  Started         28s   kubelet            Started container install
+  Normal  Pulled          28s   kubelet            Container image "srv-harbor.sec.samsung.net/rel-ran/utd-bscf-bpp:SVR26ABSCUTDD20_R00" already present on machine
+  Normal  Created         27s   kubelet            Created container: bpp
+  Normal  Started         27s   kubelet            Started container bpp
+  Normal  Killing         9s    kubelet            Stopping container bpp
+[root@bastion ocp-config]#
