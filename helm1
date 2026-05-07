@@ -1,11 +1,381 @@
-[root@bastion ~]# helm pull  bscf-pre rel-ran-srv/bscf-pre -f local-pre_2u_t1.yaml
-WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /root/clusterconfigs/auth/kubeconfig
-Error: unknown shorthand flag: 'f' in -f
-[root@bastion ~]# helm pull  bscf-pre rel-ran-srv/bscf-pre
-WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /root/clusterconfigs/auth/kubeconfig
-Error: non-absolute URLs should be in form of repo_name/path_to_chart, got: bscf-pre
-[root@bastion ~]# helm list
-WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /root/clusterconfigs/auth/kubeconfig
-NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-bscf-pre        cnf             1               2026-05-07 11:30:08.278752934 +0000 UTC deployed        bscf-pre-261.0.1        1.0
-[root@bastion ~]#
+[root@bastion templates]# cat bip-sriov-net.yaml
+{{- $nameSuffix := "" }}
+{{- if and (.Values.second_bscf) (ne .Values.second_bscf "disable") }}
+{{- $nameSuffix = printf "-%s" .Values.namespace }}
+{{- end }}
+
+{{- if eq .Values.platform "ocp" }}
+
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0c-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  capabilities: '{ "mac": true, "ips": true }'
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bip.bh0c }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0c
+  spoofChk: 'on'
+  trust: 'on'
+  inkState: auto
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0c-1-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  capabilities: '{ "mac": true, "ips": true }'
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bip.bh0c_1 }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0c_1
+  spoofChk: 'on'
+  trust: 'on'
+  inkState: auto
+---
+{{- if eq ($.Values.targetFlavor|lower) "tiny-2u-t1" }}
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0c-2-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  capabilities: '{ "mac": true, "ips": true }'
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bip.bh0c_2 }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0c_2
+  trust: 'on'
+  inkState: auto
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0c-2-1-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  capabilities: '{ "mac": true, "ips": true }'
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bip.bh0c_2_1 }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0c_2_1
+  trust: 'on'
+  inkState: auto
+---
+{{- end }}
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: bscf-bond-nad{{ $nameSuffix }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  config: '{
+  "type": "bond",
+  "cniVersion": "0.3.1",
+  "name": "bh0",
+  "ifname": "bh0",
+  "mode": "active-backup",
+  "failOverMac": 1,
+  "linksInContainer": true,
+  "miimon": "100",
+  "mtu": 1500,
+  "links": [
+     {"name": "bh0_0"},
+     {"name": "bh0_1"}
+  ]
+}'
+---
+{{- else }}
+
+{{- with .Values.sriov.bip }}
+{{- range $interface, $vlanId := . }}
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  namespace: {{ $.Values.namespace }}
+  {{- if eq $interface "bh0c_1" }}
+  name: {{ $.Values.neType }}-bh0c-1-nad{{ $nameSuffix }}
+  {{- else }}
+  name: {{ $.Values.neType }}-{{ $interface }}-nad{{ $nameSuffix }}
+  {{- end }}
+  labels:
+    {{- if eq $interface "bh0c_1" }}
+    app: {{ $.Values.neType }}-bh0c-1-nad
+    {{- else }}
+    app: {{ $.Values.neType }}-{{ $interface }}-nad
+    {{- end }}
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: {{ $.Values.sriov.devicePrefix }}/pci_sriov_net_{{ $interface }}
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "sriov",
+    {{- if and ( eq ( $.Values.sriov.networkType | lower ) "vlan" ) }}
+    "vlan": {{ $vlanId }},
+    {{- else }}
+    "vlan": 0,
+    {{- end }}
+    "trust": "on"
+  }'
+---
+{{- end }}
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  namespace: {{ $.Values.namespace }}
+  name: {{ $.Values.neType }}-bond-nad{{ $nameSuffix }}
+  labels:
+    app: {{ $.Values.neType }}-bond-nad
+spec:
+  config: '{
+    "type": "bond",
+    "cniVersion": "0.3.0",
+    "name": "bh0",
+    "mode": "active-backup",
+    "failOverMac": 1,
+    "linksInContainer": true,
+    "miimon": "100",
+    "mtu": 1500,
+    "links": [
+       {"name": "bh0_0"},
+       {"name": "bh0_1"}
+    ]
+  }'
+---
+{{- end }}
+
+{{- end }}
+
+
+
+===============================
+[root@bastion templates]# cat bpp-sriov-net.yaml
+{{- $nameSuffix := "" }}
+{{- if and (.Values.second_bscf) (ne .Values.second_bscf "disable") }}
+{{- $nameSuffix = printf "-%s" .Values.namespace }}
+{{- end }}
+
+{{- if eq .Values.platform "ocp" }}
+
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bpp.bh0u }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0u
+  trust: 'on'
+  inkState: auto
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u-1-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bpp.bh0u_1 }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0u_1
+  trust: 'on'
+  inkState: auto
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u-2-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bpp.bh0u_2 }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0u_2
+  trust: 'on'
+  inkState: auto
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u-2-1-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bpp.bh0u_2_1 }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0u_2_1
+  trust: 'on'
+  inkState: auto
+---
+{{- if eq ($.Values.targetFlavor|lower) "tiny-2u-t3" }}
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u-3-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bpp.bh0u_3 }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0u_3
+  trust: 'on'
+  inkState: auto
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: bscf-bh0u-3-1-nad{{ $nameSuffix }}
+  namespace: openshift-sriov-network-operator
+spec:
+  networkNamespace: {{ $.Values.namespace }}
+  ipam: "{}"
+  {{- if eq ( .Values.sriov.networkType | lower ) "vlan" }}
+  vlan: {{ .Values.sriov.bpp.bh0u_3_1 }}
+  {{- else }}
+  vlan: 0
+  {{- end }}
+  resourceName: pci_sriov_net_bh0u_3_1
+  trust: 'on'
+  inkState: auto
+---
+{{- end }}
+
+{{- else }}
+
+{{- with .Values.sriov.bpp }}
+{{- range $interface, $vlanId := . }}
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  namespace: {{ $.Values.namespace }}
+  {{- if eq $interface "bh0u_1" }}
+  name: {{ $.Values.neType }}-bh0u-1-nad{{ $nameSuffix }}
+  {{- end }}
+  {{- if eq $interface "bh0u" }}
+  name: {{ $.Values.neType }}-{{ $interface }}-nad{{ $nameSuffix }}
+  {{- end }}
+  {{- if eq $interface "bh0u_2" }}
+  name: {{ $.Values.neType }}-bh0u-2-nad{{ $nameSuffix }}
+  {{- end }}
+  {{- if eq $interface "bh0u_2_1" }}
+  name: {{ $.Values.neType }}-bh0u-2-1-nad{{ $nameSuffix }}
+  {{- end }}
+  {{- if eq $interface "bh0u_3" }}
+  name: {{ $.Values.neType }}-bh0u-3-nad{{ $nameSuffix }}
+  {{- end }}
+  {{- if eq $interface "bh0u_3_1" }}
+  name: {{ $.Values.neType }}-bh0u-3-1-nad{{ $nameSuffix }}
+  {{- end }}
+  labels:
+    {{- if eq $interface "bh0u_1" }}
+    app: {{ $.Values.neType }}-bh0u-1-nad
+    {{- end }}
+    {{- if eq $interface "bh0u" }}
+    app: {{ $.Values.neType }}-{{ $interface }}-nad
+    {{- end }}
+    {{- if eq $interface "bh0u_2" }}
+    app: {{ $.Values.neType }}-bh0u-2-nad
+    {{- end }}
+    {{- if eq $interface "bh0u_2_1" }}
+    app: {{ $.Values.neType }}-bh0u-2-1-nad
+    {{- end }}
+    {{- if eq $interface "bh0u_3" }}
+    app: {{ $.Values.neType }}-bh0u-3-nad
+    {{- end }}
+    {{- if eq $interface "bh0u_3_1" }}
+    app: {{ $.Values.neType }}-bh0u-3-1-nad
+    {{- end }}
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: {{ $.Values.sriov.devicePrefix }}/pci_sriov_net_{{ $interface }}
+spec:
+  config: '{
+    "cniVersion": "0.3.0",
+    "type": "sriov",
+    {{- if and ( eq ( $.Values.sriov.networkType | lower ) "vlan" ) }}
+    "vlan": {{ $vlanId }},
+    {{- else }}
+    "vlan": 0,
+    {{- end }}
+    "trust": "on"
+  }'
+---
+{{- end }}
+
+{{- end }}
+
+{{- end }}
+
+---------------------------------------------------
+[root@bastion bscf-pre]# cat values.yaml
+# Default values for bscf-pre.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+#################################################################
+# Operator configuration.
+#################################################################
+
+namespace: "default"
+second_bscf: "disable" # disable for sno and enable for 2nd bscf feature
+neType: "bscf"
+accessPolicy: "limited" # "limited, full"
+platform: "ocp" # "wrcp or ocp or aws"
+targetFlavor: ""
+# The vlan id of the sriov interface must be set according to the network environment to be installed.
+sriov:
+  devicePrefix: "intel.com"
+  networkType: "flat" # "flat or vlan"
+  bpp:
+    bh0u: "71"       #vlan id if networkType is vlan
+    bh0u_1: "71"     #vlan id if networkType is vlan
+    bh0u_2: "71"      #vlan id if networkType is vlan
+    bh0u_2_1: "71"    #vlan id if networkType is vlan
+    bh0u_3: "71"    #vlan id if networkType is vlan
+    bh0u_3_1: "71"    #vlan id if networkType is vlan
+  bip:
+    bh0c: "71"       #vlan id if networkType is vlan
+    bh0c_1: "71"     #vlan id if networkType is vlan
+[root@bastion bscf-pre]#
+
