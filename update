@@ -1,0 +1,131 @@
+srib@ocp-haproxy-1:~/kamal/kamal$ oc describe  clusterversion
+Name:         version
+Namespace:
+Labels:       <none>
+Annotations:  <none>
+API Version:  config.openshift.io/v1
+Kind:         ClusterVersion
+Metadata:
+  Creation Timestamp:  2026-02-27T17:50:06Z
+  Generation:          11
+  Resource Version:    48191102
+  UID:                 ed02d0f1-f2bf-44d8-ba4d-1d48cd16647a
+Spec:
+  Capabilities:
+    Additional Enabled Capabilities:
+    Baseline Capability Set:  None
+  Channel:                    stable-4.20
+  Cluster ID:                 63837200-ea8f-437a-834a-49f8d7d36dac
+  Desired Update:
+    Architecture:
+    Force:         false
+    Image:         bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72
+    Version:
+Status:
+  Available Updates:  <nil>
+  Capabilities:
+    Enabled Capabilities:
+      Build
+      CSISnapshot
+      CloudControllerManager
+      CloudCredential
+      Console
+      DeploymentConfig
+      ImageRegistry
+      Ingress
+      Insights
+      MachineAPI
+      NodeTuning
+      OperatorLifecycleManager
+      OperatorLifecycleManagerV1
+      Storage
+      baremetal
+      marketplace
+      openshift-samples
+    Known Capabilities:
+      Build
+      CSISnapshot
+      CloudControllerManager
+      CloudCredential
+      Console
+      DeploymentConfig
+      ImageRegistry
+      Ingress
+      Insights
+      MachineAPI
+      NodeTuning
+      OperatorLifecycleManager
+      OperatorLifecycleManagerV1
+      Storage
+      baremetal
+      marketplace
+      openshift-samples
+  Conditions:
+    Last Transition Time:  2026-03-25T05:33:20Z
+    Message:               The following capabilities could not be disabled: Build, CSISnapshot, CloudControllerManager, CloudCredential, Console, DeploymentConfig, ImageRegistry, Ingress, Insights, MachineAPI, NodeTuning, OperatorLifecycleManager, OperatorLifecycleManagerV1, Storage, baremetal, marketplace, openshift-samples
+    Reason:                CapabilitiesImplicitlyEnabled
+    Status:                True
+    Type:                  ImplicitlyEnabledCapabilities
+    Last Transition Time:  2026-03-27T03:56:38Z
+    Message:               Payload loaded version="4.20.21" image="bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72" architecture="amd64"
+    Reason:                PayloadLoaded
+    Status:                True
+    Type:                  ReleaseAccepted
+    Last Transition Time:  2026-02-27T18:38:28Z
+    Message:               Done applying 4.20.14
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  2026-05-08T12:27:58Z
+    Message:               Cluster operator machine-config is degraded
+    Reason:                ClusterOperatorDegraded
+    Status:                True
+    Type:                  Failing
+    Last Transition Time:  2026-05-08T11:06:49Z
+    Message:               Unable to apply 4.20.21: wait has exceeded 40 minutes for these operators: machine-config
+    Reason:                ClusterOperatorDegraded
+    Status:                True
+    Type:                  Progressing
+    Last Transition Time:  2026-02-27T17:50:26Z
+    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.20&id=63837200-ea8f-437a-834a-49f8d7d36dac&version=4.20.21": dial tcp 3.217.114.99:443: connect: connection timed out
+    Reason:                RemoteFailed
+    Status:                False
+    Type:                  RetrievedUpdates
+    Last Transition Time:  2026-03-27T03:56:38Z
+    Message:               An update is already in progress and the details are in the Progressing condition
+    Reason:                UpdateInProgress
+    Status:                False
+    Type:                  Upgradeable
+  Desired:
+    Image:    bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72
+    URL:      https://access.redhat.com/errata/RHBA-2026:13863
+    Version:  4.20.21
+  History:
+    Accepted Risks:     Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.20.14 to 4.20.21 is unknown.
+    Completion Time:    <nil>
+    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72
+    Started Time:       2026-05-08T11:06:49Z
+    State:              Partial
+    Verified:           true
+    Version:            4.20.21
+    Completion Time:    2026-03-27T06:00:29Z
+    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
+    Started Time:       2026-03-27T03:56:38Z
+    State:              Completed
+    Verified:           true
+    Version:            4.20.14
+    Completion Time:    2026-03-24T17:53:56Z
+    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
+    Started Time:       2026-03-24T10:37:10Z
+    State:              Completed
+    Verified:           true
+    Version:            4.19.23
+    Completion Time:    2026-02-27T18:38:28Z
+    Image:              quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
+    Started Time:       2026-02-27T17:50:26Z
+    State:              Completed
+    Verified:           false
+    Version:            4.18.23
+  Observed Generation:  11
+  Version Hash:         zQ7iJ7vLlG8=
+Events:                 <none>
+srib@ocp-haproxy-1:~/kamal/kamal$
