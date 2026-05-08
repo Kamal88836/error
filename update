@@ -1,131 +1,111 @@
-srib@ocp-haproxy-1:~/kamal/kamal$ oc describe  clusterversion
-Name:         version
+srib@ocp-haproxy-1:~/kamal/kamal$ oc get co machine-config
+NAME             VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+machine-config   4.20.14   True        True          True       69d     Unable to apply 4.20.21: error during syncRequiredMachineConfigPools: [context deadline exceeded, MachineConfigPool master has not progressed to latest configuration: controller version mismatch for rendered-master-ce0d74a3602b20d55c89b872afa4baf8 expected c19e5dc0e5e2835f89befc42e4f8b89d869fc90c has 035a7f3c16e820ed0461b25ba82c263131ff6c3d: 1 (ready 1) out of 3 nodes are updating to latest configuration rendered-master-389d7bfa3f7ca650b8d8dd8b4d8b21cb, retrying]
+srib@ocp-haproxy-1:~/kamal/kamal$ oc describe  co machine-config
+Name:         machine-config
 Namespace:
 Labels:       <none>
-Annotations:  <none>
+Annotations:  exclude.release.openshift.io/internal-openshift-hosted: true
+              include.release.openshift.io/self-managed-high-availability: true
+              include.release.openshift.io/single-node-developer: true
 API Version:  config.openshift.io/v1
-Kind:         ClusterVersion
+Kind:         ClusterOperator
 Metadata:
-  Creation Timestamp:  2026-02-27T17:50:06Z
-  Generation:          11
-  Resource Version:    48191102
-  UID:                 ed02d0f1-f2bf-44d8-ba4d-1d48cd16647a
+  Creation Timestamp:  2026-02-27T17:50:26Z
+  Generation:          1
+  Owner References:
+    API Version:     config.openshift.io/v1
+    Controller:      true
+    Kind:            ClusterVersion
+    Name:            version
+    UID:             ed02d0f1-f2bf-44d8-ba4d-1d48cd16647a
+  Resource Version:  48182570
+  UID:               f2da6215-61bb-4f8e-b964-8b245e15f52d
 Spec:
-  Capabilities:
-    Additional Enabled Capabilities:
-    Baseline Capability Set:  None
-  Channel:                    stable-4.20
-  Cluster ID:                 63837200-ea8f-437a-834a-49f8d7d36dac
-  Desired Update:
-    Architecture:
-    Force:         false
-    Image:         bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72
-    Version:
 Status:
-  Available Updates:  <nil>
-  Capabilities:
-    Enabled Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-    Known Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
   Conditions:
-    Last Transition Time:  2026-03-25T05:33:20Z
-    Message:               The following capabilities could not be disabled: Build, CSISnapshot, CloudControllerManager, CloudCredential, Console, DeploymentConfig, ImageRegistry, Ingress, Insights, MachineAPI, NodeTuning, OperatorLifecycleManager, OperatorLifecycleManagerV1, Storage, baremetal, marketplace, openshift-samples
-    Reason:                CapabilitiesImplicitlyEnabled
-    Status:                True
-    Type:                  ImplicitlyEnabledCapabilities
-    Last Transition Time:  2026-03-27T03:56:38Z
-    Message:               Payload loaded version="4.20.21" image="bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72" architecture="amd64"
-    Reason:                PayloadLoaded
-    Status:                True
-    Type:                  ReleaseAccepted
-    Last Transition Time:  2026-02-27T18:38:28Z
-    Message:               Done applying 4.20.14
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-05-08T12:27:58Z
-    Message:               Cluster operator machine-config is degraded
-    Reason:                ClusterOperatorDegraded
-    Status:                True
-    Type:                  Failing
-    Last Transition Time:  2026-05-08T11:06:49Z
-    Message:               Unable to apply 4.20.21: wait has exceeded 40 minutes for these operators: machine-config
-    Reason:                ClusterOperatorDegraded
+    Last Transition Time:  2026-05-08T11:48:09Z
+    Message:               Working towards 4.20.21
     Status:                True
     Type:                  Progressing
-    Last Transition Time:  2026-02-27T17:50:26Z
-    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.20&id=63837200-ea8f-437a-834a-49f8d7d36dac&version=4.20.21": dial tcp 3.217.114.99:443: connect: connection timed out
-    Reason:                RemoteFailed
-    Status:                False
-    Type:                  RetrievedUpdates
-    Last Transition Time:  2026-03-27T03:56:38Z
-    Message:               An update is already in progress and the details are in the Progressing condition
-    Reason:                UpdateInProgress
-    Status:                False
+    Last Transition Time:  2026-05-08T12:19:51Z
+    Message:               Unable to apply 4.20.21: error during syncRequiredMachineConfigPools: [context deadline exceeded, MachineConfigPool master has not progressed to latest configuration: controller version mismatch for rendered-master-ce0d74a3602b20d55c89b872afa4baf8 expected c19e5dc0e5e2835f89befc42e4f8b89d869fc90c has 035a7f3c16e820ed0461b25ba82c263131ff6c3d: 1 (ready 1) out of 3 nodes are updating to latest configuration rendered-master-389d7bfa3f7ca650b8d8dd8b4d8b21cb, retrying]
+    Reason:                RequiredPoolsFailed
+    Status:                True
+    Type:                  Degraded
+    Last Transition Time:  2026-02-27T18:14:10Z
+    Message:               Cluster has deployed [{operator 4.20.14} {operator-image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:70696f1ccd0dbf50b625e76197f5c1b3496741d0f4a4c961bff12bdd30371815}]
+    Reason:                AsExpected
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  2026-04-10T11:55:30Z
+    Reason:                AsExpected
+    Status:                True
     Type:                  Upgradeable
-  Desired:
-    Image:    bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72
-    URL:      https://access.redhat.com/errata/RHBA-2026:13863
-    Version:  4.20.21
-  History:
-    Accepted Risks:     Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.20.14 to 4.20.21 is unknown.
-    Completion Time:    <nil>
-    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72
-    Started Time:       2026-05-08T11:06:49Z
-    State:              Partial
-    Verified:           true
-    Version:            4.20.21
-    Completion Time:    2026-03-27T06:00:29Z
-    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:682e85bfe8034924e596b281ed8fefe4451e6f6c5bac07b5ec300443eeb23566
-    Started Time:       2026-03-27T03:56:38Z
-    State:              Completed
-    Verified:           true
-    Version:            4.20.14
-    Completion Time:    2026-03-24T17:53:56Z
-    Image:              bastion.srib-lab-ocp.lan:8443/ocp4/openshift4@sha256:7bf7c5dabc70518b89130ff7cfe62d14a61ed800adb418359bd9dcaa17b50206
-    Started Time:       2026-03-24T10:37:10Z
-    State:              Completed
-    Verified:           true
-    Version:            4.19.23
-    Completion Time:    2026-02-27T18:38:28Z
-    Image:              quay.io/openshift-release-dev/ocp-release@sha256:0bf2e8c1edf16de717c330b94d85f6d463c7208956b0a545cbb3fcf715e14c38
-    Started Time:       2026-02-27T17:50:26Z
-    State:              Completed
-    Verified:           false
-    Version:            4.18.23
-  Observed Generation:  11
-  Version Hash:         zQ7iJ7vLlG8=
-Events:                 <none>
+    Last Transition Time:  2026-02-27T18:14:10Z
+    Reason:                AsExpected
+    Status:                False
+    Type:                  EvaluationConditionsDetected
+  Extension:
+    Last Sync Error:  MachineConfigPool master has not progressed to latest configuration: controller version mismatch for rendered-master-ce0d74a3602b20d55c89b872afa4baf8 expected c19e5dc0e5e2835f89befc42e4f8b89d869fc90c has 035a7f3c16e820ed0461b25ba82c263131ff6c3d: 1 (ready 1) out of 3 nodes are updating to latest configuration rendered-master-389d7bfa3f7ca650b8d8dd8b4d8b21cb, retrying
+    Master:           1 (ready 1) out of 3 nodes are updating to latest configuration rendered-master-389d7bfa3f7ca650b8d8dd8b4d8b21cb
+    Worker:           all 0 nodes are at latest configuration rendered-worker-47c084c37bbbbaaeaabc359884be74e1
+  Related Objects:
+    Group:
+    Name:      openshift-machine-config-operator
+    Resource:  namespaces
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  machineconfigpools
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  controllerconfigs
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  kubeletconfigs
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  containerruntimeconfigs
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  machineconfigs
+    Group:     operator.openshift.io
+    Name:
+    Resource:  machineconfigurations
+    Group:
+    Name:
+    Resource:  nodes
+    Group:
+    Name:      openshift-kni-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-openstack-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-ovirt-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-vsphere-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-nutanix-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-cloud-platform-infra
+    Resource:  namespaces
+  Versions:
+    Name:     operator
+    Version:  4.20.14
+    Name:     operator-image
+    Version:  quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:70696f1ccd0dbf50b625e76197f5c1b3496741d0f4a4c961bff12bdd30371815
+Events:       <none>
+srib@ocp-haproxy-1:~/kamal/kamal$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-ce0d74a3602b20d55c89b872afa4baf8   False     True       False      3              1                   1                     0                      69d
+worker   rendered-worker-47c084c37bbbbaaeaabc359884be74e1   True      False      False      0              0                   0                     0                      69d
+srib@ocp-haproxy-1:~/kamal/kamal$ oc get no
+NAME                             STATUS                     ROLES                         AGE   VERSION
+ocp-cp-1.lab1.srib-lab-ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   69d   v1.33.6
+ocp-cp-2.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   69d   v1.33.10
+ocp-cp-3.lab1.srib-lab-ocp.lan   Ready                      control-plane,master,worker   69d   v1.33.6
 srib@ocp-haproxy-1:~/kamal/kamal$
