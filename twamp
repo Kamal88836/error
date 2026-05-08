@@ -1,11 +1,344 @@
-[sapp@bscf141-bip0-6b7b849db4-tdtll /]$ cat /var/log/command/
-SYS/              gsgb.gsm.log1     gsrb.gsm.log1     gssaif.gsm.log1   loco.log1         mulan.log1        sfm.log1          swm.log1
-gs7b.gsm.log1     gsob.gsm.log1     gssabis.gsm.log1  gsub.gsm.log1     logm.log1         ncm.log1          stm.log1          twamp.log1
-[sapp@bscf141-bip0-6b7b849db4-tdtll /]$ cat /var/log/command/twamp.log1
-[0506|11:06:46.946|TWAMP|MWINIT|0008|INFO|3]MwInitFunc ACCESS/CNF Start
-[0506|11:06:46.948|TWAMP|HAL|0021|INFO|E090000]gUhalIsAccess[1]
- mdlOpenIpc(MDS_ATTR_PROTO_UDP, DSCP_MGMT, MDS_MCAST_REUSEADDR_DISABLE, MDS_DEFAULT_VR_ID, pHalCtrlBlk->HalPort, "IIIP") Failed : 3
-[0506|11:06:47.048|TWAMP|HAL|0207|INFO|A090000]===========================
-[0506|11:06:47.048|TWAMP|HAL|0208|INFO|A090000]Waiting RSGM state...
-[0506|11:06:47.048|TWAMP|HAL|0209|INFO|A090000]===========================
+sno7@haproxy:~$ ./conn bip0
+bscf141-bip0-6b7b849db4-tdtll 1/1 Running 0 44h
+kubectl exec -it bscf141-bip0-6b7b849db4-tdtll -- /bin/bash
+Defaulted container "bip" out of: bip, sleepy (init), install (init)
 [sapp@bscf141-bip0-6b7b849db4-tdtll /]$
+[sapp@bscf141-bip0-6b7b849db4-tdtll /]$
+[sapp@bscf141-bip0-6b7b849db4-tdtll /]$ ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0@if395: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue state UP group default
+    link/ether 0a:58:0a:80:00:55 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.128.0.85/23 brd 10.128.1.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fd01:0:0:1::55/64 scope global
+       valid_lft forever preferred_lft forever
+    inet6 fe80::858:aff:fe80:55/64 scope link
+       valid_lft forever preferred_lft forever
+381: bh0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP group default qlen 1000
+    link/ether 9e:6f:12:eb:cd:41 brd ff:ff:ff:ff:ff:ff
+    altname enp38s0f0v2
+    inet6 fe80::9c6f:12ff:feeb:cd41/64 scope link
+       valid_lft forever preferred_lft forever
+382: bh1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP group default qlen 1000
+    link/ether d6:16:49:92:d1:69 brd ff:ff:ff:ff:ff:ff
+    altname enp38s0f0v3
+    inet6 fe80::d416:49ff:fe92:d169/64 scope link
+       valid_lft forever preferred_lft forever
+383: bh2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP group default qlen 1000
+    link/ether d6:4a:2c:47:80:f8 brd ff:ff:ff:ff:ff:ff
+    altname enp38s0f3v2
+    inet6 fe80::d44a:2cff:fe47:80f8/64 scope link
+       valid_lft forever preferred_lft forever
+[sapp@bscf141-bip0-6b7b849db4-tdtll /]$ ip route
+default via 10.128.0.1 dev eth0
+10.128.0.0/23 dev eth0 proto kernel scope link src 10.128.0.85
+10.128.0.0/14 via 10.128.0.1 dev eth0
+100.64.0.0/16 via 10.128.0.1 dev eth0
+169.254.0.5 via 10.128.0.1 dev eth0
+172.30.0.0/16 via 10.128.0.1 dev eth0
+[sapp@bscf141-bip0-6b7b849db4-tdtll /]$ ss -lunp
+State                   Recv-Q                  Send-Q                                      Local Address:Port                                    Peer Address:Port                  Process
+UNCONN                  0                       0                                               127.0.0.1:62495                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:62623                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:62655                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:62687                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:62719                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:62751                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:62783                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:16401                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:16832                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:16929                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:16985                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:17000                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:17376                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:17414                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:18336                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:21056                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:21184                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:21665                                        0.0.0.0:*
+UNCONN                  0                       0                                               127.0.0.1:22145                                        0.0.0.0:*
+UNCONN                  0                       0                                                       *:62490                                              *:*
+UNCONN                  0                       0                                                       *:62491                                              *:*
+UNCONN                  0                       0                                                       *:62493                                              *:*
+UNCONN                  0                       0                                                       *:62619                                              *:*
+UNCONN                  0                       0                                                       *:62620                                              *:*
+UNCONN                  0                       0                                                       *:62621                                              *:*
+UNCONN                  0                       0                                                       *:62651                                              *:*
+UNCONN                  0                       0                                                       *:62652                                              *:*
+UNCONN                  0                       0                                                       *:62653                                              *:*
+UNCONN                  0                       0                                                       *:62683                                              *:*
+UNCONN                  0                       0                                                       *:62684                                              *:*
+UNCONN                  0                       0                                                       *:62685                                              *:*
+UNCONN                  0                       0                                                       *:62715                                              *:*
+UNCONN                  0                       0                                                       *:62716                                              *:*
+UNCONN                  0                       0                                                       *:62717                                              *:*
+UNCONN                  0                       0                                                       *:62747                                              *:*
+UNCONN                  0                       0                                                       *:62748                                              *:*
+UNCONN                  0                       0                                                       *:62749                                              *:*
+UNCONN                  0                       0                                                       *:62779                                              *:*
+UNCONN                  0                       0                                                       *:62780                                              *:*
+UNCONN                  0                       0                                                       *:62781                                              *:*
+UNCONN                  0                       0                                                       *:16402                                              *:*
+UNCONN                  0                       0                                                       *:16405                                              *:*
+UNCONN                  0                       0                                                       *:16406                                              *:*
+UNCONN                  0                       0                                                       *:16835                                              *:*
+UNCONN                  0                       0                                                       *:16836                                              *:*
+UNCONN                  0                       0                                                       *:16837                                              *:*
+UNCONN                  0                       0                                                       *:16932                                              *:*
+UNCONN                  0                       0                                                       *:16935                                              *:*
+UNCONN                  0                       0                                                       *:16987                                              *:*
+UNCONN                  0                       0                                                       *:16988                                              *:*
+UNCONN                  0                       0                                                       *:16989                                              *:*
+UNCONN                  0                       0                                                       *:17001                                              *:*
+UNCONN                  0                       0                                                       *:17002                                              *:*
+UNCONN                  0                       0                                                       *:17003                                              *:*
+UNCONN                  0                       0                                                       *:17377                                              *:*
+UNCONN                  0                       0                                                       *:17380                                              *:*
+UNCONN                  0                       0                                                       *:17381                                              *:*
+UNCONN                  0                       0                                                       *:17413                                              *:*
+UNCONN                  0                       0                                                       *:17416                                              *:*
+UNCONN                  0                       0                                                       *:17417                                              *:*
+UNCONN                  0                       0                                                       *:18337                                              *:*
+UNCONN                  0                       0                                                       *:18338                                              *:*
+UNCONN                  0                       0                                                       *:18341                                              *:*
+UNCONN                  0                       0                                                       *:21059                                              *:*
+UNCONN                  0                       0                                                       *:21060                                              *:*
+UNCONN                  0                       0                                                       *:21061                                              *:*
+UNCONN                  0                       0                                                       *:21187                                              *:*
+UNCONN                  0                       0                                                       *:21188                                              *:*
+UNCONN                  0                       0                                                       *:21189                                              *:*
+UNCONN                  0                       0                                                       *:21668                                              *:*
+UNCONN                  0                       0                                                       *:21670                                              *:*
+UNCONN                  0                       0                                                       *:22148                                              *:*
+UNCONN                  0                       0                                                       *:22150                                              *:*
+UNCONN                  0                       0                                                       *:22151                                              *:*
+UNCONN                  0                       0                                        [fd01:0:0:1::55]:22152                                              *:*
+UNCONN                  0                       0                                                       *:22154                                              *:*
+UNCONN                  0                       0                                                       *:25269                                              *:*
+[sapp@bscf141-bip0-6b7b849db4-tdtll /]$ exit
+sno7@haproxy:~$
+sno7@haproxy:~$
+sno7@haproxy:~$
+sno7@haproxy:~$ oc describe po bscf141-bip0-6b7b849db4-tdtll
+Name:             bscf141-bip0-6b7b849db4-tdtll
+Namespace:        bscf
+Priority:         0
+Service Account:  bscf-sa
+Node:             sno7.lab7.ocp.lan/72.1.1.142
+Start Time:       Wed, 06 May 2026 11:06:08 +0000
+Labels:           app=bscf141-bip0
+                  component=bscf141-bip
+                  nename=bscf141
+                  pod-template-hash=6b7b849db4
+                  release=bscf
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.ovn.org/pod-networks:
+                    {"default":{"ip_addresses":["10.128.0.85/23","fd01:0:0:1::55/64"],"mac_address":"0a:58:0a:80:00:55","gateway_ips":["10.128.0.1","fd01:0:0:...
+                  k8s.v1.cni.cncf.io/network-status:
+                    [{
+                        "name": "ovn-kubernetes",
+                        "interface": "eth0",
+                        "ips": [
+                            "10.128.0.85",
+                            "fd01:0:0:1::55"
+                        ],
+                        "mac": "0a:58:0a:80:00:55",
+                        "default": true,
+                        "dns": {}
+                    },{
+                        "name": "bscf/bscf-bh0c-nad",
+                        "interface": "bh0",
+                        "mac": "9e:6f:12:eb:cd:41",
+                        "mtu": 9000,
+                        "dns": {},
+                        "device-info": {
+                            "type": "pci",
+                            "version": "1.1.0",
+                            "pci": {
+                                "pci-address": "0000:26:01.2"
+                            }
+                        }
+                    },{
+                        "name": "bscf/bscf-bh0c-nad",
+                        "interface": "bh1",
+                        "mac": "d6:16:49:92:d1:69",
+                        "mtu": 9000,
+                        "dns": {},
+                        "device-info": {
+                            "type": "pci",
+                            "version": "1.1.0",
+                            "pci": {
+                                "pci-address": "0000:26:01.3"
+                            }
+                        }
+                    },{
+                        "name": "bscf/bscf-bh0c-1-nad",
+                        "interface": "bh2",
+                        "mac": "d6:4a:2c:47:80:f8",
+                        "mtu": 9000,
+                        "dns": {},
+                        "device-info": {
+                            "type": "pci",
+                            "version": "1.1.0",
+                            "pci": {
+                                "pci-address": "0000:26:19.2"
+                            }
+                        }
+                    }]
+                  k8s.v1.cni.cncf.io/networks:
+                    [{ "name": "bscf-bh0c-nad", "interface": "bh0" }, { "name": "bscf-bh0c-nad", "interface": "bh1" },{ "name": "bscf-bh0c-1-nad", "interface"...
+                  openshift.io/scc: privileged
+Status:           Running
+IP:               10.128.0.85
+IPs:
+  IP:           10.128.0.85
+  IP:           fd01:0:0:1::55
+Controlled By:  ReplicaSet/bscf141-bip0-6b7b849db4
+Init Containers:
+  sleepy:
+    Container ID:  cri-o://68e5b5c4f2249965b8224cabfe378b75df96f98415550b1a6b82d215375012f3
+    Image:         sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
+    Image ID:      sribharbor.sec.samsung.net/integ-ran/utd-bscf-init@sha256:76a1946b1031448072f724924550f376de250a878d8704da6c859843961ed927
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo Sleepy has come && sleep 15
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Wed, 06 May 2026 11:06:22 +0000
+      Finished:     Wed, 06 May 2026 11:06:37 +0000
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:        500m
+      memory:     256Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-krcgb (ro)
+  install:
+    Container ID:  cri-o://7c802e742d5f006a1cf1b1ac2825a41b972eea698e3aeb3f9915b478d8b13648
+    Image:         sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD29_I00
+    Image ID:      sribharbor.sec.samsung.net/integ-ran/utd-bscf-init@sha256:76a1946b1031448072f724924550f376de250a878d8704da6c859843961ed927
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+    Args:
+      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Wed, 06 May 2026 11:06:38 +0000
+      Finished:     Wed, 06 May 2026 11:06:39 +0000
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:                                500m
+      memory:                             16Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Requests:
+      cpu:                                500m
+      memory:                             16Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Environment:                          <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf141-bip-log (rw)
+      /mnt/storage/shared from bscf141-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-krcgb (ro)
+Containers:
+  bip:
+    Container ID:  cri-o://7009c6e9028454db2be7cc69a2ca2717fcb8055c268012d5d06c0c139900e788
+    Image:         sribharbor.sec.samsung.net/integ-ran/utd-bscf-bip:SVR26BBSCUTDD29_I00
+    Image ID:      sribharbor.sec.samsung.net/integ-ran/utd-bscf-bip@sha256:19e780c21a0176e1e1ef1079d7b22c579189927944ab7e417f133f2935a87825
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    State:          Running
+      Started:      Wed, 06 May 2026 11:06:40 +0000
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:                                22
+      memory:                             16Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Requests:
+      cpu:                                22
+      memory:                             16Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Liveness:                             http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              UTC
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+    Mounts:
+      /etc/config from env (rw)
+      /etc/podnetinfo from podnetinfo (ro)
+      /mnt/storage/log from bscf141-bip-log (rw)
+      /mnt/storage/shared from bscf141-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-krcgb (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       True
+  ContainersReady             True
+  PodScheduled                True
+Volumes:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf141-bip0
+    Optional:  false
+  bscf141-bip-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf141-log-pvc
+    ReadOnly:   false
+  bscf141-bip-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf141-shared-pvc
+    ReadOnly:   false
+  kube-api-access-krcgb:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    ConfigMapOptional:       <nil>
+  podnetinfo:
+    Type:  DownwardAPI (a volume populated by information about the pod)
+    Items:
+      metadata.labels -> labels
+      metadata.annotations -> annotations
+QoS Class:       Guaranteed
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:          <none>
+sno7@haproxy:~$ oc get event -A | grep -i twamp
+sno7@haproxy:~$ oc logs bscf141-bip0-6b7b849db4-tdtll --previous
+Defaulted container "bip" out of: bip, sleepy (init), install (init)
+Error from server (BadRequest): previous terminated container "bip" in pod "bscf141-bip0-6b7b849db4-tdtll" not found
+sno7@haproxy:~$
