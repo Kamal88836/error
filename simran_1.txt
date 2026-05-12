@@ -1,4 +1,11 @@
-
+      annotations:
+      {{- if and (eq $.Values.global.platform "ocp") ( eq ($.Values.global.targetFlavor|lower) "tiny-2u-t1") ( eq $index 1 ) }}
+        {{- include (printf "%s.sriov-interface%d" $.Chart.Name $index) $ | indent 8 }}
+      {{- else }}
+        {{- include (printf "%s.sriov-interface0" $.Chart.Name) $ | indent 8 }}
+      {{- end }}
+    spec:
+-----------------------------
   Normal   AddedInterface          20s (x4 over 57s)  multus   Add eth0 [10.10.0.220/24 fd01:0:0:1::b65/64] from ovn-kubernetes
   Normal   AddedInterface          20s (x4 over 57s)  multus   Add bh0_0 [] from cnf/bscf-bh0c-2-nad
   Normal   AddedInterface          20s (x4 over 57s)  multus   Add bh0_1 [] from cnf/bscf-bh0c-2-1-nad
