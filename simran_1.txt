@@ -1,393 +1,174 @@
-      annotations:
-      {{- if and (eq $.Values.global.platform "ocp") ( eq ($.Values.global.targetFlavor|lower) "tiny-2u-t1") ( eq $index 1 ) }}
-        {{- include (printf "%s.sriov-interface%d" $.Chart.Name $index) $ | indent 8 }}
-      {{- else }}
-        {{- include (printf "%s.sriov-interface0" $.Chart.Name) $ | indent 8 }}
-      {{- end }}
-    spec:
------------------------------
-  Normal   AddedInterface          20s (x4 over 57s)  multus   Add eth0 [10.10.0.220/24 fd01:0:0:1::b65/64] from ovn-kubernetes
-  Normal   AddedInterface          20s (x4 over 57s)  multus   Add bh0_0 [] from cnf/bscf-bh0c-2-nad
-  Normal   AddedInterface          20s (x4 over 57s)  multus   Add bh0_1 [] from cnf/bscf-bh0c-2-1-nad
-  Warning  FailedCreatePodSandBox  20s                kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-587b8cc587-q7p4f_cnf_ba111228-3123-4fbb-a18e-2cfc8b100a5f_0(03d3d45e7fae17978c377e2b163a69365eae6fcf07ef8f2ffb4474e3cd439963): error adding pod cnf_bscf5000-bip1-587b8cc587-q7p4f to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"03d3d45e7fae17978c377e2b163a69365eae6fcf07ef8f2ffb4474e3cd439963" Netns:"/var/run/netns/62875bd7-93ec-43a8-847d-f653ea880a96" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-587b8cc587-q7p4f;K8S_POD_INFRA_CONTAINER_ID=03d3d45e7fae17978c377e2b163a69365eae6fcf07ef8f2ffb4474e3cd439963;K8S_POD_UID=ba111228-3123-4fbb-a18e-2cfc8b100a5f" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-587b8cc587-q7p4f] networking: [cnf/bscf5000-bip1-587b8cc587-q7p4f/ba111228-3123-4fbb-a18e-2cfc8b100a5f:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
-': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
 [root@bastion ~]# oc get pods
-NAME                             READY   STATUS        RESTARTS   AGE
-bscf5000-bip0-6d968df59f-n8n9f   0/1     Running       0          59s
-bscf5000-bip1-587b8cc587-q7p4f   0/1     Init:0/2      0          59s
-bscf5000-bpp0-c858bc864-2zxgf    1/1     Terminating   0          59s
-bscf5000-bpp0-c858bc864-pwkr9    0/1     Pending       0          6s
-bscf5000-bpp1-76647b5d98-57ts6   0/1     Running       0          7s
-bscf5000-bpp1-76647b5d98-jzzg2   1/1     Terminating   0          59s
-bscf5000-cmp0-7df489ccb4-jkkks   1/1     Running       0          59s
-bscf5000-cmp1-66786fc4cb-qfg7k   1/1     Running       0          59s
-bscf5000-dmp0-5d4945488c-mplq8   1/1     Running       0          59s
-bscf5000-pmp0-946d6fcc5-9drlx    1/1     Running       0          59s
-[root@bastion ~]# oc get net-attach-def
-NAME                AGE
-bscf-bh0c-1-nad     22h
-bscf-bh0c-2-1-nad   22h
-bscf-bh0c-2-nad     22h
-bscf-bh0c-nad       22h
-bscf-bh0u-1-nad     22h
-bscf-bh0u-2-1-nad   22h
-bscf-bh0u-2-nad     22h
-bscf-bh0u-nad       22h
-bscf-bond-1-nad     22h
-bscf-bond-nad       22h
-
-----------------------
-
-Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh0_0 [] from cnf/bscf-bh0c-2-nad
-  Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh2 [] from cnf/bscf-bh0c-2-1-nad
-  Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh0_1 [] from cnf/bscf-bh0c-2-1-nad
-  Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh1 [] from cnf/bscf-bh0c-2-nad
-  Normal   AddedInterface          47s (x5 over 99s)  multus   Add eth0 [10.10.0.179/24 fd01:0:0:1::b3c/64] from ovn-kubernetes
-  Warning  FailedCreatePodSandBox  46s                kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-64cb984bc9-kztlb_cnf_3aa7d237-d711-4a83-817b-a112d499669f_0(acdafbad2e98f7e8652bd61df5fe7077559fb6cc0213a06fafc1c4f05ca49619): error adding pod cnf_bscf5000-bip1-64cb984bc9-kztlb to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"acdafbad2e98f7e8652bd61df5fe7077559fb6cc0213a06fafc1c4f05ca49619" Netns:"/var/run/netns/81f16e50-2289-4e24-a694-7daf46e9c3f7" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-64cb984bc9-kztlb;K8S_POD_INFRA_CONTAINER_ID=acdafbad2e98f7e8652bd61df5fe7077559fb6cc0213a06fafc1c4f05ca49619;K8S_POD_UID=3aa7d237-d711-4a83-817b-a112d499669f" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-64cb984bc9-kztlb] networking: [cnf/bscf5000-bip1-64cb984bc9-kztlb/3aa7d237-d711-4a83-817b-a112d499669f:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+NAME                             READY   STATUS     RESTARTS   AGE
+bscf5000-bip0-6d968df59f-krdk9   1/1     Running    0          64s
+bscf5000-bip1-549c6df645-b7m7q   0/1     Init:0/2   0          64s
+bscf5000-bpp0-c858bc864-npznq    0/1     Running    0          12s
+bscf5000-bpp1-76647b5d98-wqf2f   0/1     Running    0          13s
+bscf5000-cmp0-7df489ccb4-jpcdt   1/1     Running    0          64s
+bscf5000-cmp1-66786fc4cb-cbw2z   1/1     Running    0          64s
+bscf5000-dmp0-5d4945488c-7f5rd   1/1     Running    0          64s
+bscf5000-pmp0-946d6fcc5-rqvrd    1/1     Running    0          64s
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# oc describe pod bscf5000-bip1-549c6df645-b7m7q
+Name:             bscf5000-bip1-549c6df645-b7m7q
+Namespace:        cnf
+Priority:         0
+Service Account:  bscf-sa
+Node:             master.bscf5000.samsung.local/128.68.1.155
+Start Time:       Tue, 12 May 2026 10:09:29 +0000
+Labels:           app=bscf5000-bip1
+                  component=bscf5000-bip
+                  nename=bscf5000
+                  pod-template-hash=549c6df645
+                  release=bscf
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.ovn.org/pod-networks:
+                    {"default":{"ip_addresses":["10.10.0.88/24","fd01:0:0:1::b99/64"],"mac_address":"0a:58:0a:0a:00:58","gateway_ips":["10.10.0.1","fd01:0:0:1...
+                  k8s.v1.cni.cncf.io/networks:
+                    [
+                    { "name": "bscf-bh0c-2-nad", "interface": "bh0_0" },
+                    { "name": "bscf-bh0c-2-1-nad", "interface": "bh0_1" }
+                    , { "name": "bscf-bond-1-nad", "interface": "bh0" } , { "name": "bscf-bh0c-2-nad", "interface": "bh1" } , { "name": "bscf-bh0c-2-1-nad", "...
+                  openshift.io/scc: privileged
+                  security.openshift.io/validated-scc-subject-type: serviceaccount
+Status:           Pending
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/bscf5000-bip1-549c6df645
+Init Containers:
+  sleepy:
+    Container ID:
+    Image:         ran-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo Sleepy has come && sleep 15
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:        500m
+      memory:     256Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qbvlv (ro)
+  install:
+    Container ID:
+    Image:         ran-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+    Args:
+      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf5000-bip-log (rw)
+      /mnt/storage/shared from bscf5000-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qbvlv (ro)
+Containers:
+  bip:
+    Container ID:
+    Image:         ran-harbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR26ABSCUTDD20_R00
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    State:          Waiting
+      Reason:       PodInitializing
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Requests:
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Liveness:                               http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                              http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              Asia/Kolkata
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+    Mounts:
+      /etc/config from env (rw)
+      /etc/podnetinfo from podnetinfo (ro)
+      /mnt/storage/log from bscf5000-bip-log (rw)
+      /mnt/storage/shared from bscf5000-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qbvlv (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False
+  Initialized                 False
+  Ready                       False
+  ContainersReady             False
+  PodScheduled                True
+Volumes:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf5000-bip1
+    Optional:  false
+  bscf5000-bip-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf5000-log-pvc
+    ReadOnly:   false
+  bscf5000-bip-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf5000-shared-pvc
+    ReadOnly:   false
+  kube-api-access-qbvlv:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    Optional:                false
+  podnetinfo:
+    Type:  DownwardAPI (a volume populated by information about the pod)
+    Items:
+      metadata.labels -> labels
+      metadata.annotations -> annotations
+QoS Class:       Burstable
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason                  Age   From               Message
+  ----     ------                  ----  ----               -------
+  Warning  FailedScheduling        75s   default-scheduler  running PreBind plugin "VolumeBinding": Operation cannot be fulfilled on persistentvolumeclaims "bscf5000-log-pvc": the object has been modified; please apply your changes to the latest version and try again
+  Normal   Scheduled               72s   default-scheduler  Successfully assigned cnf/bscf5000-bip1-549c6df645-b7m7q to master.bscf5000.samsung.local
+  Warning  FailedCreatePodSandBox  67s   kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-549c6df645-b7m7q_cnf_a866f9c9-cb15-42c7-b58d-463f9c0405a6_0(c93605481c221f68486720928381b6f8643b8c667fab64dbfa1a781a444d76ed): error adding pod cnf_bscf5000-bip1-549c6df645-b7m7q to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"c93605481c221f68486720928381b6f8643b8c667fab64dbfa1a781a444d76ed" Netns:"/var/run/netns/b46b88fb-167a-462a-9c99-c91fd1829485" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-549c6df645-b7m7q;K8S_POD_INFRA_CONTAINER_ID=c93605481c221f68486720928381b6f8643b8c667fab64dbfa1a781a444d76ed;K8S_POD_UID=a866f9c9-cb15-42c7-b58d-463f9c0405a6" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-549c6df645-b7m7q] networking: [cnf/bscf5000-bip1-549c6df645-b7m7q/a866f9c9-cb15-42c7-b58d-463f9c0405a6:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
 ': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  32s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-64cb984bc9-kztlb_cnf_3aa7d237-d711-4a83-817b-a112d499669f_0(48836a67678581229e30d4b956f2fa7024deb1199e6a522dc004b928dd3f713a): error adding pod cnf_bscf5000-bip1-64cb984bc9-kztlb to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"48836a67678581229e30d4b956f2fa7024deb1199e6a522dc004b928dd3f713a" Netns:"/var/run/netns/20555e7a-b072-4c8b-a5ae-a40fc51df644" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-64cb984bc9-kztlb;K8S_POD_INFRA_CONTAINER_ID=48836a67678581229e30d4b956f2fa7024deb1199e6a522dc004b928dd3f713a;K8S_POD_UID=3aa7d237-d711-4a83-817b-a112d499669f" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-64cb984bc9-kztlb] networking: [cnf/bscf5000-bip1-64cb984bc9-kztlb/3aa7d237-d711-4a83-817b-a112d499669f:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+  Warning  FailedCreatePodSandBox  64s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-549c6df645-b7m7q_cnf_a866f9c9-cb15-42c7-b58d-463f9c0405a6_0(435b2f1c973b9c858a36c5f47f4de481213961ea1a75afba485148cc8c983266): error adding pod cnf_bscf5000-bip1-549c6df645-b7m7q to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"435b2f1c973b9c858a36c5f47f4de481213961ea1a75afba485148cc8c983266" Netns:"/var/run/netns/c3707185-99f5-4b5f-90ff-0b6aa5f9a9ab" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-549c6df645-b7m7q;K8S_POD_INFRA_CONTAINER_ID=435b2f1c973b9c858a36c5f47f4de481213961ea1a75afba485148cc8c983266;K8S_POD_UID=a866f9c9-cb15-42c7-b58d-463f9c0405a6" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-549c6df645-b7m7q] networking: [cnf/bscf5000-bip1-549c6df645-b7m7q/a866f9c9-cb15-42c7-b58d-463f9c0405a6:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
 ': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Warning  FailedCreatePodSandBox  17s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-64cb984bc9-kztlb_cnf_3aa7d237-d711-4a83-817b-a112d499669f_0(a233e44c614b5e85c3ec0a76444c700d4b0ef9b3ade3bd73fcff0f8264b09343): error adding pod cnf_bscf5000-bip1-64cb984bc9-kztlb to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"a233e44c614b5e85c3ec0a76444c700d4b0ef9b3ade3bd73fcff0f8264b09343" Netns:"/var/run/netns/9f135ba5-87f7-4a8d-8114-bc50c3a698b3" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-64cb984bc9-kztlb;K8S_POD_INFRA_CONTAINER_ID=a233e44c614b5e85c3ec0a76444c700d4b0ef9b3ade3bd73fcff0f8264b09343;K8S_POD_UID=3aa7d237-d711-4a83-817b-a112d499669f" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-64cb984bc9-kztlb] networking: [cnf/bscf5000-bip1-64cb984bc9-kztlb/3aa7d237-d711-4a83-817b-a112d499669f:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+  Warning  FailedCreatePodSandBox  47s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-549c6df645-b7m7q_cnf_a866f9c9-cb15-42c7-b58d-463f9c0405a6_0(07dd9d54c055c0a24de3e5f8fdcfc55e10daf66c8f9bef53105a5bd4efaa25ab): error adding pod cnf_bscf5000-bip1-549c6df645-b7m7q to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"07dd9d54c055c0a24de3e5f8fdcfc55e10daf66c8f9bef53105a5bd4efaa25ab" Netns:"/var/run/netns/029cd3ae-8d73-4bc2-ae57-d546d4abb6b9" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-549c6df645-b7m7q;K8S_POD_INFRA_CONTAINER_ID=07dd9d54c055c0a24de3e5f8fdcfc55e10daf66c8f9bef53105a5bd4efaa25ab;K8S_POD_UID=a866f9c9-cb15-42c7-b58d-463f9c0405a6" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-549c6df645-b7m7q] networking: [cnf/bscf5000-bip1-549c6df645-b7m7q/a866f9c9-cb15-42c7-b58d-463f9c0405a6:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
 ': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-
-
-------------------------
-# resources
-{{- define "bip.resources0" }}
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-requests:
-  cpu: {{ .requests.cpu }}
-  memory: {{ .requests.memory }}
-  {{- range $key, $value := .sriov }}
-  {{- if eq $.Values.global.bondingEnable "true" }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- else }}
-  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- end }}
-  {{- end }}
-  {{- end }}
-limits:
-  cpu: {{ .limits.cpu }}
-  memory: {{ .limits.memory }}
-  {{- range $key, $value := .sriov }}
-  {{- if eq $.Values.global.bondingEnable "true" }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- else }}
-  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- end }}
-  {{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- define "bip.init.resources0" }}
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-requests:
-  cpu: "500m"
-  memory: {{ .requests.memory }}
-  {{- range $key, $value := .sriov }}
-  {{- if eq $.Values.global.bondingEnable "true" }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- else }}
-  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- end }}
-  {{- end }}
-  {{- end }}
-limits:
-  cpu: "500m"
-  memory: {{ .limits.memory }}
-  {{- range $key, $value := .sriov }}
-  {{- if eq $.Values.global.bondingEnable "true" }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- else }}
-  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- end }}
-  {{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- define "bip.resources1" }}
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-requests:
-  cpu: {{ .requests.cpu }}
-  memory: {{ .requests.memory }}
-  {{- range $key, $value := .sriov }}
-  {{- if eq $.Values.global.bondingEnable "true" }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- else }}
-  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- end }}
-  {{- end }}
-  {{- end }}
-limits:
-  cpu: {{ .limits.cpu }}
-  memory: {{ .limits.memory }}
-  {{- range $key, $value := .sriov }}
-  {{- if eq $.Values.global.bondingEnable "true" }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- else }}
-  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- end }}
-  {{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
- 
-{{- define "bip.init.resources1" }}
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-requests:
-  cpu: "500m"
-  memory: {{ .requests.memory }}
-  {{- range $key, $value := .sriov }}
-  {{- if eq $.Values.global.bondingEnable "true" }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- else }}
-  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- end }}
-  {{- end }}
-  {{- end }}
-limits:
-  cpu: "500m"
-  memory: {{ .limits.memory }}
-  {{- range $key, $value := .sriov }}
-  {{- if eq $.Values.global.bondingEnable "true" }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- else }}
-  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
-  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
-  {{- end }}
-  {{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
- 
-# sriov-interface
-{{- define "bip.sriov-interface0" }}
-k8s.v1.cni.cncf.io/networks: '[
-{{- if eq $.Values.global.storage.multusNetwork "true" }}
-  {
-    "name": "{{ $.Values.global.storage.multusNadName }}",
-    "interface": "eth1"
-  }
-,
-{{- end }}
-{{- $nameSuffix := "" }}
-{{- if and (.Values.global.second_bscf) (ne .Values.global.second_bscf "disable") }}
-{{- $nameSuffix = printf "-%s" .Values.global.namespace }}
-{{- end }}
-{{- if eq $.Values.global.bondingEnable "true" }}
- 
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-{{- $first := true }}
-{{- range $key, $value := .sriov }}
-{{- $interface := $key }}
-{{- if eq $key "bh0c" }}
-  {{- $interface = "bh0_0" }}
-{{- else if eq $key "bh0c_1" }}
-  {{- $interface = "bh0_1" }}
-{{- end }}
- 
-{{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
- 
-{{- if $first }}
-  {{- $first = false }}
-{{- else -}}
-,
-{{- end }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else if eq $key "bh0c_1" }}
-    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
-    {{- else if eq $key "bh0c" }}
-    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}"
-
-    {{- end }}
-    "interface": "{{ $interface }}"
-  },
-  {{- if eq $value "2" }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else if eq $key "bh0c_1" }}
-    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
-    {{- else if eq $key "bh0c" }}
-    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
-    {{- end }}
-    {{- if eq $key "bh0c" }}
-    "interface": "bh1"
-    {{- else if eq $key "bh0c_1" }}
-    "interface": "bh2"
-    {{- end }}
-  }
-  {{- end }}
- 
-{{- end }}
-{{- end }}
-{{- end }},
-  {
-    "name": "{{ $.Values.global.neType }}-bond-nad{{ $nameSuffix }}",
-    "interface": "bh0"
-  }
- 
-{{- else }}
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-{{- $first := true }}
-{{- range $key, $value := .sriov }}
-{{- $interface := $key }}
-{{- if eq $key "bh0c" }}
-  {{- $interface = "bh0" }}
-{{- else if and (eq $key "bh0c_1") (eq $value "2") }}
-  {{- $interface = "bh2" }}
-  {
-    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
-    "interface": "{{ $interface }}"
-  }
-{{- end }}
-{{- if eq $key "bh0c" }}
-{{- if $first }}
-  {{- $first = false }}
-{{- else -}}
-,
-{{- end }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else if eq $key "bh0c" }}
-    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
-    {{- end }}
-    "interface": "{{ $interface }}"
-  },
-  {{- if and (eq $value "2") (eq $key "bh0c") }}
-  {
-    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
-    "interface": "bh1"
-  },
-  {{- end }}
-{{- end }}
- 
-{{- end }}
-{{- end }}
- 
-{{- end }}
-]'
-{{- end }}
- 
- 
-{{- define "bip.sriov-interface1" }}
-k8s.v1.cni.cncf.io/networks: '[
-{{- if eq $.Values.global.storage.multusNetwork "true" }}
-  {
-    "name": "{{ $.Values.global.storage.multusNadName }}",
-    "interface": "eth1"
-  }
-,
-{{- end }}
-{{- $nameSuffix := "" }}
-{{- if and (.Values.global.second_bscf) (ne .Values.global.second_bscf "disable") }}
-{{- $nameSuffix = printf "-%s" .Values.global.namespace }}
-{{- end }}
- 
-{{- if eq $.Values.global.bondingEnable "true" }}
- 
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-{{- $first := true }}
-{{- range $key, $value := .sriov }}
- 
-{{- $interface := $key }}
-{{- if eq $key "bh0c_2" }}
-  {{- $interface = "bh0_0" }}
-{{- else if eq $key "bh0c_2_1" }}
-  {{- $interface = "bh0_1" }}
-{{- end }}
- 
-{{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
- 
-{{- if $first }}
-  {{- $first = false }}
-{{- else -}}
-,
-{{- end }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else if eq $key "bh0c_2" }}
-    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
-    {{- else if eq $key "bh0c_2_1"}}
-    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
-    {{- end }}
-    "interface": "{{ $interface }}"
-  },
-  {{- if eq $value "2" }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else if eq $key "bh0c_2" }}
-    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
-    {{- else if eq $key "bh0c_2_1"}}
-    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
-    {{- end }}
-    {{- if eq $key "bh0c_2" }}
-    "interface": "bh1"
-    {{- else if eq $key "bh0c_2_1" }}
-    "interface": "bh2"
-    {{- end }}
-  }
-  {{- end }}
- 
-{{- end }}
-{{- end }}
-{{- end }},
-  {
-    "name": "{{ $.Values.global.neType }}-bond-nad{{ $nameSuffix }}",
-    "interface": "bh0"
-  }
- 
-{{- else }}
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-{{- $first := true }}
-{{- range $key, $value := .sriov }}
-{{- $interface := $key }}
-{{- if eq $key "bh0c_2" }}
-  {{- $interface = "bh0" }}
-{{- else if and (eq $key "bh0c_2_1") (eq $value "2") }}
-  {{- $interface = "bh2" }}
-  {
-    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
-    "interface": "{{ $interface }}"
-  }
-{{- end }}
-{{- if eq $key "bh0c_2" }}
-{{- if $first }}
-  {{- $first = false }}
-{{- else -}}
-,
-{{- end }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else if eq $key "bh0c_2"}}
-    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
-    {{- end }}
-    "interface": "{{ $interface }}"
-  },
-  {{- if and (eq $value "2") (eq $key "bh0c_2") }}
-  {
-    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
-    "interface": "bh1"
-  },
-  {{- end }}
-{{- end }}
- 
-{{- end }}
-{{- end }}
- 
-{{- end }}
-]'
-{{- end }}
+  Warning  FailedCreatePodSandBox  30s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-549c6df645-b7m7q_cnf_a866f9c9-cb15-42c7-b58d-463f9c0405a6_0(3e6ddad8d5a87d02c2a460994a1990ca6682678d3e5380b6ace2b45b382b9e11): error adding pod cnf_bscf5000-bip1-549c6df645-b7m7q to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"3e6ddad8d5a87d02c2a460994a1990ca6682678d3e5380b6ace2b45b382b9e11" Netns:"/var/run/netns/cc48c558-9ef7-461f-bd0c-b6bff3399c3c" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-549c6df645-b7m7q;K8S_POD_INFRA_CONTAINER_ID=3e6ddad8d5a87d02c2a460994a1990ca6682678d3e5380b6ace2b45b382b9e11;K8S_POD_UID=a866f9c9-cb15-42c7-b58d-463f9c0405a6" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-549c6df645-b7m7q] networking: [cnf/bscf5000-bip1-549c6df645-b7m7q/a866f9c9-cb15-42c7-b58d-463f9c0405a6:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+  Normal   AddedInterface          14s (x5 over 68s)  multus   Add eth0 [10.10.0.88/24 fd01:0:0:1::b99/64] from ovn-kubernetes
+  Normal   AddedInterface          14s (x5 over 68s)  multus   Add bh0_0 [] from cnf/bscf-bh0c-2-nad
+  Normal   AddedInterface          14s (x5 over 68s)  multus   Add bh0_1 [] from cnf/bscf-bh0c-2-1-nad
+  Warning  FailedCreatePodSandBox  13s                kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-549c6df645-b7m7q_cnf_a866f9c9-cb15-42c7-b58d-463f9c0405a6_0(03b57120e78ce8d14f0c42f1a1fe2cbb0d0fd600bc8355c46f08ac7cba6f73fb): error adding pod cnf_bscf5000-bip1-549c6df645-b7m7q to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"03b57120e78ce8d14f0c42f1a1fe2cbb0d0fd600bc8355c46f08ac7cba6f73fb" Netns:"/var/run/netns/5de4b305-b46d-4771-ba23-fe1b8ec71335" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-549c6df645-b7m7q;K8S_POD_INFRA_CONTAINER_ID=03b57120e78ce8d14f0c42f1a1fe2cbb0d0fd600bc8355c46f08ac7cba6f73fb;K8S_POD_UID=a866f9c9-cb15-42c7-b58d-463f9c0405a6" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-549c6df645-b7m7q] networking: [cnf/bscf5000-bip1-549c6df645-b7m7q/a866f9c9-cb15-42c7-b58d-463f9c0405a6:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+[root@bastion ~]#
