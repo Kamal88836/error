@@ -1,4 +1,37 @@
-  Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh0_0 [] from cnf/bscf-bh0c-2-nad
+
+  Normal   AddedInterface          20s (x4 over 57s)  multus   Add eth0 [10.10.0.220/24 fd01:0:0:1::b65/64] from ovn-kubernetes
+  Normal   AddedInterface          20s (x4 over 57s)  multus   Add bh0_0 [] from cnf/bscf-bh0c-2-nad
+  Normal   AddedInterface          20s (x4 over 57s)  multus   Add bh0_1 [] from cnf/bscf-bh0c-2-1-nad
+  Warning  FailedCreatePodSandBox  20s                kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-587b8cc587-q7p4f_cnf_ba111228-3123-4fbb-a18e-2cfc8b100a5f_0(03d3d45e7fae17978c377e2b163a69365eae6fcf07ef8f2ffb4474e3cd439963): error adding pod cnf_bscf5000-bip1-587b8cc587-q7p4f to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"03d3d45e7fae17978c377e2b163a69365eae6fcf07ef8f2ffb4474e3cd439963" Netns:"/var/run/netns/62875bd7-93ec-43a8-847d-f653ea880a96" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-587b8cc587-q7p4f;K8S_POD_INFRA_CONTAINER_ID=03d3d45e7fae17978c377e2b163a69365eae6fcf07ef8f2ffb4474e3cd439963;K8S_POD_UID=ba111228-3123-4fbb-a18e-2cfc8b100a5f" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-587b8cc587-q7p4f] networking: [cnf/bscf5000-bip1-587b8cc587-q7p4f/ba111228-3123-4fbb-a18e-2cfc8b100a5f:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+[root@bastion ~]# oc get pods
+NAME                             READY   STATUS        RESTARTS   AGE
+bscf5000-bip0-6d968df59f-n8n9f   0/1     Running       0          59s
+bscf5000-bip1-587b8cc587-q7p4f   0/1     Init:0/2      0          59s
+bscf5000-bpp0-c858bc864-2zxgf    1/1     Terminating   0          59s
+bscf5000-bpp0-c858bc864-pwkr9    0/1     Pending       0          6s
+bscf5000-bpp1-76647b5d98-57ts6   0/1     Running       0          7s
+bscf5000-bpp1-76647b5d98-jzzg2   1/1     Terminating   0          59s
+bscf5000-cmp0-7df489ccb4-jkkks   1/1     Running       0          59s
+bscf5000-cmp1-66786fc4cb-qfg7k   1/1     Running       0          59s
+bscf5000-dmp0-5d4945488c-mplq8   1/1     Running       0          59s
+bscf5000-pmp0-946d6fcc5-9drlx    1/1     Running       0          59s
+[root@bastion ~]# oc get net-attach-def
+NAME                AGE
+bscf-bh0c-1-nad     22h
+bscf-bh0c-2-1-nad   22h
+bscf-bh0c-2-nad     22h
+bscf-bh0c-nad       22h
+bscf-bh0u-1-nad     22h
+bscf-bh0u-2-1-nad   22h
+bscf-bh0u-2-nad     22h
+bscf-bh0u-nad       22h
+bscf-bond-1-nad     22h
+bscf-bond-nad       22h
+
+----------------------
+
+Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh0_0 [] from cnf/bscf-bh0c-2-nad
   Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh2 [] from cnf/bscf-bh0c-2-1-nad
   Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh0_1 [] from cnf/bscf-bh0c-2-1-nad
   Normal   AddedInterface          47s (x5 over 99s)  multus   Add bh1 [] from cnf/bscf-bh0c-2-nad
