@@ -1,0 +1,339 @@
+# resources
+{{- define "bip.resources0" }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+requests:
+  cpu: {{ .requests.cpu }}
+  memory: {{ .requests.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+limits:
+  cpu: {{ .limits.cpu }}
+  memory: {{ .limits.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- define "bip.init.resources0" }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+requests:
+  cpu: "500m"
+  memory: {{ .requests.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+limits:
+  cpu: "500m"
+  memory: {{ .limits.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- define "bip.resources1" }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+requests:
+  cpu: {{ .requests.cpu }}
+  memory: {{ .requests.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+limits:
+  cpu: {{ .limits.cpu }}
+  memory: {{ .limits.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+ 
+{{- define "bip.init.resources1" }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+requests:
+  cpu: "500m"
+  memory: {{ .requests.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+limits:
+  cpu: "500m"
+  memory: {{ .limits.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+ 
+# sriov-interface
+{{- define "bip.sriov-interface0" }}
+k8s.v1.cni.cncf.io/networks: '[
+{{- if eq $.Values.global.storage.multusNetwork "true" }}
+  {
+    "name": "{{ $.Values.global.storage.multusNadName }}",
+    "interface": "eth1"
+  }
+,
+{{- end }}
+{{- $nameSuffix := "" }}
+{{- if and (.Values.global.second_bscf) (ne .Values.global.second_bscf "disable") }}
+{{- $nameSuffix = printf "-%s" .Values.global.namespace }}
+{{- end }}
+{{- if eq $.Values.global.bondingEnable "true" }}
+ 
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+{{- $first := true }}
+{{- range $key, $value := .sriov }}
+{{- $interface := $key }}
+{{- if eq $key "bh0c" }}
+  {{- $interface = "bh0_0" }}
+{{- else if eq $key "bh0c_1" }}
+  {{- $interface = "bh0_1" }}
+{{- end }}
+ 
+{{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+ 
+{{- if $first }}
+  {{- $first = false }}
+{{- else -}}
+,
+{{- end }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_1" }}
+    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
+    {{- else if eq $key "bh0c" }}
+    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}"
+
+    {{- end }}
+    "interface": "{{ $interface }}"
+  },
+  {{- if eq $value "2" }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_1" }}
+    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
+    {{- else if eq $key "bh0c" }}
+    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
+    {{- end }}
+    {{- if eq $key "bh0c" }}
+    "interface": "bh1"
+    {{- else if eq $key "bh0c_1" }}
+    "interface": "bh2"
+    {{- end }}
+  }
+  {{- end }}
+ 
+{{- end }}
+{{- end }}
+{{- end }},
+  {
+    "name": "{{ $.Values.global.neType }}-bond-nad{{ $nameSuffix }}",
+    "interface": "bh0"
+  }
+ 
+{{- else }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+{{- $first := true }}
+{{- range $key, $value := .sriov }}
+{{- $interface := $key }}
+{{- if eq $key "bh0c" }}
+  {{- $interface = "bh0" }}
+{{- else if and (eq $key "bh0c_1") (eq $value "2") }}
+  {{- $interface = "bh2" }}
+  {
+    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
+    "interface": "{{ $interface }}"
+  }
+{{- end }}
+{{- if eq $key "bh0c" }}
+{{- if $first }}
+  {{- $first = false }}
+{{- else -}}
+,
+{{- end }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c" }}
+    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
+    {{- end }}
+    "interface": "{{ $interface }}"
+  },
+  {{- if and (eq $value "2") (eq $key "bh0c") }}
+  {
+    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
+    "interface": "bh1"
+  },
+  {{- end }}
+{{- end }}
+ 
+{{- end }}
+{{- end }}
+ 
+{{- end }}
+]'
+{{- end }}
+ 
+ 
+{{- define "bip.sriov-interface1" }}
+k8s.v1.cni.cncf.io/networks: '[
+{{- if eq $.Values.global.storage.multusNetwork "true" }}
+  {
+    "name": "{{ $.Values.global.storage.multusNadName }}",
+    "interface": "eth1"
+  }
+,
+{{- end }}
+{{- $nameSuffix := "" }}
+{{- if and (.Values.global.second_bscf) (ne .Values.global.second_bscf "disable") }}
+{{- $nameSuffix = printf "-%s" .Values.global.namespace }}
+{{- end }}
+ 
+{{- if eq $.Values.global.bondingEnable "true" }}
+ 
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+{{- $first := true }}
+{{- range $key, $value := .sriov }}
+ 
+{{- $interface := $key }}
+{{- if eq $key "bh0c_2" }}
+  {{- $interface = "bh0_0" }}
+{{- else if eq $key "bh0c_2_1" }}
+  {{- $interface = "bh0_1" }}
+{{- end }}
+ 
+{{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+ 
+{{- if $first }}
+  {{- $first = false }}
+{{- else -}}
+,
+{{- end }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_2" }}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
+    {{- else if eq $key "bh0c_2_1"}}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
+    {{- end }}
+    "interface": "{{ $interface }}"
+  },
+  {{- if eq $value "2" }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_2" }}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
+    {{- else if eq $key "bh0c_2_1"}}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
+    {{- end }}
+    {{- if eq $key "bh0c_2" }}
+    "interface": "bh1"
+    {{- else if eq $key "bh0c_2_1" }}
+    "interface": "bh2"
+    {{- end }}
+  }
+  {{- end }}
+ 
+{{- end }}
+{{- end }}
+{{- end }},
+  {
+    "name": "{{ $.Values.global.neType }}-bond-nad{{ $nameSuffix }}",
+    "interface": "bh0"
+  }
+ 
+{{- else }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+{{- $first := true }}
+{{- range $key, $value := .sriov }}
+{{- $interface := $key }}
+{{- if eq $key "bh0c_2" }}
+  {{- $interface = "bh0" }}
+{{- else if and (eq $key "bh0c_2_1") (eq $value "2") }}
+  {{- $interface = "bh2" }}
+  {
+    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
+    "interface": "{{ $interface }}"
+  }
+{{- end }}
+{{- if eq $key "bh0c_2" }}
+{{- if $first }}
+  {{- $first = false }}
+{{- else -}}
+,
+{{- end }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_2"}}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
+    {{- end }}
+    "interface": "{{ $interface }}"
+  },
+  {{- if and (eq $value "2") (eq $key "bh0c_2") }}
+  {
+    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
+    "interface": "bh1"
+  },
+  {{- end }}
+{{- end }}
+ 
+{{- end }}
+{{- end }}
+ 
+{{- end }}
+]'
+{{- end }}
