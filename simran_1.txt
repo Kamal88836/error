@@ -1,82 +1,11 @@
 
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
+  Events:
   Type     Reason                  Age   From               Message
   ----     ------                  ----  ----               -------
-  Warning  FailedScheduling        17s   default-scheduler  0/1 nodes are available: 1 Insufficient openshift.io/pci_sriov_net_bh0c_2, 1 Insufficient openshift.io/pci_sriov_net_bh0c_2_1. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
-  Normal   Scheduled               16s   default-scheduler  Successfully assigned cnf/bscf5000-bip1-549c6df645-5pnh6 to master.bscf5000.samsung.local
-  Normal   AddedInterface          14s   multus             Add eth0 [10.10.0.125/24 fd01:0:0:1::bbc/64] from ovn-kubernetes
-  Normal   AddedInterface          14s   multus             Add bh0_0 [] from cnf/bscf-bh0c-2-nad
-  Normal   AddedInterface          14s   multus             Add bh0_1 [] from cnf/bscf-bh0c-2-1-nad
-  Warning  FailedCreatePodSandBox  13s   kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-549c6df645-5pnh6_cnf_86903238-a637-4dec-a56e-fec96e7fe957_0(34d94224b196b0981c608bde857e676f4ade4b969a26bfbea6a5aa7049bc4b97): error adding pod cnf_bscf5000-bip1-549c6df645-5pnh6 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"34d94224b196b0981c608bde857e676f4ade4b969a26bfbea6a5aa7049bc4b97" Netns:"/var/run/netns/89db4fb4-e24d-44e3-ad66-e3b7c6903ab8" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-549c6df645-5pnh6;K8S_POD_INFRA_CONTAINER_ID=34d94224b196b0981c608bde857e676f4ade4b969a26bfbea6a5aa7049bc4b97;K8S_POD_UID=86903238-a637-4dec-a56e-fec96e7fe957" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-549c6df645-5pnh6] networking: [cnf/bscf5000-bip1-549c6df645-5pnh6/86903238-a637-4dec-a56e-fec96e7fe957:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+  Warning  FailedScheduling        24s   default-scheduler  0/1 nodes are available: 1 Insufficient openshift.io/pci_sriov_net_bh0c_2, 1 Insufficient openshift.io/pci_sriov_net_bh0c_2_1. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+  Normal   Scheduled               24s   default-scheduler  Successfully assigned cnf/bscf5000-bip1-549c6df645-nzjwj to master.bscf5000.samsung.local
+  Normal   AddedInterface          22s   multus             Add eth0 [10.10.0.126/24 fd01:0:0:1::bbd/64] from ovn-kubernetes
+  Normal   AddedInterface          22s   multus             Add bh0_0 [] from cnf/bscf-bh0c-2-nad
+  Normal   AddedInterface          22s   multus             Add bh0_1 [] from cnf/bscf-bh0c-2-1-nad
+  Warning  FailedCreatePodSandBox  21s   kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-549c6df645-nzjwj_cnf_8be37d2f-3e2b-43a0-a246-2ceb64719b47_0(aa2a9161bb19eb2d5a5062aa211267ccca165ecc3f1c19920c71887931b59ddc): error adding pod cnf_bscf5000-bip1-549c6df645-nzjwj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"aa2a9161bb19eb2d5a5062aa211267ccca165ecc3f1c19920c71887931b59ddc" Netns:"/var/run/netns/2bef9f88-5df0-4c9f-a522-8601dd7fc4ad" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-549c6df645-nzjwj;K8S_POD_INFRA_CONTAINER_ID=aa2a9161bb19eb2d5a5062aa211267ccca165ecc3f1c19920c71887931b59ddc;K8S_POD_UID=8be37d2f-3e2b-43a0-a246-2ceb64719b47" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-549c6df645-nzjwj] networking: [cnf/bscf5000-bip1-549c6df645-nzjwj/8be37d2f-3e2b-43a0-a246-2ceb64719b47:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:net1] map[name:net2]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (net1) exists, error: Link not found
 ': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-[root@bastion ~]# oc get sriovnetworknodepolicy -n  openshift-sriov-network-operator
-NAME                     AGE
-policy-ens2f1-bh0c       26h
-policy-ens2f1-bh0u       26h
-policy-ens2f3-bh0c-1     26h
-policy-ens2f3-bh0u-1     26h
-policy-ens5f0-bh0c-2     26h
-policy-ens5f0-bh0u-2     26h
-policy-ens5f2-bh0c-2-1   26h
-policy-ens5f2-bh0u-2-1   26h
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]# oc describe sriovnetworknodepolicy policy-ens5f0-bh0c-2 -n openshift-sriov-network-operator
-Name:         policy-ens5f0-bh0c-2
-Namespace:    openshift-sriov-network-operator
-Labels:       <none>
-Annotations:  <none>
-API Version:  sriovnetwork.openshift.io/v1
-Kind:         SriovNetworkNodePolicy
-Metadata:
-  Creation Timestamp:  2026-05-11T07:29:09Z
-  Generation:          1
-  Resource Version:    1067549
-  UID:                 6e7cf83a-5747-459c-ba15-cc2afbb07980
-Spec:
-  Device Type:     vfio-pci
-  Is Rdma:         false
-  Mtu:             9000
-  Need Vhost Net:  true
-  Nic Selector:
-    Device ID:  1593
-    Pf Names:
-      ens5f0#2-3
-    Vendor:  8086
-  Node Selector:
-    feature.node.kubernetes.io/network-sriov.capable:  true
-  Num Vfs:                                             16
-  Priority:                                            99
-  Resource Name:                                       pci_sriov_net_bh0c_2
-Events:                                                <none>
-[root@bastion ~]# oc describe sriovnetworknodepolicy policy-ens5f2-bh0c-2-1 -n openshift-sriov-network-operator
-Name:         policy-ens5f2-bh0c-2-1
-Namespace:    openshift-sriov-network-operator
-Labels:       <none>
-Annotations:  <none>
-API Version:  sriovnetwork.openshift.io/v1
-Kind:         SriovNetworkNodePolicy
-Metadata:
-  Creation Timestamp:  2026-05-11T07:29:10Z
-  Generation:          1
-  Resource Version:    1067550
-  UID:                 d4fa96b2-c246-46b0-b18e-257f8c963855
-Spec:
-  Device Type:     vfio-pci
-  Is Rdma:         false
-  Mtu:             9000
-  Need Vhost Net:  true
-  Nic Selector:
-    Device ID:  1593
-    Pf Names:
-      ens5f2#2-3
-    Vendor:  8086
-  Node Selector:
-    feature.node.kubernetes.io/network-sriov.capable:  true
-  Num Vfs:                                             16
-  Priority:                                            99
-  Resource Name:                                       pci_sriov_net_bh0c_2_1
-Events:                                                <none>
-[root@bastion ~]#
