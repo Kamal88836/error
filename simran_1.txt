@@ -1,184 +1,350 @@
-[root@bastion ~]# oc describe pod bscf5000-bip1-69586b85dc-587rb
-Name:             bscf5000-bip1-69586b85dc-587rb
-Namespace:        cnf
-Priority:         0
-Service Account:  bscf-sa
-Node:             master.bscf5000.samsung.local/128.68.1.155
-Start Time:       Tue, 12 May 2026 13:53:58 +0000
-Labels:           app=bscf5000-bip1
-                  component=bscf5000-bip
-                  nename=bscf5000
-                  pod-template-hash=69586b85dc
-                  release=bscf
-                  restart-on-reboot=true
-                  tech=gsm
-Annotations:      k8s.ovn.org/pod-networks:
-                    {"default":{"ip_addresses":["10.10.0.195/24","fd01:0:0:1::c02/64"],"mac_address":"0a:58:0a:0a:00:c3","gateway_ips":["10.10.0.1","fd01:0:0:...
-                  k8s.v1.cni.cncf.io/networks:
-                    [
-                    { "name": "bscf-bh0c-2-nad", "interface": "bh1_0" }, { "name": "bscf-bh0c-2-1-nad", "interface": "bh1_1" }, { "name": "bscf-bond-1-nad", "...
-                  openshift.io/scc: privileged
-                  security.openshift.io/validated-scc-subject-type: serviceaccount
-Status:           Pending
-IP:
-IPs:              <none>
-Controlled By:    ReplicaSet/bscf5000-bip1-69586b85dc
-Init Containers:
-  sleepy:
-    Container ID:
-    Image:         ran-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-      echo Sleepy has come && sleep 15
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      cpu:     500m
-      memory:  256Mi
-    Requests:
-      cpu:        500m
-      memory:     256Mi
-    Environment:  <none>
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rk429 (ro)
-  install:
-    Container ID:
-    Image:         ran-harbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD20_R00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      sh
-      -c
-    Args:
-      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Environment:    <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf5000-bip-log (rw)
-      /mnt/storage/shared from bscf5000-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rk429 (ro)
-Containers:
-  bip:
-    Container ID:
-    Image:         ran-harbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR26ABSCUTDD20_R00
-    Image ID:
-    Port:          <none>
-    Host Port:     <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    State:          Waiting
-      Reason:       PodInitializing
-    Ready:          False
-    Restart Count:  0
-    Limits:
-      openshift.io/pci_sriov_net_bh0c_2:    1
-      openshift.io/pci_sriov_net_bh0c_2_1:  1
-    Requests:
-      openshift.io/pci_sriov_net_bh0c_2:    1
-      openshift.io/pci_sriov_net_bh0c_2_1:  1
-    Liveness:                               http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                              http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:              Asia/Kolkata
-      THIS_NODE_NAME:   (v1:spec.nodeName)
-    Mounts:
-      /etc/config from env (rw)
-      /etc/podnetinfo from podnetinfo (ro)
-      /mnt/storage/log from bscf5000-bip-log (rw)
-      /mnt/storage/shared from bscf5000-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rk429 (ro)
-Conditions:
-  Type                        Status
-  PodReadyToStartContainers   False
-  Initialized                 False
-  Ready                       False
-  ContainersReady             False
-  PodScheduled                True
-Volumes:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf5000-bip1
-    Optional:  false
-  bscf5000-bip-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf5000-log-pvc
-    ReadOnly:   false
-  bscf5000-bip-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf5000-shared-pvc
-    ReadOnly:   false
-  kube-api-access-rk429:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    Optional:                false
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    Optional:                false
-  podnetinfo:
-    Type:  DownwardAPI (a volume populated by information about the pod)
-    Items:
-      metadata.labels -> labels
-      metadata.annotations -> annotations
-QoS Class:       Burstable
-Node-Selectors:  <none>
-Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
 Events:
-  Type     Reason                  Age   From               Message
-  ----     ------                  ----  ----               -------
-  Warning  FailedScheduling        29s   default-scheduler  running PreBind plugin "VolumeBinding": Operation cannot be fulfilled on persistentvolumeclaims "bscf5000-log-pvc": the object has been modified; please apply your changes to the latest version and try again
-  Normal   Scheduled               26s   default-scheduler  Successfully assigned cnf/bscf5000-bip1-69586b85dc-587rb to master.bscf5000.samsung.local
-  Warning  FailedCreatePodSandBox  22s   kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-69586b85dc-587rb_cnf_0dfe9c74-3397-4e0e-86af-4023e857f13b_0(9b2a049490c7cdfac2eed01f2e5006362a03e8493387684e9d4539f34ef3865c): error adding pod cnf_bscf5000-bip1-69586b85dc-587rb to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"9b2a049490c7cdfac2eed01f2e5006362a03e8493387684e9d4539f34ef3865c" Netns:"/var/run/netns/19ca58bf-fb4b-4297-b714-6f9cd6e649f8" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-69586b85dc-587rb;K8S_POD_INFRA_CONTAINER_ID=9b2a049490c7cdfac2eed01f2e5006362a03e8493387684e9d4539f34ef3865c;K8S_POD_UID=0dfe9c74-3397-4e0e-86af-4023e857f13b" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-69586b85dc-587rb] networking: [cnf/bscf5000-bip1-69586b85dc-587rb/0dfe9c74-3397-4e0e-86af-4023e857f13b:bh1]: error adding container to network "bh1": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh1 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh1_0] map[name:bh1_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh1_0) exists, error: Link not found
+  Type     Reason                  Age                From               Message
+  ----     ------                  ----               ----               -------
+  Normal   Scheduled               24s                default-scheduler  Successfully assigned cnf/bscf5000-bip0-6bf7ddd874-7rwcm to master.bscf5000.samsung.local
+  Warning  ErrorUpdatingResource   24s (x2 over 24s)  ovnk-controlplane  addLogicalPort failed for cnf/bscf5000-bip0-6bf7ddd874-7rwcm: error while getting network attachment definition for [cnf/bscf5000-bip0-6bf7ddd874-7rwcm]: failed to get all NetworkSelectionElements for pod cnf/bscf5000-bip0-6bf7ddd874-7rwcm: parsePodNetworkAnnotation: failed to parse pod Network Attachment Selection Annotation JSON format: invalid character '}' looking for beginning of object key string
+  Warning  FailedCreatePodSandBox  21s                kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip0-6bf7ddd874-7rwcm_cnf_91fbe7fe-9f1a-4690-a125-6100a45811e1_0(c5156ed1e5f4d690128d098b7131772923f0b4076e1b56f76726df5b58efe37e): error adding pod cnf_bscf5000-bip0-6bf7ddd874-7rwcm to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"c5156ed1e5f4d690128d098b7131772923f0b4076e1b56f76726df5b58efe37e" Netns:"/var/run/netns/595b6717-05c0-4c37-a05a-ca84fcdf5c0b" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip0-6bf7ddd874-7rwcm;K8S_POD_INFRA_CONTAINER_ID=c5156ed1e5f4d690128d098b7131772923f0b4076e1b56f76726df5b58efe37e;K8S_POD_UID=91fbe7fe-9f1a-4690-a125-6100a45811e1" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip0-6bf7ddd874-7rwcm] networking: Multus: [cnf/bscf5000-bip0-6bf7ddd874-7rwcm/91fbe7fe-9f1a-4690-a125-6100a45811e1]: error loading k8s delegates k8s args: parsePodNetworkAnnotation: failed to parse pod Network Attachment Selection Annotation JSON format: invalid character '}' looking for beginning of object key string
 ': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-  Normal   AddedInterface          19s (x2 over 23s)  multus   Add eth0 [10.10.0.195/24 fd01:0:0:1::c02/64] from ovn-kubernetes
-  Normal   AddedInterface          19s (x2 over 23s)  multus   Add bh1_0 [] from cnf/bscf-bh0c-2-nad
-  Normal   AddedInterface          19s (x2 over 22s)  multus   Add bh1_1 [] from cnf/bscf-bh0c-2-1-nad
-  Warning  FailedCreatePodSandBox  18s                kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip1-69586b85dc-587rb_cnf_0dfe9c74-3397-4e0e-86af-4023e857f13b_0(b82cb1ca25f1116a6b14fc1cad1b109448b62f418209f6b4276ade56fda9fc57): error adding pod cnf_bscf5000-bip1-69586b85dc-587rb to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"b82cb1ca25f1116a6b14fc1cad1b109448b62f418209f6b4276ade56fda9fc57" Netns:"/var/run/netns/3480c469-0e27-4068-9cb6-64e7a96833b3" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip1-69586b85dc-587rb;K8S_POD_INFRA_CONTAINER_ID=b82cb1ca25f1116a6b14fc1cad1b109448b62f418209f6b4276ade56fda9fc57;K8S_POD_UID=0dfe9c74-3397-4e0e-86af-4023e857f13b" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip1-69586b85dc-587rb] networking: [cnf/bscf5000-bip1-69586b85dc-587rb/0dfe9c74-3397-4e0e-86af-4023e857f13b:bh1]: error adding container to network "bh1": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh1 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh1_0] map[name:bh1_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh1_0) exists, error: Link not found
-': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
-[root@bastion ~]# oc get net-attach-def
-NAME                AGE
-bscf-bh0c-1-nad     96s
-bscf-bh0c-2-1-nad   96s
-bscf-bh0c-2-nad     96s
-bscf-bh0c-nad       96s
-bscf-bh0u-1-nad     96s
-bscf-bh0u-2-1-nad   96s
-bscf-bh0u-2-nad     96s
-bscf-bh0u-nad       96s
-bscf-bond-1-nad     96s
-bscf-bond-nad       96s
-[root@bastion ~]# oc describe net-attach-def bscf-bond-1-nad
-Name:         bscf-bond-1-nad
-Namespace:    cnf
-Labels:       app.kubernetes.io/managed-by=Helm
-Annotations:  meta.helm.sh/release-name: bscf-pre
-              meta.helm.sh/release-namespace: cnf
-API Version:  k8s.cni.cncf.io/v1
-Kind:         NetworkAttachmentDefinition
-Metadata:
-  Creation Timestamp:  2026-05-12T13:53:16Z
-  Generation:          1
-  Resource Version:    1349394
-  UID:                 a49353bb-85ea-4f48-b12a-3da984c5fb32
-Spec:
-  Config:  { "type": "bond", "cniVersion": "0.3.1", "name": "bh1", "ifname": "bh1", "mode": "active-backup", "failOverMac": 1, "linksInContainer": true, "miimon": "100", "mtu": 1500, "links": [ {"name": "bh1_0"}, {"name": "bh1_1"} ] }
-Events:    <none>
-[root@bastion ~]#
+
+----------------
 
 
+# resources
+{{- define "bip.resources0" }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+requests:
+  cpu: {{ .requests.cpu }}
+  memory: {{ .requests.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+limits:
+  cpu: {{ .limits.cpu }}
+  memory: {{ .limits.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- define "bip.init.resources0" }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+requests:
+  cpu: "500m"
+  memory: {{ .requests.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+limits:
+  cpu: "500m"
+  memory: {{ .limits.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- define "bip.resources1" }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+requests:
+  cpu: {{ .requests.cpu }}
+  memory: {{ .requests.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+limits:
+  cpu: {{ .limits.cpu }}
+  memory: {{ .limits.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "bip.init.resources1" }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+requests:
+  cpu: "500m"
+  memory: {{ .requests.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+limits:
+  cpu: "500m"
+  memory: {{ .limits.memory }}
+  {{- range $key, $value := .sriov }}
+  {{- if eq $.Values.global.bondingEnable "true" }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- else }}
+  {{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+  {{ $.Values.global.sriovPrefix }}/{{ index $.Values "pciDevice" $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+# sriov-interface
+{{- define "bip.sriov-interface0" }}
+k8s.v1.cni.cncf.io/networks: '[
+{{- if eq $.Values.global.storage.multusNetwork "true" }}
+  {
+    "name": "{{ $.Values.global.storage.multusNadName }}",
+    "interface": "eth1"
+  }
+,
+{{- end }}
+{{- $nameSuffix := "" }}
+{{- if and (.Values.global.second_bscf) (ne .Values.global.second_bscf "disable") }}
+{{- $nameSuffix = printf "-%s" .Values.global.namespace }}
+{{- end }}
+{{- if eq $.Values.global.bondingEnable "true" }}
+
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+{{- $first := true }}
+{{- range $key, $value := .sriov }}
+{{- $interface := $key }}
+{{- if eq $key "bh0c" }}
+  {{- $interface = "bh0_0" }}
+{{- else if eq $key "bh0c_1" }}
+  {{- $interface = "bh0_1" }}
+{{- end }}
+
+{{- if or (eq $key "bh0c") (eq $key "bh0c_1") }}
+
+{{- if $first }}
+  {{- $first = false }}
+{{- else -}}
+,
+{{- end }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_1" }}
+    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
+    "interface": "{{ $interface }}"
+    {{- else if eq $key "bh0c" }}
+    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
+    "interface": "{{ $interface }}"
+    {{- end }}
+  },
+  {{- if eq $value "2" }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_1" }}
+    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
+    {{- else if eq $key "bh0c" }}
+    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
+    {{- end }}
+    {{- if eq $key "bh0c" }}
+    "interface": "bh1"
+    {{- else if eq $key "bh0c_1" }}
+    "interface": "bh2"
+    {{- end }}
+  }
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }},
+  {
+    "name": "{{ $.Values.global.neType }}-bond-nad{{ $nameSuffix }}",
+    "interface": "bh0"
+  }
+
+{{- else }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+{{- $first := true }}
+{{- range $key, $value := .sriov }}
+{{- $interface := $key }}
+{{- if eq $key "bh0c" }}
+  {{- $interface = "bh0" }}
+{{- else if and (eq $key "bh0c_1") (eq $value "2") }}
+  {{- $interface = "bh2" }}
+  {
+    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
+    "interface": "{{ $interface }}"
+  }
+{{- end }}
+{{- if eq $key "bh0c" }}
+{{- if $first }}
+  {{- $first = false }}
+{{- else -}}
+,
+{{- end }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c" }}
+    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
+    {{- end }}
+    "interface": "{{ $interface }}"
+  },
+  {{- if and (eq $value "2") (eq $key "bh0c") }}
+  {
+    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
+    "interface": "bh1"
+  },
+  {{- end }}
+{{- end }}
+
+{{- end }}
+{{- end }}
+
+{{- end }}
+]'
+{{- end }}
+
+
+{{- define "bip.sriov-interface1" }}
+k8s.v1.cni.cncf.io/networks: '[
+{{- if eq $.Values.global.storage.multusNetwork "true" }}
+  {
+    "name": "{{ $.Values.global.storage.multusNadName }}",
+    "interface": "eth1"
+  }
+,
+{{- end }}
+{{- $nameSuffix := "" }}
+{{- if and (.Values.global.second_bscf) (ne .Values.global.second_bscf "disable") }}
+{{- $nameSuffix = printf "-%s" .Values.global.namespace }}
+{{- end }}
+
+{{- if eq $.Values.global.bondingEnable "true" }}
+
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+{{- $first := true }}
+{{- range $key, $value := .sriov }}
+
+{{- $interface := $key }}
+{{- if eq $key "bh0c_2" }}
+  {{- $interface = "bh0_0" }}
+{{- else if eq $key "bh0c_2_1" }}
+  {{- $interface = "bh0_1" }}
+{{- end }}
+
+{{- if or (eq $key "bh0c_2") (eq $key "bh0c_2_1") }}
+
+{{- if $first }}
+  {{- $first = false }}
+{{- else -}}
+,
+{{- end }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_2" }}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
+    {{- else if eq $key "bh0c_2_1"}}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
+    {{- end }}
+    "interface": "{{ $interface }}"
+  },
+  {{- if eq $value "2" }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_2" }}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
+    {{- else if eq $key "bh0c_2_1"}}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
+    {{- end }}
+    {{- if eq $key "bh0c_2" }}
+    "interface": "bh1"
+    {{- else if eq $key "bh0c_2_1" }}
+    "interface": "bh2"
+    {{- end }}
+  }
+  {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }},
+  {
+    "name": "{{ $.Values.global.neType }}-bond-1-nad{{ $nameSuffix }}",
+    "interface": "bh0"
+  }
+
+{{- else }}
+{{- with (index .Values.resources $.Values.global.targetFlavor) }}
+{{- $first := true }}
+{{- range $key, $value := .sriov }}
+{{- $interface := $key }}
+{{- if eq $key "bh0c_2" }}
+  {{- $interface = "bh0" }}
+{{- else if and (eq $key "bh0c_2_1") (eq $value "2") }}
+  {{- $interface = "bh2" }}
+  {
+    "name": "{{ $.Values.global.neType }}-bh0c-2-1-nad{{ $nameSuffix }}",
+    "interface": "{{ $interface }}"
+  }
+{{- end }}
+{{- if eq $key "bh0c_2" }}
+{{- if $first }}
+  {{- $first = false }}
+{{- else -}}
+,
+{{- end }}
+  {
+    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
+    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
+    {{- else if eq $key "bh0c_2"}}
+    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
+    {{- end }}
+    "interface": "{{ $interface }}"
+  },
+  {{- if and (eq $value "2") (eq $key "bh0c_2") }}
+  {
+    "name": "{{ $.Values.global.neType }}-bh0c-2-nad{{ $nameSuffix }}",
+    "interface": "bh1"
+  },
+  {{- end }}
+{{- end }}
+
+{{- end }}
+{{- end }}
+
+{{- end }}
+]'
+{{- end }}
