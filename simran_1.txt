@@ -1,100 +1,24 @@
-{{- define "bip.sriov-interface" }}
-k8s.v1.cni.cncf.io/networks: '[
-{{- if eq $.Values.global.storage.multusNetwork "true" }}
-  {
-    "name": "{{ $.Values.global.storage.multusNadName }}",
-    "interface": "eth1"
-  }
-,
-{{- end }}
-{{- $nameSuffix := "" }}
-{{- if and (.Values.global.second_bscf) (ne .Values.global.second_bscf "disable") }}
-{{- $nameSuffix = printf "-%s" .Values.global.namespace }}
-{{- end }}
-{{- if eq $.Values.global.bondingEnable "true" }}
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-{{- $first := true }}
-{{- range $key, $value := .sriov }}
-{{- $interface := $key }}
-{{- if eq $key "bh0c" }}
-  {{- $interface = "bh0_0" }}
-{{- else if eq $key "bh0c_1" }}
-  {{- $interface = "bh0_1" }}
-{{- end }}
-{{- if $first }}
-  {{- $first = false }}
-{{- else -}}
-,
-{{- end }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else if eq $key "bh0c_1" }}
-    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
-    {{- else }}
-    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
-    {{- end }}
-    "interface": "{{ $interface }}"
-  },
-  {{- if eq $value "2" }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else if eq $key "bh0c_1" }}
-    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
-    {{- else }}
-    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
-    {{- end }}
-    {{- if eq $key "bh0c" }}
-    "interface": "bh1"
-    {{- else if eq $key "bh0c_1" }}
-    "interface": "bh2"
-    {{- end }} 
-  }
-  {{- end }}
-{{- end }}
-{{- end }},
-  {
-    "name": "{{ $.Values.global.neType }}-bond-nad",
-    "interface": "bh0"
-  }
-{{- else }}
-{{- with (index .Values.resources $.Values.global.targetFlavor) }}
-{{- $first := true }}
-{{- range $key, $value := .sriov }}
-{{- $interface := $key }}
-{{- if eq $key "bh0c" }}
-  {{- $interface = "bh0" }}
-{{- else if and (eq $key "bh0c_1") (eq $value "2") }}
-  {{- $interface = "bh2" }}
-  {
-    "name": "{{ $.Values.global.neType }}-bh0c-1-nad{{ $nameSuffix }}",
-    "interface": "{{ $interface }}"
-  }
-{{- end }}
-{{- if eq $key "bh0c" }}
-{{- if $first }}
-  {{- $first = false }}
-{{- else -}}
-,
-{{- end }}
-  {
-    {{- if ( index $.Values.global.networkAttachmentDefinition.name $key ) }}
-    "name": "{{ index $.Values.global.networkAttachmentDefinition.name $key }}",
-    {{- else }}
-    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
-    {{- end }}
-    "interface": "{{ $interface }}"
-  },
-  {{- if and (eq $value "2") (eq $key "bh0c") }}
-  {
-    "name": "{{ $.Values.global.neType }}-{{ $key }}-nad{{ $nameSuffix }}",
-    "interface": "bh1"
-  },
-  {{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-]'
-{{- end }}
+Events:
+  Type     Reason                  Age   From               Message
+  ----     ------                  ----  ----               -------
+  Normal   Scheduled               113s  default-scheduler  Successfully assigned cnf/bscf5000-bip0-54c98f8785-hxqq5 to master.bscf5000.samsung.local
+  Warning  FailedScheduling        116s  default-scheduler  running PreBind plugin "VolumeBinding": Operation cannot be fulfilled on persistentvolumeclaims "bscf5000-log-pvc": the object has been modified; please apply your changes to the latest version and try again
+  Warning  FailedCreatePodSandBox  108s  kubelet            Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip0-54c98f8785-hxqq5_cnf_9617818d-ea58-4f62-abe6-68a38f799ac7_0(4f9a68eebf6908bb2ea825883b0f8aab058158b7e0ed4143055031e9acf51357): error adding pod cnf_bscf5000-bip0-54c98f8785-hxqq5 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"4f9a68eebf6908bb2ea825883b0f8aab058158b7e0ed4143055031e9acf51357" Netns:"/var/run/netns/494b7889-d439-45b4-983f-6b39684154ac" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip0-54c98f8785-hxqq5;K8S_POD_INFRA_CONTAINER_ID=4f9a68eebf6908bb2ea825883b0f8aab058158b7e0ed4143055031e9acf51357;K8S_POD_UID=9617818d-ea58-4f62-abe6-68a38f799ac7" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip0-54c98f8785-hxqq5] networking: [cnf/bscf5000-bip0-54c98f8785-hxqq5/9617818d-ea58-4f62-abe6-68a38f799ac7:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+  Warning  FailedCreatePodSandBox  91s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip0-54c98f8785-hxqq5_cnf_9617818d-ea58-4f62-abe6-68a38f799ac7_0(fd8fea4eb81b8478174078f2cbdeb37f4cbd3a17f9d42904a0a278fc498d2e38): error adding pod cnf_bscf5000-bip0-54c98f8785-hxqq5 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"fd8fea4eb81b8478174078f2cbdeb37f4cbd3a17f9d42904a0a278fc498d2e38" Netns:"/var/run/netns/a2230e2a-be81-465d-9624-a82ec6bf9938" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip0-54c98f8785-hxqq5;K8S_POD_INFRA_CONTAINER_ID=fd8fea4eb81b8478174078f2cbdeb37f4cbd3a17f9d42904a0a278fc498d2e38;K8S_POD_UID=9617818d-ea58-4f62-abe6-68a38f799ac7" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip0-54c98f8785-hxqq5] networking: [cnf/bscf5000-bip0-54c98f8785-hxqq5/9617818d-ea58-4f62-abe6-68a38f799ac7:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+  Warning  FailedCreatePodSandBox  75s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip0-54c98f8785-hxqq5_cnf_9617818d-ea58-4f62-abe6-68a38f799ac7_0(9bfefeda1c5141cc2100e67ff10710c8eed9a4a6b09521e8308a0852ee676634): error adding pod cnf_bscf5000-bip0-54c98f8785-hxqq5 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"9bfefeda1c5141cc2100e67ff10710c8eed9a4a6b09521e8308a0852ee676634" Netns:"/var/run/netns/404d2296-bb2c-4ce6-b98e-cd4390d25eeb" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip0-54c98f8785-hxqq5;K8S_POD_INFRA_CONTAINER_ID=9bfefeda1c5141cc2100e67ff10710c8eed9a4a6b09521e8308a0852ee676634;K8S_POD_UID=9617818d-ea58-4f62-abe6-68a38f799ac7" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip0-54c98f8785-hxqq5] networking: [cnf/bscf5000-bip0-54c98f8785-hxqq5/9617818d-ea58-4f62-abe6-68a38f799ac7:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+  Warning  FailedCreatePodSandBox  57s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip0-54c98f8785-hxqq5_cnf_9617818d-ea58-4f62-abe6-68a38f799ac7_0(185944f9ce957507b3b31895f0a85319f24c13e557c4af3e0b7bda53a03caa02): error adding pod cnf_bscf5000-bip0-54c98f8785-hxqq5 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"185944f9ce957507b3b31895f0a85319f24c13e557c4af3e0b7bda53a03caa02" Netns:"/var/run/netns/4c4a004f-0128-4490-821d-74d5b708b7f4" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip0-54c98f8785-hxqq5;K8S_POD_INFRA_CONTAINER_ID=185944f9ce957507b3b31895f0a85319f24c13e557c4af3e0b7bda53a03caa02;K8S_POD_UID=9617818d-ea58-4f62-abe6-68a38f799ac7" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip0-54c98f8785-hxqq5] networking: [cnf/bscf5000-bip0-54c98f8785-hxqq5/9617818d-ea58-4f62-abe6-68a38f799ac7:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+  Normal   AddedInterface          42s (x5 over 108s)  multus   Add bh0_0 [] from cnf/bscf-bh0c-nad
+  Normal   AddedInterface          42s (x5 over 108s)  multus   Add bh2 [] from cnf/bscf-bh0c-1-nad
+  Normal   AddedInterface          42s (x5 over 108s)  multus   Add bh0_1 [] from cnf/bscf-bh0c-1-nad
+  Normal   AddedInterface          42s (x5 over 108s)  multus   Add bh1 [] from cnf/bscf-bh0c-nad
+  Normal   AddedInterface          42s (x5 over 109s)  multus   Add eth0 [10.10.0.169/24 fd01:0:0:1::1bcc/64] from ovn-kubernetes
+  Warning  FailedCreatePodSandBox  41s                 kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip0-54c98f8785-hxqq5_cnf_9617818d-ea58-4f62-abe6-68a38f799ac7_0(93176dcec5382a0d4072ce3ba0980514b94cfeb000479ae6466d8e64c3dd06f8): error adding pod cnf_bscf5000-bip0-54c98f8785-hxqq5 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"93176dcec5382a0d4072ce3ba0980514b94cfeb000479ae6466d8e64c3dd06f8" Netns:"/var/run/netns/624474a9-23ae-48f1-948b-f0d0b011f2fb" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip0-54c98f8785-hxqq5;K8S_POD_INFRA_CONTAINER_ID=93176dcec5382a0d4072ce3ba0980514b94cfeb000479ae6466d8e64c3dd06f8;K8S_POD_UID=9617818d-ea58-4f62-abe6-68a38f799ac7" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip0-54c98f8785-hxqq5] networking: [cnf/bscf5000-bip0-54c98f8785-hxqq5/9617818d-ea58-4f62-abe6-68a38f799ac7:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+  Warning  FailedCreatePodSandBox  26s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip0-54c98f8785-hxqq5_cnf_9617818d-ea58-4f62-abe6-68a38f799ac7_0(f7a1534e5c85b866bd9d312c24d517d515bb3002a13f3f85fd02d53a594a797c): error adding pod cnf_bscf5000-bip0-54c98f8785-hxqq5 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"f7a1534e5c85b866bd9d312c24d517d515bb3002a13f3f85fd02d53a594a797c" Netns:"/var/run/netns/81abcdbc-3879-40de-8a37-edf352e29be7" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip0-54c98f8785-hxqq5;K8S_POD_INFRA_CONTAINER_ID=f7a1534e5c85b866bd9d312c24d517d515bb3002a13f3f85fd02d53a594a797c;K8S_POD_UID=9617818d-ea58-4f62-abe6-68a38f799ac7" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip0-54c98f8785-hxqq5] networking: [cnf/bscf5000-bip0-54c98f8785-hxqq5/9617818d-ea58-4f62-abe6-68a38f799ac7:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
+  Warning  FailedCreatePodSandBox  12s  kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_bscf5000-bip0-54c98f8785-hxqq5_cnf_9617818d-ea58-4f62-abe6-68a38f799ac7_0(1f3a95058275bd33b4ae3817812560741fb23aeaad9c31fc706988658c1ad4a6): error adding pod cnf_bscf5000-bip0-54c98f8785-hxqq5 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): CNI request failed with status 400: 'ContainerID:"1f3a95058275bd33b4ae3817812560741fb23aeaad9c31fc706988658c1ad4a6" Netns:"/var/run/netns/e6fd86a5-2df9-452c-b5b2-c72549183f0f" IfName:"eth0" Args:"IgnoreUnknown=1;K8S_POD_NAMESPACE=cnf;K8S_POD_NAME=bscf5000-bip0-54c98f8785-hxqq5;K8S_POD_INFRA_CONTAINER_ID=1f3a95058275bd33b4ae3817812560741fb23aeaad9c31fc706988658c1ad4a6;K8S_POD_UID=9617818d-ea58-4f62-abe6-68a38f799ac7" Path:"" ERRORED: error configuring pod [cnf/bscf5000-bip0-54c98f8785-hxqq5] networking: [cnf/bscf5000-bip0-54c98f8785-hxqq5/9617818d-ea58-4f62-abe6-68a38f799ac7:bh0]: error adding container to network "bh0": failed to retrieve link objects from configuration file (&{NetConf:{CNIVersion:0.3.1 Name:bh0 Type:bond Capabilities:map[] IPAM:{Type:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RawPrevResult:map[] PrevResult:<nil> ValidAttachments:[]} Mode:active-backup LinksContNs:true FailOverMac:1 Miimon:100 Links:[map[name:bh0_0] map[name:bh0_1]] MTU:1500 AllSlavesActive:<nil> TlbDynamicLb:<nil> XmitHashPolicy:<nil>}), error: failed to confirm that link (bh0_0) exists, error: Link not found
+': StdinData: {"auxiliaryCNIChainName":"vendor-cni-chain","binDir":"/var/lib/cni/bin","clusterNetwork":"/host/run/multus/cni/net.d/10-ovn-kubernetes.conf","cniVersion":"0.3.1","daemonSocketDir":"/run/multus/socket","globalNamespaces":"default,openshift-multus,openshift-sriov-network-operator,openshift-cnv","logLevel":"verbose","logToStderr":true,"name":"multus-cni-network","namespaceIsolation":true,"type":"multus-shim"}
