@@ -1,0 +1,12 @@
+[root@ocp-sno ~]# crictl ps| grep -i dmp0
+cc762ebe0c635       54792419c5765855c6fc7e34001664f99b83f255f5a3ece0a686bfa7f19761fd                                                                          10 days ago         Running             dmp                                           0                   273df60c5bfaa       bscf190-dmp0-76c467469f-4ld9w
+[root@ocp-sno ~]# crictl exec -it cc762ebe0c635 -- /bin/bash
+ERRO[0000] exec failed: unable to start container process: open /dev/ptmx: no space left on device
+FATA[0000] execing command in container: command terminated with exit code 255
+[root@ocp-sno storage]# pwd
+/var/lib/containers/storage
+[root@ocp-sno storage]# df -Th /var/lib/containers/storage
+Filesystem     Type  Size  Used Avail Use% Mounted on
+/dev/sda4      xfs   1.8T  144G  1.7T   9% /var
+[root@ocp-sno storage]# ^C
+[root@ocp-sno storage]#
