@@ -1,102 +1,120 @@
-[root@worker02 ~]# journalctl -k --since "2026-05-19 08:00:00" --until "2026-05-19 08:50:00"
--- No entries --
-[root@worker02 ~]# journalctl -k --since "2026-05-19 08:10:00" --until "2026-05-19 08:20:00" | egrep -i 'iavf|ice|vf|bond|reset|ceph|link'
-[root@worker02 ~]#
-[root@worker02 ~]#
+Now you finally have the strongest direct evidence.
 
-[root@worker02 ~]# uptime
-who -b
-last reboot | head
- 10:48:44 up 12 days, 22:51,  1 user,  load average: 37.35, 36.86, 36.88
-         system boot  2026-05-06 11:57
-reboot   system boot  5.14.0-570.92.1. Wed May  6 11:57   still running
-reboot   system boot  5.14.0-570.92.1. Wed May  6 02:50 - 11:54  (09:04)
-reboot   system boot  5.14.0-570.92.1. Tue May  5 13:05 - 02:47  (13:42)
-reboot   system boot  5.14.0-570.92.1. Tue May  5 12:15 - 13:02  (00:47)
-reboot   system boot  5.14.0-570.92.1. Tue May  5 11:34 - 12:12  (00:37)
-reboot   system boot  5.14.0-570.92.1. Tue May  5 10:53 - 11:31  (00:38)
+The critical lines are:
 
-wtmp begins Tue May  5 10:53:30 2026
-[root@worker02 ~]# journalctl -k
-May 06 11:57:30 localhost kernel: Linux version 5.14.0-570.92.1.el9_6.x86_64+rt (mockbuild@x86-64-04.build.eng.rdu2.redhat.com) (gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), GNU ld version 2.35.2-63.el9_6>
-May 06 11:57:30 localhost kernel: The list of certified hardware and cloud instances for Red Hat Enterprise Linux 9 can be viewed at the Red Hat Ecosystem Catalog, https://catalog.redhat.com.
-May 06 11:57:30 localhost kernel: Command line: BOOT_IMAGE=(hd1,gpt3)/boot/ostree/rhcos-6c8ea2f32c6229160d999e888ab7722b19cc716b354a54576716ad3b278e7b57/vmlinuz-5.14.0-570.92.1.el9_6.x86_64+rt ignition.pla>
-May 06 11:57:30 localhost kernel: x86/tme: not enabled by BIOS
-May 06 11:57:30 localhost kernel: x86/split lock detection: #AC: crashing the kernel on kernel split_locks and warning on user-space split_locks
-May 06 11:57:30 localhost kernel: BIOS-provided physical RAM map:
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000000000000-0x000000000008ffff] usable
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000000090000-0x0000000000093fff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000000094000-0x000000000009efff] usable
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x000000000009f000-0x000000000009ffff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000000100000-0x000000003e821fff] usable
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x000000003e822000-0x000000003e831fff] ACPI data
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x000000003e832000-0x000000003ee52fff] usable
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x000000003ee53000-0x000000003ee58fff] ACPI data
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x000000003ee59000-0x0000000053e6bfff] usable
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000053e6c000-0x0000000053e9bfff] ACPI data
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000053e9c000-0x0000000055aebfff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000055aec000-0x000000005866cfff] usable
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x000000005866d000-0x00000000586fdfff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x00000000586fe000-0x00000000597fdfff] ACPI NVS
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x00000000597fe000-0x0000000059a2afff] usable
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000059a2b000-0x0000000059aabfff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000059aac000-0x000000006f7fffff] usable
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x000000006f800000-0x000000008fffffff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000098000000-0x0000000099c0ffff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x00000000fe000000-0x00000000fe00ffff] reserved
-May 06 11:57:30 localhost kernel: BIOS-e820: [mem 0x0000000100000000-0x000000807fffffff] usable
-May 06 11:57:30 localhost kernel: NX (Execute Disable) protection: active
-May 06 11:57:30 localhost kernel: APIC: Static calls initialized
-May 06 11:57:30 localhost kernel: e820: update [mem 0x507e9018-0x507f1057] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x507dd018-0x507e8257] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x507a8018-0x507dc857] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x50773018-0x507a7857] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x5073e018-0x50772857] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x50709018-0x5073d857] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x506d7018-0x50708a57] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x506a2018-0x506d6857] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x5066d018-0x506a1857] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x3e7b8018-0x3e7ec857] usable ==> usable
-May 06 11:57:30 localhost kernel: e820: update [mem 0x3e783018-0x3e7b7857] usable ==> usable
-May 06 11:57:30 localhost kernel: extended physical RAM map:
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x0000000000000000-0x000000000008ffff] usable
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x0000000000090000-0x0000000000093fff] reserved
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x0000000000094000-0x000000000009efff] usable
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000000009f000-0x000000000009ffff] reserved
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x00000000000f0000-0x00000000000fffff] reserved
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x0000000000100000-0x000000003e783017] usable
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000003e783018-0x000000003e7b7857] usable
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000003e7b7858-0x000000003e7b8017] usable
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000003e7b8018-0x000000003e7ec857] usable
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000003e7ec858-0x000000003e821fff] usable
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000003e822000-0x000000003e831fff] ACPI data
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000003e832000-0x000000003ee52fff] usable
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000003ee53000-0x000000003ee58fff] ACPI data
-May 06 11:57:30 localhost kernel: reserve setup_data: [mem 0x000000003ee59000-0x000000005066d017] usable
+libceph: mon session lost
+ceph: mds0 caps stale
+ceph: mds0 reconnect denied
+ceph: mds0 session blocklisted
+ceph: mds0 rejected session
 
-[Fri May 15 06:16:51 2026] ice 0000:2b:00.3: MAC 33:33:ff:00:00:68 does not exist for VF 2
-[Tue May 19 02:40:55 2026] libceph: mon2 (2)20.20.83.31:3300 session lost, hunting for new mon
-[Tue May 19 02:40:55 2026] libceph: mon2 (2)20.20.83.31:3300 session lost, hunting for new mon
-[Tue May 19 02:40:55 2026] libceph: mon0 (2)20.20.210.1:3300 session lost, hunting for new mon
-[Tue May 19 02:41:35 2026] ceph: mds0 caps stale
-[Tue May 19 02:41:35 2026] ceph: mds0 caps stale
-[Tue May 19 02:41:35 2026] ceph: mds0 caps stale
-[Tue May 19 02:42:34 2026] ceph: mds0 caps renewed
-[Tue May 19 02:42:39 2026] libceph: mon1 (2)20.20.210.1:3300 session established
-[Tue May 19 02:42:39 2026] libceph: mon2 (2)20.20.7.72:3300 session established
-[Tue May 19 02:42:39 2026] libceph: mon0 (2)20.20.83.31:3300 session established
-[Tue May 19 02:44:07 2026] ceph: mds0 caps renewed
-[Tue May 19 02:44:14 2026] libceph: mds0 (2)10.10.4.66:6800 socket closed (con state OPEN)
-[Tue May 19 02:44:14 2026] libceph: mon0 (2)20.20.83.31:3300 session established
-[Tue May 19 02:44:15 2026] libceph: mds0 (2)10.10.4.66:6800 session reset
-[Tue May 19 02:44:15 2026] ceph: mds0 closed our session
-[Tue May 19 02:44:15 2026] ceph: mds0 reconnect start
-[Tue May 19 02:44:15 2026] ceph: mds0 reconnect denied
-[Tue May 19 02:44:15 2026] libceph: mds0 (2)10.10.4.66:6800 socket closed (con state V2_SESSION_CONNECT)
-[Tue May 19 02:44:15 2026] libceph: mon0 (2)20.20.83.31:3300 session established
-[Tue May 19 02:44:15 2026] ceph: mds0 session blocklisted
-[Tue May 19 02:44:15 2026] ceph: mds0 rejected session
-[Tue May 19 02:59:15 2026] libceph: mds0 (2)10.10.4.66:6800 socket closed (con state OPEN)
-[Tue May 19 02:59:15 2026] libceph: mon0 (2)20.20.83.31:3300 session established
+This proves the CephFS client on worker02 lost connectivity to Ceph and got evicted/blocklisted by MDS.
 
+Most important timeline:
+
+Time	Event
+
+02:40:55	MON session lost
+02:41:35	MDS caps stale
+02:42:39	MON sessions re-established
+02:44:14–15	MDS reconnect denied + blocklisted
+02:59:15	further MDS socket close
+
+
+This is a very classic CephFS client network interruption pattern.
+
+Now combine this with your earlier logs:
+
+Earlier evidence:
+
+Reset indication received from the PF
+VF is now untrusted
+bond enslaving
+VF trusted/untrusted transitions
+
+MDS evidence:
+
+Evicting (and blocklisting) client session
+
+Kernel evidence:
+
+mon session lost
+mds reconnect denied
+session blocklisted
+
+That is enough for a solid RCA.
+
+The likely sequence is:
+
+1. SR-IOV VF/PF instability or reconfiguration occurred
+
+
+2. bond interfaces temporarily disrupted traffic
+
+
+3. Ceph MON/MDS connectivity interrupted
+
+
+4. CephFS client caps became stale
+
+
+5. MDS evicted and blocklisted clients
+
+
+6. applications experienced hangs/probe failures afterward
+
+
+
+Also important:
+
+no RocksDB stalls
+
+no OSD corruption
+
+no CRC errors
+
+no packet drop counters
+
+no MON crash evidence
+
+
+So this does NOT currently point to:
+
+Ceph storage corruption
+
+disk failure
+
+Ceph DB issue
+
+
+It points much more toward:
+
+transient network interruption
+
+SR-IOV VF reset/trust issue
+
+PF/VF control-plane instability
+
+possibly bond failover instability
+
+
+Your next verification steps should be:
+
+oc get pods -A -o wide | grep worker02
+
+oc logs -n openshift-sriov-network-operator -l app=sriov-network-config-daemon --since=12h
+
+oc logs -n openshift-multus ds/multus --since=12h
+
+ip -d link show bh0
+cat /proc/net/bonding/bh0
+
+Especially investigate:
+
+why VF trust toggling happened repeatedly
+
+whether sriov-network-config-daemon reconfigured VFs
+
+whether bond mode changes were attempted dynamically
+
+whether PF firmware/driver mismatch exists (ice + iavf)
