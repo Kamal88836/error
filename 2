@@ -1,295 +1,49 @@
-Based on the alarm sequence and the long-run PS traffic scenario, this looks more like a shared storage / filesystem I/O stall affecting CMP and DMP rather than an application crash.
-
-Key observations:
-
-dmp disk-access-fail occurred first at 08:13:11
-
-Then both:
-
-CMP[0]/SHARED
-
-CMP[1]/SHARED
-
-
-Afterwards:
-
-CMP[1]/LOG
-
-
-PM collection also failed later (PM DATA COLLECTION FAIL)
-
-No pod restart occurred:
-
-all pods still Running
-
-RESTARTS = 0
-
-
-
-This strongly indicates:
-
-containers stayed alive,
-
-but disk I/O temporarily became unavailable or blocked.
-
-
-Possible root causes
-
-1. Shared PVC / storage backend latency (Most probable)
-
-Since both CMP instances reported:
-
-/SHARED
-
-nearly same timestamp,
-
-
-the common dependency is likely:
-
-RWX shared volume,
-
-NFS,
-
-CephFS,
-
-Gluster,
-
-or hostPath backed shared storage.
-
-
-Under heavy:
-
-30 real UE PS calls
-
-600 TM500 FTP sessions
-
-cell reselection every minute
-
-
-there may be:
-
-excessive PM/log/database writes,
-
-inode exhaustion,
-
-NFS timeout,
-
-storage latency spike,
-
-fs freeze.
-
-
-The DMP DB alarm before CMP alarms supports this sequence: DB write stall -> shared filesystem inaccessible -> CMP logging failure
-
-
----
-
-2. Node-level disk pressure / IO saturation
-
-Check whether the worker/master node hosting:
-
-cmp0
-
-cmp1
-
-dmp0
-
-
-experienced:
-
-high iowait,
-
-disk full,
-
-filesystem freeze,
-
-kubelet timeout,
-
-CRI-O storage pressure.
-
-
-Especially check:
-
-oc adm top node
-
-and node logs:
-
-journalctl -u kubelet
-dmesg -T
-
-Look for:
-
-EXT4-fs error
-
-XFS freeze
-
-blk_update_request
-
-task blocked
-
-NFS timeout
-
-
-
----
-
-3. Shared volume mount transient failure
-
-Since alarms auto-cleared:
-
-storage probably recovered automatically.
-
-
-Possible:
-
-NFS server hiccup
-
-network interruption to storage backend
-
-stale file handle
-
-CSI timeout
-
-
-Check:
-
-oc describe pod bscf2000-cmp0-878bdf875-n4kfd
-oc describe pod bscf2000-cmp1-7cf46df4c8-rgv64
-oc describe pod bscf2000-dmp0-758749988c-pxxpn
-
-Look for:
-
-MountVolume.SetUp failed
-
-Unable to attach
-
-rpc timeout
-
-Read-only filesystem
-
-
-
----
-
-4. Application generating excessive files/logs
-
-cmp disk-access-fail during multiplexing longrun may happen if:
-
-log partition reaches threshold,
-
-too many PM files,
-
-tmp directory overflow,
-
-inode exhaustion.
-
-
-Check inside CMP:
-
-df -h
-df -i
-du -sh /*
-
-Also check:
-
-find / -xdev -type f | wc -l
-
-
----
-
-Recommended immediate checks
-
-A. Identify node placement
-
-oc get po -o wide | egrep 'cmp|dmp'
-
-See whether all affected pods are on same node.
-
-If yes:
-
-issue is probably node-local storage or node IO saturation.
-
-
-
----
-
-B. Check node dmesg
-
-On affected node:
-
-dmesg -T | egrep -i 'error|xfs|ext4|nfs|blk|freeze|hung|timeout'
-
-
----
-
-C. Check PVC usage
-
-oc get pvc
-
-Then:
-
-oc describe pvc <pvc-name>
-
-
----
-
-D. Check filesystem usage inside pods
-
-oc exec -it bscf2000-cmp0-878bdf875-n4kfd -- df -h
-oc exec -it bscf2000-cmp0-878bdf875-n4kfd -- df -i
-
-Same for DMP.
-
-
----
-
-E. Check kube events around failure time
-
-oc get events -A --sort-by=.lastTimestamp | tail -200
-
-
----
-
-Most likely conclusion
-
-The alarm pattern suggests:
-
-Heavy PS traffic
-   ↓
-DMP database/storage latency
-   ↓
-Shared filesystem access timeout
-   ↓
-CMP SHARED disk-access-fail
-   ↓
-CMP LOG disk-access-fail
-   ↓
-PM collection failure
-   ↓
-Storage recovered automatically
-
-Since:
-
-pods never restarted,
-
-alarms auto-cleared,
-
-multiple components affected simultaneously,
-
-
-this is unlikely to be:
-
-application crash,
-
-container issue,
-
-Kubernetes scheduling issue.
-
-
-It is more likely:
-
-storage backend latency,
-
-filesystem stall,
-
-or node disk I/O bottleneck during heavy multiplexing traffic.
+[root@worker01 ~]# dmesg -T | egrep -i 'error|xfs|ext4|nfs|blk|freeze|hung|timeout'
+[Wed May  6 11:48:20 2026] cgroup: Disabling blkio control group subsystem in v1 mounts
+[Wed May  6 11:48:20 2026] cgroup: Disabling freezer control group subsystem in v1 mounts
+[Wed May  6 11:48:21 2026] ERST: Error Record Serialization Table (ERST) support is initialized.
+[Wed May  6 11:48:22 2026] i8042: probe of i8042 failed with error -5
+[Wed May  6 11:48:23 2026] systemd[1]: systemd 252-51.el9_6.4 running in system mode (+PAM +AUDIT +SELINUX -APPARMOR +IMA +SMACK +SECCOMP +GCRYPT +GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN -IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT -QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK +XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[Wed May  6 11:48:24 2026] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[Wed May  6 11:48:25 2026] hpwdt 0000:01:00.0: timeout: 30 seconds (nowayout=0)
+[Wed May  6 11:48:25 2026] hpwdt 0000:01:00.0: pretimeout: on.
+[Wed May  6 11:48:25 2026] hpwdt 0000:01:00.0: kdumptimeout: -1.
+[Wed May  6 11:48:26 2026] megaraid_sas 0000:47:00.0: FW provided TM TaskAbort/Reset timeout    : 6 secs/60 secs
+[Wed May  6 11:48:41 2026] systemd-fsck[3771]: /usr/sbin/fsck.xfs: XFS file system.
+[Wed May  6 11:48:42 2026] SGI XFS with ACLs, security attributes, scrub, quota, no debug enabled
+[Wed May  6 11:48:42 2026] XFS (sdb4): Mounting V5 Filesystem cd192233-2208-4a6c-b298-b7a70fc47a52
+[Wed May  6 11:48:42 2026] XFS (sdb4): Ending clean mount
+[Wed May  6 11:48:44 2026] SELinux:  policy capability genfs_seclabel_symlinks=1
+[Wed May  6 11:48:44 2026] systemd[1]: systemd 252-51.el9_6.4 running in system mode (+PAM +AUDIT +SELINUX -APPARMOR +IMA +SMACK +SECCOMP +GCRYPT +GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN -IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT -QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK +XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[Wed May  6 11:48:49 2026] EXT4-fs (sdb3): mounted filesystem b5239536-88a3-45fc-892e-50b2ab3aa257 ro with ordered data mode. Quota mode: none.
+[Wed May  6 11:48:50 2026] Timeout policy base is empty
+[Wed May  6 11:50:29 2026] EXT4-fs (sdb3): re-mounted b5239536-88a3-45fc-892e-50b2ab3aa257 r/w. Quota mode: none.
+[root@worker01 ~]#
+logout
+[core@worker01 ~]$
+logout
+Connection to worker01.bscf2000.samsung.local closed.
+[root@bastion ~]# oc exec -it bscf2000-cmp0-878bdf875-n4kfd -- df -h
+Defaulted container "cmp" out of: cmp, install (init)
+Filesystem                                                                                                                                                                                                                               Size  Used Avail Use% Mounted on
+overlay                                                                                                                                                                                                                                  1.8T   43G  1.8T   3% /
+tmpfs                                                                                                                                                                                                                                     64M     0   64M   0% /dev
+shm                                                                                                                                                                                                                                       64M  8.0K   64M   1% /dev/shm
+tmpfs                                                                                                                                                                                                                                    101G  121M  101G   1% /proc/acpi
+/dev/sdb4                                                                                                                                                                                                                                1.8T   43G  1.8T   3% /etc/hosts
+csi-cephfs-node-ceph-user-g1-b6eddc64-3e24-4651-981f-98039ae5f102@f4373567-6468-4061-b8b6-3c9f3be34347.ocs-storagecluster-cephfilesystem=/volumes/csi/csi-vol-d3936dc8-7a15-4401-9d29-c8c14d03bc2c/d7650f84-97f8-4eaa-95c3-5f82783d2c88 1010G  1.5G 1009G   1% /mnt/storage/shared
+csi-cephfs-node-ceph-user-g1-b6eddc64-3e24-4651-981f-98039ae5f102@f4373567-6468-4061-b8b6-3c9f3be34347.ocs-storagecluster-cephfilesystem=/volumes/csi/csi-vol-87b26c15-24c3-40e0-94a0-dcc72cc3a938/fc469c85-292b-4280-a67d-39241628108b   50G  2.9G   48G   6% /mnt/storage/log
+tmpfs                                                                                                                                                                                                                                    4.0G   20K  4.0G   1% /run/secrets/kubernetes.io/serviceaccount
+devtmpfs                                                                                                                                                                                                                                 4.0M     0  4.0M   0% /proc/keys
+[root@bastion ~]# oc exec -it bscf2000-cmp0-878bdf875-n4kfd -- df -i
+Defaulted container "cmp" out of: cmp, install (init)
+Filesystem                                                                                                                                                                                                                                 Inodes  IUsed     IFree IUse% Mounted on
+overlay                                                                                                                                                                                                                                 187429568 381419 187048149    1% /
+tmpfs                                                                                                                                                                                                                                    65936421     17  65936404    1% /dev
+shm                                                                                                                                                                                                                                      65936421      2  65936419    1% /dev/shm
+tmpfs                                                                                                                                                                                                                                      819200   6003    813197    1% /proc/acpi
+/dev/sdb4                                                                                                                                                                                                                               187429568 381419 187048149    1% /etc/hosts
+csi-cephfs-node-ceph-user-g1-b6eddc64-3e24-4651-981f-98039ae5f102@f4373567-6468-4061-b8b6-3c9f3be34347.ocs-storagecluster-cephfilesystem=/volumes/csi/csi-vol-d3936dc8-7a15-4401-9d29-c8c14d03bc2c/d7650f84-97f8-4eaa-95c3-5f82783d2c88      3159      -         -     - /mnt/storage/shared
+csi-cephfs-node-ceph-user-g1-b6eddc64-3e24-4651-981f-98039ae5f102@f4373567-6468-4061-b8b6-3c9f3be34347.ocs-storagecluster-cephfilesystem=/volumes/csi/csi-vol-87b26c15-24c3-40e0-94a0-dcc72cc3a938/fc469c85-292b-4280-a67d-39241628108b      3159      -         -     - /mnt/storage/log
+tmpfs                                                                                                                                                                                                                                    65936421     11  65936410    1% /run/secrets/kubernetes.io/serviceaccount
+devtmpfs                                                                                                                                                                                                                                 65922494   1229  65921265    1% /proc/keys
