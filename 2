@@ -1,9 +1,60 @@
-[root@bastion ~]# oc -n openshift-storage get po | egrep 'tools|mgr|mon|mds'
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-655b6567bm4b6   2/2     Running            0                13d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-7f9868f6h65ws   2/2     Running            0                13d
-rook-ceph-mgr-a-bc65b6668-wr2l6                                   3/3     Running            0                13d
-rook-ceph-mgr-b-86c4c884f7-72lg2                                  3/3     Running            0                13d
-rook-ceph-mon-a-746d5cfdd6-9gnhr                                  2/2     Running            0                13d
-rook-ceph-mon-b-5759f6c889-drgjq                                  2/2     Running            0                13d
-rook-ceph-mon-c-696f5f859c-fsmbh                                  2/2     Running            0                13d
-[root@bastion ~]#
+Good. Now execute the Ceph commands from the mgr pod.
+
+Use:
+
+oc -n openshift-storage exec -it rook-ceph-mgr-a-bc65b6668-wr2l6 -- ceph -s
+
+Then:
+
+oc -n openshift-storage exec -it rook-ceph-mgr-a-bc65b6668-wr2l6 -- ceph health detail
+
+And:
+
+oc -n openshift-storage exec -it rook-ceph-mgr-a-bc65b6668-wr2l6 -- ceph fs status
+
+These outputs are now the most important remaining evidence.
+
+What to specifically look for
+
+In ceph -s:
+
+HEALTH_WARN
+
+slow ops
+
+degraded PGs
+
+recovery/backfill
+
+nearfull/full
+
+
+In ceph health detail:
+
+MDS_SLOW_REQUEST
+
+MDS_CLIENT_RECALL
+
+MDS_HEALTH_CLIENT_LATE_RELEASE
+
+slow metadata IOs
+
+slow ops
+
+
+In ceph fs status:
+
+MDS request queue buildup
+
+high client count
+
+laggy MDS
+
+replay state
+
+cache pressure
+
+
+If you see any MDS slow request or slow ops warnings, that will almost completely confirm:
+
+> CephFS metadata latency causing temporary CMP/DMP disk-access-fail alarms.
