@@ -1,197 +1,41 @@
-For the exact May 19 08:04 incident, these are the most valuable logs now.
-
-Please collect from worker02.
-
-
----
-
-1. Full NetworkManager logs around incident
-
-Most important.
-
-journalctl -u NetworkManager --since "2026-05-19 07:55:00" --until "2026-05-19 08:15:00"
-
-Need complete output, not filtered.
-
-
----
-
-2. Kernel logs around incident
-
-journalctl -k --since "2026-05-19 07:55:00" --until "2026-05-19 08:15:00"
-
-Very important to catch:
-
-ice resets
-
-VF changes
-
-link flap
-
-bond events
-
-PCI errors
-
-netdev down/up
-
-
-
----
-
-3. SR-IOV config daemon logs from worker02 only
-
-oc logs -n openshift-sriov-network-operator \
-$(oc get pod -n openshift-sriov-network-operator -o name | grep worker02 | grep config-daemon) \
---since=6h
-
-Need to see whether:
-
-policy reconcile happened
-
-PF reset occurred
-
-VF recreate happened
-
-
-
----
-
-4. Node description events
-
-oc describe node worker02.bscf2000.samsung.local
-
-Need:
-
-node events
-
-reboot
-
-network unavailable
-
-runtime issue
-
-pressure
-
-interface reconciliation
-
-
-
----
-
-5. MachineConfig/MCP state
-
-oc get mcp
-oc describe mcp worker
-oc get machineconfigpool worker -o yaml
-
-To check:
-
-config rollout
-
-degraded state
-
-reboot-triggering config
-
-
-
----
-
-6. NM connections on worker02
-
-Very important.
-
-nmcli -f NAME,UUID,TYPE,DEVICE,AUTOCONNECT connection show
-
-and:
-
-nmcli connection show "Wired Connection"
-
-Need to see why NM attempted DHCP on SR-IOV PFs.
-
-
----
-
-7. SR-IOV policies
-
-oc get sriovnetworknodepolicy -A -o yaml
-
-Need:
-
-PF ownership
-
-numVfs
-
-nodeSelector
-
-resourceNames
-
-
-
----
-
-8. NNCP / nmstate policies
-
-Critical because bh0 disappeared.
-
-oc get nncp -A -o yaml
-oc get nns -A
-
-Need to determine:
-
-who created bh0
-
-why it disappeared
-
-
-
----
-
-9. Interface state with counters
-
-ip -s link
-ethtool ens2f1
-ethtool ens2f3
-ethtool ens5f0
-ethtool ens5f2
-
-Need:
-
-link flaps
-
-rx/tx errors
-
-resets
-
-
-
----
-
-10. Ceph CSI logs around incident
-
-oc logs -n openshift-storage <cephfs-nodeplugin-pod-on-worker02> --since=12h
-
-and:
-
-oc logs -n openshift-storage <rbd-nodeplugin-pod-on-worker02> --since=12h
-
-Need storage disconnect correlation.
-
-
----
-
-Most critical among all:
-
-1. NetworkManager full logs
-
-
-2. kernel logs
-
-
-3. nncp/nmstate
-
-
-4. sriov policies
-
-
-
-Those four will likely expose the exact trigger at 08:04.
+[root@bastion ~]# oc get cephcluster -A
+NAMESPACE           NAME                             DATADIRHOSTPATH   MONCOUNT   AGE   PHASE   MESSAGE                        HEALTH      EXTERNAL   FSID
+openshift-storage   ocs-storagecluster-cephcluster   /var/lib/rook     3          13d   Ready   Cluster created successfully   HEALTH_OK              f4373567-6468-4061-b8b6-3c9f3be34347
+[root@bastion ~]# oc get deploy
+NAME                                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ceph-csi-controller-manager                                1/1     1            1           13d
+cnpg-controller-manager                                    1/1     1            1           13d
+csi-addons-controller-manager                              1/1     1            1           13d
+noobaa-endpoint                                            1/1     1            1           13d
+noobaa-operator                                            1/1     1            1           13d
+ocs-client-operator-console                                1/1     1            1           13d
+ocs-client-operator-controller-manager                     1/1     1            1           13d
+ocs-metrics-exporter                                       1/1     1            1           13d
+ocs-operator                                               1/1     1            1           13d
+ocs-provider-server                                        1/1     1            1           13d
+odf-console                                                1/1     1            1           13d
+odf-external-snapshotter-operator                          1/1     1            1           13d
+odf-operator-controller-manager                            1/1     1            1           13d
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin           2/2     2            2           13d
+openshift-storage.rbd.csi.ceph.com-ctrlplugin              2/2     2            2           13d
+prometheus-operator                                        0/0     0            0           13d
+rook-ceph-crashcollector-master01.bscf2000.samsung.local   1/1     1            1           13d
+rook-ceph-crashcollector-master02.bscf2000.samsung.local   1/1     1            1           13d
+rook-ceph-crashcollector-master03.bscf2000.samsung.local   1/1     1            1           13d
+rook-ceph-exporter-master01.bscf2000.samsung.local         1/1     1            1           13d
+rook-ceph-exporter-master02.bscf2000.samsung.local         1/1     1            1           13d
+rook-ceph-exporter-master03.bscf2000.samsung.local         1/1     1            1           13d
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a          1/1     1            1           13d
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b          1/1     1            1           13d
+rook-ceph-mgr-a                                            1/1     1            1           13d
+rook-ceph-mgr-b                                            1/1     1            1           13d
+rook-ceph-mon-a                                            1/1     1            1           13d
+rook-ceph-mon-b                                            1/1     1            1           13d
+rook-ceph-mon-c                                            1/1     1            1           13d
+rook-ceph-operator                                         1/1     1            1           13d
+rook-ceph-osd-0                                            1/1     1            1           13d
+rook-ceph-osd-1                                            1/1     1            1           13d
+rook-ceph-osd-2                                            1/1     1            1           13d
+rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a         1/1     1            1           13d
+ux-backend-server                                          1/1     1            1           13d
+[root@bastion ~]#
