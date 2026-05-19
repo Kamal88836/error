@@ -1,27 +1,197 @@
+For the exact May 19 08:04 incident, these are the most valuable logs now.
 
-[Thu May 14 10:27:26 2026] ice 0000:2b:00.1: VF 1 successfully set multicast promiscuous mode
-[Thu May 14 10:27:27 2026] ice 0000:2b:00.3: VF 2 successfully set multicast promiscuous mode
-[Thu May 14 10:27:27 2026] bh0_0: renamed from vf0
-[Thu May 14 10:27:28 2026] bh0_0: renamed from vf0
-[Thu May 14 10:27:29 2026] bh0_1: renamed from vf1
-[Thu May 14 10:27:29 2026] bh0_1: renamed from vf1
-[Thu May 14 10:28:30 2026] 8021q: adding VLAN 0 to HW filter on device bh0
-[Thu May 14 10:28:32 2026] 8021q: adding VLAN 0 to HW filter on device bh0
-[Thu May 14 10:28:54 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:00 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:00 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:04 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:05 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:08 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:10 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:12 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:15 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:19 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:20 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:26 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:30 2026] bh0: option mode: unable to set because the bond device has slaves
-[Thu May 14 10:29:36 2026] bh0: option mode: unable to set because the bond device has slaves
-[Fri May 15 06:16:51 2026] ice 0000:2b:00.1: MAC 33:33:ff:00:00:68 does not exist for VF 1
-[Fri May 15 06:16:51 2026] ice 0000:2b:00.3: MAC 33:33:ff:00:00:68 does not exist for VF 2
-[Tue May 19 02:44:15 2026] libceph: mds0 (2)10.10.4.66:6800 session reset
-[root@worker02 ~]#
+Please collect from worker02.
+
+
+---
+
+1. Full NetworkManager logs around incident
+
+Most important.
+
+journalctl -u NetworkManager --since "2026-05-19 07:55:00" --until "2026-05-19 08:15:00"
+
+Need complete output, not filtered.
+
+
+---
+
+2. Kernel logs around incident
+
+journalctl -k --since "2026-05-19 07:55:00" --until "2026-05-19 08:15:00"
+
+Very important to catch:
+
+ice resets
+
+VF changes
+
+link flap
+
+bond events
+
+PCI errors
+
+netdev down/up
+
+
+
+---
+
+3. SR-IOV config daemon logs from worker02 only
+
+oc logs -n openshift-sriov-network-operator \
+$(oc get pod -n openshift-sriov-network-operator -o name | grep worker02 | grep config-daemon) \
+--since=6h
+
+Need to see whether:
+
+policy reconcile happened
+
+PF reset occurred
+
+VF recreate happened
+
+
+
+---
+
+4. Node description events
+
+oc describe node worker02.bscf2000.samsung.local
+
+Need:
+
+node events
+
+reboot
+
+network unavailable
+
+runtime issue
+
+pressure
+
+interface reconciliation
+
+
+
+---
+
+5. MachineConfig/MCP state
+
+oc get mcp
+oc describe mcp worker
+oc get machineconfigpool worker -o yaml
+
+To check:
+
+config rollout
+
+degraded state
+
+reboot-triggering config
+
+
+
+---
+
+6. NM connections on worker02
+
+Very important.
+
+nmcli -f NAME,UUID,TYPE,DEVICE,AUTOCONNECT connection show
+
+and:
+
+nmcli connection show "Wired Connection"
+
+Need to see why NM attempted DHCP on SR-IOV PFs.
+
+
+---
+
+7. SR-IOV policies
+
+oc get sriovnetworknodepolicy -A -o yaml
+
+Need:
+
+PF ownership
+
+numVfs
+
+nodeSelector
+
+resourceNames
+
+
+
+---
+
+8. NNCP / nmstate policies
+
+Critical because bh0 disappeared.
+
+oc get nncp -A -o yaml
+oc get nns -A
+
+Need to determine:
+
+who created bh0
+
+why it disappeared
+
+
+
+---
+
+9. Interface state with counters
+
+ip -s link
+ethtool ens2f1
+ethtool ens2f3
+ethtool ens5f0
+ethtool ens5f2
+
+Need:
+
+link flaps
+
+rx/tx errors
+
+resets
+
+
+
+---
+
+10. Ceph CSI logs around incident
+
+oc logs -n openshift-storage <cephfs-nodeplugin-pod-on-worker02> --since=12h
+
+and:
+
+oc logs -n openshift-storage <rbd-nodeplugin-pod-on-worker02> --since=12h
+
+Need storage disconnect correlation.
+
+
+---
+
+Most critical among all:
+
+1. NetworkManager full logs
+
+
+2. kernel logs
+
+
+3. nncp/nmstate
+
+
+4. sriov policies
+
+
+
+Those four will likely expose the exact trigger at 08:04.
