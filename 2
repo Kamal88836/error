@@ -1,202 +1,38 @@
-[root@bastion ~]# oc get events -A --sort-by=.lastTimestamp | tail -200
-openshift-storage                   31m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29652998-sz4kw   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   31m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29652998-sz4kw   Created container: heartbeat
-openshift-storage                   31m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29652998-sz4kw   Started container heartbeat
-openshift-storage                   30m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29652998         Job completed
-openshift-storage                   30m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29652999         Created pod: storageclient-737342087af10580-status-reporter-29652999-5f9ml
-openshift-storage                   30m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29652999-5f9ml   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   30m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29652999-5f9ml   Add eth0 [10.10.1.224/24 fd01:0:0:2::2d4d/64] from ovn-kubernetes
-openshift-storage                   30m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29652999-5f9ml   Created container: heartbeat
-openshift-storage                   30m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29652999-5f9ml   Started container heartbeat
-openshift-storage                   29m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29652999         Job completed
-openshift-machine-config-operator   29m         Normal    ConfigMapUpdated        deployment/machine-config-operator                                  Updated ConfigMap/kube-rbac-proxy -n openshift-machine-config-operator:...
-openshift-storage                   29m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653000         Created pod: storageclient-737342087af10580-status-reporter-29653000-rmrq7
-openshift-storage                   29m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653000-rmrq7   Started container heartbeat
-openshift-storage                   29m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653000-rmrq7   Add eth0 [10.10.1.225/24 fd01:0:0:2::2d4e/64] from ovn-kubernetes
-openshift-storage                   29m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653000-rmrq7   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   29m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653000-rmrq7   Created container: heartbeat
-openshift-storage                   28m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653000         Job completed
-openshift-storage                   28m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653001         Created pod: storageclient-737342087af10580-status-reporter-29653001-dcsvl
-openshift-storage                   28m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653001-dcsvl   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   28m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653001-dcsvl   Created container: heartbeat
-openshift-storage                   28m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653001-dcsvl   Add eth0 [10.10.1.226/24 fd01:0:0:2::2d4f/64] from ovn-kubernetes
-openshift-storage                   28m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653001-dcsvl   Started container heartbeat
-openshift-storage                   27m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653001         Job completed
-openshift-storage                   27m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653002         Created pod: storageclient-737342087af10580-status-reporter-29653002-cqd4d
-openshift-storage                   27m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653002-cqd4d   Started container heartbeat
-openshift-storage                   27m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653002-cqd4d   Created container: heartbeat
-openshift-storage                   27m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653002-cqd4d   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   27m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653002-cqd4d   Add eth0 [10.10.1.227/24 fd01:0:0:2::2d50/64] from ovn-kubernetes
-openshift-storage                   26m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653002         Job completed
-openshift-storage                   26m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653003         Created pod: storageclient-737342087af10580-status-reporter-29653003-lcszj
-openshift-storage                   26m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653003-lcszj   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   26m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653003-lcszj   Add eth0 [10.10.1.228/24 fd01:0:0:2::2d51/64] from ovn-kubernetes
-openshift-storage                   26m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653003-lcszj   Started container heartbeat
-openshift-storage                   26m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653003-lcszj   Created container: heartbeat
-openshift-storage                   25m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653003         Job completed
-openshift-machine-config-operator   25m         Normal    ConfigMapUpdated        deployment/machine-config-operator                                  Updated ConfigMap/kube-rbac-proxy -n openshift-machine-config-operator:...
-openshift-storage                   25m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653004         Created pod: storageclient-737342087af10580-status-reporter-29653004-nqfdt
-openshift-storage                   25m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653004-nqfdt   Started container heartbeat
-openshift-storage                   25m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653004-nqfdt   Add eth0 [10.10.1.229/24 fd01:0:0:2::2d52/64] from ovn-kubernetes
-openshift-storage                   25m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653004-nqfdt   Created container: heartbeat
-openshift-storage                   25m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653004-nqfdt   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   24m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653004         Job completed
-openshift-storage                   24m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653005         Created pod: storageclient-737342087af10580-status-reporter-29653005-bzskb
-openshift-storage                   24m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653005-bzskb   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   24m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653005-bzskb   Started container heartbeat
-openshift-storage                   24m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653005-bzskb   Created container: heartbeat
-openshift-storage                   24m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653005-bzskb   Add eth0 [10.10.1.230/24 fd01:0:0:2::2d53/64] from ovn-kubernetes
-openshift-storage                   23m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653005         Job completed
-openshift-storage                   23m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653006         Created pod: storageclient-737342087af10580-status-reporter-29653006-fr6pz
-openshift-storage                   23m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653006-fr6pz   Started container heartbeat
-openshift-storage                   23m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653006-fr6pz   Created container: heartbeat
-openshift-storage                   23m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653006-fr6pz   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   23m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653006-fr6pz   Add eth0 [10.10.1.231/24 fd01:0:0:2::2d54/64] from ovn-kubernetes
-openshift-storage                   22m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653006         Job completed
-openshift-storage                   22m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653007         Created pod: storageclient-737342087af10580-status-reporter-29653007-44qfz
-openshift-storage                   22m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653007-44qfz   Add eth0 [10.10.1.232/24 fd01:0:0:2::2d55/64] from ovn-kubernetes
-openshift-storage                   22m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653007-44qfz   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   22m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653007-44qfz   Created container: heartbeat
-openshift-storage                   22m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653007-44qfz   Started container heartbeat
-openshift-storage                   21m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653007         Job completed
-openshift-storage                   21m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653008         Created pod: storageclient-737342087af10580-status-reporter-29653008-q6gxh
-openshift-storage                   21m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653008-q6gxh   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   21m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653008-q6gxh   Started container heartbeat
-openshift-storage                   21m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653008-q6gxh   Created container: heartbeat
-openshift-storage                   21m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653008-q6gxh   Add eth0 [10.10.1.233/24 fd01:0:0:2::2d56/64] from ovn-kubernetes
-openshift-storage                   20m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653008         Job completed
-openshift-machine-config-operator   20m         Normal    ConfigMapUpdated        deployment/machine-config-operator                                  Updated ConfigMap/kube-rbac-proxy -n openshift-machine-config-operator:...
-openshift-storage                   20m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653009         Created pod: storageclient-737342087af10580-status-reporter-29653009-fpdc9
-openshift-storage                   20m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653009-fpdc9   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   20m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653009-fpdc9   Add eth0 [10.10.1.234/24 fd01:0:0:2::2d57/64] from ovn-kubernetes
-openshift-storage                   20m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653009-fpdc9   Started container heartbeat
-openshift-storage                   20m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653009-fpdc9   Created container: heartbeat
-openshift-storage                   19m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653009         Job completed
-openshift-storage                   19m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653010         Created pod: storageclient-737342087af10580-status-reporter-29653010-s5zc8
-openshift-storage                   19m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653010-s5zc8   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   19m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653010-s5zc8   Created container: heartbeat
-openshift-storage                   19m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653010-s5zc8   Add eth0 [10.10.1.235/24 fd01:0:0:2::2d58/64] from ovn-kubernetes
-openshift-storage                   19m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653010-s5zc8   Started container heartbeat
-openshift-storage                   18m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653010         Job completed
-openshift-storage                   18m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653011         Created pod: storageclient-737342087af10580-status-reporter-29653011-pcplc
-openshift-storage                   18m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653011-pcplc   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   18m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653011-pcplc   Started container heartbeat
-openshift-storage                   18m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653011-pcplc   Add eth0 [10.10.1.236/24 fd01:0:0:2::2d59/64] from ovn-kubernetes
-openshift-storage                   18m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653011-pcplc   Created container: heartbeat
-openshift-storage                   17m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653011         Job completed
-openshift-storage                   17m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653012         Created pod: storageclient-737342087af10580-status-reporter-29653012-b6t7g
-openshift-storage                   17m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653012-b6t7g   Started container heartbeat
-openshift-storage                   17m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653012-b6t7g   Created container: heartbeat
-openshift-storage                   17m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653012-b6t7g   Add eth0 [10.10.1.237/24 fd01:0:0:2::2d5a/64] from ovn-kubernetes
-openshift-storage                   17m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653012-b6t7g   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   16m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653012         Job completed
-openshift-machine-config-operator   16m         Normal    ConfigMapUpdated        deployment/machine-config-operator                                  Updated ConfigMap/kube-rbac-proxy -n openshift-machine-config-operator:...
-openshift-storage                   16m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653013         Created pod: storageclient-737342087af10580-status-reporter-29653013-6bqcv
-openshift-storage                   16m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653013-6bqcv   Created container: heartbeat
-openshift-storage                   16m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653013-6bqcv   Add eth0 [10.10.1.238/24 fd01:0:0:2::2d5b/64] from ovn-kubernetes
-openshift-storage                   16m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653013-6bqcv   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   16m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653013-6bqcv   Started container heartbeat
-openshift-storage                   15m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653013         Job completed
-openshift-storage                   15m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653014         Created pod: storageclient-737342087af10580-status-reporter-29653014-7wzmb
-openshift-storage                   15m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653014-7wzmb   Started container heartbeat
-openshift-storage                   15m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653014-7wzmb   Created container: heartbeat
-openshift-storage                   15m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653014-7wzmb   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   15m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653014-7wzmb   Add eth0 [10.10.1.239/24 fd01:0:0:2::2d5c/64] from ovn-kubernetes
-openshift-storage                   14m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653014         Job completed
-openshift-storage                   14m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653015         Created pod: storageclient-737342087af10580-status-reporter-29653015-k9hld
-openshift-storage                   14m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653015-k9hld   Started container heartbeat
-openshift-storage                   14m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653015-k9hld   Created container: heartbeat
-openshift-storage                   14m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653015-k9hld   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   14m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653015-k9hld   Add eth0 [10.10.1.240/24 fd01:0:0:2::2d5d/64] from ovn-kubernetes
-openshift-storage                   13m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653015         Job completed
-openshift-storage                   13m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653016         Created pod: storageclient-737342087af10580-status-reporter-29653016-p8cmx
-openshift-storage                   13m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653016-p8cmx   Started container heartbeat
-openshift-storage                   13m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653016-p8cmx   Add eth0 [10.10.1.241/24 fd01:0:0:2::2d5e/64] from ovn-kubernetes
-openshift-storage                   13m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653016-p8cmx   Created container: heartbeat
-openshift-storage                   13m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653016-p8cmx   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   12m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653016         Job completed
-openshift-machine-config-operator   12m         Normal    ConfigMapUpdated        deployment/machine-config-operator                                  Updated ConfigMap/kube-rbac-proxy -n openshift-machine-config-operator:...
-openshift-storage                   12m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653017         Created pod: storageclient-737342087af10580-status-reporter-29653017-q6dww
-openshift-storage                   12m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653017-q6dww   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   12m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653017-q6dww   Add eth0 [10.10.1.242/24 fd01:0:0:2::2d5f/64] from ovn-kubernetes
-openshift-storage                   12m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653017-q6dww   Created container: heartbeat
-openshift-storage                   12m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653017-q6dww   Started container heartbeat
-openshift-storage                   11m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653017         Job completed
-openshift-storage                   11m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653018         Created pod: storageclient-737342087af10580-status-reporter-29653018-fp6nb
-openshift-storage                   11m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653018-fp6nb   Created container: heartbeat
-openshift-storage                   11m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653018-fp6nb   Started container heartbeat
-openshift-storage                   11m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653018-fp6nb   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   11m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653018-fp6nb   Add eth0 [10.10.1.243/24 fd01:0:0:2::2d60/64] from ovn-kubernetes
-openshift-storage                   10m         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653018         Job completed
-openshift-storage                   10m         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653019         Created pod: storageclient-737342087af10580-status-reporter-29653019-5ms4d
-openshift-storage                   10m         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653019-5ms4d   Created container: heartbeat
-openshift-storage                   10m         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653019-5ms4d   Started container heartbeat
-openshift-storage                   10m         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653019-5ms4d   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   10m         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653019-5ms4d   Add eth0 [10.10.1.244/24 fd01:0:0:2::2d61/64] from ovn-kubernetes
-openshift-storage                   9m56s       Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653019         Job completed
-openshift-storage                   9m2s        Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653020         Created pod: storageclient-737342087af10580-status-reporter-29653020-7gr6r
-openshift-storage                   9m          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653020-7gr6r   Add eth0 [10.10.1.245/24 fd01:0:0:2::2d62/64] from ovn-kubernetes
-openshift-storage                   9m          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653020-7gr6r   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   9m          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653020-7gr6r   Created container: heartbeat
-openshift-storage                   9m          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653020-7gr6r   Started container heartbeat
-openshift-storage                   8m55s       Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653020         Job completed
-openshift-machine-config-operator   8m4s        Normal    ConfigMapUpdated        deployment/machine-config-operator                                  Updated ConfigMap/kube-rbac-proxy -n openshift-machine-config-operator:...
-openshift-storage                   8m2s        Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653021         Created pod: storageclient-737342087af10580-status-reporter-29653021-rdggp
-openshift-storage                   8m          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653021-rdggp   Created container: heartbeat
-openshift-storage                   8m          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653021-rdggp   Add eth0 [10.10.1.246/24 fd01:0:0:2::2d63/64] from ovn-kubernetes
-openshift-storage                   8m          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653021-rdggp   Started container heartbeat
-openshift-storage                   8m          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653021-rdggp   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   7m55s       Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653021         Job completed
-openshift-storage                   7m2s        Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653022         Created pod: storageclient-737342087af10580-status-reporter-29653022-wcgdl
-openshift-storage                   7m          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653022-wcgdl   Created container: heartbeat
-openshift-storage                   7m          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653022-wcgdl   Started container heartbeat
-openshift-storage                   7m          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653022-wcgdl   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   7m          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653022-wcgdl   Add eth0 [10.10.1.247/24 fd01:0:0:2::2d64/64] from ovn-kubernetes
-openshift-storage                   6m56s       Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653022         Job completed
-openshift-storage                   6m2s        Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653023         Created pod: storageclient-737342087af10580-status-reporter-29653023-g52cm
-openshift-storage                   6m          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653023-g52cm   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   6m          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653023-g52cm   Started container heartbeat
-openshift-storage                   6m          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653023-g52cm   Created container: heartbeat
-openshift-storage                   6m          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653023-g52cm   Add eth0 [10.10.1.248/24 fd01:0:0:2::2d65/64] from ovn-kubernetes
-openshift-storage                   5m55s       Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653023         Job completed
-openshift-storage                   5m2s        Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653024         Created pod: storageclient-737342087af10580-status-reporter-29653024-tq2mb
-openshift-storage                   5m          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653024-tq2mb   Add eth0 [10.10.1.249/24 fd01:0:0:2::2d66/64] from ovn-kubernetes
-openshift-storage                   5m          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653024-tq2mb   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   5m          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653024-tq2mb   Created container: heartbeat
-openshift-storage                   5m          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653024-tq2mb   Started container heartbeat
-openshift-storage                   4m55s       Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653024         Job completed
-openshift-storage                   4m24s       Warning   ProbeError              pod/noobaa-db-pg-cluster-1                                          Startup probe error: HTTP probe failed with statuscode: 500...
-openshift-storage                   4m2s        Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653025         Created pod: storageclient-737342087af10580-status-reporter-29653025-fznrg
-openshift-storage                   4m          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653025-fznrg   Created container: heartbeat
-openshift-storage                   4m          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653025-fznrg   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   4m          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653025-fznrg   Add eth0 [10.10.1.250/24 fd01:0:0:2::2d67/64] from ovn-kubernetes
-openshift-storage                   4m          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653025-fznrg   Started container heartbeat
-openshift-storage                   3m56s       Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653025         Job completed
-openshift-machine-config-operator   3m46s       Normal    ConfigMapUpdated        deployment/machine-config-operator                                  Updated ConfigMap/kube-rbac-proxy -n openshift-machine-config-operator:...
-openshift-storage                   3m4s        Warning   BackOff                 pod/noobaa-db-pg-cluster-2                                          Back-off restarting failed container postgres in pod noobaa-db-pg-cluster-2_openshift-storage(1df00017-d560-406b-afdd-52c2b6f6834b)
-openshift-storage                   3m2s        Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653026         Created pod: storageclient-737342087af10580-status-reporter-29653026-hmnhl
-openshift-storage                   3m          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653026-hmnhl   Created container: heartbeat
-openshift-storage                   3m          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653026-hmnhl   Started container heartbeat
-openshift-storage                   3m          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653026-hmnhl   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   3m          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653026-hmnhl   Add eth0 [10.10.1.251/24 fd01:0:0:2::2d68/64] from ovn-kubernetes
-openshift-storage                   2m56s       Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653026         Job completed
-openshift-storage                   2m2s        Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653027         Created pod: storageclient-737342087af10580-status-reporter-29653027-kh4cg
-openshift-storage                   2m          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653027-kh4cg   Started container heartbeat
-openshift-storage                   2m          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653027-kh4cg   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   2m          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653027-kh4cg   Created container: heartbeat
-openshift-storage                   2m          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653027-kh4cg   Add eth0 [10.10.1.252/24 fd01:0:0:2::2d69/64] from ovn-kubernetes
-openshift-storage                   119s        Normal    Pulled                  pod/noobaa-db-pg-cluster-2                                          Container image "registry.redhat.io/rhel9/postgresql-16@sha256:680b42d2c51b76d23cd5b68dd774af456b1e4c98c4aaeb49d0de0948dc933716" already present on machine
-openshift-storage                   115s        Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653027         Job completed
-openshift-storage                   62s         Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653028         Created pod: storageclient-737342087af10580-status-reporter-29653028-g5b87
-openshift-storage                   60s         Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653028-g5b87   Add eth0 [10.10.1.253/24 fd01:0:0:2::2d6a/64] from ovn-kubernetes
-openshift-storage                   60s         Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653028-g5b87   Started container heartbeat
-openshift-storage                   60s         Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653028-g5b87   Created container: heartbeat
-openshift-storage                   60s         Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653028-g5b87   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   56s         Normal    Completed               job/storageclient-737342087af10580-status-reporter-29653028         Job completed
-openshift-storage                   2s          Normal    SuccessfulCreate        job/storageclient-737342087af10580-status-reporter-29653029         Created pod: storageclient-737342087af10580-status-reporter-29653029-n2h55
-openshift-storage                   2s          Normal    SuccessfulCreate        cronjob/storageclient-737342087af10580-status-reporter              (combined from similar events): Created job storageclient-737342087af10580-status-reporter-29653029
-openshift-storage                   0s          Normal    AddedInterface          pod/storageclient-737342087af10580-status-reporter-29653029-n2h55   Add eth0 [10.10.1.254/24 fd01:0:0:2::2d6b/64] from ovn-kubernetes
-openshift-storage                   0s          Normal    Pulled                  pod/storageclient-737342087af10580-status-reporter-29653029-n2h55   Container image "registry.redhat.io/odf4/ocs-client-rhel9-operator@sha256:d73045a16ed4ac4ab16cbff935e342f52bee3296cee229f378f67a125b188a6a" already present on machine
-openshift-storage                   0s          Normal    Created                 pod/storageclient-737342087af10580-status-reporter-29653029-n2h55   Created container: heartbeat
-openshift-storage                   0s          Normal    Started                 pod/storageclient-737342087af10580-status-reporter-29653029-n2h55   Started container heartbeat
+[root@bastion ~]# oc -n openshift-storage get deploy
+NAME                                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ceph-csi-controller-manager                                1/1     1            1           13d
+cnpg-controller-manager                                    1/1     1            1           13d
+csi-addons-controller-manager                              1/1     1            1           13d
+noobaa-endpoint                                            1/1     1            1           13d
+noobaa-operator                                            1/1     1            1           13d
+ocs-client-operator-console                                1/1     1            1           13d
+ocs-client-operator-controller-manager                     1/1     1            1           13d
+ocs-metrics-exporter                                       1/1     1            1           13d
+ocs-operator                                               1/1     1            1           13d
+ocs-provider-server                                        1/1     1            1           13d
+odf-console                                                1/1     1            1           13d
+odf-external-snapshotter-operator                          1/1     1            1           13d
+odf-operator-controller-manager                            1/1     1            1           13d
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin           2/2     2            2           13d
+openshift-storage.rbd.csi.ceph.com-ctrlplugin              2/2     2            2           13d
+prometheus-operator                                        0/0     0            0           13d
+rook-ceph-crashcollector-master01.bscf2000.samsung.local   1/1     1            1           13d
+rook-ceph-crashcollector-master02.bscf2000.samsung.local   1/1     1            1           13d
+rook-ceph-crashcollector-master03.bscf2000.samsung.local   1/1     1            1           13d
+rook-ceph-exporter-master01.bscf2000.samsung.local         1/1     1            1           13d
+rook-ceph-exporter-master02.bscf2000.samsung.local         1/1     1            1           13d
+rook-ceph-exporter-master03.bscf2000.samsung.local         1/1     1            1           13d
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a          1/1     1            1           13d
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b          1/1     1            1           13d
+rook-ceph-mgr-a                                            1/1     1            1           13d
+rook-ceph-mgr-b                                            1/1     1            1           13d
+rook-ceph-mon-a                                            1/1     1            1           13d
+rook-ceph-mon-b                                            1/1     1            1           13d
+rook-ceph-mon-c                                            1/1     1            1           13d
+rook-ceph-operator                                         1/1     1            1           13d
+rook-ceph-osd-0                                            1/1     1            1           13d
+rook-ceph-osd-1                                            1/1     1            1           13d
+rook-ceph-osd-2                                            1/1     1            1           13d
+rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a         1/1     1            1           13d
+ux-backend-server                                          1/1     1            1           13d
 [root@bastion ~]#
