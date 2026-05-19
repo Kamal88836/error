@@ -1,5 +1,9 @@
-[root@bastion ~]# oc -n openshift-storage exec -it deploy/rook-ceph-tools -- ceph -s
-Error from server (NotFound): deployments.apps "rook-ceph-tools" not found
-[root@bastion ~]# oc -n openshift-storage exec -it deploy/rook-ceph-tools -- ceph health detail
-Error from server (NotFound): deployments.apps "rook-ceph-tools" not found
+[root@bastion ~]# oc -n openshift-storage get po | egrep 'tools|mgr|mon|mds'
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-655b6567bm4b6   2/2     Running            0                13d
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-7f9868f6h65ws   2/2     Running            0                13d
+rook-ceph-mgr-a-bc65b6668-wr2l6                                   3/3     Running            0                13d
+rook-ceph-mgr-b-86c4c884f7-72lg2                                  3/3     Running            0                13d
+rook-ceph-mon-a-746d5cfdd6-9gnhr                                  2/2     Running            0                13d
+rook-ceph-mon-b-5759f6c889-drgjq                                  2/2     Running            0                13d
+rook-ceph-mon-c-696f5f859c-fsmbh                                  2/2     Running            0                13d
 [root@bastion ~]#
