@@ -1,16 +1,220 @@
-[Tue May 19 07:10:27 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:10:58 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:11:11 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:11:29 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:12:00 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:12:11 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:12:31 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:13:02 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:13:11 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:13:33 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:14:04 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:14:11 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:14:35 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:15:06 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:15:11 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
-[Tue May 19 07:15:37 2026] ceph: get_quota_realm: ino (100001463f0.fffffffffffffffe) null i_snap_realm
+This is highly relevant.
+
+The repeated kernel messages:
+
+ceph: get_quota_realm: ino (...) null i_snap_realm
+
+strongly indicate the issue is coming from the CephFS client/kernel layer used by your OpenShift PVC storage.
+
+And the timing matches your alarms exactly:
+
+Ceph warnings start before alarm
+
+dmp disk-access-fail at 08:13:11
+
+then CMP shared/log failures
+
+
+So the storage correlation is now very strong.
+
+What this means
+
+null i_snap_realm is typically seen when:
+
+CephFS metadata becomes temporarily inconsistent,
+
+snapshot realm lookup fails,
+
+client loses proper metadata association,
+
+or MDS communication/metadata handling is delayed.
+
+
+This can happen during:
+
+heavy metadata operations,
+
+massive file create/delete,
+
+directory traversal pressure,
+
+MDS overload,
+
+client cache inconsistency,
+
+network latency between node and Ceph MDS.
+
+
+In your case:
+
+multiplexing longrun
+
+PM generation
+
+DB/log writes
+
+600 TM500 UEs
+
+continuous reselection
+
+
+likely created very high metadata IOPS on CephFS shared storage.
+
+Why CMP/DMP got affected
+
+CMP and DMP probably use:
+
+shared RWX CephFS volume,
+
+or CephFS-backed PVCs.
+
+
+When CephFS metadata operations stall:
+
+file open/write blocks,
+
+DB sync blocks,
+
+logging blocks,
+
+application raises disk-access-fail.
+
+
+Since applications remained running:
+
+this was not pod crash,
+
+but filesystem access stall.
+
+
+Most probable backend issue
+
+Priority order:
+
+1. CephFS MDS overload
+
+
+2. Ceph metadata latency spike
+
+
+3. CephFS kernel client bug/state issue
+
+
+4. Network latency to Ceph cluster
+
+
+5. Excessive small-file operations from PM/logging
+
+
+
+Very likely NOT:
+
+application defect alone
+
+Kubernetes issue
+
+CRI-O issue
+
+
+Critical thing to check now
+
+Check Ceph health immediately:
+
+oc -n openshift-storage exec -it deploy/rook-ceph-tools -- ceph -s
+
+Look for:
+
+MDS slow requests
+
+MDS laggy
+
+slow ops
+
+clients failing to respond
+
+degraded
+
+cache oversized
+
+
+Then check:
+
+ceph fs status
+
+and:
+
+ceph health detail
+
+Important indicators
+
+Especially look for:
+
+MDS_SLOW_REQUEST
+MDS_CLIENT_RECALL
+MDS_HEALTH_CLIENT_LATE_RELEASE
+slow metadata IOs
+
+Also inspect MDS pod logs:
+
+oc -n openshift-storage get pod | grep mds
+
+Then:
+
+oc -n openshift-storage logs <mds-pod>
+
+Look around:
+
+08:13
+
+08:14
+
+
+Likely you will find:
+
+slow requests,
+
+cache pressure,
+
+client eviction warnings,
+
+metadata throttling.
+
+
+Additional verification
+
+Find which PVCs CMP/DMP use:
+
+oc describe pod bscf2000-cmp0-878bdf875-n4kfd
+
+If storage class is CephFS RWX:
+
+root cause confidence becomes very high.
+
+
+Why it auto-cleared
+
+CephFS transient metadata stalls often self-recover when:
+
+MDS catches up,
+
+client retries succeed,
+
+cache pressure reduces,
+
+IO burst subsides.
+
+
+That exactly matches:
+
+auto-cleared alarms,
+
+no pod restart,
+
+temporary disk-access-fail.
+
+
+Likely RCA summary
+
+You can summarize internally as:
+
+> Under heavy GPRS/EDGE multiplexing longrun traffic, CephFS metadata access latency/stall occurred on shared storage volumes used by CMP/DMP. This caused temporary filesystem access failures leading to cmp disk-access-fail and dmp disk-access-fail alarms. The issue recovered automatically after CephFS metadata operations stabilized. No pod/container restart occurred. Kernel logs showed repeated CephFS client warnings (null i_snap_realm) around the failure window, indicating CephFS metadata handling instability or MDS overload.
