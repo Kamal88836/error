@@ -1,1 +1,80 @@
-oc get events -A --sort-by=.lastTimestamp | grep -i -E 'sriov|network|multus|bond|vf'
+That is okay.
+oc get events not showing anything does not invalidate the RCA.
+
+Reason:
+
+VF resets
+
+PF resets
+
+bond flap
+
+iavf driver events
+
+trust/untrust transitions
+
+
+are kernel/driver level events, not always Kubernetes/OpenShift events.
+
+Your strongest evidence is already from:
+
+worker kernel logs
+
+Ceph MDS eviction logs
+
+Ceph client reconnect failures
+
+
+Especially these:
+
+Reset indication received from the PF
+
+VF is now untrusted
+
+bh0 (unregistering): Released all slaves
+
+followed by:
+
+session lost
+caps stale
+reconnect denied
+session blocklisted
+
+and:
+
+Evicting (and blocklisting) client session
+
+This sequence is already enough to correlate:
+
+1. Network interface instability
+
+
+2. Ceph connectivity loss
+
+
+3. CephFS client eviction
+
+
+4. Filesystem failure/remount RO
+
+
+
+You can further strengthen RCA with these commands:
+
+On affected worker:
+
+journalctl -k --since "2026-05-19 02:35:00" --until "2026-05-19 02:50:00"
+
+Check NetworkManager:
+
+journalctl -u NetworkManager --since "2026-05-19 02:35:00"
+
+Check SR-IOV operator:
+
+oc logs -n openshift-sriov-network-operator -l app=sriov-network-config-daemon --since=8h
+
+Check node dmesg around failure:
+
+dmesg -T | egrep -i 'iavf|ice|bond|vf|reset|link'
+
+But honestly, your current evidence is already quite strong.
