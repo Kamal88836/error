@@ -1,1 +1,89 @@
 journalctl -k --since "2026-05-19 08:10:00" --until "2026-05-19 08:20:00" | egrep -i 'iavf|ice|vf|bond|reset|ceph|link'
+
+
+-- No entries -- on worker02 kernel journal usually means one of these:
+
+kernel logs rotated out
+
+persistent journald disabled
+
+kernel messages stored only in dmesg ring buffer
+
+node rebooted after the event
+
+journal corruption/reset
+
+
+Now use dmesg instead.
+
+Run:
+
+dmesg -T | egrep -i 'iavf|ice|vf|bond|reset|ceph|mds|session|blocklist|link'
+
+Also check whether worker02 rebooted:
+
+uptime
+who -b
+last reboot | head
+
+Because if worker02 rebooted after the issue, that explains why:
+
+journalctl -k
+
+has no old kernel entries.
+
+Your earlier pasted logs already contained the strongest indicators:
+
+VF trusted/untrusted transitions
+
+PF reset indications
+
+bond re-enslaving
+
+Ceph session lost
+
+MDS reconnect denied
+
+client blocklisted
+
+
+So even if kernel journal rotated, you still already captured valuable forensic evidence.
+
+At this point the likely RCA direction is:
+
+1. SR-IOV VF/PF instability on worker02
+
+
+2. temporary network disruption on Ceph network path
+
+
+3. CephFS client sessions stalled
+
+
+4. MDS evicted/blocklisted clients
+
+
+5. application/container probe instability followed
+
+
+
+This does not currently look like:
+
+physical NIC CRC issue
+
+Ceph OSD disk corruption
+
+RocksDB stall
+
+Ceph MON failure
+
+
+because:
+
+NIC counters clean
+
+RocksDB stalls = 0
+
+MON sessions recovered
+
+issue pattern matches transient client connectivity interruption more than storage corruption.
