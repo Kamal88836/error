@@ -1,24 +1,283 @@
-[root@bastion ~]# oc get nodes --show-labels | grep openshift-storage
-master01.bscf2000.samsung.local   Ready    control-plane,master,worker   13d   v1.33.6   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,cluster.ocs.openshift.io/openshift-storage=,kubernetes.io/arch=amd64,kubernetes.io/hostname=master01.bscf2000.samsung.local,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=,node-role.kubernetes.io/master=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhel,sriovnetwork.openshift.io/device-plugin=Disabled
-master02.bscf2000.samsung.local   Ready    control-plane,master,worker   13d   v1.33.6   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,cluster.ocs.openshift.io/openshift-storage=,kubernetes.io/arch=amd64,kubernetes.io/hostname=master02.bscf2000.samsung.local,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=,node-role.kubernetes.io/master=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhel,sriovnetwork.openshift.io/device-plugin=Disabled
-master03.bscf2000.samsung.local   Ready    control-plane,master,worker   13d   v1.33.6   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,cluster.ocs.openshift.io/openshift-storage=,kubernetes.io/arch=amd64,kubernetes.io/hostname=master03.bscf2000.samsung.local,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=,node-role.kubernetes.io/master=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhel,sriovnetwork.openshift.io/device-plugin=Disabled
-[root@bastion ~]# oc get no
-NAME                              STATUS   ROLES                         AGE   VERSION
-master01.bscf2000.samsung.local   Ready    control-plane,master,worker   13d   v1.33.6
-master02.bscf2000.samsung.local   Ready    control-plane,master,worker   13d   v1.33.6
-master03.bscf2000.samsung.local   Ready    control-plane,master,worker   13d   v1.33.6
-worker01.bscf2000.samsung.local   Ready    worker                        13d   v1.33.6
-worker02.bscf2000.samsung.local   Ready    worker                        13d   v1.33.6
-[root@bastion ~]# oc get po -o wide
-NAME                             READY   STATUS    RESTARTS   AGE     IP            NODE                              NOMINATED NODE   READINESS GATES
-bscf2000-bip0-865dcc48dc-789kr   1/1     Running   0          4d23h   10.10.2.191   worker01.bscf2000.samsung.local   <none>           <none>
-bscf2000-bip1-659ff58fb4-f97hh   1/1     Running   0          4d23h   10.10.3.35    worker02.bscf2000.samsung.local   <none>           <none>
-bscf2000-bpp0-65d5bc84c9-t6g5g   1/1     Running   0          4d3h    10.10.2.194   worker01.bscf2000.samsung.local   <none>           <none>
-bscf2000-bpp1-76bb988f78-z2zr8   1/1     Running   0          4d23h   10.10.3.37    worker02.bscf2000.samsung.local   <none>           <none>
-bscf2000-bpp2-57c4cdcf87-h4j8s   1/1     Running   0          4d23h   10.10.2.193   worker01.bscf2000.samsung.local   <none>           <none>
-bscf2000-bpp3-778676fc74-8bwrh   1/1     Running   0          4d23h   10.10.3.36    worker02.bscf2000.samsung.local   <none>           <none>
-bscf2000-cmp0-878bdf875-n4kfd    1/1     Running   0          4d23h   10.10.2.190   worker01.bscf2000.samsung.local   <none>           <none>
-bscf2000-cmp1-7cf46df4c8-rgv64   1/1     Running   0          4d23h   10.10.3.33    worker02.bscf2000.samsung.local   <none>           <none>
-bscf2000-dmp0-758749988c-pxxpn   1/1     Running   0          4d23h   10.10.3.34    worker02.bscf2000.samsung.local   <none>           <none>
-bscf2000-pmp0-b7c65dc58-j99nc    1/1     Running   0          4d23h   10.10.2.189   worker01.bscf2000.samsung.local   <none>           <none>
-[root@bastion ~]#
+u May 14 07:03:40 2026] 8021q: adding VLAN 0 to HW filter on device bh0
+[Thu May 14 07:03:41 2026] bh0 (unregistering): Released all slaves
+[Thu May 14 07:13:19 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:22 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:23 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:26 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:27 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:30 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:30 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:33 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:36 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:39 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:42 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:44 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:49 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:13:53 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 07:15:50 2026] ice 0000:2b:00.1: MAC 33:33:ff:00:00:68 does not exist for VF 2
+[Thu May 14 07:15:50 2026] ice 0000:2b:00.3: MAC 33:33:ff:00:00:68 does not exist for VF 1
+[Thu May 14 07:32:06 2026] 41ef854deb381de: entered promiscuous mode
+[Thu May 14 07:32:11 2026] 5e2df1f2ba743e2: left promiscuous mode
+[Thu May 14 07:43:02 2026] 4819c1d1530f5ff: entered promiscuous mode
+[Thu May 14 07:43:02 2026] 8762601d94c5eca: entered promiscuous mode
+[Thu May 14 07:43:07 2026] bh0: (slave bh0_0): Releasing backup interface
+[Thu May 14 07:43:07 2026] bh0: (slave bh0_1): making interface the new active one
+[Thu May 14 07:43:07 2026] 8a5092a47d7ed69: left promiscuous mode
+[Thu May 14 07:43:08 2026] ice 0000:2b:00.3: Disabling allmulticast mode succeeded
+[Thu May 14 07:43:08 2026] ice 0000:2b:00.1: Disabling allmulticast mode succeeded
+[Thu May 14 07:43:08 2026] 41ef854deb381de: left promiscuous mode
+[Thu May 14 07:43:08 2026] bh0: (slave bh0_1): Releasing backup interface
+[Thu May 14 07:43:09 2026] ice 0000:2b:00.3: VF 1 is now untrusted
+[Thu May 14 07:43:09 2026] bh0: (slave bh0_0): Releasing backup interface
+[Thu May 14 07:43:09 2026] bh0: (slave bh0_1): making interface the new active one
+[Thu May 14 07:43:09 2026] ice 0000:a2:00.2: Disabling allmulticast mode succeeded
+[Thu May 14 07:43:09 2026] ice 0000:a2:00.0: Disabling allmulticast mode succeeded
+[Thu May 14 07:43:10 2026] bh0: (slave bh0_0): Releasing backup interface
+[Thu May 14 07:43:10 2026] bh0: (slave bh0_1): making interface the new active one
+[Thu May 14 07:43:10 2026] bh0: (slave bh0_1): Releasing backup interface
+[Thu May 14 07:43:10 2026] 8021q: adding VLAN 0 to HW filter on device bh0_0
+[Thu May 14 07:43:10 2026] ice 0000:2b:00.1: VF 2 is now untrusted
+[Thu May 14 07:43:10 2026] iavf 0000:2b:09.5 bh0_0: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:43:11 2026] bh0: (slave bh0_1): Releasing backup interface
+[Thu May 14 07:43:11 2026] 8021q: adding VLAN 0 to HW filter on device bh0_1
+[Thu May 14 07:43:11 2026] iavf 0000:2b:1a.0 bh0_1: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:43:11 2026] bh0 (unregistering): Released all slaves
+[Thu May 14 07:43:11 2026] iavf 0000:2b:19.7: Reset indication received from the PF
+[Thu May 14 07:43:11 2026] iavf 0000:2b:19.7: Scheduling reset task
+[Thu May 14 07:43:11 2026] ice 0000:2b:00.3: VF 7 is now untrusted
+[Thu May 14 07:43:11 2026] iavf 0000:2b:19.7 ens2f3v7: renamed from bh2
+[Thu May 14 07:43:11 2026] ice 0000:a2:00.2: VF 0 is now untrusted
+[Thu May 14 07:43:11 2026] iavf 0000:2b:1a.0: Reset indication received from the PF
+[Thu May 14 07:43:11 2026] iavf 0000:2b:1a.0: Scheduling reset task
+[Thu May 14 07:43:11 2026] ice 0000:2b:00.3: VF 8 is now untrusted
+[Thu May 14 07:43:11 2026] ice 0000:a2:00.0: VF 3 is now untrusted
+[Thu May 14 07:43:12 2026] iavf 0000:2b:1a.0 bh0_1: Device resources not yet released
+[Thu May 14 07:43:12 2026] iavf 0000:2b:1a.0 ens2f3v8: renamed from bh0_1
+[Thu May 14 07:43:12 2026] iavf 0000:2b:09.4: Reset indication received from the PF
+[Thu May 14 07:43:12 2026] iavf 0000:2b:09.4: Scheduling reset task
+[Thu May 14 07:43:12 2026] ice 0000:2b:00.1: VF 4 is now untrusted
+[Thu May 14 07:43:12 2026] iavf 0000:2b:09.4 ens2f1v4: renamed from bh1
+[Thu May 14 07:43:12 2026] iavf 0000:2b:09.5: Reset indication received from the PF
+[Thu May 14 07:43:12 2026] iavf 0000:2b:09.5: Scheduling reset task
+[Thu May 14 07:43:12 2026] ice 0000:2b:00.1: VF 5 is now untrusted
+[Thu May 14 07:43:13 2026] iavf 0000:2b:09.5 ens2f1v5: renamed from bh0_0
+[Thu May 14 07:43:13 2026] 8a658b291cd0be0: left promiscuous mode
+[Thu May 14 07:43:13 2026] 76b479d08ef2987: left promiscuous mode
+[Thu May 14 07:43:13 2026] 47c7fa4db42ff04: left promiscuous mode
+[Thu May 14 07:43:13 2026] bh0 (unregistering): Released all slaves
+[Thu May 14 07:43:16 2026] 33c95e9d821c410: entered promiscuous mode
+[Thu May 14 07:43:16 2026] 9795a6974b805e0: entered promiscuous mode
+[Thu May 14 07:43:16 2026] 0b8483aa9cb65ad: entered promiscuous mode
+[Thu May 14 07:43:17 2026] ice 0000:2b:00.1: VF 3 is now trusted
+[Thu May 14 07:43:17 2026] ice 0000:2b:00.3: VF 2 is now trusted
+[Thu May 14 07:43:17 2026] iavf 0000:2b:09.7: Reset indication received from the PF
+[Thu May 14 07:43:17 2026] iavf 0000:2b:09.7: Scheduling reset task
+[Thu May 14 07:43:18 2026] ice 0000:2b:00.1: VF 7 is now trusted
+[Thu May 14 07:43:18 2026] iavf 0000:2b:09.7 temp_23: renamed from ens2f1v7
+[Thu May 14 07:43:18 2026] iavf 0000:2b:09.7 bh0_0: renamed from temp_23
+[Thu May 14 07:43:18 2026] 8021q: adding VLAN 0 to HW filter on device bh0_0
+[Thu May 14 07:43:18 2026] iavf 0000:2b:0a.0: Reset indication received from the PF
+[Thu May 14 07:43:18 2026] iavf 0000:2b:0a.0: Scheduling reset task
+[Thu May 14 07:43:18 2026] ice 0000:2b:00.1: VF 8 is now trusted
+[Thu May 14 07:43:18 2026] iavf 0000:2b:0a.0 temp_16: renamed from ens2f1v8
+[Thu May 14 07:43:18 2026] iavf 0000:2b:0a.0 bh1: renamed from temp_16
+[Thu May 14 07:43:18 2026] iavf 0000:2b:09.7 bh0_0: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:43:18 2026] ice 0000:a2:00.0: VF 2 is now trusted
+[Thu May 14 07:43:18 2026] 8021q: adding VLAN 0 to HW filter on device bh1
+[Thu May 14 07:43:18 2026] ice 0000:a2:00.2: VF 0 is now trusted
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.4: Reset indication received from the PF
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.4: Scheduling reset task
+[Thu May 14 07:43:18 2026] ice 0000:2b:00.3: VF 4 is now trusted
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.4 temp_44: renamed from ens2f3v4
+[Thu May 14 07:43:18 2026] iavf 0000:2b:0a.0 bh1: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.4 bh0_1: renamed from temp_44
+[Thu May 14 07:43:18 2026] 8021q: adding VLAN 0 to HW filter on device bh0_1
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.5: Reset indication received from the PF
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.5: Scheduling reset task
+[Thu May 14 07:43:18 2026] ice 0000:2b:00.3: VF 5 is now trusted
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.5 temp_42: renamed from ens2f3v5
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.4 bh0_1: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.5 bh2: renamed from temp_42
+[Thu May 14 07:43:18 2026] 8021q: adding VLAN 0 to HW filter on device bh2
+[Thu May 14 07:43:18 2026] 8021q: adding VLAN 0 to HW filter on device bh0_0
+[Thu May 14 07:43:18 2026] bh0: (slave bh0_0): Enslaving as a backup interface with a down link
+[Thu May 14 07:43:18 2026] iavf 0000:2b:19.5 bh2: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:43:18 2026] iavf 0000:2b:09.7 bh0_0: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:43:18 2026] 8021q: adding VLAN 0 to HW filter on device bh0_1
+[Thu May 14 07:43:18 2026] bh0: (slave bh0_1): Enslaving as a backup interface with a down link
+[Thu May 14 07:43:19 2026] 8021q: adding VLAN 0 to HW filter on device bh0
+[Thu May 14 07:43:19 2026] bh0: (slave bh0_0): link status definitely up, 10000 Mbps full duplex
+[Thu May 14 07:43:19 2026] bh0: (slave bh0_0): making interface the new active one
+[Thu May 14 07:43:19 2026] bh0: active interface up!
+[Thu May 14 07:43:19 2026] iavf 0000:2b:19.4 bh0_1: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:43:19 2026] bh0: (slave bh0_1): link status definitely up, 10000 Mbps full duplex
+[Thu May 14 07:43:27 2026] vfio-pci 0000:2b:09.3: enabling device (0000 -> 0002)
+[Thu May 14 07:43:28 2026] vfio-pci 0000:2b:19.2: enabling device (0000 -> 0002)
+[Thu May 14 07:43:28 2026] vfio-pci 0000:a2:01.2: enabling device (0000 -> 0002)
+[Thu May 14 07:43:29 2026] vfio-pci 0000:a2:11.0: enabling device (0000 -> 0002)
+[Thu May 14 07:43:29 2026] ice 0000:2b:00.1: VF 3 successfully set multicast promiscuous mode
+[Thu May 14 07:43:29 2026] ice 0000:2b:00.3: VF 2 successfully set multicast promiscuous mode
+[Thu May 14 07:43:29 2026] gen0: entered allmulticast mode
+[Thu May 14 07:43:30 2026] ice 0000:a2:00.0: VF 2 successfully set multicast promiscuous mode
+[Thu May 14 07:43:30 2026] ice 0000:a2:00.2: VF 0 successfully set multicast promiscuous mode
+[Thu May 14 07:43:30 2026] gen0: entered allmulticast mode
+[Thu May 14 07:43:30 2026] bh0_0: renamed from vf0
+[Thu May 14 07:43:31 2026] bh0_0: renamed from vf0
+[Thu May 14 07:43:32 2026] bh0_1: renamed from vf1
+[Thu May 14 07:43:33 2026] bh0_1: renamed from vf1
+[Thu May 14 07:43:34 2026] gen0: entered promiscuous mode
+[Thu May 14 07:43:35 2026] gen0: entered promiscuous mode
+[Thu May 14 07:44:59 2026] bh0 (unregistering): Released all slaves
+[Thu May 14 07:45:00 2026] bh0: (slave bh0_0): making interface the new active one
+[Thu May 14 07:45:00 2026] bh0: (slave bh0_0): Enslaving as an active interface with an up link
+[Thu May 14 07:45:00 2026] bh0: (slave bh0_1): Enslaving as a backup interface with an up link
+[Thu May 14 07:45:01 2026] 8021q: adding VLAN 0 to HW filter on device bh0
+[Thu May 14 07:45:03 2026] bh0: (slave bh0_0): making interface the new active one
+[Thu May 14 07:45:03 2026] bh0: (slave bh0_0): Enslaving as an active interface with an up link
+[Thu May 14 07:45:03 2026] bh0: (slave bh0_1): Enslaving as a backup interface with an up link
+[Thu May 14 07:45:03 2026] 8021q: adding VLAN 0 to HW filter on device bh0
+[Thu May 14 07:46:20 2026] 4819c1d1530f5ff: left promiscuous mode
+[Thu May 14 07:46:21 2026] bh0: (slave bh0_0): Releasing backup interface
+[Thu May 14 07:46:21 2026] bh0: (slave bh0_1): making interface the new active one
+[Thu May 14 07:46:21 2026] ice 0000:2b:00.3: Disabling allmulticast mode succeeded
+[Thu May 14 07:46:21 2026] ice 0000:2b:00.1: Disabling allmulticast mode succeeded
+[Thu May 14 07:46:21 2026] bh0: (slave bh0_0): Releasing backup interface
+[Thu May 14 07:46:21 2026] bh0: (slave bh0_1): making interface the new active one
+[Thu May 14 07:46:21 2026] ice 0000:a2:00.2: Disabling allmulticast mode succeeded
+[Thu May 14 07:46:21 2026] bh0: (slave bh0_1): Releasing backup interface
+[Thu May 14 07:46:21 2026] ice 0000:a2:00.0: Disabling allmulticast mode succeeded
+[Thu May 14 07:46:21 2026] bh0: (slave bh0_0): Releasing backup interface
+[Thu May 14 07:46:21 2026] bh0: (slave bh0_1): making interface the new active one
+[Thu May 14 07:46:21 2026] bh0: (slave bh0_1): Releasing backup interface
+[Thu May 14 07:46:21 2026] 8021q: adding VLAN 0 to HW filter on device bh0_0
+[Thu May 14 07:46:22 2026] bh0: (slave bh0_1): Releasing backup interface
+[Thu May 14 07:46:22 2026] 8021q: adding VLAN 0 to HW filter on device bh0_1
+[Thu May 14 07:46:22 2026] iavf 0000:2b:09.7 bh0_0: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:46:22 2026] ice 0000:2b:00.3: VF 2 is now untrusted
+[Thu May 14 07:46:22 2026] ice 0000:a2:00.2: VF 0 is now untrusted
+[Thu May 14 07:46:22 2026] bh0 (unregistering): Released all slaves
+[Thu May 14 07:46:22 2026] iavf 0000:2b:19.4 bh0_1: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:46:22 2026] ice 0000:2b:00.1: VF 3 is now untrusted
+[Thu May 14 07:46:22 2026] ice 0000:a2:00.0: VF 2 is now untrusted
+[Thu May 14 07:46:22 2026] iavf 0000:2b:19.5: Reset indication received from the PF
+[Thu May 14 07:46:22 2026] iavf 0000:2b:19.5: Scheduling reset task
+[Thu May 14 07:46:22 2026] ice 0000:2b:00.3: VF 5 is now untrusted
+[Thu May 14 07:46:22 2026] iavf 0000:2b:19.5 ens2f3v5: renamed from bh2
+[Thu May 14 07:46:22 2026] iavf 0000:2b:19.4: Reset indication received from the PF
+[Thu May 14 07:46:22 2026] iavf 0000:2b:19.4: Scheduling reset task
+[Thu May 14 07:46:22 2026] ice 0000:2b:00.3: VF 4 is now untrusted
+[Thu May 14 07:46:22 2026] iavf 0000:2b:19.4 ens2f3v4: renamed from bh0_1
+[Thu May 14 07:46:22 2026] iavf 0000:2b:0a.0: Reset indication received from the PF
+[Thu May 14 07:46:22 2026] iavf 0000:2b:0a.0: Scheduling reset task
+[Thu May 14 07:46:22 2026] ice 0000:2b:00.1: VF 8 is now untrusted
+[Thu May 14 07:46:22 2026] 9795a6974b805e0: left promiscuous mode
+[Thu May 14 07:46:22 2026] 8762601d94c5eca: left promiscuous mode
+[Thu May 14 07:46:22 2026] 0b8483aa9cb65ad: left promiscuous mode
+[Thu May 14 07:46:22 2026] iavf 0000:2b:0a.0 ens2f1v8: renamed from bh1
+[Thu May 14 07:46:22 2026] iavf 0000:2b:09.7: Reset indication received from the PF
+[Thu May 14 07:46:22 2026] iavf 0000:2b:09.7: Scheduling reset task
+[Thu May 14 07:46:22 2026] ice 0000:2b:00.1: VF 7 is now untrusted
+[Thu May 14 07:46:22 2026] bh0 (unregistering): Released all slaves
+[Thu May 14 07:46:23 2026] iavf 0000:2b:09.7 ens2f1v7: renamed from bh0_0
+[Thu May 14 07:46:23 2026] 33c95e9d821c410: left promiscuous mode
+[Thu May 14 07:46:51 2026] 99dc718d6d4f2b7: entered promiscuous mode
+[Thu May 14 07:46:54 2026] 99dc718d6d4f2b7: left promiscuous mode
+[Thu May 14 07:47:53 2026] libceph: mon2 (2)20.20.83.31:3300 session established
+[Thu May 14 07:47:53 2026] libceph: client1073199 fsid f4373567-6468-4061-b8b6-3c9f3be34347
+[Thu May 14 07:47:53 2026] libceph: mon2 (2)20.20.83.31:3300 session established
+[Thu May 14 07:47:53 2026] libceph: client1073202 fsid f4373567-6468-4061-b8b6-3c9f3be34347
+[Thu May 14 07:47:53 2026] libceph: mon0 (2)20.20.210.1:3300 session established
+[Thu May 14 07:47:53 2026] libceph: client833335 fsid f4373567-6468-4061-b8b6-3c9f3be34347
+[Thu May 14 07:47:53 2026] 2b36d6fbfc16f8c: entered promiscuous mode
+[Thu May 14 07:47:54 2026] d76009d67f26a09: entered promiscuous mode
+[Thu May 14 07:47:54 2026] fa4fc48d0fd03a1: entered promiscuous mode
+[Thu May 14 07:47:54 2026] 7b5719b2acaede9: entered promiscuous mode
+[Thu May 14 07:47:54 2026] 406b8fcc726f71f: entered promiscuous mode
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.6: Reset indication received from the PF
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.6: Scheduling reset task
+[Thu May 14 07:47:55 2026] ice 0000:2b:00.1: VF 6 is now trusted
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.6 temp_17: renamed from ens2f1v6
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.6 bh0_0: renamed from temp_17
+[Thu May 14 07:47:55 2026] 8021q: adding VLAN 0 to HW filter on device bh0_0
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.5: Reset indication received from the PF
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.5: Scheduling reset task
+[Thu May 14 07:47:55 2026] ice 0000:2b:00.1: VF 5 is now trusted
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.5 temp_27: renamed from ens2f1v5
+[Thu May 14 07:47:55 2026] ice 0000:a2:00.0: VF 3 is now trusted
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.6 bh0_0: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:47:55 2026] iavf 0000:2b:09.5 bh1: renamed from temp_27
+[Thu May 14 07:47:55 2026] 8021q: adding VLAN 0 to HW filter on device bh1
+[Thu May 14 07:47:55 2026] ice 0000:a2:00.2: VF 0 is now trusted
+[Thu May 14 07:47:55 2026] iavf 0000:2b:19.4: Reset indication received from the PF
+[Thu May 14 07:47:55 2026] iavf 0000:2b:19.4: Scheduling reset task
+[Thu May 14 07:47:55 2026] ice 0000:2b:00.3: VF 4 is now trusted
+[Thu May 14 07:47:55 2026] iavf 0000:2b:19.4 temp_44: renamed from ens2f3v4
+[Thu May 14 07:47:56 2026] iavf 0000:2b:19.4 bh0_1: renamed from temp_44
+[Thu May 14 07:47:56 2026] 8021q: adding VLAN 0 to HW filter on device bh0_1
+[Thu May 14 07:47:56 2026] iavf 0000:2b:19.5: Reset indication received from the PF
+[Thu May 14 07:47:56 2026] iavf 0000:2b:19.5: Scheduling reset task
+[Thu May 14 07:47:56 2026] ice 0000:2b:00.3: VF 5 is now trusted
+[Thu May 14 07:47:56 2026] iavf 0000:2b:19.5 temp_42: renamed from ens2f3v5
+[Thu May 14 07:47:56 2026] iavf 0000:2b:09.5 bh1: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:47:56 2026] ice 0000:2b:00.1: VF 2 is now trusted
+[Thu May 14 07:47:56 2026] iavf 0000:2b:19.4 bh0_1: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:47:56 2026] iavf 0000:2b:19.5 bh2: renamed from temp_42
+[Thu May 14 07:47:56 2026] 8021q: adding VLAN 0 to HW filter on device bh2
+[Thu May 14 07:47:56 2026] ice 0000:2b:00.3: VF 3 is now trusted
+[Thu May 14 07:47:56 2026] iavf 0000:2b:19.5 bh2: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:47:56 2026] 8021q: adding VLAN 0 to HW filter on device bh0_0
+[Thu May 14 07:47:56 2026] bh0: (slave bh0_0): Enslaving as a backup interface with a down link
+[Thu May 14 07:47:56 2026] 8021q: adding VLAN 0 to HW filter on device bh0_1
+[Thu May 14 07:47:56 2026] bh0: (slave bh0_1): Enslaving as a backup interface with a down link
+[Thu May 14 07:47:56 2026] 8021q: adding VLAN 0 to HW filter on device bh0
+[Thu May 14 07:47:56 2026] iavf 0000:2b:09.6 bh0_0: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:47:56 2026] iavf 0000:2b:19.4 bh0_1: NIC Link is Up Speed is 10 Gbps Full Duplex
+[Thu May 14 07:47:56 2026] bh0: (slave bh0_0): link status definitely up, 10000 Mbps full duplex
+[Thu May 14 07:47:56 2026] bh0: (slave bh0_1): link status definitely up, 10000 Mbps full duplex
+[Thu May 14 07:47:56 2026] bh0: (slave bh0_0): making interface the new active one
+[Thu May 14 07:47:56 2026] bh0: active interface up!
+[Thu May 14 07:48:05 2026] vfio-pci 0000:a2:01.3: enabling device (0000 -> 0002)
+[Thu May 14 07:48:06 2026] vfio-pci 0000:a2:11.0: enabling device (0000 -> 0002)
+[Thu May 14 07:48:06 2026] vfio-pci 0000:2b:09.2: enabling device (0000 -> 0002)
+[Thu May 14 07:48:07 2026] vfio-pci 0000:2b:19.3: enabling device (0000 -> 0002)
+[Thu May 14 07:48:07 2026] ice 0000:a2:00.0: VF 3 successfully set multicast promiscuous mode
+[Thu May 14 07:48:07 2026] ice 0000:a2:00.2: VF 0 successfully set multicast promiscuous mode
+[Thu May 14 07:48:07 2026] gen0: entered allmulticast mode
+[Thu May 14 07:48:07 2026] bh0 (unregistering): Released all slaves
+[Thu May 14 07:48:07 2026] ice 0000:2b:00.1: VF 2 successfully set multicast promiscuous mode
+[Thu May 14 07:48:08 2026] ice 0000:2b:00.3: VF 3 successfully set multicast promiscuous mode
+[Thu May 14 07:48:08 2026] gen0: entered allmulticast mode
+[Thu May 14 07:48:08 2026] bh0_0: renamed from vf0
+[Thu May 14 07:48:09 2026] bh0_0: renamed from vf0
+[Thu May 14 07:48:10 2026] bh0_1: renamed from vf1
+[Thu May 14 07:48:11 2026] bh0_1: renamed from vf1
+[Thu May 14 07:48:12 2026] gen0: entered promiscuous mode
+[Thu May 14 07:48:13 2026] gen0: entered promiscuous mode
+[Thu May 14 07:49:55 2026] bh0: (slave bh0_0): making interface the new active one
+[Thu May 14 07:49:55 2026] bh0: (slave bh0_0): Enslaving as an active interface with an up link
+[Thu May 14 07:49:55 2026] bh0: (slave bh0_1): Enslaving as a backup interface with an up link
+[Thu May 14 07:49:55 2026] 8021q: adding VLAN 0 to HW filter on device bh0
+[Thu May 14 07:49:58 2026] bh0: (slave bh0_0): making interface the new active one
+[Thu May 14 07:49:58 2026] bh0: (slave bh0_0): Enslaving as an active interface with an up link
+[Thu May 14 07:49:58 2026] bh0: (slave bh0_1): Enslaving as a backup interface with an up link
+[Thu May 14 07:49:58 2026] 8021q: adding VLAN 0 to HW filter on device bh0
+[Thu May 14 09:03:51 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:03:53 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:03:54 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:03:57 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:03:57 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:00 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:00 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:03 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:05 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:09 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:11 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:15 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:16 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:04:19 2026] bh0: option mode: unable to set because the bond device has slaves
+[Thu May 14 09:06:00 2026] ice 0000:2b:00.1: MAC 33:33:ff:00:00:68 does not exist for VF 2
+[Thu May 14 09:06:00 2026] ice 0000:2b:00.3: MAC 33:33:ff:00:00:68 does not exist for VF 3
+[Thu May 14 09:19:52 2026] bb485882459fc27: entered promiscuous mode
+[Thu May 14 09:19:52 2026] 62cd0173ca10e01: entered promiscuous mode
+[Thu May 14 09:19:57 2026] bh0: (slave bh0_0): Releasing backup interface
+[Thu May 14 09:19:57 2026] bh0: (slave bh0_1): making interface the new active one
