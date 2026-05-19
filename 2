@@ -1,220 +1,295 @@
-This is highly relevant.
+Based on the alarm sequence and the long-run PS traffic scenario, this looks more like a shared storage / filesystem I/O stall affecting CMP and DMP rather than an application crash.
 
-The repeated kernel messages:
+Key observations:
 
-ceph: get_quota_realm: ino (...) null i_snap_realm
+dmp disk-access-fail occurred first at 08:13:11
 
-strongly indicate the issue is coming from the CephFS client/kernel layer used by your OpenShift PVC storage.
+Then both:
 
-And the timing matches your alarms exactly:
+CMP[0]/SHARED
 
-Ceph warnings start before alarm
+CMP[1]/SHARED
 
-dmp disk-access-fail at 08:13:11
 
-then CMP shared/log failures
+Afterwards:
 
+CMP[1]/LOG
 
-So the storage correlation is now very strong.
 
-What this means
+PM collection also failed later (PM DATA COLLECTION FAIL)
 
-null i_snap_realm is typically seen when:
+No pod restart occurred:
 
-CephFS metadata becomes temporarily inconsistent,
+all pods still Running
 
-snapshot realm lookup fails,
+RESTARTS = 0
 
-client loses proper metadata association,
 
-or MDS communication/metadata handling is delayed.
 
+This strongly indicates:
 
-This can happen during:
+containers stayed alive,
 
-heavy metadata operations,
+but disk I/O temporarily became unavailable or blocked.
 
-massive file create/delete,
 
-directory traversal pressure,
+Possible root causes
 
-MDS overload,
+1. Shared PVC / storage backend latency (Most probable)
 
-client cache inconsistency,
+Since both CMP instances reported:
 
-network latency between node and Ceph MDS.
+/SHARED
 
+nearly same timestamp,
 
-In your case:
 
-multiplexing longrun
+the common dependency is likely:
 
-PM generation
+RWX shared volume,
 
-DB/log writes
+NFS,
 
-600 TM500 UEs
+CephFS,
 
-continuous reselection
+Gluster,
 
+or hostPath backed shared storage.
 
-likely created very high metadata IOPS on CephFS shared storage.
 
-Why CMP/DMP got affected
+Under heavy:
 
-CMP and DMP probably use:
+30 real UE PS calls
 
-shared RWX CephFS volume,
+600 TM500 FTP sessions
 
-or CephFS-backed PVCs.
+cell reselection every minute
 
 
-When CephFS metadata operations stall:
+there may be:
 
-file open/write blocks,
+excessive PM/log/database writes,
 
-DB sync blocks,
+inode exhaustion,
 
-logging blocks,
+NFS timeout,
 
-application raises disk-access-fail.
+storage latency spike,
 
+fs freeze.
 
-Since applications remained running:
 
-this was not pod crash,
+The DMP DB alarm before CMP alarms supports this sequence: DB write stall -> shared filesystem inaccessible -> CMP logging failure
 
-but filesystem access stall.
 
+---
 
-Most probable backend issue
+2. Node-level disk pressure / IO saturation
 
-Priority order:
+Check whether the worker/master node hosting:
 
-1. CephFS MDS overload
+cmp0
 
+cmp1
 
-2. Ceph metadata latency spike
+dmp0
 
 
-3. CephFS kernel client bug/state issue
+experienced:
 
+high iowait,
 
-4. Network latency to Ceph cluster
+disk full,
 
+filesystem freeze,
 
-5. Excessive small-file operations from PM/logging
+kubelet timeout,
 
+CRI-O storage pressure.
 
 
-Very likely NOT:
+Especially check:
 
-application defect alone
+oc adm top node
 
-Kubernetes issue
+and node logs:
 
-CRI-O issue
-
-
-Critical thing to check now
-
-Check Ceph health immediately:
-
-oc -n openshift-storage exec -it deploy/rook-ceph-tools -- ceph -s
+journalctl -u kubelet
+dmesg -T
 
 Look for:
 
-MDS slow requests
+EXT4-fs error
 
-MDS laggy
+XFS freeze
 
-slow ops
+blk_update_request
 
-clients failing to respond
+task blocked
 
-degraded
-
-cache oversized
+NFS timeout
 
 
-Then check:
 
-ceph fs status
+---
 
-and:
+3. Shared volume mount transient failure
 
-ceph health detail
+Since alarms auto-cleared:
 
-Important indicators
+storage probably recovered automatically.
 
-Especially look for:
 
-MDS_SLOW_REQUEST
-MDS_CLIENT_RECALL
-MDS_HEALTH_CLIENT_LATE_RELEASE
-slow metadata IOs
+Possible:
 
-Also inspect MDS pod logs:
+NFS server hiccup
 
-oc -n openshift-storage get pod | grep mds
+network interruption to storage backend
+
+stale file handle
+
+CSI timeout
+
+
+Check:
+
+oc describe pod bscf2000-cmp0-878bdf875-n4kfd
+oc describe pod bscf2000-cmp1-7cf46df4c8-rgv64
+oc describe pod bscf2000-dmp0-758749988c-pxxpn
+
+Look for:
+
+MountVolume.SetUp failed
+
+Unable to attach
+
+rpc timeout
+
+Read-only filesystem
+
+
+
+---
+
+4. Application generating excessive files/logs
+
+cmp disk-access-fail during multiplexing longrun may happen if:
+
+log partition reaches threshold,
+
+too many PM files,
+
+tmp directory overflow,
+
+inode exhaustion.
+
+
+Check inside CMP:
+
+df -h
+df -i
+du -sh /*
+
+Also check:
+
+find / -xdev -type f | wc -l
+
+
+---
+
+Recommended immediate checks
+
+A. Identify node placement
+
+oc get po -o wide | egrep 'cmp|dmp'
+
+See whether all affected pods are on same node.
+
+If yes:
+
+issue is probably node-local storage or node IO saturation.
+
+
+
+---
+
+B. Check node dmesg
+
+On affected node:
+
+dmesg -T | egrep -i 'error|xfs|ext4|nfs|blk|freeze|hung|timeout'
+
+
+---
+
+C. Check PVC usage
+
+oc get pvc
 
 Then:
 
-oc -n openshift-storage logs <mds-pod>
-
-Look around:
-
-08:13
-
-08:14
+oc describe pvc <pvc-name>
 
 
-Likely you will find:
+---
 
-slow requests,
+D. Check filesystem usage inside pods
 
-cache pressure,
+oc exec -it bscf2000-cmp0-878bdf875-n4kfd -- df -h
+oc exec -it bscf2000-cmp0-878bdf875-n4kfd -- df -i
 
-client eviction warnings,
-
-metadata throttling.
-
-
-Additional verification
-
-Find which PVCs CMP/DMP use:
-
-oc describe pod bscf2000-cmp0-878bdf875-n4kfd
-
-If storage class is CephFS RWX:
-
-root cause confidence becomes very high.
+Same for DMP.
 
 
-Why it auto-cleared
+---
 
-CephFS transient metadata stalls often self-recover when:
+E. Check kube events around failure time
 
-MDS catches up,
-
-client retries succeed,
-
-cache pressure reduces,
-
-IO burst subsides.
+oc get events -A --sort-by=.lastTimestamp | tail -200
 
 
-That exactly matches:
+---
 
-auto-cleared alarms,
+Most likely conclusion
 
-no pod restart,
+The alarm pattern suggests:
 
-temporary disk-access-fail.
+Heavy PS traffic
+   ↓
+DMP database/storage latency
+   ↓
+Shared filesystem access timeout
+   ↓
+CMP SHARED disk-access-fail
+   ↓
+CMP LOG disk-access-fail
+   ↓
+PM collection failure
+   ↓
+Storage recovered automatically
+
+Since:
+
+pods never restarted,
+
+alarms auto-cleared,
+
+multiple components affected simultaneously,
 
 
-Likely RCA summary
+this is unlikely to be:
 
-You can summarize internally as:
+application crash,
 
-> Under heavy GPRS/EDGE multiplexing longrun traffic, CephFS metadata access latency/stall occurred on shared storage volumes used by CMP/DMP. This caused temporary filesystem access failures leading to cmp disk-access-fail and dmp disk-access-fail alarms. The issue recovered automatically after CephFS metadata operations stabilized. No pod/container restart occurred. Kernel logs showed repeated CephFS client warnings (null i_snap_realm) around the failure window, indicating CephFS metadata handling instability or MDS overload.
+container issue,
+
+Kubernetes scheduling issue.
+
+
+It is more likely:
+
+storage backend latency,
+
+filesystem stall,
+
+or node disk I/O bottleneck during heavy multiplexing traffic.
