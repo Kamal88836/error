@@ -1,38 +1,5 @@
-[root@bastion ~]# oc -n openshift-storage get deploy
-NAME                                                       READY   UP-TO-DATE   AVAILABLE   AGE
-ceph-csi-controller-manager                                1/1     1            1           13d
-cnpg-controller-manager                                    1/1     1            1           13d
-csi-addons-controller-manager                              1/1     1            1           13d
-noobaa-endpoint                                            1/1     1            1           13d
-noobaa-operator                                            1/1     1            1           13d
-ocs-client-operator-console                                1/1     1            1           13d
-ocs-client-operator-controller-manager                     1/1     1            1           13d
-ocs-metrics-exporter                                       1/1     1            1           13d
-ocs-operator                                               1/1     1            1           13d
-ocs-provider-server                                        1/1     1            1           13d
-odf-console                                                1/1     1            1           13d
-odf-external-snapshotter-operator                          1/1     1            1           13d
-odf-operator-controller-manager                            1/1     1            1           13d
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin           2/2     2            2           13d
-openshift-storage.rbd.csi.ceph.com-ctrlplugin              2/2     2            2           13d
-prometheus-operator                                        0/0     0            0           13d
-rook-ceph-crashcollector-master01.bscf2000.samsung.local   1/1     1            1           13d
-rook-ceph-crashcollector-master02.bscf2000.samsung.local   1/1     1            1           13d
-rook-ceph-crashcollector-master03.bscf2000.samsung.local   1/1     1            1           13d
-rook-ceph-exporter-master01.bscf2000.samsung.local         1/1     1            1           13d
-rook-ceph-exporter-master02.bscf2000.samsung.local         1/1     1            1           13d
-rook-ceph-exporter-master03.bscf2000.samsung.local         1/1     1            1           13d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a          1/1     1            1           13d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b          1/1     1            1           13d
-rook-ceph-mgr-a                                            1/1     1            1           13d
-rook-ceph-mgr-b                                            1/1     1            1           13d
-rook-ceph-mon-a                                            1/1     1            1           13d
-rook-ceph-mon-b                                            1/1     1            1           13d
-rook-ceph-mon-c                                            1/1     1            1           13d
-rook-ceph-operator                                         1/1     1            1           13d
-rook-ceph-osd-0                                            1/1     1            1           13d
-rook-ceph-osd-1                                            1/1     1            1           13d
-rook-ceph-osd-2                                            1/1     1            1           13d
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a         1/1     1            1           13d
-ux-backend-server                                          1/1     1            1           13d
+[root@bastion ~]# oc -n openshift-storage exec -it deploy/rook-ceph-tools -- ceph -s
+Error from server (NotFound): deployments.apps "rook-ceph-tools" not found
+[root@bastion ~]# oc -n openshift-storage exec -it deploy/rook-ceph-tools -- ceph health detail
+Error from server (NotFound): deployments.apps "rook-ceph-tools" not found
 [root@bastion ~]#
