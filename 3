@@ -20,3 +20,18 @@ debug 2026-05-19T08:16:47.180+0000 7efe2efc9640  0 log_channel(audit) log [DBG] 
 debug 2026-05-19T08:17:17.180+0000 7efe2efc9640  0 mon.b@1(peon) e3 handle_command mon_command({"prefix": "osd blocklist ls", "format": "json"} v 0)
 debug 2026-05-19T08:17:17.180+0000 7efe2efc9640  0 log_channel(audit) log [DBG] : from='mgr.35833 10.10.4.58:0/4167225224' entity='mgr.a' cmd={"prefix": "osd blocklist ls", "format": "json"} : dispatch
 Stalls(count): 0 level0_slowdown, 0 level0_slowdown_with_compaction, 0 level0_numfiles, 0 level0_numfiles_with_compaction, 0 stop for pending_compaction_bytes, 0 slowdown for pending_compaction_bytes, 0 memtable_compaction, 0 memtable_slowdown, interval 0 total count
+[root@bastion ~]# oc logs  rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-7f9868f6h65ws --since=8h | grep -Ei 'stale|blocklist|reconnect|evict|client'
+Defaulted container "mds" out of: mds, log-collector, chown-container-data-dir (init)
+debug 2026-05-19T02:43:24.725+0000 7f1680d62640  0 log_channel(cluster) log [WRN] : slow request 34.999299 seconds old, received at 2026-05-19T02:42:49.726609+0000: client_request(client.1073202:507996 create owner_uid=2101, owner_gid=2001 #0x100001474ff/diskAlmChk_cmp1.txt 2026-05-19T02:42:49.724579+0000 caller_uid=2101, caller_gid=2001{10,2001,}) currently failed to wrlock, waiting
+debug 2026-05-19T02:43:24.725+0000 7f1680d62640  0 log_channel(cluster) log [WRN] : slow request 34.998628 seconds old, received at 2026-05-19T02:42:49.727279+0000: client_request(client.1073202:508009 getattr AsXsFs #0x10000146eff 2026-05-19T02:42:49.725579+0000 caller_uid=2101, caller_gid=2001{10,2001,}) currently failed to rdlock, waiting
+debug 2026-05-19T02:43:49.725+0000 7f1680d62640  0 log_channel(cluster) log [WRN] : evicting unresponsive client worker01.bscf2000.samsung.local (1073187), after 191.458 seconds
+debug 2026-05-19T02:43:49.725+0000 7f1680d62640  1 mds.0.5 Evicting (and blocklisting) client session 1073187 (100.64.0.4:0/2879872317)
+debug 2026-05-19T02:43:49.725+0000 7f1680d62640  0 log_channel(cluster) log [INF] : Evicting (and blocklisting) client session 1073187 (100.64.0.4:0/2879872317)
+debug 2026-05-19T02:43:50.317+0000 7f1684d6a640  0 --2- [v2:10.10.4.66:6800/2284834474,v1:10.10.4.66:6801/2284834474] >> 100.64.0.4:0/2879872317 conn(0x558ea7363400 0x558eab433080 crc :-1 s=SESSION_ACCEPTING pgs=29 cs=0 l=0 rev1=1 crypto rx=0 tx=0 comp rx=0 tx=0).handle_reconnect no existing connection exists, reseting client
+debug 2026-05-19T02:43:50.319+0000 7f1682565640  0 mds.0.server  ignoring msg from not-open sessionclient_reconnect(4 caps 3 realms )
+debug 2026-05-19T02:44:29.725+0000 7f1680d62640  0 log_channel(cluster) log [WRN] : evicting unresponsive client worker02.bscf2000.samsung.local (833335), after 225.098 seconds
+debug 2026-05-19T02:44:29.725+0000 7f1680d62640  1 mds.0.5 Evicting (and blocklisting) client session 833335 (100.64.0.5:0/2020367450)
+debug 2026-05-19T02:44:29.725+0000 7f1680d62640  0 log_channel(cluster) log [INF] : Evicting (and blocklisting) client session 833335 (100.64.0.5:0/2020367450)
+debug 2026-05-19T02:44:30.349+0000 7f1685d6c640  0 --2- [v2:10.10.4.66:6800/2284834474,v1:10.10.4.66:6801/2284834474] >> 100.64.0.5:0/2020367450 conn(0x558ea5ebbc00 0x558eab433080 crc :-1 s=SESSION_ACCEPTING pgs=40 cs=0 l=0 rev1=1 crypto rx=0 tx=0 comp rx=0 tx=0).handle_reconnect no existing connection exists, reseting client
+debug 2026-05-19T02:44:30.350+0000 7f1682565640  0 mds.0.server  ignoring msg from not-open sessionclient_reconnect(3 caps 3 realms )
+[root@bastion ~]#
