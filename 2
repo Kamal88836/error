@@ -1,21 +1,199 @@
-[root@worker02 ~]# ethtool -S ens2f1 | egrep -i 'err|drop|reset|fail'
-     rx_dropped: 0
-     rx_alloc_fail: 0
-     rx_pg_alloc_fail: 0
-     tx_errors: 0
-     tx_errors.nic: 0
-     tx_dropped_link_down.nic: 0
-     rx_eipe_error.nic: 0
-     rx_dropped.nic: 0
-     rx_crc_errors.nic: 0
-[root@worker02 ~]# ethtool -S ens2f3 | egrep -i 'err|drop|reset|fail'
-     rx_dropped: 0
-     rx_alloc_fail: 0
-     rx_pg_alloc_fail: 0
-     tx_errors: 0
-     tx_errors.nic: 0
-     tx_dropped_link_down.nic: 0
-     rx_eipe_error.nic: 0
-     rx_dropped.nic: 0
-     rx_crc_errors.nic: 0
-[root@worker02 ~]#
+You should mainly check these Ceph pods in namespace:
+
+openshift-storage
+
+Most important pods for your issue
+
+1. Ceph MON pods (VERY IMPORTANT)
+
+These will prove monitor session disconnects around:
+
+Tue May 19 02:40:55
+
+Get pods:
+
+oc get pods -n openshift-storage | grep mon
+
+Usually like:
+
+rook-ceph-mon-a
+
+rook-ceph-mon-b
+
+rook-ceph-mon-c
+
+
+Check logs around timestamp:
+
+oc logs -n openshift-storage rook-ceph-mon-a --since=8h | grep -Ei 'session|reset|timeout|slow|blocklist|deny|lost'
+
+Also check b and c.
+
+You may see:
+
+client disconnects
+
+reconnects
+
+socket closed
+
+auth/session failures
+
+
+
+---
+
+2. Ceph MDS pods (MOST IMPORTANT for your logs)
+
+Because your node showed:
+
+ceph: mds0 caps stale
+ceph: mds0 session blocklisted
+
+Get MDS pods:
+
+oc get pods -n openshift-storage | grep mds
+
+Usually:
+
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a
+
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b
+
+
+Check logs:
+
+oc logs -n openshift-storage <mds-pod> --since=8h | grep -Ei 'stale|blocklist|reconnect|evict|client'
+
+This is the BEST proof.
+
+You will likely see:
+
+client became stale
+
+session evicted
+
+client blocklisted
+
+reconnect denied
+
+
+matching your worker02 timestamps.
+
+
+---
+
+3. OSD pods
+
+If storage I/O stalled during network flap.
+
+Get OSD pods:
+
+oc get pods -n openshift-storage | grep osd
+
+Check:
+
+oc logs -n openshift-storage <osd-pod> --since=8h | grep -Ei 'slow|heartbeat|timeout|blocked|reset'
+
+Possible evidence:
+
+slow ops
+
+heartbeat timeout
+
+network stalls
+
+
+
+---
+
+4. CSI RBD / CephFS plugin pods (VERY useful)
+
+Since filesystem became RO.
+
+Get pods:
+
+oc get pods -n openshift-storage | grep csi
+
+Especially:
+
+csi-rbdplugin
+
+csi-cephfsplugin
+
+
+Check worker02-specific pod.
+
+Get node placement:
+
+oc get pods -n openshift-storage -o wide | grep worker02
+
+Then logs:
+
+oc logs -n openshift-storage <csi-pod> --since=8h
+
+Look for:
+
+mount timeout
+
+transport endpoint shutdown
+
+rados timeout
+
+reconnect failures
+
+
+Best evidence chain
+
+Your strongest proof chain will be:
+
+On worker02 kernel logs
+
+VF reset storm
+bond flap
+libceph session lost
+
+PLUS
+
+In MDS logs
+
+client stale
+session blocklisted
+reconnect denied
+
+PLUS
+
+In MON logs
+
+client session reset/disconnect
+
+That proves:
+
+network instability,
+
+caused Ceph disconnect,
+
+caused filesystem corruption/remount RO.
+
+
+Very useful command
+
+You can correlate timestamps quickly:
+
+oc logs -n openshift-storage <mds-pod> --since-time=2026-05-19T02:35:00Z
+
+and:
+
+oc logs -n openshift-storage <mon-pod> --since-time=2026-05-19T02:35:00Z
+
+Focus window:
+
+02:40 -> 02:45 UTC
+
+because your worker02 logs show:
+
+session lost at 02:40:55
+
+stale caps 02:41:35
+
+reconnect denied 02:44:15.
