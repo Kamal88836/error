@@ -1,41 +1,7 @@
-[root@bastion ~]# oc get cephcluster -A
-NAMESPACE           NAME                             DATADIRHOSTPATH   MONCOUNT   AGE   PHASE   MESSAGE                        HEALTH      EXTERNAL   FSID
-openshift-storage   ocs-storagecluster-cephcluster   /var/lib/rook     3          13d   Ready   Cluster created successfully   HEALTH_OK              f4373567-6468-4061-b8b6-3c9f3be34347
-[root@bastion ~]# oc get deploy
-NAME                                                       READY   UP-TO-DATE   AVAILABLE   AGE
-ceph-csi-controller-manager                                1/1     1            1           13d
-cnpg-controller-manager                                    1/1     1            1           13d
-csi-addons-controller-manager                              1/1     1            1           13d
-noobaa-endpoint                                            1/1     1            1           13d
-noobaa-operator                                            1/1     1            1           13d
-ocs-client-operator-console                                1/1     1            1           13d
-ocs-client-operator-controller-manager                     1/1     1            1           13d
-ocs-metrics-exporter                                       1/1     1            1           13d
-ocs-operator                                               1/1     1            1           13d
-ocs-provider-server                                        1/1     1            1           13d
-odf-console                                                1/1     1            1           13d
-odf-external-snapshotter-operator                          1/1     1            1           13d
-odf-operator-controller-manager                            1/1     1            1           13d
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin           2/2     2            2           13d
-openshift-storage.rbd.csi.ceph.com-ctrlplugin              2/2     2            2           13d
-prometheus-operator                                        0/0     0            0           13d
-rook-ceph-crashcollector-master01.bscf2000.samsung.local   1/1     1            1           13d
-rook-ceph-crashcollector-master02.bscf2000.samsung.local   1/1     1            1           13d
-rook-ceph-crashcollector-master03.bscf2000.samsung.local   1/1     1            1           13d
-rook-ceph-exporter-master01.bscf2000.samsung.local         1/1     1            1           13d
-rook-ceph-exporter-master02.bscf2000.samsung.local         1/1     1            1           13d
-rook-ceph-exporter-master03.bscf2000.samsung.local         1/1     1            1           13d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a          1/1     1            1           13d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b          1/1     1            1           13d
-rook-ceph-mgr-a                                            1/1     1            1           13d
-rook-ceph-mgr-b                                            1/1     1            1           13d
-rook-ceph-mon-a                                            1/1     1            1           13d
-rook-ceph-mon-b                                            1/1     1            1           13d
-rook-ceph-mon-c                                            1/1     1            1           13d
-rook-ceph-operator                                         1/1     1            1           13d
-rook-ceph-osd-0                                            1/1     1            1           13d
-rook-ceph-osd-1                                            1/1     1            1           13d
-rook-ceph-osd-2                                            1/1     1            1           13d
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a         1/1     1            1           13d
-ux-backend-server                                          1/1     1            1           13d
-[root@bastion ~]#
+command terminated with exit code 130
+[root@bastion ~]# oc rsh deploy/rook-ceph-operator
+sh-5.1$ ceph -s
+Error initializing cluster client: ObjectNotFound('RADOS object not found (error calling conf_read_file)')
+sh-5.1$ ceph health detail
+Error initializing cluster client: ObjectNotFound('RADOS object not found (error calling conf_read_file)')
+sh-5.1$
