@@ -1,29 +1,57 @@
-[root@bastion ~]# oc -n openshift-storage get po | egrep 'tools|mgr|mon|mds'
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-655b6567bm4b6   2/2     Running            0                13d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-7f9868f6h65ws   2/2     Running            0                13d
-rook-ceph-mgr-a-bc65b6668-wr2l6                                   3/3     Running            0                13d
-rook-ceph-mgr-b-86c4c884f7-72lg2                                  3/3     Running            0                13d
-rook-ceph-mon-a-746d5cfdd6-9gnhr                                  2/2     Running            0                13d
-rook-ceph-mon-b-5759f6c889-drgjq                                  2/2     Running            0                13d
-rook-ceph-mon-c-696f5f859c-fsmbh                                  2/2     Running            0                13d
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]# oc rsh rook-ceph-mgr-a-bc65b6668-wr2l6
-Defaulted container "mgr" out of: mgr, watch-active, log-collector, chown-container-data-dir (init)
-sh-5.1# ceph -s
-2026-05-19T09:26:57.465+0000 7f4665385640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
-2026-05-19T09:26:57.465+0000 7f4664b84640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
-2026-05-19T09:26:57.466+0000 7f4665b86640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
-[errno 13] RADOS permission denied (error connecting to the cluster)
-sh-5.1# ceph health detail
-2026-05-19T09:27:44.408+0000 7ff67536b640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
-2026-05-19T09:27:44.409+0000 7ff67636d640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
-2026-05-19T09:27:44.409+0000 7ff675b6c640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
-[errno 13] RADOS permission denied (error connecting to the cluster)
-sh-5.1# ceph fs status
-2026-05-19T09:27:58.062+0000 7fa3998bf640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
-2026-05-19T09:27:58.063+0000 7fa3990be640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
-2026-05-19T09:27:58.063+0000 7fa39a0c0640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
+sh-5.1# ls -l /etc/ceph/
+total 0
+lrwxrwxrwx. 1 root 1000760000  16 May  6 08:07 ceph.conf -> ..data/ceph.conf
+drwxrwsrwt. 3 root 1000760000 100 May  6 08:07 keyring-store
+sh-5.1# env | grep CEPH
+ROOK_CEPH_MON_A_SERVICE_HOST=20.20.83.31
+ROOK_CEPH_MON_A_SERVICE_PORT=3300
+ROOK_CEPH_MON_A_PORT=tcp://20.20.83.31:3300
+CEPH_DEVEL=false
+ROOK_CEPH_MON_HOST=[v2:20.20.83.31:3300],[v2:20.20.210.1:3300],[v2:20.20.7.72:3300]
+ROOK_CEPH_MON_C_PORT_3300_TCP_PORT=3300
+CEPH_POINT_RELEASE=
+ROOK_CEPH_MON_A_PORT_3300_TCP_PORT=3300
+ROOK_CEPH_MON_C_SERVICE_PORT=3300
+ROOK_CEPH_MON_C_PORT=tcp://20.20.7.72:3300
+ROOK_CEPH_EXPORTER_PORT_9926_TCP_ADDR=20.20.52.60
+ROOK_CEPH_MON_B_SERVICE_HOST=20.20.210.1
+ROOK_CEPH_EXPORTER_PORT_9926_TCP_PROTO=tcp
+ROOK_CEPH_EXPORTER_SERVICE_HOST=20.20.52.60
+ROOK_CEPH_MON_C_SERVICE_PORT_TCP_MSGR2=3300
+ROOK_CEPH_MON_A_PORT_3300_TCP=tcp://20.20.83.31:3300
+CEPH_VERSION=squid
+ROOK_CEPH_MON_C_SERVICE_HOST=20.20.7.72
+CEPH_REF=squid
+ROOK_CEPH_MON_B_PORT_3300_TCP=tcp://20.20.210.1:3300
+ROOK_CEPH_EXPORTER_SERVICE_PORT=9926
+ROOK_CEPH_CLUSTER_CRD_NAME=ocs-storagecluster-cephcluster
+ROOK_CEPH_MON_A_SERVICE_PORT_TCP_MSGR2=3300
+ROOK_CEPH_MON_B_PORT=tcp://20.20.210.1:3300
+ROOK_CEPH_MON_INITIAL_MEMBERS=a,b,c
+ROOK_CEPH_CLUSTER_CRD_VERSION=v1
+ROOK_CEPH_MON_B_PORT_3300_TCP_ADDR=20.20.210.1
+ROOK_CEPH_MON_A_PORT_3300_TCP_ADDR=20.20.83.31
+ROOK_CEPH_EXPORTER_SERVICE_PORT_CEPH_EXPORTER_HTTP_METRICS=9926
+ROOK_CEPH_MON_B_PORT_3300_TCP_PROTO=tcp
+CEPH_ARGS=--mon-host [v2:20.20.83.31:3300],[v2:20.20.210.1:3300],[v2:20.20.7.72:3300] --keyring /etc/ceph/keyring-store/keyring
+ROOK_CEPH_MON_B_SERVICE_PORT=3300
+ROOK_CEPH_MON_C_PORT_3300_TCP_ADDR=20.20.7.72
+ROOK_CEPH_MON_C_PORT_3300_TCP=tcp://20.20.7.72:3300
+ROOK_CEPH_MON_B_SERVICE_PORT_TCP_MSGR2=3300
+CEPH_USE_RANDOM_NONCE=true
+ROOK_CEPH_EXPORTER_PORT_9926_TCP=tcp://20.20.52.60:9926
+ROOK_CEPH_MON_B_PORT_3300_TCP_PORT=3300
+ROOK_CEPH_MON_A_PORT_3300_TCP_PROTO=tcp
+ROOK_CEPH_EXPORTER_PORT=tcp://20.20.52.60:9926
+ROOK_CEPH_MON_C_PORT_3300_TCP_PROTO=tcp
+ROOK_CEPH_EXPORTER_PORT_9926_TCP_PORT=9926
+sh-5.1# ceph -c /etc/ceph/ceph.conf -k /etc/ceph/keyring-store/
+..2026_05_06_08_07_55.2016289057/ ..data/                           keyring
+sh-5.1# ceph -c /etc/ceph/ceph.conf -k /etc/ceph/keyring-store/
+..2026_05_06_08_07_55.2016289057/ ..data/                           keyring
+sh-5.1# ceph -c /etc/ceph/ceph.conf -k /etc/ceph/keyring-store/keyring -s
+2026-05-19T09:30:31.068+0000 7f2f69345640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
+2026-05-19T09:30:31.068+0000 7f2f5bfff640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
+2026-05-19T09:30:31.069+0000 7f2f68b44640 -1 monclient(hunting): handle_auth_bad_method server allowed_methods [2] but i only support [2,1]
 [errno 13] RADOS permission denied (error connecting to the cluster)
 sh-5.1#
