@@ -1,119 +1,152 @@
-[root@bastion ~]# oc get pods -A -o wide | grep worker02
-cnf                                                bscf2000-bip1-659ff58fb4-f97hh                                    1/1     Running            0                5d      10.10.3.35     worker02.bscf2000.samsung.local   <none>           <none>
-cnf                                                bscf2000-bpp1-76bb988f78-z2zr8                                    1/1     Running            0                5d      10.10.3.37     worker02.bscf2000.samsung.local   <none>           <none>
-cnf                                                bscf2000-bpp3-778676fc74-8bwrh                                    1/1     Running            0                5d      10.10.3.36     worker02.bscf2000.samsung.local   <none>           <none>
-cnf                                                bscf2000-cmp1-7cf46df4c8-rgv64                                    1/1     Running            0                5d      10.10.3.33     worker02.bscf2000.samsung.local   <none>           <none>
-cnf                                                bscf2000-dmp0-758749988c-pxxpn                                    1/1     Running            0                5d      10.10.3.34     worker02.bscf2000.samsung.local   <none>           <none>
-openshift-cluster-node-tuning-operator             tuned-btt85                                                       1/1     Running            5                14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-dns                                      dns-default-849gg                                                 2/2     Running            10               13d     10.10.3.7      worker02.bscf2000.samsung.local   <none>           <none>
-openshift-dns                                      node-resolver-sjzbb                                               1/1     Running            5                14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-image-registry                           node-ca-xgp9z                                                     1/1     Running            5                14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-ingress-canary                           ingress-canary-tzfvd                                              1/1     Running            5                13d     10.10.3.6      worker02.bscf2000.samsung.local   <none>           <none>
-openshift-insights                                 insights-runtime-extractor-ff7lx                                  3/3     Running            15               13d     10.10.3.8      worker02.bscf2000.samsung.local   <none>           <none>
-openshift-kni-infra                                coredns-worker02.bscf2000.samsung.local                           2/2     Running            10               14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-kni-infra                                keepalived-worker02.bscf2000.samsung.local                        2/2     Running            10               14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-machine-config-operator                  kube-rbac-proxy-crio-worker02.bscf2000.samsung.local              1/1     Running            5                14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-machine-config-operator                  machine-config-daemon-p7zxb                                       2/2     Running            10               14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-monitoring                               metrics-server-67466d4b46-twwgn                                   1/1     Running            0                12d     10.10.3.12     worker02.bscf2000.samsung.local   <none>           <none>
-openshift-monitoring                               monitoring-plugin-5ffc99c9cf-6p2k5                                1/1     Running            0                12d     10.10.3.11     worker02.bscf2000.samsung.local   <none>           <none>
-openshift-monitoring                               node-exporter-89ctz                                               2/2     Running            10               13d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-multus                                   multus-additional-cni-plugins-sfgw9                               1/1     Running            5                14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-multus                                   multus-b4vmr                                                      1/1     Running            5                14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-multus                                   network-metrics-daemon-vjtmp                                      2/2     Running            10               14d     10.10.3.3      worker02.bscf2000.samsung.local   <none>           <none>
-openshift-network-diagnostics                      network-check-target-bz7rk                                        1/1     Running            5                14d     10.10.3.4      worker02.bscf2000.samsung.local   <none>           <none>
-openshift-network-operator                         iptables-alerter-j7mh2                                            1/1     Running            5                14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-ovn-kubernetes                           ovnkube-node-cblhh                                                8/8     Running            43               14d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-sriov-network-operator                   sriov-device-plugin-j2cgk                                         1/1     Running            0                12d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-sriov-network-operator                   sriov-network-config-daemon-pfnks                                 1/1     Running            1                13d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-storage                                  openshift-storage.cephfs.csi.ceph.com-ctrlplugin-5cbcd6488vm97w   8/8     Running            4 (8h ago)       12d     10.10.3.5      worker02.bscf2000.samsung.local   <none>           <none>
-openshift-storage                                  openshift-storage.cephfs.csi.ceph.com-nodeplugin-h4czd            3/3     Running            3                13d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-openshift-storage                                  openshift-storage.rbd.csi.ceph.com-ctrlplugin-97fc94657-6vwwq     8/8     Running            7 (8h ago)       12d     10.10.3.9      worker02.bscf2000.samsung.local   <none>           <none>
-openshift-storage                                  openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-vmjqd    2/2     Running            5 (8h ago)       13d     10.10.3.32     worker02.bscf2000.samsung.local   <none>           <none>
-openshift-storage                                  openshift-storage.rbd.csi.ceph.com-nodeplugin-fm9bq               3/3     Running            3                13d     128.68.1.129   worker02.bscf2000.samsung.local   <none>           <none>
-[root@bastion ~]# oc logs -n openshift-sriov-network-operator -l app=sriov-network-config-daemon --since=12h
-2026-05-19T10:56:08.722144954Z  LEVEL(-2)       sriov/sriov.go:138      DiscoverVDPAType(): VDPA module is not loaded   {"device": "0000:a2:12.0", "name": "vdpa:0000:a2:12.0"}
-2026-05-19T10:56:08.724573166Z  LEVEL(-2)       sriov/sriov.go:138      DiscoverVDPAType(): VDPA module is not loaded   {"device": "0000:a2:12.1", "name": "vdpa:0000:a2:12.1"}
-2026-05-19T10:56:08.724876681Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens5f3"}
-2026-05-19T10:56:08.72540414Z   LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens5f3"}
-2026-05-19T10:56:08.725553069Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:a2:00.3"}
-2026-05-19T10:56:08.725948186Z  INFO    daemon/daemon.go:203    verifying interfaces status change
-2026-05-19T10:56:08.72596281Z   LEVEL(-2)       daemon/daemon.go:203    verifying status change for plugin      {"pluginName": "intel"}
-2026-05-19T10:56:08.72598241Z   LEVEL(-2)       daemon/daemon.go:203    verifying status change for plugin      {"pluginName": "generic"}
-2026-05-19T10:56:08.725987636Z  INFO    daemon/daemon.go:464    generic-plugin CheckStatusChanges()
-2026-05-19T10:56:08.72605931Z   INFO    daemon/daemon.go:203    Interfaces not changed
-2026-05-19T10:56:03.676573922Z  LEVEL(-2)       sriov/sriov.go:138      DiscoverVDPAType(): VDPA module is not loaded   {"device": "0000:a2:12.0", "name": "vdpa:0000:a2:12.0"}
-2026-05-19T10:56:03.679558386Z  LEVEL(-2)       sriov/sriov.go:138      DiscoverVDPAType(): VDPA module is not loaded   {"device": "0000:a2:12.1", "name": "vdpa:0000:a2:12.1"}
-2026-05-19T10:56:03.679935451Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens5f3"}
-2026-05-19T10:56:03.714564286Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens5f3"}
-2026-05-19T10:56:03.71478982Z   LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:a2:00.3"}
-2026-05-19T10:56:03.715257082Z  INFO    daemon/daemon.go:203    verifying interfaces status change
-2026-05-19T10:56:03.715276426Z  LEVEL(-2)       daemon/daemon.go:203    verifying status change for plugin      {"pluginName": "intel"}
-2026-05-19T10:56:03.715287206Z  LEVEL(-2)       daemon/daemon.go:203    verifying status change for plugin      {"pluginName": "generic"}
-2026-05-19T10:56:03.715292514Z  INFO    daemon/daemon.go:464    generic-plugin CheckStatusChanges()
-2026-05-19T10:56:03.715391252Z  INFO    daemon/daemon.go:203    Interfaces not changed
-2026-05-19T10:56:11.378842822Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f1"}
-2026-05-19T10:56:11.394204129Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f1"}
-2026-05-19T10:56:11.394351244Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.1"}
-2026-05-19T10:56:11.394575684Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f2"}
-2026-05-19T10:56:11.409927117Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f2"}
-2026-05-19T10:56:11.410124053Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.2"}
-2026-05-19T10:56:11.410390791Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f3"}
-2026-05-19T10:56:11.425667583Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f3"}
-2026-05-19T10:56:11.425836043Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.3"}
-2026-05-19T10:56:11.426095484Z  INFO    checkHostStateDrift()   daemon/daemon.go:203    interface policy spec not yet set by controller for sriovNetworkNodeState       {"name": "master01.bscf2000.samsung.local"}
-2026-05-19T10:56:07.288158715Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f1"}
-2026-05-19T10:56:07.288606973Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f1"}
-2026-05-19T10:56:07.288784946Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.1"}
-2026-05-19T10:56:07.289028964Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f2"}
-2026-05-19T10:56:07.302980977Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f2"}
-2026-05-19T10:56:07.303171555Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.2"}
-2026-05-19T10:56:07.303454791Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f3"}
-2026-05-19T10:56:07.331583942Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f3"}
-2026-05-19T10:56:07.331794706Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.3"}
-2026-05-19T10:56:07.332062944Z  INFO    checkHostStateDrift()   daemon/daemon.go:203    interface policy spec not yet set by controller for sriovNetworkNodeState       {"name": "master02.bscf2000.samsung.local"}
-2026-05-19T10:56:09.717384848Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f1"}
-2026-05-19T10:56:09.73139743Z   LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f1"}
-2026-05-19T10:56:09.731581293Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.1"}
-2026-05-19T10:56:09.731850646Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f2"}
-2026-05-19T10:56:09.759964786Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f2"}
-2026-05-19T10:56:09.760157986Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.2"}
-2026-05-19T10:56:09.76039883Z   LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f3"}
-2026-05-19T10:56:09.788573393Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f3"}
-2026-05-19T10:56:09.788758311Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:8a:00.3"}
-2026-05-19T10:56:09.789023065Z  INFO    checkHostStateDrift()   daemon/daemon.go:203    interface policy spec not yet set by controller for sriovNetworkNodeState       {"name": "master03.bscf2000.samsung.local"}
-[root@bastion ~]# oc logs -n openshift-multus ds/multus --since=12h
-Found 5 pods, using pod/multus-vxlk2
-2026-05-18T23:53:26Z [error] failed to list pods with new certs: pods is forbidden: User "system:node:master02.bscf2000.samsung.local" cannot list resource "pods" in API group "" at the cluster scope: can only list/watch pods with spec.nodeName field selector
-E0519 02:43:06.664029   12831 reflector.go:147] k8s.io/client-go/informers/factory.go:159: Failed to watch *v1.Pod: Get "https://api-int.bscf2000.samsung.local:6443/api/v1/pods?allowWatchBookmarks=true&fieldSelector=spec.nodeName%3Dmaster02.bscf2000.samsung.local&resourceVersion=10745751&timeout=5m32s&timeoutSeconds=332&watch=true": http2: client connection lost
-E0519 02:43:06.664053   12831 reflector.go:147] github.com/k8snetworkplumbingwg/network-attachment-definition-client/pkg/client/informers/externalversions/factory.go:117: Failed to watch *v1.NetworkAttachmentDefinition: Get "https://api-int.bscf2000.samsung.local:6443/apis/k8s.cni.cncf.io/v1/network-attachment-definitions?allowWatchBookmarks=true&resourceVersion=10745731&timeout=5m54s&timeoutSeconds=354&watch=true": http2: client connection lost
-[root@bastion ~]# ip -d link show bh0
-Device "bh0" does not exist.
-[root@bastion ~]# cat /proc/net/bonding/bh0
-cat: /proc/net/bonding/bh0: No such file or directory
-[root@bastion ~]# ssh core@worker02.bscf2000.samsung.local
-Red Hat Enterprise Linux CoreOS 9.6.20260217-1
-  Part of OpenShift 4.20, RHCOS is a Kubernetes-native operating system
-  managed by the Machine Config Operator (`clusteroperator/machine-config`).
+This gives a much clearer picture now.
 
-WARNING: Direct SSH access to machines is not recommended; instead,
-make configuration changes via `machineconfig` objects:
-  https://docs.openshift.com/container-platform/4.20/architecture/architecture-rhcos.html
+Important findings:
+
+1. Ceph issue definitely happened You already proved:
+
+
+
+mon session lost
+mds caps stale
+reconnect denied
+session blocklisted
+
+That confirms storage connectivity interruption.
+
 
 ---
-Last login: Tue May 19 10:45:42 2026 from 128.68.1.120
-[systemd]
-Failed Units: 3
-  NetworkManager-wait-online.service
-  remove-failed-pod.service
-  systemd-network-generator.service
-[core@worker02 ~]$ sudo -i
-[systemd]
-Failed Units: 3
-  NetworkManager-wait-online.service
-  remove-failed-pod.service
-  systemd-network-generator.service
-[root@worker02 ~]# ip -d link show bh0
-Device "bh0" does not exist.
-[root@worker02 ~]#  cat /proc/net/bonding/bh0
-cat: /proc/net/bonding/bh0: No such file or directory
-[root@worker02 ~]#
+
+2. Multus/API connectivity issue also happened simultaneously Critical evidence:
+
+
+
+http2: client connection lost
+Failed to watch *v1.Pod
+Failed to watch *NetworkAttachmentDefinition
+
+at:
+
+02:43:06
+
+This is extremely important because it means:
+
+not only Ceph traffic
+
+but also Kubernetes API traffic
+
+
+was interrupted from the node.
+
+That strongly points to node networking instability rather than Ceph-only issue.
+
+
+---
+
+3. SR-IOV daemon currently shows no active reconfiguration Current logs show only polling/status checks:
+
+
+
+Interfaces not changed
+
+So the disruptive event already passed.
+
+
+---
+
+4. bh0 does not exist now This means:
+
+
+
+either the bond interface existed only inside pods/netns
+
+or interface naming changed
+
+or earlier logs referencing bond/VF events were from another interface/node
+
+
+Need to identify actual active interfaces on worker02.
+
+Run:
+
+ip link
+
+and:
+
+nmcli con show
+
+and:
+
+ip addr
+
+
+---
+
+5. Very important systemd failures exist
+
+
+
+You have:
+
+NetworkManager-wait-online.service FAILED
+systemd-network-generator.service FAILED
+
+This is highly suspicious in a node already showing:
+
+Ceph disconnects
+
+API watch disconnects
+
+VF trust/reset history
+
+
+This strengthens the networking RCA.
+
+
+---
+
+Current strongest RCA hypothesis:
+
+Component	Evidence
+
+CephFS disruption	MDS evict/blocklist
+Node network interruption	API watch lost
+Possible SR-IOV/VF instability	earlier VF reset/trust logs
+Possible node network stack instability	NetworkManager failures
+Storage backend corruption	NO evidence
+OSD failure	NO evidence
+
+
+So at this point the issue is looking more like:
+
+> transient node-level network disruption on worker02 causing CephFS session eviction and Kubernetes API disconnects
+
+
+
+rather than a Ceph storage fault.
+
+Most useful next commands:
+
+systemctl status NetworkManager-wait-online.service
+
+systemctl status systemd-network-generator.service
+
+journalctl -u NetworkManager --since "2026-05-19 02:35:00" --until "2026-05-19 02:50:00"
+
+dmesg -T | egrep -i 'ice|iavf|reset|vf|link.*down|link.*up'
+
+ip link
+
+I would especially focus on:
+
+Intel ice/iavf
+
+SR-IOV VF resets
+
+interface flaps
+
+bond failover
+
+NetworkManager reload/reconcile events
+
+
+because the timestamps across Ceph + Multus strongly align with network interruption.
