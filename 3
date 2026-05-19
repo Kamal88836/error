@@ -1,80 +1,149 @@
-That is okay.
-oc get events not showing anything does not invalidate the RCA.
+[root@worker02 ~]# journalctl -u NetworkManager --since "2026-05-19 07:55:00" --until "2026-05-19 08:15:00"
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3198] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3204] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3207] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3209] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3215] device (ens2f1): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3218] device (ens2f3): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3221] device (ens5f0): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3224] device (ens5f2): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3226] device (ens2f1): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3229] device (ens2f1): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3236] device (ens2f3): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3239] device (ens2f3): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3245] device (ens5f0): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3248] device (ens5f0): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3253] device (ens5f2): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3257] device (ens5f2): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3263] device (ens2f1): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3311] dhcp4 (ens2f1): activation: beginning transaction (timeout in 90 seconds)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3315] device (ens2f3): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3365] dhcp4 (ens2f3): activation: beginning transaction (timeout in 90 seconds)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3368] device (ens5f0): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3413] dhcp4 (ens5f0): activation: beginning transaction (timeout in 90 seconds)
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3417] device (ens5f2): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 07:57:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177454.3466] dhcp4 (ens5f2): activation: beginning transaction (timeout in 90 seconds)
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3198] device (ens2f1): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779177544.3203] device (ens2f1): Activation: failed for connection 'Wired Connection'
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3203] device (ens2f3): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779177544.3206] device (ens2f3): Activation: failed for connection 'Wired Connection'
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3206] device (ens5f0): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779177544.3208] device (ens5f0): Activation: failed for connection 'Wired Connection'
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3209] device (ens5f2): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779177544.3211] device (ens5f2): Activation: failed for connection 'Wired Connection'
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3215] device (ens2f1): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3652] dhcp4 (ens2f1): canceled DHCP transaction
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3653] dhcp4 (ens2f1): activation: beginning transaction (timeout in 90 seconds)
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3653] dhcp4 (ens2f1): state changed no lease
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3669] device (ens2f3): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3974] dhcp4 (ens2f3): canceled DHCP transaction
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3974] dhcp4 (ens2f3): activation: beginning transaction (timeout in 90 seconds)
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3975] dhcp4 (ens2f3): state changed no lease
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.3984] device (ens5f0): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.4291] dhcp4 (ens5f0): canceled DHCP transaction
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.4291] dhcp4 (ens5f0): activation: beginning transaction (timeout in 90 seconds)
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.4291] dhcp4 (ens5f0): state changed no lease
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.4301] device (ens5f2): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.4523] dhcp4 (ens5f2): canceled DHCP transaction
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.4523] dhcp4 (ens5f2): activation: beginning transaction (timeout in 90 seconds)
+May 19 07:59:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177544.4523] dhcp4 (ens5f2): state changed no lease
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3199] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3202] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3203] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3204] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3208] device (ens2f1): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3211] device (ens2f3): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3214] device (ens5f0): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3216] device (ens5f2): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3216] device (ens2f1): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3219] device (ens2f1): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3225] device (ens2f3): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3228] device (ens2f3): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3232] device (ens5f0): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3235] device (ens5f0): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3238] device (ens5f2): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3241] device (ens5f2): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3245] device (ens2f1): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3290] dhcp4 (ens2f1): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3292] device (ens2f3): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3336] dhcp4 (ens2f3): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3339] device (ens5f0): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3384] dhcp4 (ens5f0): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3387] device (ens5f2): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 08:04:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177844.3432] dhcp4 (ens5f2): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3194] device (ens2f1): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779177934.3200] device (ens2f1): Activation: failed for connection 'Wired Connection'
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3200] device (ens2f3): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779177934.3203] device (ens2f3): Activation: failed for connection 'Wired Connection'
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3203] device (ens5f0): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779177934.3206] device (ens5f0): Activation: failed for connection 'Wired Connection'
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3206] device (ens5f2): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779177934.3209] device (ens5f2): Activation: failed for connection 'Wired Connection'
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3213] device (ens2f1): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3582] dhcp4 (ens2f1): canceled DHCP transaction
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3582] dhcp4 (ens2f1): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3583] dhcp4 (ens2f1): state changed no lease
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.3602] device (ens2f3): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.4294] dhcp4 (ens2f3): canceled DHCP transaction
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.4295] dhcp4 (ens2f3): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.4295] dhcp4 (ens2f3): state changed no lease
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.4304] device (ens5f0): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.4944] dhcp4 (ens5f0): canceled DHCP transaction
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.4945] dhcp4 (ens5f0): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.4945] dhcp4 (ens5f0): state changed no lease
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.4955] device (ens5f2): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.5751] dhcp4 (ens5f2): canceled DHCP transaction
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.5751] dhcp4 (ens5f2): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:05:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779177934.5751] dhcp4 (ens5f2): state changed no lease
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3200] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3203] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3204] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3206] policy: auto-activating connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3209] device (ens2f1): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3212] device (ens2f3): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3213] device (ens5f0): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3215] device (ens5f2): Activation: starting connection 'Wired Connection' (b82261e5-30ff-499c-865a-fd0aa5e21c33)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3216] device (ens2f1): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3219] device (ens2f1): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3223] device (ens2f3): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3227] device (ens2f3): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3230] device (ens5f0): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3233] device (ens5f0): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3237] device (ens5f2): state change: disconnected -> prepare (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3239] device (ens5f2): state change: prepare -> config (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3244] device (ens2f1): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3287] dhcp4 (ens2f1): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3290] device (ens2f3): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3332] dhcp4 (ens2f3): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3335] device (ens5f0): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3379] dhcp4 (ens5f0): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3382] device (ens5f2): state change: config -> ip-config (reason 'none', managed-type: 'full')
+May 19 08:10:34 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178234.3425] dhcp4 (ens5f2): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3193] device (ens2f1): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779178324.3199] device (ens2f1): Activation: failed for connection 'Wired Connection'
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3199] device (ens2f3): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779178324.3203] device (ens2f3): Activation: failed for connection 'Wired Connection'
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3203] device (ens5f0): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779178324.3206] device (ens5f0): Activation: failed for connection 'Wired Connection'
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3206] device (ens5f2): state change: ip-config -> failed (reason 'ip-config-unavailable', managed-type: 'full')
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <warn>  [1779178324.3209] device (ens5f2): Activation: failed for connection 'Wired Connection'
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3213] device (ens2f1): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3814] dhcp4 (ens2f1): canceled DHCP transaction
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3815] dhcp4 (ens2f1): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3815] dhcp4 (ens2f1): state changed no lease
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.3826] device (ens2f3): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4182] dhcp4 (ens2f3): canceled DHCP transaction
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4182] dhcp4 (ens2f3): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4182] dhcp4 (ens2f3): state changed no lease
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4195] device (ens5f0): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4494] dhcp4 (ens5f0): canceled DHCP transaction
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4495] dhcp4 (ens5f0): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4495] dhcp4 (ens5f0): state changed no lease
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4504] device (ens5f2): state change: failed -> disconnected (reason 'none', managed-type: 'full')
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4745] dhcp4 (ens5f2): canceled DHCP transaction
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4745] dhcp4 (ens5f2): activation: beginning transaction (timeout in 90 seconds)
+May 19 08:12:04 worker02.bscf2000.samsung.local NetworkManager[4532]: <info>  [1779178324.4745] dhcp4 (ens5f2): state changed no lease
 
-Reason:
-
-VF resets
-
-PF resets
-
-bond flap
-
-iavf driver events
-
-trust/untrust transitions
-
-
-are kernel/driver level events, not always Kubernetes/OpenShift events.
-
-Your strongest evidence is already from:
-
-worker kernel logs
-
-Ceph MDS eviction logs
-
-Ceph client reconnect failures
-
-
-Especially these:
-
-Reset indication received from the PF
-
-VF is now untrusted
-
-bh0 (unregistering): Released all slaves
-
-followed by:
-
-session lost
-caps stale
-reconnect denied
-session blocklisted
-
-and:
-
-Evicting (and blocklisting) client session
-
-This sequence is already enough to correlate:
-
-1. Network interface instability
-
-
-2. Ceph connectivity loss
-
-
-3. CephFS client eviction
-
-
-4. Filesystem failure/remount RO
-
-
-
-You can further strengthen RCA with these commands:
-
-On affected worker:
-
-journalctl -k --since "2026-05-19 02:35:00" --until "2026-05-19 02:50:00"
-
-Check NetworkManager:
-
-journalctl -u NetworkManager --since "2026-05-19 02:35:00"
-
-Check SR-IOV operator:
-
-oc logs -n openshift-sriov-network-operator -l app=sriov-network-config-daemon --since=8h
-
-Check node dmesg around failure:
-
-dmesg -T | egrep -i 'iavf|ice|bond|vf|reset|link'
-
-But honestly, your current evidence is already quite strong.
+[root@worker02 ~]# journalctl -k --since "2026-05-19 07:55:00" --until "2026-05-19 08:15:00"
+-- No entries --
+[root@worker02 ~]# 
