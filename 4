@@ -1,8 +1,23 @@
-ㅁ Problem description: 
-cmp disk-access-fail happened during GPRS/EDGE Multiplexing longrun case
-ㅁ Test info.
-- Version info.: 
-BSC: r-0100(SVR26ABSCUTDD41_R00)
-BTS: r-0100(SVR26ABTSUTDD41)
-- Occur. frequency: Always
-- Occur. quantity: 100%
+[root@worker02 ~]# journalctl -u crio --since "2026-05-19 07:30:00" --until "2026-05-19 09:00:00"
+May 19 07:30:27 worker02.bscf2000.samsung.local crio[8244]: time="2026-05-19T07:30:27.924606787Z" level=warning msg="Failed to get the status of process with PID 504442: open /proc/504442/stat: no such fil>
+May 19 07:30:43 worker02.bscf2000.samsung.local crio[8244]: time="2026-05-19T07:30:43.690473784Z" level=warning msg="Failed to get the status of process with PID 505214: open /proc/505214/stat: no such fil>
+May 19 07:30:43 worker02.bscf2000.samsung.local crio[8244]: time="2026-05-19T07:30:43.690537508Z" level=warning msg="Failed to get the status of process with PID 505273: open /proc/505273/stat: no such fil>
+May 19 07:30:43 worker02.bscf2000.samsung.local crio[8244]: time="2026-05-19T07:30:43.690632893Z" level=warning msg="Failed to get the status of process with PID 505399: open /proc/505399/stat: no such fil>
+May 19 07:30:57 worker02.bscf2000.samsung.local crio[8244]: time="2026-05-19T07:30:57.936059317Z" level=warning msg="Failed to get the status of process with PID 506188: open /proc/506188/stat: no such fil>
+May 19 07:30:57 worker02.bscf2000.samsung.local crio[8244]: time="2026-05-19T07:30:57.936194784Z" level=warning msg="Failed to get the status of process with PID 506213: open /proc/506213/stat: no such fil>
+May 19 07:31:13 worker02.bscf2000.samsung.local crio[8244]: time="2026-05-19T07:31:13.692066976Z" level=warning msg="Failed to get the status of process with PID 507015: open /proc/507015/stat: no such fil>
+May 19 07:31:13 worker02.bscf2000.samsung.local crio[8244]: time="2026-05-19T07:31:13.692303393Z" level=warning msg="Failed to get the status of process with PID 507145: open /proc/507145/stat: no such fil>
+May 19 07:31
+[root@worker02 ~]# journalctl -u kubelet  --since "2026-05-19 07:30:00" --until "2026-05-19 09:00:00"
+May 19 07:30:02 worker02.bscf2000.samsung.local kubenswrapper[8390]: E0519 07:30:02.124710    8390 prober.go:256] "Unable to write all bytes from execInContainer" err="short write" expectedBytes=12163 actu>
+May 19 07:30:08 worker02.bscf2000.samsung.local kubenswrapper[8390]: I0519 07:30:08.922990    8390 file.go:238] "Static Pod is managed. Using modified pod" name="coredns-worker02.bscf2000.samsung.local" na>
+May 19 07:30:08 worker02.bscf2000.samsung.local kubenswrapper[8390]: I0519 07:30:08.923744    8390 file.go:238] "Static Pod is managed. Using modified pod" name="kube-rbac-proxy-crio-worker02.bscf2000.sams>
+May 19 07:30:08 worker02.bscf2000.samsung.local kubenswrapper[8390]: I0519 07:30:08.925247    8390 file.go:238] "Static Pod is managed. Using modified pod" name="keepalived-worker02.bscf2000.samsung.local">
+May 19 07:30:12 worker02.bscf2000.samsung.local kubenswrapper[8390]: E0519 07:30:12.123832    8390 prober.go:256] "Unable to write all bytes from execInContainer" err="short write" expectedBytes=12163 actu>
+May 19 07:30:22 worker02.bscf2000.samsung.local kubenswrapper[8390]: E0519 07:30:22.123983    8390 prober.go:256] "Unable to write all bytes from execInContainer" err="short write" expectedBytes=12163 actu>
+May 19 07:30:28 worker02.bscf2000.samsung.local kubenswrapper[8390]: I0519 07:30:28.922230    8390 file.go:238] "Static Pod is managed. Using modified pod" name="coredns-worker02.bscf2000.samsung.local" na>
+May 19 07:30:28 worker02.bscf2000.samsung.local kubenswrapper[8390]: I0519 07:30:28.922952    8390 file.go:238] "Static Pod is managed. Using modified pod" name="kube-rbac-proxy-crio-worker02.bscf2000.sams>
+May 19 07:30:28 worker02.bscf2000.samsung.local kubenswrapper[8390]: I0519 07:30:28.924278    8390 file.go:238] "Static Pod is managed. Using modified pod" name="keepalived-worker02.bscf2000.samsung.local">
+May 19 07:30:32 worker02.bscf2000.samsung.local kubenswrapper[8390]: E0519 07:30:32.120818    8390 prober.go:256] "Unable to write all bytes from execInContainer" err="short write" expectedBytes=12163 actu>
+May 19 07:30:42 worker02.bscf2000.samsung.local kubenswrapper[8390]: E0519 07:30:42.123951    8390 prober.go:256] "Unable to write all bytes from execInContainer" err="short write" expectedBytes=12163 actu>
+May 19 07:30:48 worker02.bscf2000.samsung.local kubenswrapper[8390]: I0519 07:30:48.922294    8390 file.go:238] "Static 
