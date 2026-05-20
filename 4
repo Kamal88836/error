@@ -1,68 +1,238 @@
-[root@bastion ~]# oc rsh -n openshift-storage $(oc get pods -n openshift-storage -o name -l app=rook-ceph-operator)
-sh-5.1$  export CEPH_ARGS='-c /var/lib/rook/openshift-storage/openshift-storage.config'
-sh-5.1$ ceph -s
-  cluster:
-    id:     f4373567-6468-4061-b8b6-3c9f3be34347
-    health: HEALTH_OK
+Based on all the logs and Ceph validation you shared, the most defensible root cause is:
 
-  services:
-    mon: 3 daemons, quorum a,b,c (age 26h)
-    mgr: a(active, since 13d), standbys: b
-    mds: 1/1 daemons up, 1 hot standby
-    osd: 3 osds: 3 up (since 13d), 3 in (since 13d)
-    rgw: 1 daemon active (1 hosts, 1 zones)
+Root Cause
 
-  data:
-    volumes: 1/1 healthy
-    pools:   12 pools, 232 pgs
-    objects: 4.87k objects, 3.3 GiB
-    usage:   13 GiB used, 3.5 TiB / 3.5 TiB avail
-    pgs:     232 active+clean
+The cmp disk-access-fail is caused by node/container-runtime resource exhaustion on worker02, leading to kubelet/CRI-O exec communication failures and temporary loss of application access to mounted storage/database services.
 
-  io:
-    client:   20 KiB/s rd, 4.6 MiB/s wr, 3 op/s rd, 16 op/s wr
+This is NOT caused by Ceph storage failure.
 
-sh-5.1$ ceph health detail
-HEALTH_OK
-sh-5.1$ ceph osd status
-ID  HOST                              USED  AVAIL  WR OPS  WR DATA  RD OPS  RD DATA  STATE
- 0  master02.bscf2000.samsung.local  4267M   890G      2     22.1k      2     20.9k  exists,up
- 1  master01.bscf2000.samsung.local  4411M   889G      5     42.3k      0        0   exists,up
- 2  master03.bscf2000.samsung.local  4280M  1784G      6     16.2k      3      292   exists,up
-sh-5.1$ ceph osd tree
-ID  CLASS  WEIGHT   TYPE NAME                                 STATUS  REWEIGHT  PRI-AFF
--1         3.49318  root default
--5         0.87329      host master01-bscf2000-samsung-local
- 1    ssd  0.87329          osd.1                                 up   1.00000  1.00000
--3         0.87329      host master02-bscf2000-samsung-local
- 0    ssd  0.87329          osd.0                                 up   1.00000  1.00000
--7         1.74660      host master03-bscf2000-samsung-local
- 2    ssd  1.74660          osd.2                                 up   1.00000  1.00000
-sh-5.1$ ceph pg stat
-232 pgs: 232 active+clean; 3.3 GiB data, 13 GiB used, 3.5 TiB / 3.5 TiB avail; 21 KiB/s rd, 82 KiB/s wr, 17 op/s
-sh-5.1$ ceph df
---- RAW STORAGE ---
-CLASS     SIZE    AVAIL    USED  RAW USED  %RAW USED
-ssd    3.5 TiB  3.5 TiB  13 GiB    13 GiB       0.36
-TOTAL  3.5 TiB  3.5 TiB  13 GiB    13 GiB       0.36
 
---- POOLS ---
-POOL                                                   ID  PGS   STORED  OBJECTS     USED  %USED  MAX AVAIL
-.mgr                                                    1   32  3.4 MiB        2   10 MiB      0   1008 GiB
-ocs-storagecluster-cephobjectstore.rgw.control          2    8      0 B        8      0 B      0   1008 GiB
-ocs-storagecluster-cephblockpool                        3   64  1.2 GiB      534  3.5 GiB   0.12   1008 GiB
-ocs-storagecluster-cephfilesystem-metadata              4   16  252 MiB      180  756 MiB   0.02   1008 GiB
-ocs-storagecluster-cephobjectstore.rgw.meta             5    8  2.6 KiB       14  120 KiB      0   1008 GiB
-ocs-storagecluster-cephfilesystem-data0                 6   32  1.8 GiB    3.74k  5.3 GiB   0.17   1008 GiB
-ocs-storagecluster-cephobjectstore.rgw.log              7    8   68 KiB      373  2.4 MiB      0   1008 GiB
-ocs-storagecluster-cephobjectstore.rgw.buckets.index    8    8  2.1 KiB       11  6.4 KiB      0   1008 GiB
-ocs-storagecluster-cephobjectstore.rgw.buckets.non-ec   9    8      0 B        0      0 B      0   1008 GiB
-ocs-storagecluster-cephobjectstore.rgw.otp             10    8      0 B        0      0 B      0   1008 GiB
-.rgw.root                                              11    8  6.3 KiB       16  180 KiB      0   1008 GiB
-ocs-storagecluster-cephobjectstore.rgw.buckets.data    12   32      0 B        0      0 B      0   1008 GiB
-sh-5.1$ ceph osd perf
-osd  commit_latency(ms)  apply_latency(ms)
-  2                   0                  0
-  1                   0                  0
-  0                   0                  0
-sh-5.1$
+---
+
+Proof and Correlation
+
+1. Ceph storage is healthy → eliminates backend storage failure
+
+You verified:
+
+health: HEALTH_OK
+
+232 pgs: 232 active+clean
+
+osd: 3 up, 3 in
+
+commit_latency(ms) 0
+apply_latency(ms) 0
+
+This proves:
+
+no degraded PGs
+
+no slow ops
+
+no OSD failures
+
+no storage latency
+
+no backend I/O bottleneck
+
+
+Therefore:
+
+> Actual Ceph storage failure cannot explain the application disk-access-fail.
+
+
+
+
+---
+
+2. kubelet exec communication failures are occurring
+
+Critical evidence:
+
+Unable to write all bytes from execInContainer
+err="short write"
+
+This is abnormal and indicates:
+
+PTY exhaustion,
+
+pipe exhaustion,
+
+FD exhaustion,
+
+or runtime communication failure.
+
+
+Kubelet could not fully communicate with processes inside containers.
+
+This directly affects:
+
+probes,
+
+exec sessions,
+
+container runtime operations,
+
+storage-mounted applications.
+
+
+
+---
+
+3. CRI-O shows unstable process tracking
+
+Repeated messages:
+
+Failed to get the status of process with PID ...
+open /proc/<pid>/stat: no such file
+
+This indicates very high process churn or runtime instability.
+
+Not fatal alone, but strongly correlated with:
+
+excessive process creation,
+
+crashed exec sessions,
+
+runtime overload.
+
+
+
+---
+
+4. Storage-related pods become unstable
+
+You observed:
+
+startup probe error: HTTP probe failed with statuscode: 500
+
+and:
+
+Back-off restarting failed container postgres
+
+This proves applications using storage/database became unhealthy during the issue window.
+
+Postgres restart failures commonly occur when:
+
+runtime cannot service processes,
+
+exec/probes fail,
+
+or mounted filesystem access becomes temporarily unavailable.
+
+
+
+---
+
+5. Application API failures occurred simultaneously
+
+You also had:
+
+[getApiPodList] fail to run k8sApiGetAllPods, ret: -912
+
+This shows the application could no longer properly communicate with Kubernetes APIs during the same degradation period.
+
+That is consistent with:
+
+node runtime instability, NOT:
+
+Ceph disk corruption.
+
+
+
+---
+
+Logical Elimination
+
+If Ceph were the root cause, we would expect:
+
+HEALTH_WARN/ERR
+
+slow ops
+
+degraded PGs
+
+high OSD latency
+
+OSD flapping
+
+mon quorum instability
+
+
+None exist.
+
+
+---
+
+If physical disk failed, we would expect:
+
+kernel I/O errors
+
+ext4/xfs corruption
+
+read-only remount
+
+blk/nvme/scsi errors
+
+
+None provided.
+
+
+---
+
+What matches ALL symptoms?
+
+The following matches every symptom:
+
+long-running telecom workload
+
+increasing exec/process usage
+
+kubelet short-write failures
+
+CRI-O instability
+
+probe failures
+
+postgres restart loops
+
+API failures
+
+temporary storage access failures
+
+Ceph still healthy
+
+
+That pattern is classic node/container-runtime resource exhaustion.
+
+
+---
+
+Final RCA Statement
+
+Root Cause Analysis:
+
+During the GPRS/EDGE Multiplexing long-run test, the worker node ("worker02") experienced container runtime resource exhaustion, likely related to PTY/file descriptor/process exhaustion under sustained workload conditions.
+
+Evidence:
+
+1. kubelet repeatedly reported:
+   "Unable to write all bytes from execInContainer" with "short write" errors, indicating failure in container exec communication paths.
+
+2. CRI-O continuously reported inability to retrieve process status from "/proc/<pid>/stat", showing excessive process churn/runtime instability.
+
+3. Multiple application/storage probe failures occurred simultaneously, including PostgreSQL restart backoff and HTTP 500 startup probe failures.
+
+4. Kubernetes API access failures ("ret: -912") occurred during the same time window.
+
+5. Ceph storage backend was verified healthy:
+   
+   - HEALTH_OK
+   - all PGs active+clean
+   - all OSDs up/in
+   - zero OSD latency
+   - no slow ops or degraded PGs
+
+Conclusion:
+The "cmp disk-access-fail" was not caused by Ceph storage failure. It was an application-visible symptom caused by node/container-runtime instability, which temporarily disrupted access to mounted storage/database services during long-run workload execution.
