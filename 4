@@ -1,238 +1,29 @@
-Based on all the logs and Ceph validation you shared, the most defensible root cause is:
-
-Root Cause
-
-The cmp disk-access-fail is caused by node/container-runtime resource exhaustion on worker02, leading to kubelet/CRI-O exec communication failures and temporary loss of application access to mounted storage/database services.
-
-This is NOT caused by Ceph storage failure.
-
-
----
-
-Proof and Correlation
-
-1. Ceph storage is healthy → eliminates backend storage failure
-
-You verified:
-
-health: HEALTH_OK
-
-232 pgs: 232 active+clean
-
-osd: 3 up, 3 in
-
-commit_latency(ms) 0
-apply_latency(ms) 0
-
-This proves:
-
-no degraded PGs
-
-no slow ops
-
-no OSD failures
-
-no storage latency
-
-no backend I/O bottleneck
-
-
-Therefore:
-
-> Actual Ceph storage failure cannot explain the application disk-access-fail.
-
-
-
-
----
-
-2. kubelet exec communication failures are occurring
-
-Critical evidence:
-
-Unable to write all bytes from execInContainer
-err="short write"
-
-This is abnormal and indicates:
-
-PTY exhaustion,
-
-pipe exhaustion,
-
-FD exhaustion,
-
-or runtime communication failure.
-
-
-Kubelet could not fully communicate with processes inside containers.
-
-This directly affects:
-
-probes,
-
-exec sessions,
-
-container runtime operations,
-
-storage-mounted applications.
-
-
-
----
-
-3. CRI-O shows unstable process tracking
-
-Repeated messages:
-
-Failed to get the status of process with PID ...
-open /proc/<pid>/stat: no such file
-
-This indicates very high process churn or runtime instability.
-
-Not fatal alone, but strongly correlated with:
-
-excessive process creation,
-
-crashed exec sessions,
-
-runtime overload.
-
-
-
----
-
-4. Storage-related pods become unstable
-
-You observed:
-
-startup probe error: HTTP probe failed with statuscode: 500
-
-and:
-
-Back-off restarting failed container postgres
-
-This proves applications using storage/database became unhealthy during the issue window.
-
-Postgres restart failures commonly occur when:
-
-runtime cannot service processes,
-
-exec/probes fail,
-
-or mounted filesystem access becomes temporarily unavailable.
-
-
-
----
-
-5. Application API failures occurred simultaneously
-
-You also had:
-
-[getApiPodList] fail to run k8sApiGetAllPods, ret: -912
-
-This shows the application could no longer properly communicate with Kubernetes APIs during the same degradation period.
-
-That is consistent with:
-
-node runtime instability, NOT:
-
-Ceph disk corruption.
-
-
-
----
-
-Logical Elimination
-
-If Ceph were the root cause, we would expect:
-
-HEALTH_WARN/ERR
-
-slow ops
-
-degraded PGs
-
-high OSD latency
-
-OSD flapping
-
-mon quorum instability
-
-
-None exist.
-
-
----
-
-If physical disk failed, we would expect:
-
-kernel I/O errors
-
-ext4/xfs corruption
-
-read-only remount
-
-blk/nvme/scsi errors
-
-
-None provided.
-
-
----
-
-What matches ALL symptoms?
-
-The following matches every symptom:
-
-long-running telecom workload
-
-increasing exec/process usage
-
-kubelet short-write failures
-
-CRI-O instability
-
-probe failures
-
-postgres restart loops
-
-API failures
-
-temporary storage access failures
-
-Ceph still healthy
-
-
-That pattern is classic node/container-runtime resource exhaustion.
-
-
----
-
-Final RCA Statement
-
-Root Cause Analysis:
-
-During the GPRS/EDGE Multiplexing long-run test, the worker node ("worker02") experienced container runtime resource exhaustion, likely related to PTY/file descriptor/process exhaustion under sustained workload conditions.
-
-Evidence:
-
-1. kubelet repeatedly reported:
-   "Unable to write all bytes from execInContainer" with "short write" errors, indicating failure in container exec communication paths.
-
-2. CRI-O continuously reported inability to retrieve process status from "/proc/<pid>/stat", showing excessive process churn/runtime instability.
-
-3. Multiple application/storage probe failures occurred simultaneously, including PostgreSQL restart backoff and HTTP 500 startup probe failures.
-
-4. Kubernetes API access failures ("ret: -912") occurred during the same time window.
-
-5. Ceph storage backend was verified healthy:
-   
-   - HEALTH_OK
-   - all PGs active+clean
-   - all OSDs up/in
-   - zero OSD latency
-   - no slow ops or degraded PGs
-
-Conclusion:
-The "cmp disk-access-fail" was not caused by Ceph storage failure. It was an application-visible symptom caused by node/container-runtime instability, which temporarily disrupted access to mounted storage/database services during long-run workload execution.
+debug 2026-05-11T08:22:10.262+0000 7f168556b640  0 --2- [v2:10.10.4.66:6800/2284834474,v1:10.10.4.66:6801/2284834474] >> 100.64.0.5:0/3815042118 conn(0x558ea74db800 0x558ea7df2b00 crc :-1 s=SESSION_ACCEPTING pgs=47 cs=0 l=0 rev1=1 crypto rx=0 tx=0 comp rx=0 tx=0).handle_reconnect no existing connection exists, reseting client
+debug 2026-05-11T08:22:10.263+0000 7f1682565640  0 mds.0.server  ignoring msg from not-open sessionclient_reconnect(3 caps 3 realms )
+debug 2026-05-12T00:00:10.566+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 473421) UID: 0
+debug 2026-05-12T00:00:10.569+0000 7f1683d68640 -1 received  signal: Hangup from pkill -1 -x ceph-mon|ceph-mgr|ceph-mds|ceph-osd|ceph-fuse|radosgw|rbd-mirror|cephfs-mirror  (PID: 473422) UID: 0
+debug 2026-05-13T00:00:11.069+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 557137) UID: 0
+debug 2026-05-13T00:00:11.072+0000 7f1683d68640 -1 received  signal: Hangup from pkill -1 -x ceph-mon|ceph-mgr|ceph-mds|ceph-osd|ceph-fuse|radosgw|rbd-mirror|cephfs-mirror  (PID: 557138) UID: 0
+debug 2026-05-14T00:00:11.569+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 640853) UID: 0
+debug 2026-05-14T00:00:11.573+0000 7f1683d68640 -1 received  signal: Hangup from pkill -1 -x ceph-mon|ceph-mgr|ceph-mds|ceph-osd|ceph-fuse|radosgw|rbd-mirror|cephfs-mirror  (PID: 640854) UID: 0
+debug 2026-05-15T00:00:12.066+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 724569) UID: 0
+debug 2026-05-15T00:00:12.069+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 724570) UID: 0
+debug 2026-05-16T00:00:12.569+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 808285) UID: 0
+debug 2026-05-16T00:00:12.572+0000 7f1683d68640 -1 received  signal: Hangup from pkill -1 -x ceph-mon|ceph-mgr|ceph-mds|ceph-osd|ceph-fuse|radosgw|rbd-mirror|cephfs-mirror  (PID: 808286) UID: 0
+debug 2026-05-17T00:00:13.010+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 892001) UID: 0
+debug 2026-05-17T00:00:13.013+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 892002) UID: 0
+debug 2026-05-18T00:00:13.465+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 975717) UID: 0
+debug 2026-05-18T00:00:13.467+0000 7f1683d68640 -1 received  signal: Hangup from pkill -1 -x ceph-mon|ceph-mgr|ceph-mds|ceph-osd|ceph-fuse|radosgw|rbd-mirror|cephfs-mirror  (PID: 975718) UID: 0
+debug 2026-05-19T00:00:13.972+0000 7f1683d68640 -1 received  signal: Hangup from  (PID: 1059433) UID: 0
+debug 2026-05-19T00:00:13.975+0000 7f1683d68640 -1 received  signal: Hangup from pkill -1 -x ceph-mon|ceph-mgr|ceph-mds|ceph-osd|ceph-fuse|radosgw|rbd-mirror|cephfs-mirror  (PID: 1059434) UID: 0
+debug 2026-05-19T02:40:55.752+0000 7f1680561640  0 mds.beacon.ocs-storagecluster-cephfilesystem-b missed beacon ack from the monitors
+debug 2026-05-19T02:40:59.752+0000 7f1680561640  0 mds.beacon.ocs-storagecluster-cephfilesystem-b missed beacon ack from the monitors
+debug 2026-05-19T02:41:03.752+0000 7f1680561640  0 mds.beacon.ocs-storagecluster-cephfilesystem-b missed beacon ack from the monitors
+debug 2026-05-19T02:41:04.722+0000 7f1680d62640  1 mds.beacon.ocs-storagecluster-cephfilesystem-b MDS connection to Monitors appears to be laggy; 16.9715s since last acked beacon
+debug 2026-05-19T02:41:04.722+0000 7f1680d62640  1 mds.0.5 skipping upkeep work because connection to Monitors appears laggy
+debug 2026-05-19T02:41:07.752+0000 7f1680561640  0 mds.beacon.ocs-storagecluster-cephfilesystem-b missed beacon ack from the monitors
+debug 2026-05-19T02:41:09.722+0000 7f1680d62640  1 mds.0.5 skipping upkeep work because connection to Monitors appears laggy
+debug 2026-05-19T02:41:11.752+0000 7f1680561640  0 mds.beacon.ocs-storagecluster-cephfilesystem-b missed beacon ack from the monitors
+debug 2026-05-19T02:41:14.722+0000 7f1680d62640  1 mds.0.5 skipping upkeep work because connection to Monitors appears laggy
+debug 2026-05-19T02:41:15.752+0000 7f1680561640  0 mds.beacon.ocs-storagecluster-cephfilesystem-b missed beacon ack from the monitors
+debug 2026-05-19T02:41:19.722+0000 7f1680d62640
