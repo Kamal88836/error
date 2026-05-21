@@ -1,143 +1,139 @@
-This confirms it is a filesystem permission/ownership problem inside CephFS, not a PVC or mount issue.
-
-Notice the broken entries:
-
-On cmp0:
-
-d?????????? ? ? ? ? ? shared
-
-On cmp1:
-
-d?????????? ? ? ? ? ? log
-
-That means the kernel cannot stat the directory due to permission denial from the CephFS backend.
-
-Also observe:
-
-Accessible dirs:
-
-drwxrwsr-x.
-
-Inaccessible mount: completely hidden metadata (??????????)
-
-
-This strongly indicates:
-
-different CephFS export permissions
-
-or UID/GID mismatch at root directory level
-
-or root squash / ACL issue
-
-
-Most importantly:
-
-shared is owned by root sgroup
-
-log is owned by root sgroup
-
-but access differs per pod
-
-
-So the likely issue is: the two CMP pods are running with different supplemental groups or fsGroup mappings.
-
-Check IDs in BOTH pods:
-
-id
-
-You will likely see different groups.
-
-Then check pod security context:
-
-oc get pod bscf2000-cmp0-878bdf875-n4kfd -o yaml | grep -A20 -i securityContext
-
-oc get pod bscf2000-cmp1-7cf46df4c8-rgv64 -o yaml | grep -A20 -i securityContext
-
-You are looking for:
-
-fsGroup
-
-supplementalGroups
-
-runAsUser
-
-
-Most likely scenario:
-
-one pod has correct sgroup
-
-another pod does not
-
-
-Another very important clue: Earlier your df -Th showed swapped capacities:
-
-Pod	shared	log
-
-cmp0	1010G	50G
-cmp1	40G	1010G
-
-
-But actual PVCs are:
-
-shared-pvc = 40G
-
-log-pvc = 50G
-
-
-There is NO 1010G PVC in your CNF namespace.
-
-That means: the mountpoints are corrupted or overlapping from inside container init/configuration.
-
-Possible causes:
-
-1. bind mount mistake in app startup
-
-
-2. symbolic link overlay
-
-
-3. init container remount
-
-
-4. application recreating directories
-
-
-5. volumeMount paths overlapping
-
-
-
-Very likely the deployment YAML has wrong mountPath usage.
-
-You should inspect:
-
-oc get deploy bscf2000-cmp0 -o yaml > cmp0.yaml
-oc get deploy bscf2000-cmp1 -o yaml > cmp1.yaml
-
-Then compare:
-
-grep -A10 -B5 mountPath cmp0.yaml
-grep -A10 -B5 mountPath cmp1.yaml
-
-Also compare:
-
-grep claimName -n cmp0.yaml
-grep claimName -n cmp1.yaml
-
-I suspect one of these:
-
-mountPath: /mnt/storage
-mountPath: /mnt/storage/shared
-
-or overlapping mounts like:
-
-- mountPath: /mnt/storage
-  pvc: shared-pvc
-
-- mountPath: /mnt/storage/log
-  pvc: log-pvc
-
-This causes hidden/overmounted directories and exactly these symptoms.
-
-The 1010G size is a huge clue: that is not from your PVCs at all — it is coming from another underlying filesystem exposed beneath the mount hierarchy.
-
-Most probable root cause now: overlapping volumeMount definitions in deployment/statefulset.
+[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 storage]$ id
+uid=2101(sapp) gid=2001(sgroup) groups=2001(sgroup),10(wheel)
+[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 storage]$ exit
+[root@bastion ~]# oc get pod bscf2000-cmp0-878bdf875-n4kfd -o yaml | grep -A20 -i securityContext
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN
+        - NET_RAW
+        - DAC_READ_SEARCH
+        - IPC_LOCK
+        - SYS_MODULE
+        - SYS_RAWIO
+        - SYS_PTRACE
+        - SYS_ADMIN
+        - SYS_NICE
+        - SYS_TIME
+        - SYS_TTY_CONFIG
+        - SYS_RESOURCE
+        - SYS_CHROOT
+        - SETFCAP
+      privileged: false
+      runAsGroup: 2001
+      runAsNonRoot: true
+      runAsUser: 2101
+--
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/config
+      name: env
+    - mountPath: /mnt/storage/shared
+      name: bscf2000-cmp-shared
+    - mountPath: /mnt/storage/log
+      name: bscf2000-cmp-log
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-fjn24
+      readOnly: true
+  nodeName: worker01.bscf2000.samsung.local
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 2001
+    runAsGroup: 2001
+    runAsUser: 2101
+    seLinuxOptions:
+      level: s0
+  serviceAccount: bscf-sa
+  serviceAccountName: bscf-sa
+  terminationGracePeriodSeconds: 8
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+[root@bastion ~]# oc get pod bscf2000-cmp1-7cf46df4c8-rgv64 -o yaml | grep -A20 -i securityContext
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN
+        - NET_RAW
+        - DAC_READ_SEARCH
+        - IPC_LOCK
+        - SYS_MODULE
+        - SYS_RAWIO
+        - SYS_PTRACE
+        - SYS_ADMIN
+        - SYS_NICE
+        - SYS_TIME
+        - SYS_TTY_CONFIG
+        - SYS_RESOURCE
+        - SYS_CHROOT
+        - SETFCAP
+      privileged: false
+      runAsGroup: 2001
+      runAsNonRoot: true
+      runAsUser: 2101
+--
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/config
+      name: env
+    - mountPath: /mnt/storage/shared
+      name: bscf2000-cmp-shared
+    - mountPath: /mnt/storage/log
+      name: bscf2000-cmp-log
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-kcxv2
+      readOnly: true
+  nodeName: worker02.bscf2000.samsung.local
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 2001
+    runAsGroup: 2001
+    runAsUser: 2101
+    seLinuxOptions:
+      level: s0
+  serviceAccount: bscf-sa
+  serviceAccountName: bscf-sa
+  terminationGracePeriodSeconds: 8
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+[root@bastion ~]# ./conn cmp0
+bscf2000-cmp0-878bdf875-n4kfd 1/1 Running 0 6d18h
+kubectl exec -it bscf2000-cmp0-878bdf875-n4kfd -- /bin/bash
+Defaulted container "cmp" out of: cmp, install (init)
+[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$ id
+uid=2101(sapp) gid=2001(sgroup) groups=2001(sgroup),10(wheel)
+[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$ exit
+[root@bastion ~]#
