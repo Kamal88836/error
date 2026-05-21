@@ -1,74 +1,37 @@
-[root@bastion ~]# ./conn cmp1
-bscf2000-cmp1-7cf46df4c8-rgv64 1/1 Running 0 6d18h
-kubectl exec -it bscf2000-cmp1-7cf46df4c8-rgv64 -- /bin/bash
-Defaulted container "cmp" out of: cmp, install (init)
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 /]$ df -Th
-Filesystem                                                                                                                                                                                                                              Type      Size  Used Avail Use% Mounted on
-overlay                                                                                                                                                                                                                                 overlay   1.8T   45G  1.8T   3% /
-tmpfs                                                                                                                                                                                                                                   tmpfs      64M     0   64M   0% /dev
-shm                                                                                                                                                                                                                                     tmpfs      64M  8.0K   64M   1% /dev/shm
-tmpfs                                                                                                                                                                                                                                   tmpfs     101G  115M  101G   1% /proc/acpi
-/dev/sdb4                                                                                                                                                                                                                               xfs       1.8T   45G  1.8T   3% /etc/hosts
-csi-cephfs-node-ceph-user-g1-b6eddc64-3e24-4651-981f-98039ae5f102@f4373567-6468-4061-b8b6-3c9f3be34347.ocs-storagecluster-cephfilesystem=/volumes/csi/csi-vol-d3936dc8-7a15-4401-9d29-c8c14d03bc2c/d7650f84-97f8-4eaa-95c3-5f82783d2c88 ceph       40G   68M   40G   1% /mnt/storage/shared
-csi-cephfs-node-ceph-user-g1-b6eddc64-3e24-4651-981f-98039ae5f102@f4373567-6468-4061-b8b6-3c9f3be34347.ocs-storagecluster-cephfilesystem=/volumes/csi/csi-vol-87b26c15-24c3-40e0-94a0-dcc72cc3a938/fc469c85-292b-4280-a67d-39241628108b ceph     1010G  2.1G 1008G   1% /mnt/storage/log
-tmpfs                                                                                                                                                                                                                                   tmpfs     4.0G   20K  4.0G   1% /run/secrets/kubernetes.io/serviceaccount
-devtmpfs                                                                                                                                                                                                                                devtmpfs  4.0M     0  4.0M   0% /proc/keys
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 /]$ cd log
-log     log_nr
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 /]$ cd log
-log     log_nr
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 /]$ cd /mnt/storage/log
-bash: cd: /mnt/storage/log: Permission denied
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 /]$ cd /mnt/storage/log
-bash: cd: /mnt/storage/log: Permission denied
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 /]$ cd /mnt/storage/shared
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 shared]$ ls
-CONFIG  FTM  HDB  NFMLogs  NRFM  SON  TESTDKU  UDM  VPM  VPMbackup  flavor_option  growcomplete  vespm
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 shared]$ exit
 [root@bastion ~]# ./conn cmp0
 bscf2000-cmp0-878bdf875-n4kfd 1/1 Running 0 6d18h
 kubectl exec -it bscf2000-cmp0-878bdf875-n4kfd -- /bin/bash
 Defaulted container "cmp" out of: cmp, install (init)
-df -[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$ df -Th
-Filesystem                                                                                                                                                                                                                              Type      Size  Used Avail Use% Mounted on
-overlay                                                                                                                                                                                                                                 overlay   1.8T   44G  1.8T   3% /
-tmpfs                                                                                                                                                                                                                                   tmpfs      64M     0   64M   0% /dev
-shm                                                                                                                                                                                                                                     tmpfs      64M  8.0K   64M   1% /dev/shm
-tmpfs                                                                                                                                                                                                                                   tmpfs     101G  121M  101G   1% /proc/acpi
-/dev/sdb4                                                                                                                                                                                                                               xfs       1.8T   44G  1.8T   3% /etc/hosts
-csi-cephfs-node-ceph-user-g1-b6eddc64-3e24-4651-981f-98039ae5f102@f4373567-6468-4061-b8b6-3c9f3be34347.ocs-storagecluster-cephfilesystem=/volumes/csi/csi-vol-d3936dc8-7a15-4401-9d29-c8c14d03bc2c/d7650f84-97f8-4eaa-95c3-5f82783d2c88 ceph     1010G  2.1G 1008G   1% /mnt/storage/shared
-csi-cephfs-node-ceph-user-g1-b6eddc64-3e24-4651-981f-98039ae5f102@f4373567-6468-4061-b8b6-3c9f3be34347.ocs-storagecluster-cephfilesystem=/volumes/csi/csi-vol-87b26c15-24c3-40e0-94a0-dcc72cc3a938/fc469c85-292b-4280-a67d-39241628108b ceph       50G  2.9G   48G   6% /mnt/storage/log
-tmpfs                                                                                                                                                                                                                                   tmpfs     4.0G   20K  4.0G   1% /run/secrets/kubernetes.io/serviceaccount
-devtmpfs                                                                                                                                                                                                                                devtmpfs  4.0M     0  4.0M   0% /proc/keys
-[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$ cd /mnt/storage/shared
-bash: cd: /mnt/storage/shared: Permission denied
+[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$
+[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$
+[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$
 [sapp@bscf2000-cmp0-878bdf875-n4kfd /]$ cd /mnt/storage/log
-[sapp@bscf2000-cmp0-878bdf875-n4kfd log]$ exit
-[root@bastion ~]# oc get po
-NAME                             READY   STATUS    RESTARTS   AGE
-bscf2000-bip0-865dcc48dc-789kr   1/1     Running   0          6d18h
-bscf2000-bip1-659ff58fb4-f97hh   1/1     Running   0          6d18h
-bscf2000-bpp0-65d5bc84c9-t6g5g   1/1     Running   0          5d22h
-bscf2000-bpp1-76bb988f78-z2zr8   1/1     Running   0          6d18h
-bscf2000-bpp2-57c4cdcf87-h4j8s   1/1     Running   0          6d18h
-bscf2000-bpp3-778676fc74-8bwrh   1/1     Running   0          6d18h
-bscf2000-cmp0-878bdf875-n4kfd    1/1     Running   0          6d18h
-bscf2000-cmp1-7cf46df4c8-rgv64   1/1     Running   0          6d18h
-bscf2000-dmp0-758749988c-pxxpn   1/1     Running   0          6d18h
-bscf2000-pmp0-b7c65dc58-j99nc    1/1     Running   0          6d18h
-[root@bastion ~]# oc get pvc
-NAME                  STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                VOLUMEATTRIBUTESCLASS   AGE
-bscf2000-db-pvc       Bound    pvc-3ea3027f-ae97-4134-aeb6-ce7bab52ac87   8Gi        RWX            ocs-storagecluster-cephfs   <unset>                 6d21h
-bscf2000-log-pvc      Bound    pvc-d7bdc5e3-a994-478c-83c9-3bce19e26a56   50Gi       RWX            ocs-storagecluster-cephfs   <unset>                 6d21h
-bscf2000-shared-pvc   Bound    pvc-0de0254c-02a8-4591-84d4-b979a7e98656   40Gi       RWX            ocs-storagecluster-cephfs   <unset>                 6d21h
-[root@bastion ~]# oc get pv
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                                        STORAGECLASS                  VOLUMEATTRIBUTESCLASS   REASON   AGE
-local-pv-2ae0f10d                          1788Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-local-volume-2-data-086qlh   local-volume                  <unset>                          14d
-local-pv-4e8e9cdc                          894Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-local-volume-0-data-08m82s   local-volume                  <unset>                          14d
-local-pv-8f8702ba                          894Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-local-volume-1-data-04q5lc   local-volume                  <unset>                          14d
-pvc-00625226-8679-414f-8bc6-c40db24d06a0   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-1                     ocs-storagecluster-ceph-rbd   <unset>                          14d
-pvc-0de0254c-02a8-4591-84d4-b979a7e98656   40Gi       RWX            Delete           Bound    cnf/bscf2000-shared-pvc                                      ocs-storagecluster-cephfs     <unset>                          6d21h
-pvc-3ea3027f-ae97-4134-aeb6-ce7bab52ac87   8Gi        RWX            Delete           Bound    cnf/bscf2000-db-pvc                                          ocs-storagecluster-cephfs     <unset>                          6d21h
-pvc-ad975d73-4f2b-4a57-98da-733a7200f959   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-2                     ocs-storagecluster-ceph-rbd   <unset>                          14d
-pvc-d7bdc5e3-a994-478c-83c9-3bce19e26a56   50Gi       RWX            Delete           Bound    cnf/bscf2000-log-pvc                                         ocs-storagecluster-cephfs     <unset>                          6d21h
-[root@bastion ~]#
+[sapp@bscf2000-cmp0-878bdf875-n4kfd log]$ cd /mnt/storage/shared
+bash: cd: /mnt/storage/shared: Permission denied
+[sapp@bscf2000-cmp0-878bdf875-n4kfd log]$ ls -ld /mnt/storage/shared
+ls: cannot access '/mnt/storage/shared': Permission denied
+[sapp@bscf2000-cmp0-878bdf875-n4kfd log]$ cd /mnt/storage/
+[sapp@bscf2000-cmp0-878bdf875-n4kfd storage]$ ls -ltr
+ls: cannot access 'shared': Permission denied
+total 0
+d?????????? ? ?    ?      ?            ? shared
+drwxrwsr-x. 2 sapp sgroup 6 May 10 23:59 VPMbackup
+drwxrwsr-x. 2 sapp sgroup 6 May 10 23:59 CONFD
+drwxrwsr-x. 6 root sgroup 4 May 14 13:20 log
+[sapp@bscf2000-cmp0-878bdf875-n4kfd storage]$ ls -d shared
+ls: cannot access 'shared': Permission denied
+[sapp@bscf2000-cmp0-878bdf875-n4kfd storage]$ exit
+command terminated with exit code 2
+[root@bastion ~]# ./conn cmp1
+bscf2000-cmp1-7cf46df4c8-rgv64 1/1 Running 0 6d18h
+kubectl exec -it bscf2000-cmp1-7cf46df4c8-rgv64 -- /bin/bash
+Defaulted container "cmp" out of: cmp, install (init)
+[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 /]$ cd /mnt/storage/
+[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 storage]$ ls -ltr
+ls: cannot access 'log': Permission denied
+total 0
+d??????????  ? ?    ?       ?            ? log
+drwxrwsr-x.  2 sapp sgroup  6 May 10 23:59 VPMbackup
+drwxrwsr-x.  2 sapp sgroup  6 May 10 23:59 CONFD
+drwxrwsr-x. 17 root sgroup 16 May 14 15:35 shared
+[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 storage]$
