@@ -1,139 +1,19 @@
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 storage]$ id
-uid=2101(sapp) gid=2001(sgroup) groups=2001(sgroup),10(wheel)
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 storage]$ exit
-[root@bastion ~]# oc get pod bscf2000-cmp0-878bdf875-n4kfd -o yaml | grep -A20 -i securityContext
-    securityContext:
-      capabilities:
-        add:
-        - NET_ADMIN
-        - NET_RAW
-        - DAC_READ_SEARCH
-        - IPC_LOCK
-        - SYS_MODULE
-        - SYS_RAWIO
-        - SYS_PTRACE
-        - SYS_ADMIN
-        - SYS_NICE
-        - SYS_TIME
-        - SYS_TTY_CONFIG
-        - SYS_RESOURCE
-        - SYS_CHROOT
-        - SETFCAP
-      privileged: false
-      runAsGroup: 2001
-      runAsNonRoot: true
-      runAsUser: 2101
---
-    securityContext:
-      privileged: true
-      runAsUser: 0
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /etc/config
-      name: env
-    - mountPath: /mnt/storage/shared
-      name: bscf2000-cmp-shared
-    - mountPath: /mnt/storage/log
-      name: bscf2000-cmp-log
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: kube-api-access-fjn24
-      readOnly: true
-  nodeName: worker01.bscf2000.samsung.local
-  preemptionPolicy: PreemptLowerPriority
-  priority: 0
-  restartPolicy: Always
-  schedulerName: default-scheduler
-  securityContext:
-    fsGroup: 2001
-    runAsGroup: 2001
-    runAsUser: 2101
-    seLinuxOptions:
-      level: s0
-  serviceAccount: bscf-sa
-  serviceAccountName: bscf-sa
-  terminationGracePeriodSeconds: 8
-  tolerations:
-  - effect: NoExecute
-    key: node.kubernetes.io/not-ready
-    operator: Exists
-    tolerationSeconds: 300
-  - effect: NoExecute
-    key: node.kubernetes.io/unreachable
-    operator: Exists
-    tolerationSeconds: 300
-  - effect: NoSchedule
-    key: node.kubernetes.io/memory-pressure
-    operator: Exists
-[root@bastion ~]# oc get pod bscf2000-cmp1-7cf46df4c8-rgv64 -o yaml | grep -A20 -i securityContext
-    securityContext:
-      capabilities:
-        add:
-        - NET_ADMIN
-        - NET_RAW
-        - DAC_READ_SEARCH
-        - IPC_LOCK
-        - SYS_MODULE
-        - SYS_RAWIO
-        - SYS_PTRACE
-        - SYS_ADMIN
-        - SYS_NICE
-        - SYS_TIME
-        - SYS_TTY_CONFIG
-        - SYS_RESOURCE
-        - SYS_CHROOT
-        - SETFCAP
-      privileged: false
-      runAsGroup: 2001
-      runAsNonRoot: true
-      runAsUser: 2101
---
-    securityContext:
-      privileged: true
-      runAsUser: 0
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /etc/config
-      name: env
-    - mountPath: /mnt/storage/shared
-      name: bscf2000-cmp-shared
-    - mountPath: /mnt/storage/log
-      name: bscf2000-cmp-log
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: kube-api-access-kcxv2
-      readOnly: true
-  nodeName: worker02.bscf2000.samsung.local
-  preemptionPolicy: PreemptLowerPriority
-  priority: 0
-  restartPolicy: Always
-  schedulerName: default-scheduler
-  securityContext:
-    fsGroup: 2001
-    runAsGroup: 2001
-    runAsUser: 2101
-    seLinuxOptions:
-      level: s0
-  serviceAccount: bscf-sa
-  serviceAccountName: bscf-sa
-  terminationGracePeriodSeconds: 8
-  tolerations:
-  - effect: NoExecute
-    key: node.kubernetes.io/not-ready
-    operator: Exists
-    tolerationSeconds: 300
-  - effect: NoExecute
-    key: node.kubernetes.io/unreachable
-    operator: Exists
-    tolerationSeconds: 300
-  - effect: NoSchedule
-    key: node.kubernetes.io/memory-pressure
-    operator: Exists
-[root@bastion ~]# ./conn cmp0
-bscf2000-cmp0-878bdf875-n4kfd 1/1 Running 0 6d18h
-kubectl exec -it bscf2000-cmp0-878bdf875-n4kfd -- /bin/bash
-Defaulted container "cmp" out of: cmp, install (init)
-[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$ id
-uid=2101(sapp) gid=2001(sgroup) groups=2001(sgroup),10(wheel)
-[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$ exit
+Events:
+  Type     Reason       Age                 From               Message
+  ----     ------       ----                ----               -------
+  Normal   Scheduled    43s                 default-scheduler  Successfully assigned cnf/bscf2000-cmp0-878bdf875-htvp8 to worker01.bscf2000.samsung.local
+  Warning  FailedMount  21s (x10 over 43s)  kubelet            MountVolume.SetUp failed for volume "pvc-0de0254c-02a8-4591-84d4-b979a7e98656" : rpc error: code = Internal desc = lstat /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba/globalmount: permission denied
+[root@bastion ~]#
+[root@bastion ~]# oc get po
+NAME                             READY   STATUS     RESTARTS   AGE
+bscf2000-bip0-865dcc48dc-789kr   1/1     Running    0          6d18h
+bscf2000-bip1-659ff58fb4-f97hh   1/1     Running    0          6d18h
+bscf2000-bpp0-65d5bc84c9-t6g5g   1/1     Running    0          5d23h
+bscf2000-bpp1-76bb988f78-z2zr8   1/1     Running    0          6d18h
+bscf2000-bpp2-57c4cdcf87-h4j8s   1/1     Running    0          6d18h
+bscf2000-bpp3-778676fc74-8bwrh   1/1     Running    0          6d18h
+bscf2000-cmp0-878bdf875-htvp8    0/1     Init:0/1   0          56s
+bscf2000-cmp1-7cf46df4c8-rgv64   1/1     Running    0          6d18h
+bscf2000-dmp0-758749988c-pxxpn   1/1     Running    0          6d18h
+bscf2000-pmp0-b7c65dc58-j99nc    1/1     Running    0          6d18h
 [root@bastion ~]#
