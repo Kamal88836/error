@@ -1,3 +1,95 @@
- Normal   Scheduled    18m                 default-scheduler  Successfully assigned cnf/bscf2000-bip0-865dcc48dc-7z7g2 to worker01.bscf2000.samsung.local
-  Warning  FailedMount  60s (x10 over 15m)  kubelet            MountVolume.MountDevice failed for volume "pvc-0de0254c-02a8-4591-84d4-b979a7e98656" : kubernetes.io/csi: attacher.MountDevice failed to create dir "/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba/globalmount":  mkdir /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba/globalmount: file exists
-[root@bastion ~]#
+This confirms the stale directory still exists on worker01.
+
+The kubelet is trying to create:
+
+/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba/globalmount
+
+but that path already exists from a broken previous mount attempt.
+
+You can fix this manually without reboot if the kernel mount is not wedged.
+
+Do exactly this on worker01.
+
+
+---
+
+1. Debug node
+
+oc debug node/worker01.bscf2000.samsung.local
+
+Then:
+
+chroot /host
+
+
+---
+
+2. Check if mount is active
+
+mount | grep e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba
+
+and:
+
+findmnt | grep e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba
+
+
+---
+
+3. If mounted → lazy unmount
+
+umount -lf /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba/globalmount
+
+
+---
+
+4. Remove stale directory
+
+rm -rf /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba
+
+
+---
+
+5. Restart kubelet
+
+systemctl restart kubelet
+
+Wait about 60-90 seconds.
+
+
+---
+
+6. Restart CephFS CSI plugin pod on worker01
+
+Get pod:
+
+oc get pod -n openshift-storage -o wide | grep cephfs
+
+Delete the one on worker01:
+
+oc delete pod <cephfsplugin-pod> -n openshift-storage
+
+
+---
+
+7. Recreate failed CNF pods
+
+oc delete pod bscf2000-bip0-865dcc48dc-7z7g2 -n cnf
+
+Then watch:
+
+oc get po -w
+
+
+---
+
+Important observation
+
+The hash:
+
+e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba
+
+corresponds to your shared PVC:
+
+pvc-0de0254c-02a8-4591-84d4-b979a7e98656
+
+So the shared CephFS mount is specifically corrupted/stale on worker01.
