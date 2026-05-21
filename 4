@@ -1,95 +1,17 @@
-This confirms the stale directory still exists on worker01.
-
-The kubelet is trying to create:
-
-/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba/globalmount
-
-but that path already exists from a broken previous mount attempt.
-
-You can fix this manually without reboot if the kernel mount is not wedged.
-
-Do exactly this on worker01.
-
-
----
-
-1. Debug node
-
-oc debug node/worker01.bscf2000.samsung.local
-
-Then:
-
-chroot /host
-
-
----
-
-2. Check if mount is active
-
-mount | grep e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba
-
-and:
-
-findmnt | grep e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba
-
-
----
-
-3. If mounted → lazy unmount
-
-umount -lf /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba/globalmount
-
-
----
-
-4. Remove stale directory
-
-rm -rf /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba
-
-
----
-
-5. Restart kubelet
-
-systemctl restart kubelet
-
-Wait about 60-90 seconds.
-
-
----
-
-6. Restart CephFS CSI plugin pod on worker01
-
-Get pod:
-
-oc get pod -n openshift-storage -o wide | grep cephfs
-
-Delete the one on worker01:
-
-oc delete pod <cephfsplugin-pod> -n openshift-storage
-
-
----
-
-7. Recreate failed CNF pods
-
-oc delete pod bscf2000-bip0-865dcc48dc-7z7g2 -n cnf
-
-Then watch:
-
-oc get po -w
-
-
----
-
-Important observation
-
-The hash:
-
-e72b449cc2471be2998890717403bda0fc0255076ef5a70fb407931b59ebf6ba
-
-corresponds to your shared PVC:
-
-pvc-0de0254c-02a8-4591-84d4-b979a7e98656
-
-So the shared CephFS mount is specifically corrupted/stale on worker01.
+  Type     Reason       Age                 From               Message
+  ----     ------       ----                ----               -------
+  Normal   Scheduled    33m                 default-scheduler  Successfully assigned cnf/bscf2000-bip1-659ff58fb4-96smh to worker02.bscf2000.samsung.local
+  Warning  FailedMount  59s (x2 over 9m7s)  kubelet            MountVolume.MountDevice failed for volume "pvc-d7bdc5e3-a994-478c-83c9-3bce19e26a56" : kubernetes.io/csi: attacher.MountDevice failed to create dir "/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/fded37e2b48b3c1bb87d5be0db84b3e05151387d853314c3a01d42fa17aeb616/globalmount":  mkdir /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/fded37e2b48b3c1bb87d5be0db84b3e05151387d853314c3a01d42fa17aeb616/globalmount: file exists
+[root@bastion ~]# oc get po -o wide
+NAME                             READY   STATUS     RESTARTS   AGE     IP            NODE                              NOMINATED NODE   READINESS GATES
+bscf2000-bip0-865dcc48dc-7z7g2   1/1     Running    0          39m     10.10.2.201   worker01.bscf2000.samsung.local   <none>           <none>
+bscf2000-bip1-659ff58fb4-96smh   0/1     Init:0/2   0          33m     <none>        worker02.bscf2000.samsung.local   <none>           <none>
+bscf2000-bpp0-65d5bc84c9-xfjzl   1/1     Running    0          39m     10.10.2.199   worker01.bscf2000.samsung.local   <none>           <none>
+bscf2000-bpp1-76bb988f78-ms5nk   0/1     Init:0/1   0          33m     <none>        worker02.bscf2000.samsung.local   <none>           <none>
+bscf2000-bpp2-57c4cdcf87-rfp62   1/1     Running    0          39m     10.10.2.200   worker01.bscf2000.samsung.local   <none>           <none>
+bscf2000-bpp3-778676fc74-ljqww   0/1     Init:0/1   0          33m     <none>        worker02.bscf2000.samsung.local   <none>           <none>
+bscf2000-cmp0-878bdf875-htvp8    1/1     Running    0          43m     10.10.2.198   worker01.bscf2000.samsung.local   <none>           <none>
+bscf2000-cmp1-7cf46df4c8-rgv64   1/1     Running    0          6d19h   10.10.3.33    worker02.bscf2000.samsung.local   <none>           <none>
+bscf2000-dmp0-758749988c-pxxpn   1/1     Running    0          6d19h   10.10.3.34    worker02.bscf2000.samsung.local   <none>           <none>
+bscf2000-pmp0-b7c65dc58-j99nc    1/1     Running    0          6d19h   10.10.2.189   worker01.bscf2000.samsung.local   <none>           <none>
+[root@bastion ~]#
