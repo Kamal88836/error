@@ -1,37 +1,143 @@
-[root@bastion ~]# ./conn cmp0
-bscf2000-cmp0-878bdf875-n4kfd 1/1 Running 0 6d18h
-kubectl exec -it bscf2000-cmp0-878bdf875-n4kfd -- /bin/bash
-Defaulted container "cmp" out of: cmp, install (init)
-[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$
-[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$
-[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$
-[sapp@bscf2000-cmp0-878bdf875-n4kfd /]$ cd /mnt/storage/log
-[sapp@bscf2000-cmp0-878bdf875-n4kfd log]$ cd /mnt/storage/shared
-bash: cd: /mnt/storage/shared: Permission denied
-[sapp@bscf2000-cmp0-878bdf875-n4kfd log]$ ls -ld /mnt/storage/shared
-ls: cannot access '/mnt/storage/shared': Permission denied
-[sapp@bscf2000-cmp0-878bdf875-n4kfd log]$ cd /mnt/storage/
-[sapp@bscf2000-cmp0-878bdf875-n4kfd storage]$ ls -ltr
-ls: cannot access 'shared': Permission denied
-total 0
-d?????????? ? ?    ?      ?            ? shared
-drwxrwsr-x. 2 sapp sgroup 6 May 10 23:59 VPMbackup
-drwxrwsr-x. 2 sapp sgroup 6 May 10 23:59 CONFD
-drwxrwsr-x. 6 root sgroup 4 May 14 13:20 log
-[sapp@bscf2000-cmp0-878bdf875-n4kfd storage]$ ls -d shared
-ls: cannot access 'shared': Permission denied
-[sapp@bscf2000-cmp0-878bdf875-n4kfd storage]$ exit
-command terminated with exit code 2
-[root@bastion ~]# ./conn cmp1
-bscf2000-cmp1-7cf46df4c8-rgv64 1/1 Running 0 6d18h
-kubectl exec -it bscf2000-cmp1-7cf46df4c8-rgv64 -- /bin/bash
-Defaulted container "cmp" out of: cmp, install (init)
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 /]$ cd /mnt/storage/
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 storage]$ ls -ltr
-ls: cannot access 'log': Permission denied
-total 0
-d??????????  ? ?    ?       ?            ? log
-drwxrwsr-x.  2 sapp sgroup  6 May 10 23:59 VPMbackup
-drwxrwsr-x.  2 sapp sgroup  6 May 10 23:59 CONFD
-drwxrwsr-x. 17 root sgroup 16 May 14 15:35 shared
-[sapp@bscf2000-cmp1-7cf46df4c8-rgv64 storage]$
+This confirms it is a filesystem permission/ownership problem inside CephFS, not a PVC or mount issue.
+
+Notice the broken entries:
+
+On cmp0:
+
+d?????????? ? ? ? ? ? shared
+
+On cmp1:
+
+d?????????? ? ? ? ? ? log
+
+That means the kernel cannot stat the directory due to permission denial from the CephFS backend.
+
+Also observe:
+
+Accessible dirs:
+
+drwxrwsr-x.
+
+Inaccessible mount: completely hidden metadata (??????????)
+
+
+This strongly indicates:
+
+different CephFS export permissions
+
+or UID/GID mismatch at root directory level
+
+or root squash / ACL issue
+
+
+Most importantly:
+
+shared is owned by root sgroup
+
+log is owned by root sgroup
+
+but access differs per pod
+
+
+So the likely issue is: the two CMP pods are running with different supplemental groups or fsGroup mappings.
+
+Check IDs in BOTH pods:
+
+id
+
+You will likely see different groups.
+
+Then check pod security context:
+
+oc get pod bscf2000-cmp0-878bdf875-n4kfd -o yaml | grep -A20 -i securityContext
+
+oc get pod bscf2000-cmp1-7cf46df4c8-rgv64 -o yaml | grep -A20 -i securityContext
+
+You are looking for:
+
+fsGroup
+
+supplementalGroups
+
+runAsUser
+
+
+Most likely scenario:
+
+one pod has correct sgroup
+
+another pod does not
+
+
+Another very important clue: Earlier your df -Th showed swapped capacities:
+
+Pod	shared	log
+
+cmp0	1010G	50G
+cmp1	40G	1010G
+
+
+But actual PVCs are:
+
+shared-pvc = 40G
+
+log-pvc = 50G
+
+
+There is NO 1010G PVC in your CNF namespace.
+
+That means: the mountpoints are corrupted or overlapping from inside container init/configuration.
+
+Possible causes:
+
+1. bind mount mistake in app startup
+
+
+2. symbolic link overlay
+
+
+3. init container remount
+
+
+4. application recreating directories
+
+
+5. volumeMount paths overlapping
+
+
+
+Very likely the deployment YAML has wrong mountPath usage.
+
+You should inspect:
+
+oc get deploy bscf2000-cmp0 -o yaml > cmp0.yaml
+oc get deploy bscf2000-cmp1 -o yaml > cmp1.yaml
+
+Then compare:
+
+grep -A10 -B5 mountPath cmp0.yaml
+grep -A10 -B5 mountPath cmp1.yaml
+
+Also compare:
+
+grep claimName -n cmp0.yaml
+grep claimName -n cmp1.yaml
+
+I suspect one of these:
+
+mountPath: /mnt/storage
+mountPath: /mnt/storage/shared
+
+or overlapping mounts like:
+
+- mountPath: /mnt/storage
+  pvc: shared-pvc
+
+- mountPath: /mnt/storage/log
+  pvc: log-pvc
+
+This causes hidden/overmounted directories and exactly these symptoms.
+
+The 1010G size is a huge clue: that is not from your PVCs at all — it is coming from another underlying filesystem exposed beneath the mount hierarchy.
+
+Most probable root cause now: overlapping volumeMount definitions in deployment/statefulset.
