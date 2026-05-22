@@ -1,138 +1,24 @@
-Your error:
-
-open /dev/ptmx: no space left on device
-
-is usually caused by exhaustion of PTYs (pseudo terminals) on the node, not disk space.
-
-Common root causes in OpenShift / CRI-O environments are:
-
-
----
-
-1. Too many exec/rsh sessions (Most common)
-
-Repeated usage of:
-
-oc rsh
-
-oc exec
-
-crictl exec
-
-
-can leave stale PTY allocations if sessions disconnect improperly.
-
-Especially common when:
-
-terminal/network disconnects
-
-automation/scripts run many execs
-
-shells crash
-
-
-
----
-
-2. Stale conmon processes
-
-conmon manages container stdio for CRI-O.
-
-Sometimes after:
-
-failed execs
-
-runtime glitches
-
-container crashes
-
-
-old conmon processes remain alive and keep PTYs allocated.
-
-Check:
-
-ps -ef | grep conmon | wc -l
-
-
----
-
-3. Kernel PTY limit reached
-
-Linux has a maximum PTY count.
-
-Check:
-
-sysctl kernel.pty.nr
-sysctl kernel.pty.max
-
-If:
-
-nr ≈ max
-
-
-then new terminal allocation fails.
-
-Typical defaults:
-
-max = 4096
-
-
-Long-running clusters sometimes leak PTYs over days/weeks.
-
-
----
-
-4. File descriptor exhaustion
-
-Each exec consumes file descriptors.
-
-Check:
-
-cat /proc/sys/fs/file-nr
-
-and:
-
-ulimit -n
-
-
----
-
-5. CRI-O bug / runtime leak
-
-This is also seen in:
-
-older CRI-O builds
-
-long uptime SNO clusters
-
-heavy debugging environments
-
-
-Runtime gradually leaks PTYs/resources until restart.
-
-
----
-
-Why restart fixes it
-
-Restarting crio:
-
-clears stale exec sessions
-
-releases leaked PTYs
-
-restarts conmon
-
-resets runtime state
-
-
-That is why it is the standard fix.
-
-
----
-
-To confirm after recovery, run:
-
-sysctl kernel.pty.nr
-
-If the number drops significantly after restart, PTY leakage/exhaustion was the cause.
+evicting pod openshift-kube-controller-manager/kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local
+error when evicting pods/"kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-kube-controller-manager" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+error when evicting pods/"openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-kube-scheduler" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+error when evicting pods/"etcd-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-etcd" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+evicting pod openshift-etcd/etcd-guard-master3.airtelvvt.samsungbsc.local
+evicting pod openshift-kube-scheduler/openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local
+evicting pod openshift-kube-controller-manager/kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local
+error when evicting pods/"etcd-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-etcd" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+error when evicting pods/"openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-kube-scheduler" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+error when evicting pods/"kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-kube-controller-manager" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+evicting pod openshift-kube-controller-manager/kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local
+evicting pod openshift-etcd/etcd-guard-master3.airtelvvt.samsungbsc.local
+evicting pod openshift-kube-scheduler/openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local
+error when evicting pods/"openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-kube-scheduler" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+error when evicting pods/"etcd-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-etcd" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+error when evicting pods/"kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-kube-controller-manager" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+evicting pod openshift-kube-controller-manager/kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local
+evicting pod openshift-kube-scheduler/openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local
+evicting pod openshift-etcd/etcd-guard-master3.airtelvvt.samsungbsc.local
+error when evicting pods/"openshift-kube-scheduler-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-kube-scheduler" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+error when evicting pods/"kube-controller-manager-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-kube-controller-manager" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+error when evicting pods/"etcd-guard-master3.airtelvvt.samsungbsc.local" -n "openshift-etcd" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+^C
+[root@bastion ~]#
