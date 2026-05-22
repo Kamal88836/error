@@ -1,121 +1,133 @@
-Yes — that explains the remaining behavior.
-
-In disconnected/OpenShift mirrored environments, the ovnkube-upgrades-prepuller daemonset commonly gets stuck because nodes cannot pull the new OVN images from the mirrored registry properly.
-
-Your cluster is actually healthy now:
-
-no degraded MCP
-
-no degraded network operator
-
-all nodes Ready
-
-control plane stable
-
-
-The upgrade is waiting only for OVN rollout completion.
-
-Most likely root cause in your disconnected setup:
-
-one or more OVN images for 4.19.24 are missing in your mirror registry
-
-OR ImageContentSourcePolicy/ImageDigestMirrorSet mismatch
-
-OR node pull secret issue
-
-OR stale prepuller pod
-
-
-Check this immediately:
-
-oc get pods -n openshift-ovn-kubernetes
-
-Look for:
-
-ImagePullBackOff
-
-ErrImagePull
-
-ContainerCreating
-
-Pending
-
-
-Then inspect failing pod:
-
-oc describe pod -n openshift-ovn-kubernetes <podname>
-
-Especially check Events section.
-
-Also verify daemonsets:
-
-oc get ds -n openshift-ovn-kubernetes
-
-Very likely you will see something like:
-
-DESIRED  CURRENT  READY  UP-TO-DATE
-3        3        2      3
-
-That single unavailable pod is blocking completion.
-
-In disconnected clusters, common fix is:
-
-1. Verify mirrored image exists in local harbor/quay
-
-
-2. Verify pullspec resolution
-
-
-3. Delete stuck prepuller pod
-
-
-
-Example:
-
-oc delete pod -n openshift-ovn-kubernetes <stuck-pod>
-
-The daemonset recreates it.
-
-Also verify node can pull image:
-
-oc describe pod -n openshift-ovn-kubernetes <stuck-pod> | grep -A20 -i image
-
-You may see:
-
-unauthorized
-
-manifest unknown
-
-no route to host
-
-x509
-
-timeout
-
-
-Another important point:
-
-Your RetrievedUpdates=False due to DNS failure to api.openshift.com is completely normal in disconnected environments and NOT blocking the upgrade.
-
-The real blocker is only:
-
-OVN rollout completion
-
-
-Also:
-
-machine-config still showing 4.18.17 while MCP updated is normal during late-stage reconciliation
-
-it usually flips after network operator completes
-
-
-So at this stage:
-
-do NOT reboot nodes
-
-do NOT force another upgrade
-
-do NOT manually modify CVO
-
-
-Focus only on the stuck OVN daemonset/pod/image pull.
+[root@bastion ~]# oc get clusterversion | grep 4.18.17
+version   4.18.17   True        True          20h     Working towards 4.19.24: 797 of 926 done (86% complete), waiting on machine-config
+[root@bastion ~]# oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.19.24   True        False         False      51m
+baremetal                                  4.19.24   True        False         False      71d
+cloud-controller-manager                   4.19.24   True        False         False      71d
+cloud-credential                           4.19.24   True        False         False      71d
+cluster-autoscaler                         4.19.24   True        False         False      71d
+config-operator                            4.19.24   True        False         False      71d
+console                                    4.19.24   True        False         False      60m
+control-plane-machine-set                  4.19.24   True        False         False      71d
+csi-snapshot-controller                    4.19.24   True        False         False      50m
+dns                                        4.19.24   True        False         False      11d
+etcd                                       4.19.24   True        False         False      7d15h
+image-registry                             4.19.24   True        False         False      40d
+ingress                                    4.19.24   True        False         False      7d1h
+insights                                   4.19.24   True        False         False      71d
+kube-apiserver                             4.19.24   True        False         False      71d
+kube-controller-manager                    4.19.24   True        False         False      71d
+kube-scheduler                             4.19.24   True        False         False      71d
+kube-storage-version-migrator              4.19.24   True        False         False      4m5s
+machine-api                                4.19.24   True        False         False      71d
+machine-approver                           4.19.24   True        False         False      71d
+machine-config                             4.18.17   True        True          False      71d     Working towards 4.19.24
+marketplace                                4.19.24   True        False         False      71d
+monitoring                                 4.19.24   True        False         False      56m
+network                                    4.19.24   True        False         False      71d
+node-tuning                                4.19.24   True        False         False      19h
+olm                                        4.19.24   True        False         False      50m
+openshift-apiserver                        4.19.24   True        False         False      56m
+openshift-controller-manager               4.19.24   True        False         False      40d
+openshift-samples                          4.19.24   True        False         False      71d
+operator-lifecycle-manager                 4.19.24   True        False         False      71d
+operator-lifecycle-manager-catalog         4.19.24   True        False         False      71d
+operator-lifecycle-manager-packageserver   4.19.24   True        False         False      7d1h
+service-ca                                 4.19.24   True        False         False      71d
+storage                                    4.19.24   True        False         False      71d
+[root@bastion ~]# oc describe co machine-config
+Name:         machine-config
+Namespace:
+Labels:       <none>
+Annotations:  exclude.release.openshift.io/internal-openshift-hosted: true
+              include.release.openshift.io/self-managed-high-availability: true
+              include.release.openshift.io/single-node-developer: true
+API Version:  config.openshift.io/v1
+Kind:         ClusterOperator
+Metadata:
+  Creation Timestamp:  2026-03-11T12:57:50Z
+  Generation:          1
+  Owner References:
+    API Version:     config.openshift.io/v1
+    Controller:      true
+    Kind:            ClusterVersion
+    Name:            version
+    UID:             d03369df-aa1a-408c-a419-05be8f93d778
+  Resource Version:  42360797
+  UID:               d8610a0c-7b65-4c36-9dc7-08fc8b2b979d
+Spec:
+Status:
+  Conditions:
+    Last Transition Time:  2026-05-22T06:23:21Z
+    Message:               Working towards 4.19.24
+    Status:                True
+    Type:                  Progressing
+    Last Transition Time:  2026-03-11T13:20:09Z
+    Message:               Cluster is using deprecated cgroup v1 and is not upgradable. Please update the `CgroupMode` in the `nodes.config.openshift.io` object to 'v2'. Once upgraded, the cluster cannot be changed back to cgroup v1
+    Reason:                ClusterOnCgroupV1
+    Status:                False
+    Type:                  Upgradeable
+    Last Transition Time:  2026-05-22T05:34:34Z
+    Status:                False
+    Type:                  Degraded
+    Last Transition Time:  2026-03-11T13:20:31Z
+    Message:               Cluster has deployed [{operator 4.18.17} {operator-image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:34023d549425cd14559140435d3138a561423c8bb1d2aa1f7117636f5b03506f}]
+    Reason:                AsExpected
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  2026-03-11T13:20:31Z
+    Reason:                cgroupsv1: support has been deprecated in favor of cgroupsv2
+    Status:                True
+    Type:                  EvaluationConditionsDetected
+  Extension:
+    Last Sync Error:  MachineConfigPool master has not progressed to latest configuration: controller version mismatch for rendered-master-19d87d1f05468ec7bb1f68d7fadec27e expected 25321abfd952d282486d28fe27c4ab6052469ebf has 00143af1a51bedf0290496a6a97e47cf60b18693: 0 (ready 0) out of 3 nodes are updating to latest configuration rendered-master-4e56136e7b8f9b46cad268f2b6e3c976, retrying
+    Master:           0 (ready 0) out of 3 nodes are updating to latest configuration rendered-master-4e56136e7b8f9b46cad268f2b6e3c976
+    Worker:           all 0 nodes are at latest configuration rendered-worker-e4b99a6980d4c6ed5fc95b0bb5986cd5
+  Related Objects:
+    Group:
+    Name:      openshift-machine-config-operator
+    Resource:  namespaces
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  machineconfigpools
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  controllerconfigs
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  kubeletconfigs
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  containerruntimeconfigs
+    Group:     machineconfiguration.openshift.io
+    Name:
+    Resource:  machineconfigs
+    Group:
+    Name:
+    Resource:  nodes
+    Group:
+    Name:      openshift-kni-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-openstack-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-ovirt-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-vsphere-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-nutanix-infra
+    Resource:  namespaces
+    Group:
+    Name:      openshift-cloud-platform-infra
+    Resource:  namespaces
+  Versions:
+    Name:     operator
+    Version:  4.18.17
+    Name:     operator-image
+    Version:  quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:34023d549425cd14559140435d3138a561423c8bb1d2aa1f7117636f5b03506f
+Events:       <none>
+[root@bastion ~]#
