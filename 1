@@ -1,392 +1,93 @@
-[root@bastion ~]# oc describe clusterversion
-Name:         version
-Namespace:
-Labels:       <none>
-Annotations:  <none>
-API Version:  config.openshift.io/v1
-Kind:         ClusterVersion
-Metadata:
-  Creation Timestamp:  2026-03-11T12:56:57Z
-  Generation:          4
-  Resource Version:    42345736
-  UID:                 d03369df-aa1a-408c-a419-05be8f93d778
-Spec:
-  Channel:     stable-4.19
-  Cluster ID:  79181d4b-be5f-4014-a5da-23d15290977f
-  Desired Update:
-    Architecture:
-    Force:         true
-    Image:         nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    Version:
-Status:
-  Available Updates:  <nil>
-  Capabilities:
-    Enabled Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-    Known Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-  Conditions:
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Cluster should not be upgraded between minor versions for multiple reasons: ClusterOperatorsNotUpgradeable,UpdateInProgress
-* Multiple cluster operators should not be upgraded between minor versions:
-* Cluster operator operator-lifecycle-manager should not be upgraded between minor versions: IncompatibleOperatorsInstalled: ClusterServiceVersions blocking minor version upgrades to 4.20.0 or higher:
-- maximum supported OCP version for openshift-local-storage/local-storage-operator.v4.18.0-202603152157 is 4.19
-- maximum supported OCP version for openshift-storage/odf-operator.v4.18.17-rhodf is 4.19
-- maximum supported OCP version for openshift-storage/odf-dependencies.v4.18.17-rhodf is 4.19
-* Cluster operator machine-config should not be upgraded between minor versions: ClusterOnCgroupV1: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-* An update is already in progress and the details are in the Progressing condition
-    Reason:                MultipleReasons
-    Status:                False
-    Type:                  Upgradeable
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Capabilities match configured spec
-    Reason:                AsExpected
-    Status:                False
-    Type:                  ImplicitlyEnabledCapabilities
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Payload loaded version="4.19.24" image="nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d" architecture="amd64"
-    Reason:                PayloadLoaded
-    Status:                True
-    Type:                  ReleaseAccepted
-    Last Transition Time:  2026-03-11T13:44:20Z
-    Message:               Done applying 4.18.17
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-05-22T05:50:43Z
-    Status:                False
-    Type:                  Failing
-    Last Transition Time:  2026-05-21T09:59:26Z
-    Message:               Working towards 4.19.24: 726 of 926 done (78% complete), waiting up to 40 minutes on image-registry
-    Reason:                ClusterOperatorDegraded
-    Status:                True
-    Type:                  Progressing
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.19&id=79181d4b-be5f-4014-a5da-23d15290977f&version=4.19.24": dial tcp: lookup api.openshift.com on 20.1.30.152:53: server misbehaving
-    Reason:                RemoteFailed
-    Status:                False
-    Type:                  RetrievedUpdates
-    Last Transition Time:  2026-03-11T13:21:55Z
-    Message:               Multiple cluster operators should not be upgraded between minor versions:
-* Cluster operator operator-lifecycle-manager should not be upgraded between minor versions: IncompatibleOperatorsInstalled: ClusterServiceVersions blocking minor version upgrades to 4.20.0 or higher:
-- maximum supported OCP version for openshift-local-storage/local-storage-operator.v4.18.0-202603152157 is 4.19
-- maximum supported OCP version for openshift-storage/odf-operator.v4.18.17-rhodf is 4.19
-- maximum supported OCP version for openshift-storage/odf-dependencies.v4.18.17-rhodf is 4.19
-* Cluster operator machine-config should not be upgraded between minor versions: ClusterOnCgroupV1: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-    Reason:                ClusterOperatorsNotUpgradeable
-    Status:                False
-    Type:                  UpgradeableClusterOperators
-    Last Transition Time:  2026-05-21T09:59:37Z
-    Message:               An update is already in progress and the details are in the Progressing condition
-    Reason:                UpdateInProgress
-    Status:                True
-    Type:                  UpgradeableUpgradeInProgress
-  Desired:
-    Image:    nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    URL:      https://access.redhat.com/errata/RHSA-2026:2651
-    Version:  4.19.24
-  History:
-    Accepted Risks:  Forced through blocking failures: Multiple precondition checks failed:
-* Precondition "ClusterVersionUpgradeable" failed because of "MultipleReasons": Cluster should not be upgraded between minor versions for multiple reasons: AdminAckRequired,ClusterOnCgroupV1
-* Kubernetes 1.32 and therefore OpenShift 4.19 remove several APIs which require admin consideration. Please see the knowledge article https://access.redhat.com/articles/7112216 for details and instructions.
-* Cluster operator machine-config should not be upgraded between minor versions: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.18.17 to 4.19.24 is unknown.
-    Completion Time:    <nil>
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    Started Time:       2026-05-21T09:59:26Z
-    State:              Partial
-    Verified:           true
-    Version:            4.19.24
-    Completion Time:    2026-03-11T13:44:20Z
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687
-    Started Time:       2026-03-11T12:57:50Z
-    State:              Completed
-    Verified:           false
-    Version:            4.18.17
-  Observed Generation:  4
-  Version Hash:         fOND09SRlWc=
-Events:                 <none>
-[root@bastion ~]# oc describe clusterversion
-Name:         version
-Namespace:
-Labels:       <none>
-Annotations:  <none>
-API Version:  config.openshift.io/v1
-Kind:         ClusterVersion
-Metadata:
-  Creation Timestamp:  2026-03-11T12:56:57Z
-  Generation:          4
-  Resource Version:    42345736
-  UID:                 d03369df-aa1a-408c-a419-05be8f93d778
-Spec:
-  Channel:     stable-4.19
-  Cluster ID:  79181d4b-be5f-4014-a5da-23d15290977f
-  Desired Update:
-    Architecture:
-    Force:         true
-    Image:         nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    Version:
-Status:
-  Available Updates:  <nil>
-  Capabilities:
-    Enabled Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-    Known Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-  Conditions:
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Cluster should not be upgraded between minor versions for multiple reasons: ClusterOperatorsNotUpgradeable,UpdateInProgress
-* Multiple cluster operators should not be upgraded between minor versions:
-* Cluster operator operator-lifecycle-manager should not be upgraded between minor versions: IncompatibleOperatorsInstalled: ClusterServiceVersions blocking minor version upgrades to 4.20.0 or higher:
-- maximum supported OCP version for openshift-local-storage/local-storage-operator.v4.18.0-202603152157 is 4.19
-- maximum supported OCP version for openshift-storage/odf-operator.v4.18.17-rhodf is 4.19
-- maximum supported OCP version for openshift-storage/odf-dependencies.v4.18.17-rhodf is 4.19
-* Cluster operator machine-config should not be upgraded between minor versions: ClusterOnCgroupV1: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-* An update is already in progress and the details are in the Progressing condition
-    Reason:                MultipleReasons
-    Status:                False
-    Type:                  Upgradeable
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Capabilities match configured spec
-    Reason:                AsExpected
-    Status:                False
-    Type:                  ImplicitlyEnabledCapabilities
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Payload loaded version="4.19.24" image="nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d" architecture="amd64"
-    Reason:                PayloadLoaded
-    Status:                True
-    Type:                  ReleaseAccepted
-    Last Transition Time:  2026-03-11T13:44:20Z
-    Message:               Done applying 4.18.17
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-05-22T05:50:43Z
-    Status:                False
-    Type:                  Failing
-    Last Transition Time:  2026-05-21T09:59:26Z
-    Message:               Working towards 4.19.24: 726 of 926 done (78% complete), waiting up to 40 minutes on image-registry
-    Reason:                ClusterOperatorDegraded
-    Status:                True
-    Type:                  Progressing
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.19&id=79181d4b-be5f-4014-a5da-23d15290977f&version=4.19.24": dial tcp: lookup api.openshift.com on 20.1.30.152:53: server misbehaving
-    Reason:                RemoteFailed
-    Status:                False
-    Type:                  RetrievedUpdates
-    Last Transition Time:  2026-03-11T13:21:55Z
-    Message:               Multiple cluster operators should not be upgraded between minor versions:
-* Cluster operator operator-lifecycle-manager should not be upgraded between minor versions: IncompatibleOperatorsInstalled: ClusterServiceVersions blocking minor version upgrades to 4.20.0 or higher:
-- maximum supported OCP version for openshift-local-storage/local-storage-operator.v4.18.0-202603152157 is 4.19
-- maximum supported OCP version for openshift-storage/odf-operator.v4.18.17-rhodf is 4.19
-- maximum supported OCP version for openshift-storage/odf-dependencies.v4.18.17-rhodf is 4.19
-* Cluster operator machine-config should not be upgraded between minor versions: ClusterOnCgroupV1: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-    Reason:                ClusterOperatorsNotUpgradeable
-    Status:                False
-    Type:                  UpgradeableClusterOperators
-    Last Transition Time:  2026-05-21T09:59:37Z
-    Message:               An update is already in progress and the details are in the Progressing condition
-    Reason:                UpdateInProgress
-    Status:                True
-    Type:                  UpgradeableUpgradeInProgress
-  Desired:
-    Image:    nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    URL:      https://access.redhat.com/errata/RHSA-2026:2651
-    Version:  4.19.24
-  History:
-    Accepted Risks:  Forced through blocking failures: Multiple precondition checks failed:
-* Precondition "ClusterVersionUpgradeable" failed because of "MultipleReasons": Cluster should not be upgraded between minor versions for multiple reasons: AdminAckRequired,ClusterOnCgroupV1
-* Kubernetes 1.32 and therefore OpenShift 4.19 remove several APIs which require admin consideration. Please see the knowledge article https://access.redhat.com/articles/7112216 for details and instructions.
-* Cluster operator machine-config should not be upgraded between minor versions: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.18.17 to 4.19.24 is unknown.
-    Completion Time:    <nil>
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    Started Time:       2026-05-21T09:59:26Z
-    State:              Partial
-    Verified:           true
-    Version:            4.19.24
-    Completion Time:    2026-03-11T13:44:20Z
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687
-    Started Time:       2026-03-11T12:57:50Z
-    State:              Completed
-    Verified:           false
-    Version:            4.18.17
-  Observed Generation:  4
-  Version Hash:         fOND09SRlWc=
-Events:                 <none>
-[root@bastion ~]# oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.19.24   True        False         False      16m
-baremetal                                  4.19.24   True        False         False      71d
-cloud-controller-manager                   4.19.24   True        False         False      71d
-cloud-credential                           4.19.24   True        False         False      71d
-cluster-autoscaler                         4.19.24   True        False         False      71d
-config-operator                            4.19.24   True        False         False      71d
-console                                    4.19.24   True        False         False      25m
-control-plane-machine-set                  4.19.24   True        False         False      71d
-csi-snapshot-controller                    4.19.24   True        False         False      15m
-dns                                        4.18.17   True        False         False      11d
-etcd                                       4.19.24   True        False         False      7d14h
-image-registry                             4.19.24   True        False         True       40d     Degraded: The registry is removed...
-ingress                                    4.19.24   True        False         False      7d
-insights                                   4.19.24   True        False         False      71d
-kube-apiserver                             4.19.24   True        False         False      71d
-kube-controller-manager                    4.19.24   True        False         False      71d
-kube-scheduler                             4.19.24   True        False         False      71d
-kube-storage-version-migrator              4.19.24   True        False         False      15m
-machine-api                                4.19.24   True        False         False      71d
-machine-approver                           4.19.24   True        False         False      71d
-machine-config                             4.18.17   True        False         False      71d
-marketplace                                4.19.24   True        False         False      71d
-monitoring                                 4.19.24   True        False         False      21m
-network                                    4.18.17   True        False         False      71d
-node-tuning                                4.19.24   True        False         False      19h
-olm                                        4.18.17   True        False         False      15m
-openshift-apiserver                        4.19.24   True        False         False      21m
-openshift-controller-manager               4.19.24   True        False         False      40d
-openshift-samples                          4.19.24   True        False         False      71d
-operator-lifecycle-manager                 4.19.24   True        False         False      71d
-operator-lifecycle-manager-catalog         4.19.24   True        False         False      71d
-operator-lifecycle-manager-packageserver   4.19.24   True        False         False      7d
-service-ca                                 4.19.24   True        False         False      71d
-storage                                    4.19.24   True        False         False      71d
-[root@bastion ~]# oc describe co image-registry
-Name:         image-registry
-Namespace:
-Labels:       <none>
-Annotations:  capability.openshift.io/name: ImageRegistry
-              include.release.openshift.io/hypershift: true
-              include.release.openshift.io/ibm-cloud-managed: true
-              include.release.openshift.io/self-managed-high-availability: true
-              include.release.openshift.io/single-node-developer: true
-API Version:  config.openshift.io/v1
-Kind:         ClusterOperator
-Metadata:
-  Creation Timestamp:  2026-03-11T12:57:50Z
-  Generation:          1
-  Owner References:
-    API Version:     config.openshift.io/v1
-    Controller:      true
-    Kind:            ClusterVersion
-    Name:            version
-    UID:             d03369df-aa1a-408c-a419-05be8f93d778
-  Resource Version:  42342495
-  UID:               98fa6c6a-d8fa-4445-a9f5-051f4ad70f6b
-Spec:
-Status:
-  Conditions:
-    Last Transition Time:  2026-04-11T14:05:44Z
-    Message:               Available: The registry is removed
-NodeCADaemonAvailable: The daemon set node-ca has available replicas
-ImagePrunerAvailable: Pruner CronJob has been created
-    Reason:                Removed
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-05-22T05:49:03Z
-    Message:               Progressing: All registry resources are removed
-NodeCADaemonProgressing: The daemon set node-ca is deployed
-    Reason:                Removed
-    Status:                False
-    Type:                  Progressing
-    Last Transition Time:  2026-05-22T05:34:30Z
-    Message:               Degraded: The registry is removed
+Your upgrade is actually mostly successful already.
+
+The cluster is running Kubernetes v1.31.9 and most operators are already on 4.19.24.
+
+The upgrade is stuck only because the image-registry ClusterOperator is Degraded=True.
+
+Main blocker:
+
+image-registry   4.19.24   True   False   True
+Degraded: The registry is removed...
 ImagePrunerDegraded: Job has reached the specified backoff limit
-    Reason:   ImagePrunerJobFailed::Removed
-    Status:   True
-    Type:     Degraded
-  Extension:  <nil>
-  Related Objects:
-    Group:     imageregistry.operator.openshift.io
-    Name:      cluster
-    Resource:  configs
-    Group:     imageregistry.operator.openshift.io
-    Name:      cluster
-    Resource:  imagepruners
-    Group:     rbac.authorization.k8s.io
-    Name:      system:registry
-    Resource:  clusterroles
-    Group:     rbac.authorization.k8s.io
-    Name:      registry-registry-role
-    Resource:  clusterrolebindings
-    Group:     rbac.authorization.k8s.io
-    Name:      openshift-image-registry-pruner
-    Resource:  clusterrolebindings
-    Group:
-    Name:      openshift-image-registry
-    Resource:  namespaces
-  Versions:
-    Name:     operator
-    Version:  4.19.24
-Events:       <none>
-[root@bastion ~]# oc get no
-NAME                                 STATUS   ROLES                         AGE   VERSION
-master1.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-master2.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-master3.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-[root@bastion ~]#
-[root@bastion ~]# oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.18.17   True        True          20h     Working towards 4.19.24: 726 of 926 done (78% complete), waiting up to 40 minutes on image-registry
-[root@bastion ~]#
+
+And CVO says:
+
+Working towards 4.19.24: 726 of 926 done (78% complete), waiting on image-registry
+
+This usually happens when:
+
+internal registry was intentionally removed/disabled
+
+but the image pruner job still exists and fails repeatedly
+
+therefore CVO never marks upgrade completed
+
+
+Your control plane itself is healthy:
+
+etcd healthy
+
+kube-apiserver healthy
+
+scheduler healthy
+
+all masters Ready
+
+
+So the earlier PDB drain issue was temporary during control-plane reconciliation.
+
+Now the real issue is image-registry degraded state.
+
+Check registry config:
+
+oc get configs.imageregistry.operator.openshift.io cluster -o yaml
+
+Most likely you will see:
+
+managementState: Removed
+
+Since your registry is intentionally removed, the failing pruner job is unnecessary.
+
+Check failed pruner jobs:
+
+oc get jobs -n openshift-image-registry
+
+Then inspect:
+
+oc describe job -n openshift-image-registry <failed-job>
+
+Usually cleanup resolves it:
+
+oc delete job -n openshift-image-registry --all
+
+Then watch operator:
+
+oc get co image-registry -w
+
+Expected final state:
+
+image-registry   4.19.24   True   False   False
+
+Then CVO should complete automatically:
+
+version  4.19.24  True  False
+
+Also note these important observations from your output:
+
+You forced the upgrade from 4.18 → 4.19
+
+Cluster was still using cgroup v1
+
+ODF + Local Storage operators are only certified up to 4.19
+
+
+So after cluster stabilizes, you should still plan:
+
+1. Move to cgroup v2
+
+
+2. Upgrade ODF operators before attempting 4.20 later
+
+
+
+Your current cluster is already effectively on 4.19 control-plane binaries, but CVO completion is blocked by the degraded image-registry operator.
