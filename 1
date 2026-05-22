@@ -1,711 +1,121 @@
-[root@bastion ~]# oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.18.17   True        True          20h     Working towards 4.19.24: 755 of 926 done (81% complete), waiting on dns, network
-[root@bastion ~]# oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.19.24   True        True          False      27m     OAuthServerDeploymentProgressing: deployment/oauth-openshift.openshift-authentication: 3/3 pods have been updated to the latest generation and 1/3 pods are available
-baremetal                                  4.19.24   True        False         False      71d
-cloud-controller-manager                   4.19.24   True        False         False      71d
-cloud-credential                           4.19.24   True        False         False      71d
-cluster-autoscaler                         4.19.24   True        False         False      71d
-config-operator                            4.19.24   True        False         False      71d
-console                                    4.19.24   True        False         False      36m
-control-plane-machine-set                  4.19.24   True        False         False      71d
-csi-snapshot-controller                    4.19.24   True        False         False      27m
-dns                                        4.18.17   True        True          False      11d     DNS "default" reports Progressing=True: "Have 0 up-to-date DNS pods, want 3.\nHave 2 available node-resolver pods, want 3."...
-etcd                                       4.19.24   True        False         False      7d14h
-image-registry                             4.19.24   True        False         False      40d
-ingress                                    4.19.24   True        False         False      7d
-insights                                   4.19.24   True        False         False      71d
-kube-apiserver                             4.19.24   True        False         False      71d
-kube-controller-manager                    4.19.24   True        False         False      71d
-kube-scheduler                             4.19.24   True        False         False      71d
-kube-storage-version-migrator              4.19.24   True        False         False      27m
-machine-api                                4.19.24   True        False         False      71d
-machine-approver                           4.19.24   True        False         False      71d
-machine-config                             4.18.17   True        False         False      71d
-marketplace                                4.19.24   True        False         False      71d
-monitoring                                 4.19.24   True        False         False      33m
-network                                    4.18.17   True        True          False      71d     DaemonSet "/openshift-multus/multus" update is rolling out (1 out of 3 updated)...
-node-tuning                                4.19.24   True        False         False      19h
-olm                                        4.19.24   True        False         False      27m
-openshift-apiserver                        4.19.24   True        True          False      33m     APIServerDeploymentProgressing: deployment/apiserver.openshift-apiserver: 1/3 pods have been updated to the latest generation and 2/3 pods are available
-openshift-controller-manager               4.19.24   True        False         False      40d
-openshift-samples                          4.19.24   True        False         False      71d
-operator-lifecycle-manager                 4.19.24   True        False         False      71d
-operator-lifecycle-manager-catalog         4.19.24   True        False         False      71d
-operator-lifecycle-manager-packageserver   4.19.24   True        False         False      7d1h
-service-ca                                 4.19.24   True        False         False      71d
-storage                                    4.19.24   True        False         False      71d
-[root@bastion ~]#
-[root@bastion ~]# oc get co | grep 4.18.17
-dns                                        4.18.17   True        True          False      11d     DNS "default" reports Progressing=True: "Have 0 up-to-date DNS pods, want 3.\nHave 2 available node-resolver pods, want 3."...
-machine-config                             4.18.17   True        False         False      71d
-network                                    4.18.17   True        True          False      71d     DaemonSet "/openshift-ovn-kubernetes/ovnkube-upgrades-prepuller" is not available (awaiting 3 nodes)...
-[root@bastion ~]# oc get no
-NAME                                 STATUS   ROLES                         AGE   VERSION
-master1.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-master2.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-master3.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-[root@bastion ~]# oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.18.17   True        True          20h     Working towards 4.19.24: 755 of 926 done (81% complete), waiting on dns, network
-[root@bastion ~]# oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-19d87d1f05468ec7bb1f68d7fadec27e   True      False      False      3              3                   3                     0                      71d
-worker   rendered-worker-ab714c56e85e1508ec70d9db612283ee   True      False      False      0              0                   0                     0                      71d
-[root@bastion ~]# oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.18.17   True        True          20h     Working towards 4.19.24: 755 of 926 done (81% complete), waiting on dns, network
-[root@bastion ~]# oc get co | grep 4.18.17
-dns                                        4.18.17   True        True          False      11d     DNS "default" reports Progressing=True: "Have 2 available DNS pods, want 3.\nHave 1 up-to-date DNS pods, want 3."...
-machine-config                             4.18.17   True        False         False      71d
-network                                    4.18.17   True        True          False      71d     DaemonSet "/openshift-ovn-kubernetes/ovnkube-upgrades-prepuller" is not available (awaiting 1 nodes)...
-[root@bastion ~]# oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.18.17   True        True          20h     Working towards 4.19.24: 755 of 926 done (81% complete), waiting on dns, network
-[root@bastion ~]# oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.18.17   True        True          20h     Working towards 4.19.24: 755 of 926 done (81% complete), waiting on dns, network
-[root@bastion ~]# oc describe  clusterversion
-Name:         version
-Namespace:
-Labels:       <none>
-Annotations:  <none>
-API Version:  config.openshift.io/v1
-Kind:         ClusterVersion
-Metadata:
-  Creation Timestamp:  2026-03-11T12:56:57Z
-  Generation:          4
-  Resource Version:    42354675
-  UID:                 d03369df-aa1a-408c-a419-05be8f93d778
-Spec:
-  Channel:     stable-4.19
-  Cluster ID:  79181d4b-be5f-4014-a5da-23d15290977f
-  Desired Update:
-    Architecture:
-    Force:         true
-    Image:         nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    Version:
-Status:
-  Available Updates:  <nil>
-  Capabilities:
-    Enabled Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-    Known Capabilities:
-      Build
-      CSISnapshot
-      CloudControllerManager
-      CloudCredential
-      Console
-      DeploymentConfig
-      ImageRegistry
-      Ingress
-      Insights
-      MachineAPI
-      NodeTuning
-      OperatorLifecycleManager
-      OperatorLifecycleManagerV1
-      Storage
-      baremetal
-      marketplace
-      openshift-samples
-  Conditions:
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Cluster should not be upgraded between minor versions for multiple reasons: ClusterOperatorsNotUpgradeable,UpdateInProgress
-* Multiple cluster operators should not be upgraded between minor versions:
-* Cluster operator machine-config should not be upgraded between minor versions: ClusterOnCgroupV1: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-* Cluster operator operator-lifecycle-manager should not be upgraded between minor versions: IncompatibleOperatorsInstalled: ClusterServiceVersions blocking minor version upgrades to 4.20.0 or higher:
-- maximum supported OCP version for openshift-storage/odf-operator.v4.18.17-rhodf is 4.19
-- maximum supported OCP version for openshift-storage/odf-dependencies.v4.18.17-rhodf is 4.19
-- maximum supported OCP version for openshift-local-storage/local-storage-operator.v4.18.0-202603152157 is 4.19
-* An update is already in progress and the details are in the Progressing condition
-    Reason:                MultipleReasons
-    Status:                False
-    Type:                  Upgradeable
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Capabilities match configured spec
-    Reason:                AsExpected
-    Status:                False
-    Type:                  ImplicitlyEnabledCapabilities
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Payload loaded version="4.19.24" image="nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d" architecture="amd64"
-    Reason:                PayloadLoaded
-    Status:                True
-    Type:                  ReleaseAccepted
-    Last Transition Time:  2026-03-11T13:44:20Z
-    Message:               Done applying 4.18.17
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-05-22T06:06:58Z
-    Status:                False
-    Type:                  Failing
-    Last Transition Time:  2026-05-21T09:59:26Z
-    Message:               Working towards 4.19.24: 756 of 926 done (81% complete), waiting on network
-    Reason:                ClusterOperatorUpdating
-    Status:                True
-    Type:                  Progressing
-    Last Transition Time:  2026-03-11T12:57:50Z
-    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.19&id=79181d4b-be5f-4014-a5da-23d15290977f&version=4.19.24": dial tcp: lookup api.openshift.com on 20.1.30.152:53: server misbehaving
-    Reason:                RemoteFailed
-    Status:                False
-    Type:                  RetrievedUpdates
-    Last Transition Time:  2026-03-11T13:21:55Z
-    Message:               Multiple cluster operators should not be upgraded between minor versions:
-* Cluster operator machine-config should not be upgraded between minor versions: ClusterOnCgroupV1: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-* Cluster operator operator-lifecycle-manager should not be upgraded between minor versions: IncompatibleOperatorsInstalled: ClusterServiceVersions blocking minor version upgrades to 4.20.0 or higher:
-- maximum supported OCP version for openshift-storage/odf-operator.v4.18.17-rhodf is 4.19
-- maximum supported OCP version for openshift-storage/odf-dependencies.v4.18.17-rhodf is 4.19
-- maximum supported OCP version for openshift-local-storage/local-storage-operator.v4.18.0-202603152157 is 4.19
-    Reason:                ClusterOperatorsNotUpgradeable
-    Status:                False
-    Type:                  UpgradeableClusterOperators
-    Last Transition Time:  2026-05-21T09:59:37Z
-    Message:               An update is already in progress and the details are in the Progressing condition
-    Reason:                UpdateInProgress
-    Status:                True
-    Type:                  UpgradeableUpgradeInProgress
-  Desired:
-    Image:    nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    URL:      https://access.redhat.com/errata/RHSA-2026:2651
-    Version:  4.19.24
-  History:
-    Accepted Risks:  Forced through blocking failures: Multiple precondition checks failed:
-* Precondition "ClusterVersionUpgradeable" failed because of "MultipleReasons": Cluster should not be upgraded between minor versions for multiple reasons: AdminAckRequired,ClusterOnCgroupV1
-* Kubernetes 1.32 and therefore OpenShift 4.19 remove several APIs which require admin consideration. Please see the knowledge article https://access.redhat.com/articles/7112216 for details and instructions.
-* Cluster operator machine-config should not be upgraded between minor versions: Cluster is using deprecated cgroup v1, which is removed in 4.19.  Please update the 'cgroupMode' in the 'cluster' object of nodes.config.openshift.io resource type to 'v2'. This can be changed back to 'v1' while on 4.18, but must be 'v2' before you update to 4.19.  Once updated to 4.19, cgroup v1 is no longer an option. Please refer to https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/nodes/index#nodes-clusters-cgroups-2_nodes-cluster-cgroups-2
-* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.18.17 to 4.19.24 is unknown.
-    Completion Time:    <nil>
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:3ef832b8bb0d56331035ba54af36c36be46d6c6dc1a41e300055692f02bb001d
-    Started Time:       2026-05-21T09:59:26Z
-    State:              Partial
-    Verified:           true
-    Version:            4.19.24
-    Completion Time:    2026-03-11T13:44:20Z
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687
-    Started Time:       2026-03-11T12:57:50Z
-    State:              Completed
-    Verified:           false
-    Version:            4.18.17
-  Observed Generation:  4
-  Version Hash:         fOND09SRlWc=
-Events:                 <none>
-[root@bastion ~]# oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-19d87d1f05468ec7bb1f68d7fadec27e   True      False      False      3              3                   3                     0                      71d
-worker   rendered-worker-ab714c56e85e1508ec70d9db612283ee   True      False      False      0              0                   0                     0                      71d
-[root@bastion ~]# oc describe mcp master
-Name:         master
-Namespace:
-Labels:       machineconfiguration.openshift.io/mco-built-in=
-              operator.machineconfiguration.openshift.io/required-for-upgrade=
-              pools.operator.machineconfiguration.openshift.io/master=
-Annotations:  sriovnetwork.openshift.io/state: Idle
-API Version:  machineconfiguration.openshift.io/v1
-Kind:         MachineConfigPool
-Metadata:
-  Creation Timestamp:  2026-03-11T13:19:34Z
-  Generation:          11
-  Resource Version:    42343227
-  UID:                 be5f6f14-17aa-4613-8ffb-b3554be992ad
-Spec:
-  Configuration:
-    Name:  rendered-master-19d87d1f05468ec7bb1f68d7fadec27e
-    Source:
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         00-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-container-runtime
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-cpu-partitioning
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         05-kdump-config-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         06-kdump-enable-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         10-master-hosts
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-masters-chrony-configuration
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-nto-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-performance-performance-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         97-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-master-coredump-maxsize
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-assisted-installer-master-ssh
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-crio-disable-wipe-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-registries
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-ssh
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-remove-failed-pod-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-set-core-ssh-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-set-core-user-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         disable-chronyd
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         load-sctp-module
-  Machine Config Selector:
-    Match Labels:
-      machineconfiguration.openshift.io/role:  master
-  Node Selector:
-    Match Labels:
-      node-role.kubernetes.io/master:
-  Paused:                              false
-Status:
-  Cert Expirys:
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-03-08T01:30:27Z
-    Subject:  CN=admin-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-06-10T14:36:37Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1775918195
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-05-28T02:37:37Z
-    Subject:  CN=kube-csr-signer_@1777343856
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-06-12T02:37:36Z
-    Subject:  CN=kube-csr-signer_@1778639856
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-07-10T14:36:42Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1778510202
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-03-11T12:50:17Z
-    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-05-21T10:02:04Z
-    Subject:  CN=openshift-kube-apiserver-operator_kube-apiserver-to-kubelet-signer@1779357723
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-03-11T12:50:17Z
-    Subject:  CN=kube-control-plane-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-07-10T04:37:28Z
-    Subject:  CN=openshift-kube-apiserver-operator_kube-control-plane-signer@1778474248
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-06-10T04:36:54Z
-    Subject:  CN=openshift-kube-apiserver-operator_kube-control-plane-signer@1775882214
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-03-08T12:50:15Z
-    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-03-11T13:18:52Z
-    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1773235132
-  Conditions:
-    Last Transition Time:  2026-05-12T06:46:52Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  RenderDegraded
-    Last Transition Time:  2026-05-21T12:26:57Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  NodeDegraded
-    Last Transition Time:  2026-05-21T12:26:57Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Degraded
-    Last Transition Time:  2026-05-22T05:49:30Z
-    Message:               All nodes are updated with MachineConfig rendered-master-19d87d1f05468ec7bb1f68d7fadec27e
-    Reason:
-    Status:                True
-    Type:                  Updated
-    Last Transition Time:  2026-05-22T05:49:30Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Updating
-  Configuration:
-    Name:  rendered-master-19d87d1f05468ec7bb1f68d7fadec27e
-    Source:
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   00-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-container-runtime
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-cpu-partitioning
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   05-kdump-config-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   06-kdump-enable-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   10-master-hosts
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   50-masters-chrony-configuration
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   50-nto-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   50-performance-performance-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   97-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   98-master-coredump-maxsize
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   98-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-assisted-installer-master-ssh
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-crio-disable-wipe-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-generated-registries
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-ssh
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-remove-failed-pod-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-set-core-ssh-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-set-core-user-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   disable-chronyd
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   load-sctp-module
-  Degraded Machine Count:     0
-  Machine Count:              3
-  Observed Generation:        11
-  Ready Machine Count:        3
-  Unavailable Machine Count:  0
-  Updated Machine Count:      3
-Events:                       <none>
-[root@bastion ~]# oc describe mcp worker
-Name:         worker
-Namespace:
-Labels:       machineconfiguration.openshift.io/mco-built-in=
-              pools.operator.machineconfiguration.openshift.io/worker=
-Annotations:  <none>
-API Version:  machineconfiguration.openshift.io/v1
-Kind:         MachineConfigPool
-Metadata:
-  Creation Timestamp:  2026-03-11T13:19:34Z
-  Generation:          5
-  Resource Version:    41986312
-  UID:                 ecde1718-75c2-4476-99f3-6c140312c559
-Spec:
-  Configuration:
-    Name:  rendered-worker-ab714c56e85e1508ec70d9db612283ee
-    Source:
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         00-worker
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-worker-container-runtime
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-worker-cpu-partitioning
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-worker-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         05-kdump-config-worker
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         06-kdump-enable-worker
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-workers-chrony-configuration
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         97-worker-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-worker-coredump-maxsize
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-worker-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-crio-disable-wipe-worker
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-remove-failed-pod-worker
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-set-core-ssh-worker
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-set-core-user-worker
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-worker-generated-registries
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-worker-ssh
-  Machine Config Selector:
-    Match Labels:
-      machineconfiguration.openshift.io/role:  worker
-  Node Selector:
-    Match Labels:
-      node-role.kubernetes.io/worker:
-  Paused:                              false
-Status:
-  Cert Expirys:
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-03-08T01:30:27Z
-    Subject:  CN=admin-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-06-10T14:36:37Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1775918195
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-05-28T02:37:37Z
-    Subject:  CN=kube-csr-signer_@1777343856
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-06-12T02:37:36Z
-    Subject:  CN=kube-csr-signer_@1778639856
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-07-10T14:36:42Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1778510202
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-03-11T12:50:17Z
-    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-05-21T10:02:04Z
-    Subject:  CN=openshift-kube-apiserver-operator_kube-apiserver-to-kubelet-signer@1779357723
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-03-11T12:50:17Z
-    Subject:  CN=kube-control-plane-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-07-10T04:37:28Z
-    Subject:  CN=openshift-kube-apiserver-operator_kube-control-plane-signer@1778474248
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-06-10T04:36:54Z
-    Subject:  CN=openshift-kube-apiserver-operator_kube-control-plane-signer@1775882214
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-03-08T12:50:15Z
-    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-03-11T13:18:52Z
-    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1773235132
-  Conditions:
-    Last Transition Time:  2026-03-11T13:20:05Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Updating
-    Last Transition Time:  2026-03-11T13:20:05Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  NodeDegraded
-    Last Transition Time:  2026-03-11T13:20:05Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Degraded
-    Last Transition Time:  2026-03-11T13:20:05Z
-    Message:               All nodes are updated with MachineConfig rendered-worker-ab714c56e85e1508ec70d9db612283ee
-    Reason:
-    Status:                True
-    Type:                  Updated
-    Last Transition Time:  2026-04-24T19:27:07Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  RenderDegraded
-  Configuration:
-    Name:  rendered-worker-ab714c56e85e1508ec70d9db612283ee
-    Source:
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   00-worker
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-worker-container-runtime
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-worker-cpu-partitioning
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-worker-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   05-kdump-config-worker
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   06-kdump-enable-worker
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   50-workers-chrony-configuration
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   97-worker-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   98-worker-coredump-maxsize
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   98-worker-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-crio-disable-wipe-worker
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-remove-failed-pod-worker
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-set-core-ssh-worker
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-set-core-user-worker
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-worker-generated-registries
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-worker-ssh
-  Degraded Machine Count:     0
-  Machine Count:              0
-  Observed Generation:        5
-  Ready Machine Count:        0
-  Unavailable Machine Count:  0
-  Updated Machine Count:      0
-Events:                       <none>
-[root@bastion ~]# oc get no
-NAME                                 STATUS   ROLES                         AGE   VERSION
-master1.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-master2.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-master3.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   71d   v1.31.9
-[root@bastion ~]# oc describe node master1.airtelvvt.samsungbsc.local | grep -i currentconfig -A2
-                    machineconfiguration.openshift.io/currentConfig: rendered-master-19d87d1f05468ec7bb1f68d7fadec27e
-                    machineconfiguration.openshift.io/desiredConfig: rendered-master-19d87d1f05468ec7bb1f68d7fadec27e
-                    machineconfiguration.openshift.io/desiredDrain: uncordon-rendered-master-19d87d1f05468ec7bb1f68d7fadec27e
-[root@bastion ~]# oc get nodes.config.openshift.io cluster -o yaml
-apiVersion: config.openshift.io/v1
-kind: Node
-metadata:
-  creationTimestamp: "2026-03-11T12:57:28Z"
-  generation: 1
-  name: cluster
-  resourceVersion: "42324563"
-  uid: 37efc10c-333c-46d4-9415-d7c2fd2cee2f
-spec:
-  cgroupMode: v1
-status:
-  conditions:
-  - lastTransitionTime: "2026-05-22T05:28:29Z"
-    message: cgroups v1 support will soon be deprecated in Openshift, consider switching
-      to cgroups v2
-    reason: CGroupModeV1
-    status: "True"
-    type: CGroupMode
-[root@bastion ~]# oc get co olm -o yaml | egrep -i "message|reason|status"
-status:
-    message: All is well
-    reason: AsExpected
-    status: "False"
-    message: |-
-    reason: AsExpected
-    status: "False"
-    message: |-
-    reason: AsExpected
-    status: "True"
-    message: All is well
-    reason: AsExpected
-    status: "True"
-    reason: NoData
-    status: Unknown
-[root@bastion ~]# oc get csv -A
-NAMESPACE                              NAME                                          DISPLAY                            VERSION               REPLACES                                      PHASE
-openshift-local-storage                local-storage-operator.v4.18.0-202603152157   Local Storage                      4.18.0-202603152157   local-storage-operator.v4.18.0-202602272244   Succeeded
-openshift-operator-lifecycle-manager   packageserver                                 Package Server                     0.0.1-snapshot                                                      Succeeded
-openshift-ptp                          ptp-operator.v4.18.0-202603171536             PTP Operator                       4.18.0-202603171536   ptp-operator.v4.18.0-202602261953             Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.18.0-202603111324   SR-IOV Network Operator            4.18.0-202603111324   sriov-network-operator.v4.18.0-202602261953   Succeeded
-openshift-storage                      cephcsi-operator.v4.18.17-rhodf               CephCSI operator                   4.18.17-rhodf         cephcsi-operator.v4.18.14-rhodf               Succeeded
-openshift-storage                      mcg-operator.v4.18.17-rhodf                   NooBaa Operator                    4.18.17-rhodf         mcg-operator.v4.18.14-rhodf                   Succeeded
-openshift-storage                      ocs-client-operator.v4.18.17-rhodf            OpenShift Data Foundation Client   4.18.17-rhodf         ocs-client-operator.v4.18.14-rhodf            Succeeded
-openshift-storage                      ocs-operator.v4.18.17-rhodf                   OpenShift Container Storage        4.18.17-rhodf         ocs-operator.v4.18.14-rhodf                   Succeeded
-openshift-storage                      odf-csi-addons-operator.v4.18.17-rhodf        CSI Addons                         4.18.17-rhodf         odf-csi-addons-operator.v4.18.14-rhodf        Succeeded
-openshift-storage                      odf-dependencies.v4.18.17-rhodf               Data Foundation Dependencies       4.18.17-rhodf         odf-dependencies.v4.18.14-rhodf               Succeeded
-openshift-storage                      odf-operator.v4.18.17-rhodf                   OpenShift Data Foundation          4.18.17-rhodf         odf-operator.v4.18.14-rhodf                   Succeeded
-openshift-storage                      odf-prometheus-operator.v4.18.17-rhodf        Prometheus Operator                4.18.17-rhodf         odf-prometheus-operator.v4.18.14-rhodf        Succeeded
-openshift-storage                      recipe.v4.18.17-rhodf                         Recipe                             4.18.17-rhodf         recipe.v4.18.14-rhodf                         Succeeded
-openshift-storage                      rook-ceph-operator.v4.18.17-rhodf             Rook-Ceph                          4.18.17-rhodf         rook-ceph-operator.v4.18.14-rhodf             Succeeded
-[root@bastion ~]# oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-19d87d1f05468ec7bb1f68d7fadec27e   True      False      False      3              3                   3                     0                      71d
-worker   rendered-worker-ab714c56e85e1508ec70d9db612283ee   True      False      False      0              0                   0                     0                      71d
-[root@bastion ~]# oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.18.17   True        True          20h     Working towards 4.19.24: 756 of 926 done (81% complete), waiting on network
-[root@bastion ~]#
+Yes — that explains the remaining behavior.
+
+In disconnected/OpenShift mirrored environments, the ovnkube-upgrades-prepuller daemonset commonly gets stuck because nodes cannot pull the new OVN images from the mirrored registry properly.
+
+Your cluster is actually healthy now:
+
+no degraded MCP
+
+no degraded network operator
+
+all nodes Ready
+
+control plane stable
+
+
+The upgrade is waiting only for OVN rollout completion.
+
+Most likely root cause in your disconnected setup:
+
+one or more OVN images for 4.19.24 are missing in your mirror registry
+
+OR ImageContentSourcePolicy/ImageDigestMirrorSet mismatch
+
+OR node pull secret issue
+
+OR stale prepuller pod
+
+
+Check this immediately:
+
+oc get pods -n openshift-ovn-kubernetes
+
+Look for:
+
+ImagePullBackOff
+
+ErrImagePull
+
+ContainerCreating
+
+Pending
+
+
+Then inspect failing pod:
+
+oc describe pod -n openshift-ovn-kubernetes <podname>
+
+Especially check Events section.
+
+Also verify daemonsets:
+
+oc get ds -n openshift-ovn-kubernetes
+
+Very likely you will see something like:
+
+DESIRED  CURRENT  READY  UP-TO-DATE
+3        3        2      3
+
+That single unavailable pod is blocking completion.
+
+In disconnected clusters, common fix is:
+
+1. Verify mirrored image exists in local harbor/quay
+
+
+2. Verify pullspec resolution
+
+
+3. Delete stuck prepuller pod
+
+
+
+Example:
+
+oc delete pod -n openshift-ovn-kubernetes <stuck-pod>
+
+The daemonset recreates it.
+
+Also verify node can pull image:
+
+oc describe pod -n openshift-ovn-kubernetes <stuck-pod> | grep -A20 -i image
+
+You may see:
+
+unauthorized
+
+manifest unknown
+
+no route to host
+
+x509
+
+timeout
+
+
+Another important point:
+
+Your RetrievedUpdates=False due to DNS failure to api.openshift.com is completely normal in disconnected environments and NOT blocking the upgrade.
+
+The real blocker is only:
+
+OVN rollout completion
+
+
+Also:
+
+machine-config still showing 4.18.17 while MCP updated is normal during late-stage reconciliation
+
+it usually flips after network operator completes
+
+
+So at this stage:
+
+do NOT reboot nodes
+
+do NOT force another upgrade
+
+do NOT manually modify CVO
+
+
+Focus only on the stuck OVN daemonset/pod/image pull.
