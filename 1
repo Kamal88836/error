@@ -1,9 +1,50 @@
- 1032  history
-[root@bastion ~]#  oc get  Subscription
-E0525 13:10:35.036513  331017 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: the server has asked for the client to provide credentials"
-E0525 13:10:35.110328  331017 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: the server has asked for the client to provide credentials"
-E0525 13:10:35.132174  331017 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: the server has asked for the client to provide credentials"
-E0525 13:10:35.156183  331017 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: the server has asked for the client to provide credentials"
-E0525 13:10:35.241480  331017 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: the server has asked for the client to provide credentials"
-error: You must be logged in to the server (the server has asked for the client to provide credentials)
-[root@bastion ~]#
+[root@bastion clusterconfigs]#  oc get  csv -A
+NAMESPACE                              NAME                                          DISPLAY                            VERSION               REPLACES                                      PHASE
+openshift-local-storage                local-storage-operator.v4.19.0-202602262001   Local Storage                      4.19.0-202602262001   local-storage-operator.v4.18.0-202603152157   Succeeded
+openshift-operator-lifecycle-manager   packageserver                                 Package Server                     0.0.1-snapshot                                                      Succeeded
+openshift-ptp                          ptp-operator.v4.19.0-202603031419             PTP Operator                       4.19.0-202603031419   ptp-operator.v4.18.0-202603171536             Succeeded
+openshift-sriov-network-operator       sriov-network-operator.v4.19.0-202603100922   SR-IOV Network Operator            4.19.0-202603100922   sriov-network-operator.v4.18.0-202603111324   Succeeded
+openshift-storage                      cephcsi-operator.v4.18.17-rhodf               CephCSI operator                   4.18.17-rhodf         cephcsi-operator.v4.18.14-rhodf               Succeeded
+openshift-storage                      mcg-operator.v4.18.17-rhodf                   NooBaa Operator                    4.18.17-rhodf         mcg-operator.v4.18.14-rhodf                   Succeeded
+openshift-storage                      ocs-client-operator.v4.18.17-rhodf            OpenShift Data Foundation Client   4.18.17-rhodf         ocs-client-operator.v4.18.14-rhodf            Succeeded
+openshift-storage                      ocs-operator.v4.18.17-rhodf                   OpenShift Container Storage        4.18.17-rhodf         ocs-operator.v4.18.14-rhodf                   Succeeded
+openshift-storage                      odf-csi-addons-operator.v4.18.17-rhodf        CSI Addons                         4.18.17-rhodf         odf-csi-addons-operator.v4.18.14-rhodf        Succeeded
+openshift-storage                      odf-dependencies.v4.18.17-rhodf               Data Foundation Dependencies       4.18.17-rhodf         odf-dependencies.v4.18.14-rhodf               Succeeded
+openshift-storage                      odf-operator.v4.19.12-rhodf                   OpenShift Data Foundation          4.19.12-rhodf         odf-operator.v4.18.17-rhodf                   Succeeded
+openshift-storage                      odf-prometheus-operator.v4.18.17-rhodf        Prometheus Operator                4.18.17-rhodf         odf-prometheus-operator.v4.18.14-rhodf        Succeeded
+openshift-storage                      recipe.v4.18.17-rhodf                         Recipe                             4.18.17-rhodf         recipe.v4.18.14-rhodf                         Succeeded
+openshift-storage                      rook-ceph-operator.v4.18.17-rhodf             Rook-Ceph                          4.18.17-rhodf         rook-ceph-operator.v4.18.14-rhodf             Succeeded
+[root@bastion clusterconfigs]#  oc get  sub -A
+NAMESPACE                          NAME                                                                              PACKAGE                   SOURCE                  CHANNEL
+openshift-local-storage            local-storage-operator                                                            local-storage-operator    redhat-operator-index   stable
+openshift-ptp                      ptp-operator-subscription                                                         ptp-operator              redhat-operator-index   stable
+openshift-sriov-network-operator   sriov-network-operator-subscription                                               sriov-network-operator    redhat-operator-index   stable
+openshift-storage                  cephcsi-operator-stable-4.18-redhat-operator-index-openshift-marketplace          cephcsi-operator          redhat-operator-index   stable-4.19
+openshift-storage                  mcg-operator-stable-4.18-redhat-operator-index-openshift-marketplace              mcg-operator              redhat-operator-index   stable-4.19
+openshift-storage                  ocs-client-operator-stable-4.18-redhat-operator-index-openshift-marketplace       ocs-client-operator       redhat-operator-index   stable-4.19
+openshift-storage                  ocs-operator-stable-4.18-redhat-operator-index-openshift-marketplace              ocs-operator              redhat-operator-index   stable-4.19
+openshift-storage                  odf-csi-addons-operator-stable-4.18-redhat-operator-index-openshift-marketplace   odf-csi-addons-operator   redhat-operator-index   stable-4.19
+openshift-storage                  odf-dependencies                                                                  odf-dependencies          redhat-operator-index   stable-4.19
+openshift-storage                  odf-operator                                                                      odf-operator              redhat-operator-index   stable-4.19
+openshift-storage                  odf-prometheus-operator-stable-4.18-redhat-operator-index-openshift-marketplace   odf-prometheus-operator   redhat-operator-index   stable-4.19
+openshift-storage                  recipe-stable-4.18-redhat-operator-index-openshift-marketplace                    recipe                    redhat-operator-index   stable-4.19
+openshift-storage                  rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace        rook-ceph-operator        redhat-operator-index   stable-4.19
+[root@bastion clusterconfigs]#  oc get  installplan  -A
+NAMESPACE                          NAME            CSV                                           APPROVAL    APPROVED
+openshift-local-storage            install-mkwnz   local-storage-operator.v4.18.0-202512150311   Automatic   true
+openshift-local-storage            install-p94cx   local-storage-operator.v4.18.0-202602272244   Automatic   true
+openshift-local-storage            install-snhm6   local-storage-operator.v4.18.0-202603152157   Automatic   true
+openshift-local-storage            install-xhk9k   local-storage-operator.v4.19.0-202602262001   Automatic   true
+openshift-ptp                      install-b7bhr   ptp-operator.v4.19.0-202603031419             Automatic   true
+openshift-ptp                      install-gfnjc   ptp-operator.v4.18.0-202602261953             Automatic   true
+openshift-ptp                      install-jwtkv   ptp-operator.v4.18.0-202603171536             Automatic   true
+openshift-ptp                      install-kxq4t   ptp-operator.v4.18.0-202512150311             Automatic   true
+openshift-sriov-network-operator   install-7nsjf   sriov-network-operator.v4.18.0-202603111324   Automatic   true
+openshift-sriov-network-operator   install-htwgp   sriov-network-operator.v4.18.0-202601041256   Automatic   true
+openshift-sriov-network-operator   install-qbvz4   sriov-network-operator.v4.18.0-202602261953   Automatic   true
+openshift-sriov-network-operator   install-vlgjn   sriov-network-operator.v4.19.0-202603100922   Automatic   true
+openshift-storage                  install-g7dq2   odf-dependencies.v4.18.14-rhodf               Automatic   true
+openshift-storage                  install-h8p47   rook-ceph-operator.v4.18.17-rhodf             Automatic   true
+openshift-storage                  install-q8knl   odf-operator.v4.18.14-rhodf                   Automatic   true
+openshift-storage                  install-rkpq9   odf-operator.v4.19.12-rhodf                   Automatic   true
+[root@bastion clusterconfigs]#
