@@ -1,78 +1,89 @@
-Now this confirms newer 4.19 RHODF supporting component bundles are available in your catalog.
-
-You currently have:
-
-installed CSVs → 4.18.17-rhodf
-
-catalog available CSVs → 4.19.12-rhodf
-
-
-So the subscriptions are not tracking the correct channel/head properly.
-
-The main clue is your subscription names:
-
-rook-ceph-operator-stable-4.18-...
-ocs-operator-stable-4.18-...
-
-These subscriptions were originally created on 4.18 and likely still pinned internally to the old startingCSV/resolution chain even though channel now says stable-4.19.
-
-You should verify this first:
-
-oc get sub -n openshift-storage rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace -o yaml
-
-Look for:
-
-startingCSV
-
-currentCSV
-
-installedCSV
-
-
-Most likely startingCSV still references 4.18.
-
-Do the same for:
-
-ocs-operator
-
-mcg-operator
-
-cephcsi-operator
-
-
-If startingCSV is pinned to 4.18, remove it.
-
-Example:
-
-oc edit sub -n openshift-storage rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace
-
-Remove:
-
-startingCSV: rook-ceph-operator.v4.18.17-rhodf
-
-Save and wait a few minutes.
-
-Then monitor:
-
-oc get installplan -A
-oc get csv -A
-
-OLM should generate new installplans for:
-
-rook-ceph-operator.v4.19.12-rhodf
-
-ocs-operator.v4.19.12-rhodf
-
-mcg-operator.v4.19.12-rhodf
-
-related operators
-
-
-If installplans do not appear automatically, restart marketplace/catalog reconciliation:
-
-oc delete pod -n openshift-marketplace --all
-oc delete pod -n openshift-operator-lifecycle-manager --all
-
-Then recheck.
-
-Do NOT delete the CSVs manually. Only clear subscription pinning if present.
+[root@bastion upgrade]# oc get sub -n openshift-storage rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace -o yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    olm.generated-by: install-g7dq2
+  creationTimestamp: "2026-03-11T14:05:26Z"
+  generation: 5
+  labels:
+    olm.managed: "true"
+    operators.coreos.com/rook-ceph-operator.openshift-storage: ""
+  name: rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+  namespace: openshift-storage
+  ownerReferences:
+  - apiVersion: operators.coreos.com/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Subscription
+    name: odf-operator
+    uid: 893796ad-d0e0-4c6b-92e3-019fd00cb2ce
+  resourceVersion: "44147484"
+  uid: 53853faa-01cb-4da0-a2c8-b89bc84c6019
+spec:
+  channel: stable-4.19
+  config: {}
+  installPlanApproval: Automatic
+  name: rook-ceph-operator
+  source: redhat-operator-index
+  sourceNamespace: openshift-marketplace
+  startingCSV: rook-ceph-operator.v4.18.14-rhodf
+status:
+  catalogHealth:
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: certified-operator-index
+      namespace: openshift-marketplace
+      resourceVersion: "7372457"
+      uid: bac4ebdc-3db7-4752-bddd-4fa7758daaf9
+    healthy: true
+    lastUpdated: "2026-03-24T02:04:40Z"
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: redhat-operator-index
+      namespace: openshift-marketplace
+      resourceVersion: "7372338"
+      uid: 3d956717-8403-437d-b3b6-a8401a0ccf12
+    healthy: true
+    lastUpdated: "2026-03-24T02:04:40Z"
+  conditions:
+  - lastTransitionTime: "2026-03-24T02:04:41Z"
+    message: all available catalogsources are healthy
+    reason: AllCatalogSourcesHealthy
+    status: "False"
+    type: CatalogSourcesUnhealthy
+  - message: 'error using catalogsource openshift-marketplace/certified-operator-index:
+      failed to list bundles: rpc error: code = Unavailable desc = connection error:
+      desc = "transport: Error while dialing: dial tcp 172.25.23.129:50051: connect:
+      connection refused"'
+    reason: ErrorPreventedResolution
+    status: "True"
+    type: ResolutionFailed
+  - reason: UnpackingInProgress
+    status: "True"
+    type: BundleUnpacking
+  - message: 'bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job
+      was active longer than specified deadline'
+    reason: BundleUnpackFailed
+    status: "True"
+    type: BundleUnpackFailed
+  currentCSV: rook-ceph-operator.v4.18.17-rhodf
+  installPlanGeneration: 3
+  installPlanRef:
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: install-h8p47
+    namespace: openshift-storage
+    resourceVersion: "18871384"
+    uid: 1181f5cf-3927-454c-bfce-0a29713915af
+  installedCSV: rook-ceph-operator.v4.18.17-rhodf
+  installplan:
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: install-h8p47
+    uuid: 1181f5cf-3927-454c-bfce-0a29713915af
+  lastUpdated: "2026-05-25T05:32:36Z"
+  state: AtLatestKnown
+[root@bastion upgrade]#
