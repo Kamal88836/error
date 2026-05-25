@@ -1,31 +1,67 @@
-[root@bastion ODF]# oc delete csv odf-dependencies.v4.18.17-rhodf -n openshift-storage
-clusterserviceversion.operators.coreos.com "odf-dependencies.v4.18.17-rhodf" deleted
-[root@bastion ODF]#
-[root@bastion ODF]# oc delete pod -n openshift-storage -l control-plane=controller-manager
-pod "odf-operator-controller-manager-79cdcbd66f-kfgt4" deleted
-[root@bastion ODF]# oc get sub -n openshift-storage
-NAME               PACKAGE            SOURCE                  CHANNEL
-odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
-odf-operator       odf-operator       redhat-operator-index   stable-4.19
-[root@bastion ODF]# oc get sub -n openshift-storage
-NAME               PACKAGE            SOURCE                  CHANNEL
-odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
-odf-operator       odf-operator       redhat-operator-index   stable-4.19
-[root@bastion ODF]# oc get installplan -n openshift-storage
-NAME            CSV                                 APPROVAL    APPROVED
-install-g7dq2   odf-dependencies.v4.18.14-rhodf     Automatic   true
-install-h8p47   rook-ceph-operator.v4.18.17-rhodf   Automatic   true
-install-q8knl   odf-operator.v4.18.14-rhodf         Automatic   true
-install-rkpq9   odf-operator.v4.19.12-rhodf         Automatic   true
-[root@bastion ODF]#  oc get csv -n openshift-storage
-NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
-cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.14-rhodf          Succeeded
-mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.14-rhodf              Succeeded
-ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.14-rhodf       Succeeded
-ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.14-rhodf              Succeeded
-odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.14-rhodf   Succeeded
-odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.18.17-rhodf              Installing
-odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.14-rhodf   Succeeded
-recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.14-rhodf                    Succeeded
-rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
-[root@bastion ODF]#
+Now we can clearly see the remaining issue.
+
+odf-dependencies subscription exists, but:
+
+no new CSV created
+
+no installplan for 4.19
+
+ODF operator remains in Installing
+
+
+This means OLM resolver is still pinned to old dependency graph.
+
+The stale object now is likely the old InstallPlan:
+
+install-g7dq2   odf-dependencies.v4.18.14-rhodf
+
+and possibly stale CSVs still owned by previous resolution chain.
+
+Next safe recovery step:
+
+Step 1 — Delete stale installplan for odf-dependencies
+
+oc delete installplan install-g7dq2 -n openshift-storage
+
+Do NOT delete:
+
+install-rkpq9
+
+odf-operator CSV
+
+StorageCluster
+
+
+
+---
+
+Step 2 — Delete odf-dependencies subscription
+
+oc delete sub odf-dependencies -n openshift-storage
+
+
+---
+
+Step 3 — Restart ODF operator again
+
+oc delete pod -n openshift-storage -l control-plane=controller-manager
+
+
+---
+
+Step 4 — Watch recreation
+
+watch oc get sub,csv,installplan -n openshift-storage
+
+Expected:
+
+odf-dependencies subscription recreated
+
+NEW installplan generated
+
+NEW odf-dependencies.v4.19.12-rhodf
+
+then remaining subscriptions generated automatically
+
+
+You are now fixing the last stale resolver chain from old 4.18 dependency metadata.
