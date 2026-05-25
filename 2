@@ -1,25 +1,122 @@
-[root@bastion upgrade]# oc get jobs -A | grep unpack
-[root@bastion upgrade]# oc get pod -A | grep unpack
-[root@bastion upgrade]#  oc get po  -n openshift-marketplace
-NAME                                   READY   STATUS    RESTARTS            AGE
-certified-operator-index-lq4q6         1/1     Running   0                   <invalid>
-marketplace-operator-58d57c9fd-mk8ls   1/1     Running   1 (<invalid> ago)   <invalid>
-redhat-operator-index-ljgv2            1/1     Running   0                   <invalid>
-[root@bastion upgrade]#
-[root@bastion upgrade]#
-[root@bastion upgrade]# oc logs -n openshift-marketplace redhat-operator-index-ljgv2
-time="2026-05-25T08:14:24Z" level=info msg="starting pprof endpoint" address="localhost:6060"
-time="2026-05-25T08:14:24Z" level=info msg="cache directory is empty, using preferred backend" backend=pogreb.v1 cache=/tmp/opm-serve-cache-1471199014 configs=/configs
-time="2026-05-25T08:14:24Z" level=info msg="building cache" cache=/tmp/opm-serve-cache-1471199014 configs=/configs
-time="2026-05-25T08:14:24Z" level=info msg="serving registry" cache=/tmp/opm-serve-cache-1471199014 configs=/configs port=50051
-time="2026-05-25T08:14:24Z" level=info msg="stopped caching cpu profile data" address="localhost:6060"
-time="2026-05-25T08:14:32Z" level=info msg="started call" :authority="[localhost:50051]" content-type="[application/grpc]" grpc.component=server grpc.method=Check grpc.method_type=unary grpc.request.deadline="2026-05-25T08:14:33Z" grpc.service=grpc.health.v1.Health grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.021 peer.address="127.0.0.1:50036" protocol=grpc user-agent="[grpc_health_probe grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="finished call" :authority="[localhost:50051]" content-type="[application/grpc]" grpc.code=OK grpc.component=server grpc.method=Check grpc.method_type=unary grpc.request.deadline="2026-05-25T08:14:33Z" grpc.service=grpc.health.v1.Health grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.095 peer.address="127.0.0.1:50036" protocol=grpc user-agent="[grpc_health_probe grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="started call" :authority="[localhost:50051]" content-type="[application/grpc]" grpc.component=server grpc.method=Check grpc.method_type=unary grpc.request.deadline="2026-05-25T08:14:33Z" grpc.service=grpc.health.v1.Health grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.039 peer.address="127.0.0.1:50040" protocol=grpc user-agent="[grpc_health_probe grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="finished call" :authority="[localhost:50051]" content-type="[application/grpc]" grpc.code=OK grpc.component=server grpc.method=Check grpc.method_type=unary grpc.request.deadline="2026-05-25T08:14:33Z" grpc.service=grpc.health.v1.Health grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.107 peer.address="127.0.0.1:50040" protocol=grpc user-agent="[grpc_health_probe grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="started call" :authority="[redhat-operator-index.openshift-marketplace.svc:50051]" content-type="[application/grpc]" grpc-accept-encoding="[gzip]" grpc.component=server grpc.method=ListBundles grpc.method_type=server_stream grpc.request.deadline="2026-05-25T08:19:32Z" grpc.service=api.Registry grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.061 peer.address="10.30.1.11:47972" protocol=grpc user-agent="[grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="finished call" :authority="[redhat-operator-index.openshift-marketplace.svc:50051]" content-type="[application/grpc]" grpc-accept-encoding="[gzip]" grpc.code=OK grpc.component=server grpc.method=ListBundles grpc.method_type=server_stream grpc.request.deadline="2026-05-25T08:19:32Z" grpc.service=api.Registry grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=7.832 peer.address="10.30.1.11:47972" protocol=grpc user-agent="[grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="started call" :authority="[redhat-operator-index.openshift-marketplace.svc:50051]" content-type="[application/grpc]" grpc-accept-encoding="[gzip]" grpc.component=server grpc.method=ListPackages grpc.method_type=server_stream grpc.request.deadline="2026-05-25T08:19:32Z" grpc.service=api.Registry grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.04 peer.address="10.30.1.11:47972" protocol=grpc user-agent="[grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="finished call" :authority="[redhat-operator-index.openshift-marketplace.svc:50051]" content-type="[application/grpc]" grpc-accept-encoding="[gzip]" grpc.code=OK grpc.component=server grpc.method=ListPackages grpc.method_type=server_stream grpc.request.deadline="2026-05-25T08:19:32Z" grpc.service=api.Registry grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.295 peer.address="10.30.1.11:47972" protocol=grpc user-agent="[grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="started call" :authority="[redhat-operator-index.openshift-marketplace.svc:50051]" content-type="[application/grpc]" grpc-accept-encoding="[gzip]" grpc.component=server grpc.method=GetPackage grpc.method_type=unary grpc.request.deadline="2026-05-25T08:19:32Z" grpc.service=api.Registry grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.023 peer.address="10.30.1.11:47972" protocol=grpc user-agent="[grpc-go/1.63.2]"
-time="2026-05-25T08:14:32Z" level=info msg="started call" :authority="[redhat-operator-index.openshift-marketplace.svc:50051]" content-type="[application/grpc]" grpc-accept-encoding="[gzip]" grpc.component=server grpc.method=GetPackage grpc.method_type=unary grpc.request.deadline="2026-05-25T08:19:32Z" grpc.service=api.Registry grpc.start_time="2026-05-25T08:14:32Z" grpc.time_ms=0.044 peer.address="10.30.1.11:47972" protocol=grpc user-agent="[grpc-go/1.63.2]"
+Good — this changes the diagnosis significantly.
+
+Your catalog source itself is healthy now.
+
+These logs prove:
+
+grpc is working
+
+ListBundles works
+
+ListPackages works
+
+OLM can query the catalog successfully
+
+
+So the old:
+
+connection refused
+
+errors are stale historical conditions.
+
+Now the REAL issue is:
+
+ODF operator upgraded to 4.19.12, but supporting operators never generated InstallPlans.
+
+This usually happens when:
+
+subscriptions were manually modified
+
+old installplan references remain
+
+or OLM resolution graph got stuck midway during disconnected upgrade
+
+
+The strongest clue is:
+
+InstallPlan not found for CSV ...v4.19.12-rhodf
+
+AND:
+
+state: AtLatestKnown
+currentCSV: *.v4.18.17-rhodf
+
+That means OLM thinks:
+
+> "No newer upgrade available"
+
+
+
+even though package manifest clearly contains:
+
+rook-ceph-operator.v4.19.12-rhodf
+
+So now this is an OLM resolver stuck-state issue.
+
+You are very close now.
+
+Do this carefully.
+
+First verify there are NO pending installplans:
+
+oc get installplan -A
+
+Then delete ONLY the supporting subscriptions (NOT odf-operator subscription)
+
+Delete these:
+
+oc delete sub -n openshift-storage \
+rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
+cephcsi-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
+mcg-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
+ocs-client-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
+ocs-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
+odf-csi-addons-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
+odf-prometheus-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
+recipe-stable-4.18-redhat-operator-index-openshift-marketplace \
+odf-dependencies
+
+Do NOT delete:
+
+CSVs
+
+installplans
+
+odf-operator subscription
+
+
+Then restart OLM:
+
+oc delete pod -n openshift-operator-lifecycle-manager -l app=catalog-operator
+oc delete pod -n openshift-operator-lifecycle-manager -l app=olm-operator
+
+Then wait 2-3 minutes.
+
+ODF operator should recreate all dependent subscriptions automatically.
+
+Then immediately check:
+
+oc get sub -n openshift-storage
+
+You should now see:
+
+fresh generations
+
+new installplans
+
+supporting CSVs moving to 4.19.12
+
+
+Then watch:
+
+watch oc get csv -n openshift-storage
+
+Finally verify:
+
+oc get storagecluster -n openshift-storage
+
+Expected:
+
+VERSION   4.19.12
+
+Right now your cluster is stuck because stale Subscription objects survived the partial upgrade attempt.
