@@ -1,199 +1,42 @@
-You should mainly check these Ceph pods in namespace:
-
-openshift-storage
-
-Most important pods for your issue
-
-1. Ceph MON pods (VERY IMPORTANT)
-
-These will prove monitor session disconnects around:
-
-Tue May 19 02:40:55
-
-Get pods:
-
-oc get pods -n openshift-storage | grep mon
-
-Usually like:
-
-rook-ceph-mon-a
-
-rook-ceph-mon-b
-
-rook-ceph-mon-c
-
-
-Check logs around timestamp:
-
-oc logs -n openshift-storage rook-ceph-mon-a --since=8h | grep -Ei 'session|reset|timeout|slow|blocklist|deny|lost'
-
-Also check b and c.
-
-You may see:
-
-client disconnects
-
-reconnects
-
-socket closed
-
-auth/session failures
-
-
-
----
-
-2. Ceph MDS pods (MOST IMPORTANT for your logs)
-
-Because your node showed:
-
-ceph: mds0 caps stale
-ceph: mds0 session blocklisted
-
-Get MDS pods:
-
-oc get pods -n openshift-storage | grep mds
-
-Usually:
-
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a
-
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b
-
-
-Check logs:
-
-oc logs -n openshift-storage <mds-pod> --since=8h | grep -Ei 'stale|blocklist|reconnect|evict|client'
-
-This is the BEST proof.
-
-You will likely see:
-
-client became stale
-
-session evicted
-
-client blocklisted
-
-reconnect denied
-
-
-matching your worker02 timestamps.
-
-
----
-
-3. OSD pods
-
-If storage I/O stalled during network flap.
-
-Get OSD pods:
-
-oc get pods -n openshift-storage | grep osd
-
-Check:
-
-oc logs -n openshift-storage <osd-pod> --since=8h | grep -Ei 'slow|heartbeat|timeout|blocked|reset'
-
-Possible evidence:
-
-slow ops
-
-heartbeat timeout
-
-network stalls
-
-
-
----
-
-4. CSI RBD / CephFS plugin pods (VERY useful)
-
-Since filesystem became RO.
-
-Get pods:
-
-oc get pods -n openshift-storage | grep csi
-
-Especially:
-
-csi-rbdplugin
-
-csi-cephfsplugin
-
-
-Check worker02-specific pod.
-
-Get node placement:
-
-oc get pods -n openshift-storage -o wide | grep worker02
-
-Then logs:
-
-oc logs -n openshift-storage <csi-pod> --since=8h
-
-Look for:
-
-mount timeout
-
-transport endpoint shutdown
-
-rados timeout
-
-reconnect failures
-
-
-Best evidence chain
-
-Your strongest proof chain will be:
-
-On worker02 kernel logs
-
-VF reset storm
-bond flap
-libceph session lost
-
-PLUS
-
-In MDS logs
-
-client stale
-session blocklisted
-reconnect denied
-
-PLUS
-
-In MON logs
-
-client session reset/disconnect
-
-That proves:
-
-network instability,
-
-caused Ceph disconnect,
-
-caused filesystem corruption/remount RO.
-
-
-Very useful command
-
-You can correlate timestamps quickly:
-
-oc logs -n openshift-storage <mds-pod> --since-time=2026-05-19T02:35:00Z
-
-and:
-
-oc logs -n openshift-storage <mon-pod> --since-time=2026-05-19T02:35:00Z
-
-Focus window:
-
-02:40 -> 02:45 UTC
-
-because your worker02 logs show:
-
-session lost at 02:40:55
-
-stale caps 02:41:35
-
-reconnect denied 02:44:15.
+2026-05-25T07:51:19Z    ERROR   failed getting odf-deps csv     {"controller": "operatorScaler", "namespace": "", "name": "prometheuses.monitoring.coreos.com", "reconcileID": "54b40b54-6e72-4561-96e5-8a248b457aa5", "csvName": "odf-dependencies.v4.19.12-rhodf", "error": "ClusterServiceVersion.operators.coreos.com \"odf-dependencies.v4.19.12-rhodf\" not found"}
+github.com/red-hat-storage/odf-operator/controllers.(*OperatorScalerReconciler).isOdfDependenciesCsvReady
+        /src/remote_source/app/controllers/operatorscaler_controller.go:190
+github.com/red-hat-storage/odf-operator/controllers.(*OperatorScalerReconciler).Reconcile
+        /src/remote_source/app/controllers/operatorscaler_controller.go:109
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:119
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:334
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T07:51:19Z    ERROR   Reconciler error        {"controller": "operatorScaler", "namespace": "", "name": "prometheuses.monitoring.coreos.com", "reconcileID": "54b40b54-6e72-4561-96e5-8a248b457aa5", "error": "ClusterServiceVersion.operators.coreos.com \"odf-dependencies.v4.19.12-rhodf\" not found"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T07:51:19Z    INFO    starting reconcile      {"controller": "operatorScaler", "namespace": "", "name": "storageclusters.ocs.openshift.io", "reconcileID": "e5a990ab-052f-4522-b607-697b974ccd27"}
+2026-05-25T07:51:19Z    INFO    entering loadOdfConfigMapData   {"controller": "operatorScaler", "namespace": "", "name": "storageclusters.ocs.openshift.io", "reconcileID": "e5a990ab-052f-4522-b607-697b974ccd27"}
+2026-05-25T07:51:19Z    INFO    found configmap successfully    {"controller": "operatorScaler", "namespace": "", "name": "storageclusters.ocs.openshift.io", "reconcileID": "e5a990ab-052f-4522-b607-697b974ccd27", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T07:51:20Z    INFO    skipping crd not found  {"controller": "operatorScaler", "namespace": "", "name": "storageclusters.ocs.openshift.io", "reconcileID": "e5a990ab-052f-4522-b607-697b974ccd27", "crdName": "flashsystemclusters.odf.ibm.com"}
+2026-05-25T07:51:20Z    INFO    skipping crd not found  {"controller": "operatorScaler", "namespace": "", "name": "storageclusters.ocs.openshift.io", "reconcileID": "e5a990ab-052f-4522-b607-697b974ccd27", "crdName": "flashsystemclusters.odf.ibm.com"}
+2026-05-25T07:51:20Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-prometheus-operator-stable-4.18-redhat-operator-index-openshift-marketplace", "reconcileID": "2f568715-c217-4c4a-8491-57c85b00950f", "error": "InstallPlan not found for CSV odf-prometheus-operator.v4.19.12-rhodf; InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf; InstallPlan not found for CSV rook-ceph-operator.v4.19.12-rhodf; InstallPlan not found for CSV odf-csi-addons-operator.v4.19.12-rhodf; InstallPlan not found for CSV mcg-operator.v4.19.12-rhodf; InstallPlan not found for CSV cephcsi-operator.v4.19.12-rhodf; InstallPlan not found for CSV ocs-operator.v4.19.12-rhodf; InstallPlan not found for CSV ocs-client-operator.v4.19.12-rhodf; InstallPlan not found for CSV recipe.v4.19.12-rhodf", "errorCauses": [{"error": "InstallPlan not found for CSV odf-prometheus-operator.v4.19.12-rhodf"}, {"error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}, {"error": "InstallPlan not found for CSV rook-ceph-operator.v4.19.12-rhodf"}, {"error": "InstallPlan not found for CSV odf-csi-addons-operator.v4.19.12-rhodf"}, {"error": "InstallPlan not found for CSV mcg-operator.v4.19.12-rhodf"}, {"error": "InstallPlan not found for CSV cephcsi-operator.v4.19.12-rhodf"}, {"error": "InstallPlan not found for CSV ocs-operator.v4.19.12-rhodf"}, {"error": "InstallPlan not found for CSV ocs-client-operator.v4.19.12-rhodf"}, {"error": "InstallPlan not found for CSV recipe.v4.19.12-rhodf"}]}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T07:51:20Z    INFO    starting reconcile      {"controller": "subscription", "namespace": "openshift-storage", "name": "recipe-stable-4.18-redhat-operator-index-openshift-marketplace", "reconcileID": "728e7309-5ca6-4d3e-9871-30c924cc79fc"}
+2026-05-25T07:51:20Z    INFO    found configmap successfully    {"controller": "subscription", "namespace": "openshift-storage", "name": "recipe-stable-4.18-redhat-operator-index-openshift-marketplace", "reconcileID": "728e7309-5ca6-4d3e-9871-30c924cc79fc", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T07:51:20Z    INFO    subscriptions records   {"controller": "subscription", "namespace": "openshift-storage", "name": "recipe-stable-4.18-redhat-operator-index-openshift-marketplace", "reconcileID": "728e7309-5ca6-4d3e-9871-30c924cc79fc", "records": [{"Channel":"stable-v1.8","Csv":"ibm-storage-odf-operator.v1.8.0","Pkg":"ibm-storage-odf-operator"},{"Channel":"stable-4.19","Csv":"odf-prometheus-operator.v4.19.12-rhodf","Pkg":"odf-prometheus-operator"},{"Channel":"stable-4.19","Csv":"cephcsi-operator.v4.19.12-rhodf","Pkg":"cephcsi-operator"},{"Channel":"stable-4.19","Csv":"ocs-operator.v4.19.12-rhodf","Pkg":"ocs-operator"},{"Channel":"stable-4.19","Csv":"ocs-client-operator.v4.19.12-rhodf","Pkg":"ocs-client-operator"},{"Channel":"stable-4.19","Csv":"recipe.v4.19.12-rhodf","Pkg":"recipe"},{"Channel":"stable-4.19","Csv":"odf-csi-addons-operator.v4.19.12-rhodf","Pkg":"odf-csi-addons-operator"},{"Channel":"stable-v1.12.4","Csv":"ibm-block-csi-operator.v1.12.4","Pkg":"ibm-block-csi-operator"},{"Channel":"stable-4.19","Csv":"mcg-operator.v4.19.12-rhodf","Pkg":"mcg-operator"},{"Channel":"stable-4.19","Csv":"odf-dependencies.v4.19.12-rhodf","Pkg":"odf-dependencies"},{"Channel":"stable-4.19","Csv":"rook-ceph-operator.v4.19.12-rhodf","Pkg":"rook-ceph-operator"}]}
+2026-05-25T07:51:20Z    INFO    setting operator upgradeable status     {"controller": "subscription", "namespace": "openshift-storage", "name": "recipe-stable-4.18-redhat-operator-index-openshift-marketplace", "reconcileID": "728e7309-5ca6-4d3e-9871-30c924cc79fc", "status": "True"}
+2026-05-25T07:51:20Z    INFO    skipping the record from the configmap  {"controller": "operatorScaler", "namespace": "", "name": "storageclusters.ocs.openshift.io", "reconcileID": "e5a990ab-052f-4522-b607-697b974ccd27", "key": "RECIPE", "value": "channel: stable-4.19\ncsv: recipe.v4.19.12-rhodf\npkg: recipe\n"}
+2026-05-25T07:51:20Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "openshift-storage", "name": "recipe-stable-4.18-redhat-operator-index-openshift-marketplace", "reconcileID": "728e7309-5ca6-4d3e-9871-30c924cc79fc", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T07:51:20Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "openshift-storage", "name": "recipe-stable-4.18-redhat-operator-index-openshift-marketplace", "reconcileID": "728e7309-5ca6-4d3e-9871-30c924cc79fc", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T07:51:20Z    INFO    skipping the record from the configmap  {"controller": "operatorScaler", "namespace": "", "name": "storageclusters.ocs.openshift.io", "reconcileID": "e5a990ab-052f-4522-b607-697b974ccd27", "key": "ODF_DEPS", "value": "channel: stable-4.19\ncsv: odf-dependencies.v4.19.12-rhodf\npkg: odf-dependencies\n"}
+^C
+[root@bastion upgrade]#
