@@ -1,4 +1,57 @@
-[root@bastion clusterconfigs]# oc get csv -n openshift-storage odf-operator.v4.19.12-rhodf -o yaml | grep -i maxOpenShiftVersion
-    olm.properties: '[{"type": "olm.maxOpenShiftVersion", "value": "4.20"}]'
-    operatorframework.io/properties: '{"properties":[{"type":"olm.maxOpenShiftVersion","value":"4.20"},{"type":"olm.package","value":{"packageName":"odf-operator","version":"4.19.12-rhodf"}}]}'
-[root@bastion clusterconfigs]#
+[root@bastion upgrade]# oc edit Subscription recipe-stable-4.18-redhat-operator-index-openshift-marketplace
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: certified-operator-index
+      namespace: openshift-marketplace
+      resourceVersion: "46868"
+      uid: bac4ebdc-3db7-4752-bddd-4fa7758daaf9
+    healthy: true
+    lastUpdated: "2026-03-11T14:05:38Z"
+  - catalogSourceRef:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      name: redhat-operator-index
+      namespace: openshift-marketplace
+      resourceVersion: "46575"
+      uid: 3d956717-8403-437d-b3b6-a8401a0ccf12
+    healthy: true
+    lastUpdated: "2026-03-11T14:05:38Z"
+  conditions:
+  - lastTransitionTime: "2026-03-11T14:05:39Z"
+    message: all available catalogsources are healthy
+    reason: AllCatalogSourcesHealthy
+    status: "False"
+    type: CatalogSourcesUnhealthy
+  - message: 'error using catalogsource openshift-marketplace/certified-operator-index:
+      failed to list bundles: rpc error: code = Unavailable desc = connection error:
+      desc = "transport: Error while dialing: dial tcp 172.25.23.129:50051: connect:
+      connection refused"'
+    reason: ErrorPreventedResolution
+    status: "True"
+    type: ResolutionFailed
+  - reason: UnpackingInProgress
+    status: "True"
+    type: BundleUnpacking
+  - message: 'bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job
+      was active longer than specified deadline'
+    reason: BundleUnpackFailed
+    status: "True"
+    type: BundleUnpackFailed
+  currentCSV: recipe.v4.18.17-rhodf
+  installPlanGeneration: 3
+  installPlanRef:
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: install-h8p47
+    namespace: openshift-storage
+    resourceVersion: "18871384"
+    uid: 1181f5cf-3927-454c-bfce-0a29713915af
+  installedCSV: recipe.v4.18.17-rhodf
+  installplan:
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    name: install-h8p47
+    uuid: 1181f5cf-3927-454c-bfce-0a29713915af
+  lastUpdated: "2026-05-25T05:32:36Z"
+  state: AtLatestKnown
