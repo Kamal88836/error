@@ -1,4 +1,78 @@
-[root@bastion upgrade]# oc get packagemanifest rook-ceph-operator -o jsonpath='{.status.channels[*].currentCSV}'
-rook-ceph-operator.v4.18.17-rhodf rook-ceph-operator.v4.19.12-rhodf[root@bastion upgrade]# oc get packagemanifest ocs-operator -o jsonpath='{.status.channels[*].currentCSV}'
-ocs-operator.v4.18.17-rhodf ocs-operator.v4.19.12-rhodf[root@bastion upgrade]# oc get packagemanifest mcg-operator -o jsonpath='{.status.channels[*].currentCSV}'
-mcg-operator.v4.18.17-rhodf mcg-operator.v4.19.12-rhodf[root@bastion upgrade]# 
+Now this confirms newer 4.19 RHODF supporting component bundles are available in your catalog.
+
+You currently have:
+
+installed CSVs → 4.18.17-rhodf
+
+catalog available CSVs → 4.19.12-rhodf
+
+
+So the subscriptions are not tracking the correct channel/head properly.
+
+The main clue is your subscription names:
+
+rook-ceph-operator-stable-4.18-...
+ocs-operator-stable-4.18-...
+
+These subscriptions were originally created on 4.18 and likely still pinned internally to the old startingCSV/resolution chain even though channel now says stable-4.19.
+
+You should verify this first:
+
+oc get sub -n openshift-storage rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace -o yaml
+
+Look for:
+
+startingCSV
+
+currentCSV
+
+installedCSV
+
+
+Most likely startingCSV still references 4.18.
+
+Do the same for:
+
+ocs-operator
+
+mcg-operator
+
+cephcsi-operator
+
+
+If startingCSV is pinned to 4.18, remove it.
+
+Example:
+
+oc edit sub -n openshift-storage rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+
+Remove:
+
+startingCSV: rook-ceph-operator.v4.18.17-rhodf
+
+Save and wait a few minutes.
+
+Then monitor:
+
+oc get installplan -A
+oc get csv -A
+
+OLM should generate new installplans for:
+
+rook-ceph-operator.v4.19.12-rhodf
+
+ocs-operator.v4.19.12-rhodf
+
+mcg-operator.v4.19.12-rhodf
+
+related operators
+
+
+If installplans do not appear automatically, restart marketplace/catalog reconciliation:
+
+oc delete pod -n openshift-marketplace --all
+oc delete pod -n openshift-operator-lifecycle-manager --all
+
+Then recheck.
+
+Do NOT delete the CSVs manually. Only clear subscription pinning if present.
