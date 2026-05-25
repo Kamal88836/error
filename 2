@@ -1,63 +1,252 @@
-Now the root cause is much clearer.
-
-Your odf-operator.v4.19.12-rhodf is no longer blocked by dependencies.
-
-The actual failure is:
-
-> deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability
-
-
-
-So OLM is repeatedly reinstalling because the deployment is not becoming Ready consistently.
-
-Check the deployment and pod state now.
-
-Run:
-
-oc get deploy odf-operator-controller-manager -n openshift-storage
-
-Then:
-
-oc describe deploy odf-operator-controller-manager -n openshift-storage
-
-And:
-
-oc get po -n openshift-storage -l control-plane=controller-manager -o wide
-
-Most likely one of these is happening:
-
-pod crashlooping
-
-readiness probe failing
-
-old ReplicaSet conflict
-
-webhook secret missing
-
-image pull issue in disconnected env
-
-deployment unavailable because replica never becomes Ready
-
-
-Especially important in disconnected environments: the CSV upgraded to 4.19 but dependent images may not exist in your mirrored registry / ICSP / IDMS.
-
-Check pod events carefully.
-
-Also verify:
-
-oc logs -n openshift-storage deploy/odf-operator-controller-manager --all-containers --tail=100
-
-And:
-
-oc get events -n openshift-storage --sort-by=.metadata.creationTimestamp | tail -40
-
-Your storage itself is safe right now because:
-
-StorageCluster = Ready
-
-Ceph pods healthy
-
-no data path issue
-
-
-This is now purely an operator deployment availability issue, not storage corruption.
+[root@bastion ODF]#
+[root@bastion ODF]# oc get deploy odf-operator-controller-manager -n openshift-storage
+NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+odf-operator-controller-manager   1/1     1            1           74d
+[root@bastion ODF]# oc describe deploy odf-operator-controller-manager -n openshift-storage
+Name:                   odf-operator-controller-manager
+Namespace:              openshift-storage
+CreationTimestamp:      Wed, 11 Mar 2026 23:04:23 +0900
+Labels:                 app.kubernetes.io/name=odf-operator
+                        control-plane=controller-manager
+                        olm.deployment-spec-hash=24hlg9wklSUPluBP2iXUsqUPhIqMeHWFwYlBOj
+                        olm.managed=true
+                        olm.owner=odf-operator.v4.19.12-rhodf
+                        olm.owner.kind=ClusterServiceVersion
+                        olm.owner.namespace=openshift-storage
+                        operators.coreos.com/odf-operator.openshift-storage=
+Annotations:            deployment.kubernetes.io/revision: 3
+Selector:               control-plane=controller-manager
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:           app.kubernetes.io/name=odf-operator
+                    control-plane=controller-manager
+  Annotations:      alm-examples: []
+                    capabilities: Deep Insights
+                    categories: Storage
+                    console.openshift.io/plugins: ["odf-console"]
+                    containerImage: registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4
+                    createdAt: 2026-03-02T04:21:09Z
+                    description: OpenShift Data Foundation provides a common control plane for storage solutions on OpenShift Container Platform.
+                    features.operators.openshift.io/cnf: false
+                    features.operators.openshift.io/cni: false
+                    features.operators.openshift.io/csi: true
+                    features.operators.openshift.io/disconnected: true
+                    features.operators.openshift.io/fips-compliant: true
+                    features.operators.openshift.io/proxy-aware: true
+                    features.operators.openshift.io/tls-profiles: false
+                    features.operators.openshift.io/token-auth-aws: true
+                    features.operators.openshift.io/token-auth-azure: false
+                    features.operators.openshift.io/token-auth-gcp: false
+                    kubectl.kubernetes.io/default-container: manager
+                    olm.operatorGroup: openshift-storage-operatorgroup
+                    olm.operatorNamespace: openshift-storage
+                    olm.properties: [{"type": "olm.maxOpenShiftVersion", "value": "4.20"}]
+                    olm.skipRange: >=4.2.0 <4.19.12-rhodf
+                    olm.targetNamespaces: openshift-storage
+                    operatorframework.io/initialization-link: /odf/resource/odf.openshift.io~v1alpha1~StorageSystem/create/~new
+                    operatorframework.io/properties:
+                      {"properties":[{"type":"olm.maxOpenShiftVersion","value":"4.20"},{"type":"olm.package","value":{"packageName":"odf-operator","version":"4....
+                    operatorframework.io/suggested-namespace: openshift-storage
+                    operators.openshift.io/infrastructure-features: ["disconnected"]
+                    operators.openshift.io/valid-subscription:
+                      ["OpenShift Platform Plus","OpenShift Data Foundation Essentials","OpenShift Data Foundation Advanced"]
+                    operators.operatorframework.io/builder: operator-sdk-v1.31.0
+                    operators.operatorframework.io/operator-type: standalone
+                    operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+                    repository: https://github.com/red-hat-storage/odf-operator
+                    support: Red Hat
+                    vendors.odf.openshift.io/kind: ["storagecluster.ocs.openshift.io/v1", "flashsystemcluster.odf.ibm.com/v1alpha1"]
+  Service Account:  odf-operator-controller-manager
+  Containers:
+   manager:
+    Image:       registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4
+    Ports:       9443/TCP, 8443/TCP
+    Host Ports:  0/TCP, 0/TCP
+    Command:
+      /manager
+    Args:
+      --health-probe-bind-address=:8081
+      --metrics-bind-address=:8443
+      --leader-elect
+      --odf-console-port=9001
+    Limits:
+      cpu:     200m
+      memory:  400Mi
+    Requests:
+      cpu:      200m
+      memory:   400Mi
+    Liveness:   http-get http://:8081/healthz delay=15s timeout=1s period=20s #success=1 #failure=3
+    Readiness:  http-get http://:8081/readyz delay=5s timeout=90s period=10s #success=1 #failure=3
+    Environment Variables from:
+      odf-operator-manager-config  ConfigMap  Optional: false
+    Environment:
+      PKGS_CONFIG_MAP_NAME:     odf-operator-pkgs-config-4.19.12-rhodf
+      OPERATOR_NAMESPACE:        (v1:metadata.namespace)
+      OPERATOR_CONDITION_NAME:  odf-operator.v4.19.12-rhodf
+    Mounts:
+      /tmp/k8s-webhook-server/serving-certs from cert (ro)
+  Volumes:
+   cert:
+    Type:               Secret (a volume populated by a Secret)
+    SecretName:         odf-operator-webhook-server-cert
+    Optional:           false
+  Priority Class Name:  system-cluster-critical
+  Node-Selectors:       <none>
+  Tolerations:          node.ocs.openshift.io/storage=true:NoSchedule
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      True    MinimumReplicasAvailable
+OldReplicaSets:  odf-operator-controller-manager-6df95b7f67 (0/0 replicas created)
+NewReplicaSet:   odf-operator-controller-manager-79cdcbd66f (1/1 replicas created)
+Events:          <none>
+[root@bastion ODF]# oc get po -n openshift-storage -l control-plane=controller-manager -o wide
+NAME                                               READY   STATUS    RESTARTS            AGE         IP            NODE                                 NOMINATED NODE   READINESS GATES
+odf-operator-controller-manager-79cdcbd66f-77dhh   1/1     Running   2 (<invalid> ago)   <invalid>   10.30.0.159   master3.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion ODF]# oc logs -n openshift-storage deploy/odf-operator-controller-manager --all-containers --tail=100
+2026-05-25T11:16:42Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "", "name": "sriov-operator-webhook-config", "reconcileID": "daedae38-b2b0-4b32-bb30-c93b1d61a78f", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T11:16:42Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "", "name": "sriov-operator-webhook-config", "reconcileID": "daedae38-b2b0-4b32-bb30-c93b1d61a78f", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T11:16:42Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "", "name": "sriov-operator-webhook-config", "reconcileID": "daedae38-b2b0-4b32-bb30-c93b1d61a78f", "error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T11:16:42Z    INFO    starting reconcile      {"controller": "subscription", "namespace": "", "name": "catalogd-mutating-webhook-configuration", "reconcileID": "d04c4554-0618-487c-83d7-3e3a4250ff27"}
+2026-05-25T11:16:42Z    INFO    found configmap successfully    {"controller": "subscription", "namespace": "", "name": "catalogd-mutating-webhook-configuration", "reconcileID": "d04c4554-0618-487c-83d7-3e3a4250ff27", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T11:16:42Z    INFO    subscriptions records   {"controller": "subscription", "namespace": "", "name": "catalogd-mutating-webhook-configuration", "reconcileID": "d04c4554-0618-487c-83d7-3e3a4250ff27", "records": [{"Channel":"stable-4.19","Csv":"recipe.v4.19.12-rhodf","Pkg":"recipe"},{"Channel":"stable-v1.12.4","Csv":"ibm-block-csi-operator.v1.12.4","Pkg":"ibm-block-csi-operator"},{"Channel":"stable-4.19","Csv":"odf-dependencies.v4.19.12-rhodf","Pkg":"odf-dependencies"},{"Channel":"stable-4.19","Csv":"odf-prometheus-operator.v4.19.12-rhodf","Pkg":"odf-prometheus-operator"},{"Channel":"stable-4.19","Csv":"cephcsi-operator.v4.19.12-rhodf","Pkg":"cephcsi-operator"},{"Channel":"stable-4.19","Csv":"ocs-operator.v4.19.12-rhodf","Pkg":"ocs-operator"},{"Channel":"stable-4.19","Csv":"odf-csi-addons-operator.v4.19.12-rhodf","Pkg":"odf-csi-addons-operator"},{"Channel":"stable-v1.8","Csv":"ibm-storage-odf-operator.v1.8.0","Pkg":"ibm-storage-odf-operator"},{"Channel":"stable-4.19","Csv":"rook-ceph-operator.v4.19.12-rhodf","Pkg":"rook-ceph-operator"},{"Channel":"stable-4.19","Csv":"mcg-operator.v4.19.12-rhodf","Pkg":"mcg-operator"},{"Channel":"stable-4.19","Csv":"ocs-client-operator.v4.19.12-rhodf","Pkg":"ocs-client-operator"}]}
+2026-05-25T11:16:42Z    INFO    setting operator upgradeable status     {"controller": "subscription", "namespace": "", "name": "catalogd-mutating-webhook-configuration", "reconcileID": "d04c4554-0618-487c-83d7-3e3a4250ff27", "status": "True"}
+2026-05-25T11:16:42Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "", "name": "catalogd-mutating-webhook-configuration", "reconcileID": "d04c4554-0618-487c-83d7-3e3a4250ff27", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T11:16:42Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "", "name": "catalogd-mutating-webhook-configuration", "reconcileID": "d04c4554-0618-487c-83d7-3e3a4250ff27", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T11:16:42Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "", "name": "catalogd-mutating-webhook-configuration", "reconcileID": "d04c4554-0618-487c-83d7-3e3a4250ff27", "error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T11:16:42Z    INFO    starting reconcile      {"controller": "subscription", "namespace": "", "name": "csv.odf.openshift.io", "reconcileID": "b77c1ca6-9276-4d42-a02b-ec56c8e04dab"}
+2026-05-25T11:16:42Z    INFO    found configmap successfully    {"controller": "subscription", "namespace": "", "name": "csv.odf.openshift.io", "reconcileID": "b77c1ca6-9276-4d42-a02b-ec56c8e04dab", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T11:16:42Z    INFO    subscriptions records   {"controller": "subscription", "namespace": "", "name": "csv.odf.openshift.io", "reconcileID": "b77c1ca6-9276-4d42-a02b-ec56c8e04dab", "records": [{"Channel":"stable-4.19","Csv":"ocs-client-operator.v4.19.12-rhodf","Pkg":"ocs-client-operator"},{"Channel":"stable-4.19","Csv":"odf-prometheus-operator.v4.19.12-rhodf","Pkg":"odf-prometheus-operator"},{"Channel":"stable-4.19","Csv":"mcg-operator.v4.19.12-rhodf","Pkg":"mcg-operator"},{"Channel":"stable-4.19","Csv":"odf-dependencies.v4.19.12-rhodf","Pkg":"odf-dependencies"},{"Channel":"stable-4.19","Csv":"recipe.v4.19.12-rhodf","Pkg":"recipe"},{"Channel":"stable-v1.8","Csv":"ibm-storage-odf-operator.v1.8.0","Pkg":"ibm-storage-odf-operator"},{"Channel":"stable-4.19","Csv":"rook-ceph-operator.v4.19.12-rhodf","Pkg":"rook-ceph-operator"},{"Channel":"stable-4.19","Csv":"cephcsi-operator.v4.19.12-rhodf","Pkg":"cephcsi-operator"},{"Channel":"stable-4.19","Csv":"ocs-operator.v4.19.12-rhodf","Pkg":"ocs-operator"},{"Channel":"stable-4.19","Csv":"odf-csi-addons-operator.v4.19.12-rhodf","Pkg":"odf-csi-addons-operator"},{"Channel":"stable-v1.12.4","Csv":"ibm-block-csi-operator.v1.12.4","Pkg":"ibm-block-csi-operator"}]}
+2026-05-25T11:16:42Z    INFO    setting operator upgradeable status     {"controller": "subscription", "namespace": "", "name": "csv.odf.openshift.io", "reconcileID": "b77c1ca6-9276-4d42-a02b-ec56c8e04dab", "status": "True"}
+2026-05-25T11:16:42Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "", "name": "csv.odf.openshift.io", "reconcileID": "b77c1ca6-9276-4d42-a02b-ec56c8e04dab", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T11:16:42Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "", "name": "csv.odf.openshift.io", "reconcileID": "b77c1ca6-9276-4d42-a02b-ec56c8e04dab", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T11:16:42Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "", "name": "csv.odf.openshift.io", "reconcileID": "b77c1ca6-9276-4d42-a02b-ec56c8e04dab", "error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T11:16:42Z    INFO    starting reconcile      {"controller": "subscription", "namespace": "", "name": "machine-api", "reconcileID": "7d1eba87-204c-4f1c-a9db-3c61847e06de"}
+2026-05-25T11:16:42Z    INFO    found configmap successfully    {"controller": "subscription", "namespace": "", "name": "machine-api", "reconcileID": "7d1eba87-204c-4f1c-a9db-3c61847e06de", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T11:16:42Z    INFO    subscriptions records   {"controller": "subscription", "namespace": "", "name": "machine-api", "reconcileID": "7d1eba87-204c-4f1c-a9db-3c61847e06de", "records": [{"Channel":"stable-4.19","Csv":"odf-csi-addons-operator.v4.19.12-rhodf","Pkg":"odf-csi-addons-operator"},{"Channel":"stable-v1.8","Csv":"ibm-storage-odf-operator.v1.8.0","Pkg":"ibm-storage-odf-operator"},{"Channel":"stable-4.19","Csv":"ocs-operator.v4.19.12-rhodf","Pkg":"ocs-operator"},{"Channel":"stable-4.19","Csv":"ocs-client-operator.v4.19.12-rhodf","Pkg":"ocs-client-operator"},{"Channel":"stable-4.19","Csv":"odf-prometheus-operator.v4.19.12-rhodf","Pkg":"odf-prometheus-operator"},{"Channel":"stable-v1.12.4","Csv":"ibm-block-csi-operator.v1.12.4","Pkg":"ibm-block-csi-operator"},{"Channel":"stable-4.19","Csv":"odf-dependencies.v4.19.12-rhodf","Pkg":"odf-dependencies"},{"Channel":"stable-4.19","Csv":"recipe.v4.19.12-rhodf","Pkg":"recipe"},{"Channel":"stable-4.19","Csv":"cephcsi-operator.v4.19.12-rhodf","Pkg":"cephcsi-operator"},{"Channel":"stable-4.19","Csv":"mcg-operator.v4.19.12-rhodf","Pkg":"mcg-operator"},{"Channel":"stable-4.19","Csv":"rook-ceph-operator.v4.19.12-rhodf","Pkg":"rook-ceph-operator"}]}
+2026-05-25T11:16:42Z    INFO    setting operator upgradeable status     {"controller": "subscription", "namespace": "", "name": "machine-api", "reconcileID": "7d1eba87-204c-4f1c-a9db-3c61847e06de", "status": "True"}
+2026-05-25T11:16:42Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "", "name": "machine-api", "reconcileID": "7d1eba87-204c-4f1c-a9db-3c61847e06de", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T11:16:42Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "", "name": "machine-api", "reconcileID": "7d1eba87-204c-4f1c-a9db-3c61847e06de", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T11:16:42Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "", "name": "machine-api", "reconcileID": "7d1eba87-204c-4f1c-a9db-3c61847e06de", "error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T11:16:43Z    INFO    starting reconcile      {"controller": "subscription", "namespace": "", "name": "machine-api-metal3-remediation", "reconcileID": "89888eeb-0ae2-4b81-b052-0041e14ff85e"}
+2026-05-25T11:16:43Z    INFO    found configmap successfully    {"controller": "subscription", "namespace": "", "name": "machine-api-metal3-remediation", "reconcileID": "89888eeb-0ae2-4b81-b052-0041e14ff85e", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T11:16:43Z    INFO    subscriptions records   {"controller": "subscription", "namespace": "", "name": "machine-api-metal3-remediation", "reconcileID": "89888eeb-0ae2-4b81-b052-0041e14ff85e", "records": [{"Channel":"stable-4.19","Csv":"ocs-client-operator.v4.19.12-rhodf","Pkg":"ocs-client-operator"},{"Channel":"stable-4.19","Csv":"rook-ceph-operator.v4.19.12-rhodf","Pkg":"rook-ceph-operator"},{"Channel":"stable-4.19","Csv":"cephcsi-operator.v4.19.12-rhodf","Pkg":"cephcsi-operator"},{"Channel":"stable-4.19","Csv":"mcg-operator.v4.19.12-rhodf","Pkg":"mcg-operator"},{"Channel":"stable-v1.12.4","Csv":"ibm-block-csi-operator.v1.12.4","Pkg":"ibm-block-csi-operator"},{"Channel":"stable-4.19","Csv":"ocs-operator.v4.19.12-rhodf","Pkg":"ocs-operator"},{"Channel":"stable-4.19","Csv":"odf-prometheus-operator.v4.19.12-rhodf","Pkg":"odf-prometheus-operator"},{"Channel":"stable-v1.8","Csv":"ibm-storage-odf-operator.v1.8.0","Pkg":"ibm-storage-odf-operator"},{"Channel":"stable-4.19","Csv":"odf-dependencies.v4.19.12-rhodf","Pkg":"odf-dependencies"},{"Channel":"stable-4.19","Csv":"recipe.v4.19.12-rhodf","Pkg":"recipe"},{"Channel":"stable-4.19","Csv":"odf-csi-addons-operator.v4.19.12-rhodf","Pkg":"odf-csi-addons-operator"}]}
+2026-05-25T11:16:43Z    INFO    setting operator upgradeable status     {"controller": "subscription", "namespace": "", "name": "machine-api-metal3-remediation", "reconcileID": "89888eeb-0ae2-4b81-b052-0041e14ff85e", "status": "True"}
+2026-05-25T11:16:43Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "", "name": "machine-api-metal3-remediation", "reconcileID": "89888eeb-0ae2-4b81-b052-0041e14ff85e", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T11:16:43Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "", "name": "machine-api-metal3-remediation", "reconcileID": "89888eeb-0ae2-4b81-b052-0041e14ff85e", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T11:16:43Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "", "name": "machine-api-metal3-remediation", "reconcileID": "89888eeb-0ae2-4b81-b052-0041e14ff85e", "error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T11:16:43Z    INFO    starting reconcile      {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-dependencies", "reconcileID": "4fd4831e-1b33-45c7-acfa-121d86567e85"}
+2026-05-25T11:16:43Z    INFO    found configmap successfully    {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-dependencies", "reconcileID": "4fd4831e-1b33-45c7-acfa-121d86567e85", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T11:16:43Z    INFO    subscriptions records   {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-dependencies", "reconcileID": "4fd4831e-1b33-45c7-acfa-121d86567e85", "records": [{"Channel":"stable-4.19","Csv":"ocs-client-operator.v4.19.12-rhodf","Pkg":"ocs-client-operator"},{"Channel":"stable-4.19","Csv":"odf-csi-addons-operator.v4.19.12-rhodf","Pkg":"odf-csi-addons-operator"},{"Channel":"stable-v1.12.4","Csv":"ibm-block-csi-operator.v1.12.4","Pkg":"ibm-block-csi-operator"},{"Channel":"stable-v1.8","Csv":"ibm-storage-odf-operator.v1.8.0","Pkg":"ibm-storage-odf-operator"},{"Channel":"stable-4.19","Csv":"recipe.v4.19.12-rhodf","Pkg":"recipe"},{"Channel":"stable-4.19","Csv":"mcg-operator.v4.19.12-rhodf","Pkg":"mcg-operator"},{"Channel":"stable-4.19","Csv":"ocs-operator.v4.19.12-rhodf","Pkg":"ocs-operator"},{"Channel":"stable-4.19","Csv":"odf-prometheus-operator.v4.19.12-rhodf","Pkg":"odf-prometheus-operator"},{"Channel":"stable-4.19","Csv":"rook-ceph-operator.v4.19.12-rhodf","Pkg":"rook-ceph-operator"},{"Channel":"stable-4.19","Csv":"odf-dependencies.v4.19.12-rhodf","Pkg":"odf-dependencies"},{"Channel":"stable-4.19","Csv":"cephcsi-operator.v4.19.12-rhodf","Pkg":"cephcsi-operator"}]}
+2026-05-25T11:16:43Z    INFO    setting operator upgradeable status     {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-dependencies", "reconcileID": "4fd4831e-1b33-45c7-acfa-121d86567e85", "status": "True"}
+2026-05-25T11:16:43Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-dependencies", "reconcileID": "4fd4831e-1b33-45c7-acfa-121d86567e85", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T11:16:43Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-dependencies", "reconcileID": "4fd4831e-1b33-45c7-acfa-121d86567e85", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T11:16:43Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-dependencies", "reconcileID": "4fd4831e-1b33-45c7-acfa-121d86567e85", "error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T11:16:43Z    INFO    starting reconcile      {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator", "reconcileID": "2b323f69-0343-4ce5-ad6b-e09d4ebb18d2"}
+2026-05-25T11:16:43Z    INFO    found configmap successfully    {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator", "reconcileID": "2b323f69-0343-4ce5-ad6b-e09d4ebb18d2", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T11:16:43Z    INFO    subscriptions records   {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator", "reconcileID": "2b323f69-0343-4ce5-ad6b-e09d4ebb18d2", "records": [{"Channel":"stable-4.19","Csv":"odf-prometheus-operator.v4.19.12-rhodf","Pkg":"odf-prometheus-operator"},{"Channel":"stable-4.19","Csv":"odf-csi-addons-operator.v4.19.12-rhodf","Pkg":"odf-csi-addons-operator"},{"Channel":"stable-v1.12.4","Csv":"ibm-block-csi-operator.v1.12.4","Pkg":"ibm-block-csi-operator"},{"Channel":"stable-v1.8","Csv":"ibm-storage-odf-operator.v1.8.0","Pkg":"ibm-storage-odf-operator"},{"Channel":"stable-4.19","Csv":"recipe.v4.19.12-rhodf","Pkg":"recipe"},{"Channel":"stable-4.19","Csv":"rook-ceph-operator.v4.19.12-rhodf","Pkg":"rook-ceph-operator"},{"Channel":"stable-4.19","Csv":"cephcsi-operator.v4.19.12-rhodf","Pkg":"cephcsi-operator"},{"Channel":"stable-4.19","Csv":"mcg-operator.v4.19.12-rhodf","Pkg":"mcg-operator"},{"Channel":"stable-4.19","Csv":"ocs-operator.v4.19.12-rhodf","Pkg":"ocs-operator"},{"Channel":"stable-4.19","Csv":"ocs-client-operator.v4.19.12-rhodf","Pkg":"ocs-client-operator"},{"Channel":"stable-4.19","Csv":"odf-dependencies.v4.19.12-rhodf","Pkg":"odf-dependencies"}]}
+2026-05-25T11:16:43Z    INFO    setting operator upgradeable status     {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator", "reconcileID": "2b323f69-0343-4ce5-ad6b-e09d4ebb18d2", "status": "True"}
+2026-05-25T11:16:43Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator", "reconcileID": "2b323f69-0343-4ce5-ad6b-e09d4ebb18d2", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T11:16:43Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator", "reconcileID": "2b323f69-0343-4ce5-ad6b-e09d4ebb18d2", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T11:16:43Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator", "reconcileID": "2b323f69-0343-4ce5-ad6b-e09d4ebb18d2", "error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+2026-05-25T11:16:43Z    INFO    starting reconcile      {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator-pkgs-config-4.19.12-rhodf", "reconcileID": "f0c2ca96-bed5-40ad-98d5-40379309f6bf"}
+2026-05-25T11:16:43Z    INFO    found configmap successfully    {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator-pkgs-config-4.19.12-rhodf", "reconcileID": "f0c2ca96-bed5-40ad-98d5-40379309f6bf", "configmap": "odf-operator-pkgs-config-4.19.12-rhodf"}
+2026-05-25T11:16:43Z    INFO    subscriptions records   {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator-pkgs-config-4.19.12-rhodf", "reconcileID": "f0c2ca96-bed5-40ad-98d5-40379309f6bf", "records": [{"Channel":"stable-4.19","Csv":"rook-ceph-operator.v4.19.12-rhodf","Pkg":"rook-ceph-operator"},{"Channel":"stable-4.19","Csv":"cephcsi-operator.v4.19.12-rhodf","Pkg":"cephcsi-operator"},{"Channel":"stable-v1.12.4","Csv":"ibm-block-csi-operator.v1.12.4","Pkg":"ibm-block-csi-operator"},{"Channel":"stable-4.19","Csv":"odf-dependencies.v4.19.12-rhodf","Pkg":"odf-dependencies"},{"Channel":"stable-4.19","Csv":"recipe.v4.19.12-rhodf","Pkg":"recipe"},{"Channel":"stable-4.19","Csv":"odf-csi-addons-operator.v4.19.12-rhodf","Pkg":"odf-csi-addons-operator"},{"Channel":"stable-4.19","Csv":"ocs-operator.v4.19.12-rhodf","Pkg":"ocs-operator"},{"Channel":"stable-4.19","Csv":"ocs-client-operator.v4.19.12-rhodf","Pkg":"ocs-client-operator"},{"Channel":"stable-4.19","Csv":"odf-prometheus-operator.v4.19.12-rhodf","Pkg":"odf-prometheus-operator"},{"Channel":"stable-4.19","Csv":"mcg-operator.v4.19.12-rhodf","Pkg":"mcg-operator"},{"Channel":"stable-v1.8","Csv":"ibm-storage-odf-operator.v1.8.0","Pkg":"ibm-storage-odf-operator"}]}
+2026-05-25T11:16:43Z    INFO    setting operator upgradeable status     {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator-pkgs-config-4.19.12-rhodf", "reconcileID": "f0c2ca96-bed5-40ad-98d5-40379309f6bf", "status": "True"}
+2026-05-25T11:16:43Z    INFO    successfully created or updated webhook service {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator-pkgs-config-4.19.12-rhodf", "reconcileID": "f0c2ca96-bed5-40ad-98d5-40379309f6bf", "operation": "updated", "name": "odf-operator-webhook-server-service"}
+2026-05-25T11:16:43Z    INFO    successfully created or updated webhook {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator-pkgs-config-4.19.12-rhodf", "reconcileID": "f0c2ca96-bed5-40ad-98d5-40379309f6bf", "operation": "updated", "name": "csv.odf.openshift.io"}
+2026-05-25T11:16:43Z    ERROR   Reconciler error        {"controller": "subscription", "namespace": "openshift-storage", "name": "odf-operator-pkgs-config-4.19.12-rhodf", "reconcileID": "f0c2ca96-bed5-40ad-98d5-40379309f6bf", "error": "InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf"}
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:347
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:294
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
+        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:255
+[root@bastion ODF]# oc get events -n openshift-storage --sort-by=.metadata.creationTimestamp | tail -40
+<invalid>   Normal    Killing                        pod/odf-operator-controller-manager-79cdcbd66f-kfgt4           Stopping container manager
+8m5s        Normal    Scheduled                      pod/odf-operator-controller-manager-79cdcbd66f-mmmnr           Successfully assigned openshift-storage/odf-operator-controller-manager-79cdcbd66f-mmmnr to master3.airtelvvt.samsungbsc.local
+<invalid>   Normal    AddedInterface                 pod/odf-operator-controller-manager-79cdcbd66f-mmmnr           Add eth0 [10.30.0.157/24 fd01:0:0:2::214/64] from ovn-kubernetes
+<invalid>   Normal    Pulling                        pod/odf-operator-controller-manager-79cdcbd66f-mmmnr           Pulling image "registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4"
+7m38s       Warning   RequirementsNotMet             clusterserviceversion/mcg-operator.v4.18.17-rhodf              requirements no longer met
+<invalid>   Normal    Pulled                         pod/odf-operator-controller-manager-79cdcbd66f-mmmnr           Successfully pulled image "registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4" in 54.344s (54.344s including waiting). Image size: 182900903 bytes.
+<invalid>   Normal    Started                        pod/odf-operator-controller-manager-79cdcbd66f-mmmnr           Started container manager
+<invalid>   Normal    Created                        pod/odf-operator-controller-manager-79cdcbd66f-mmmnr           Created container: manager
+<invalid>   Normal    LeaderElection                 lease/4fd470de.openshift.io                                    odf-operator-controller-manager-79cdcbd66f-mmmnr_89c41176-602c-42c1-b9a8-282516818fbf became leader
+<invalid>   Warning   ProbeError                     pod/odf-operator-controller-manager-79cdcbd66f-kfgt4           Readiness probe error: Get "http://10.30.0.156:8081/readyz": context deadline exceeded (Client.Timeout exceeded while awaiting headers)...
+<invalid>   Warning   Unhealthy                      pod/odf-operator-controller-manager-79cdcbd66f-kfgt4           Readiness probe failed: Get "http://10.30.0.156:8081/readyz": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+<invalid>   Normal    Killing                        pod/odf-operator-controller-manager-79cdcbd66f-mmmnr           Stopping container manager
+4m35s       Normal    Scheduled                      pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Successfully assigned openshift-storage/odf-operator-controller-manager-79cdcbd66f-77dhh to master3.airtelvvt.samsungbsc.local
+<invalid>   Normal    InstallWaiting                 clusterserviceversion/odf-operator.v4.19.12-rhodf              installing: waiting for deployment odf-operator-controller-manager to become ready: waiting for spec update of deployment "odf-operator-controller-manager" to be observed...
+<invalid>   Normal    Pulling                        pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Pulling image "registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4"
+<invalid>   Normal    AddedInterface                 pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Add eth0 [10.30.0.159/24 fd01:0:0:2::216/64] from ovn-kubernetes
+<invalid>   Normal    Pulled                         pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Successfully pulled image "registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4" in 33.477s (33.477s including waiting). Image size: 182900903 bytes.
+<invalid>   Normal    Started                        pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Started container manager
+<invalid>   Normal    Created                        pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Created container: manager
+<invalid>   Normal    Pulled                         pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Successfully pulled image "registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4" in 34.363s (34.363s including waiting). Image size: 182900903 bytes.
+<invalid>   Warning   BackOff                        pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Back-off restarting failed container manager in pod odf-operator-controller-manager-79cdcbd66f-77dhh_openshift-storage(83c01fbc-a783-40fe-9810-def7d1684d42)
+<invalid>   Normal    Pulled                         pod/odf-operator-controller-manager-79cdcbd66f-77dhh           Successfully pulled image "registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4" in 50.763s (50.763s including waiting). Image size: 182900903 bytes.
+<invalid>   Normal    BackingStorePhaseReady         backingstore/noobaa-default-backing-store                      Backing store mode: OPTIMAL
+<invalid>   Warning   RequirementsNotMet             clusterserviceversion/ocs-client-operator.v4.18.17-rhodf       requirements no longer met
+<invalid>   Normal    InstallSucceeded               clusterserviceversion/ocs-client-operator.v4.18.17-rhodf       install strategy completed with no errors
+<invalid>   Normal    ComponentUnhealthy             clusterserviceversion/ocs-operator.v4.18.17-rhodf              Webhook install failed: Unauthorized
+<invalid>   Normal    InstallSucceeded               clusterserviceversion/ocs-operator.v4.18.17-rhodf              waiting for install components to report healthy
+<invalid>   Normal    InstallSucceeded               clusterserviceversion/ocs-operator.v4.18.17-rhodf              install strategy completed with no errors
+15m         Normal    SuccessfulCreate               replicaset/odf-operator-controller-manager-79cdcbd66f          Created pod: odf-operator-controller-manager-79cdcbd66f-dhl8k
+<invalid>   Normal    AllRequirementsMet             clusterserviceversion/odf-operator.v4.19.12-rhodf              all requirements found, attempting install
+<invalid>   Normal    InstallSucceeded               clusterserviceversion/odf-operator.v4.19.12-rhodf              waiting for install components to report healthy
+<invalid>   Warning   ComponentUnhealthy             clusterserviceversion/odf-operator.v4.19.12-rhodf              installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+<invalid>   Normal    NeedsReinstall                 clusterserviceversion/odf-operator.v4.19.12-rhodf              installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+<invalid>   Normal    InstallWaiting                 clusterserviceversion/odf-operator.v4.19.12-rhodf              installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+<invalid>   Normal    InstallSucceeded               clusterserviceversion/odf-operator.v4.19.12-rhodf              install strategy completed with no errors
+<invalid>   Normal    LeaderElection                 lease/4fd470de.openshift.io                                    odf-operator-controller-manager-79cdcbd66f-dhl8k_48912989-7e1c-406b-b322-eb3d87366ca5 became leader
+13m         Normal    SuccessfulCreate               replicaset/odf-operator-controller-manager-79cdcbd66f          Created pod: odf-operator-controller-manager-79cdcbd66f-kfgt4
+9m20s       Normal    SuccessfulCreate               replicaset/odf-operator-controller-manager-79cdcbd66f          Created pod: odf-operator-controller-manager-79cdcbd66f-mmmnr
+5m50s       Normal    SuccessfulCreate               replicaset/odf-operator-controller-manager-79cdcbd66f          Created pod: odf-operator-controller-manager-79cdcbd66f-77dhh
+<invalid>   Normal    LeaderElection                 lease/4fd470de.openshift.io                                    odf-operator-controller-manager-79cdcbd66f-77dhh_7766075d-7e71-4ff0-8618-43a6e3f53b48 became leader
+[root@bastion ODF]#
