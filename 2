@@ -1,75 +1,176 @@
-Yes — if you take proper backups first, you can recover from operator issues much more safely.
-
-But there are two very different things here:
-
-1. Backup of Kubernetes/ODF configuration
-
-This helps restore:
-
-Subscriptions
-
-StorageCluster CR
-
-CephCluster CR
-
-ODF configs
-
-
-But NOT actual PVC application data.
-
-Example backup:
-
-mkdir -p /root/odf-backup
-
-oc get storagecluster -n openshift-storage ocs-storagecluster -o yaml > /root/odf-backup/storagecluster.yaml
-
-oc get cephcluster -n openshift-storage -o yaml > /root/odf-backup/cephcluster.yaml
-
-oc get sub,csv,installplan -n openshift-storage -o yaml > /root/odf-backup/operators.yaml
-
-oc get sc -o yaml > /root/odf-backup/storageclasses.yaml
-
-2. Actual application/PVC data backup
-
-This is what protects real data.
-
-Deleting StorageCluster can destroy:
-
-Ceph pools
-
-RBD images
-
-CephFS
-
-object buckets
-
-
-Configuration backup alone CANNOT recover application data if disks are wiped.
-
-For real protection you need:
-
-OADP/Velero
-
-CSI snapshots
-
-external replication
-
-rsync/app backup
-
-Ceph mirroring
-
-
-Since your current issue is only upgrade orchestration, there is no need to take the dangerous path of deleting StorageCluster.
-
-Safer approach:
-
-keep Ceph running
-
-repair OLM subscriptions
-
-let operators reconcile
-
-
-That is recoverable and low risk.
-
-Deleting StorageCluster is high risk and unnecessary for your current situation.
+[root@bastion ODF]# oc describe     storagecluster  ocs-storagecluster  -n openshift-storage
+Name:         ocs-storagecluster
+Namespace:    openshift-storage
+Labels:       <none>
+Annotations:  force-reconcile: 1779693253
+              uninstall.ocs.openshift.io/cleanup-policy: delete
+              uninstall.ocs.openshift.io/mode: graceful
+API Version:  ocs.openshift.io/v1
+Kind:         StorageCluster
+Metadata:
+  Creation Timestamp:  2026-03-11T14:09:14Z
+  Finalizers:
+    storagecluster.ocs.openshift.io
+  Generation:  2
+  Owner References:
+    API Version:     odf.openshift.io/v1alpha1
+    Kind:            StorageSystem
+    Name:            ocs-storagecluster-storagesystem
+    UID:             31a38370-e95f-4cd0-83a1-f895b9924372
+  Resource Version:  44270983
+  UID:               6023ee82-5d67-4bf6-a760-05908d58e490
+Spec:
+  Arbiter:
+  Encryption:
+    Key Rotation:
+      Schedule:  @weekly
+    Kms:
+  External Storage:
+  Managed Resources:
+    Ceph Block Pools:
+    Ceph Cluster:
+    Ceph Config:
+    Ceph Dashboard:
+    Ceph Filesystems:
+      Data Pool Spec:
+        Application:
+        Erasure Coded:
+          Coding Chunks:  0
+          Data Chunks:    0
+        Mirroring:
+        Quotas:
+        Replicated:
+          Size:  0
+        Status Check:
+          Mirror:
+    Ceph Non Resilient Pools:
+      Count:  1
+      Resources:
+      Volume Claim Template:
+        Metadata:
+        Spec:
+          Resources:
+        Status:
+    Ceph Object Store Users:
+    Ceph Object Stores:
+    Ceph RBD Mirror:
+      Daemon Count:  1
+    Ceph Toolbox:
+  Mon Data Dir Host Path:  /var/lib/rook
+  Resources:
+    Mds:
+      Limits:
+        Cpu:     3
+        Memory:  8Gi
+      Requests:
+        Cpu:     3
+        Memory:  8Gi
+  Storage Device Sets:
+    Config:
+    Count:  1
+    Data PVC Template:
+      Metadata:
+      Spec:
+        Access Modes:
+          ReadWriteOnce
+        Resources:
+          Requests:
+            Storage:         850Gi
+        Storage Class Name:  local-volume
+        Volume Mode:         Block
+      Status:
+    Name:  ocs-deviceset
+    Placement:
+    Prepare Placement:
+    Replica:  3
+    Resources:
+      Limits:
+        Cpu:     2
+        Memory:  5Gi
+      Requests:
+        Cpu:     2
+        Memory:  5Gi
+Status:
+  Conditions:
+    Last Heartbeat Time:      2026-03-11T14:09:30Z
+    Last Transition Time:     2026-03-11T14:09:30Z
+    Message:                  Version check successful
+    Reason:                   VersionMatched
+    Status:                   False
+    Type:                     VersionMismatch
+    Last Heartbeat Time:      2026-05-25T09:59:44Z
+    Last Transition Time:     2026-05-25T09:50:37Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     ReconcileComplete
+    Last Heartbeat Time:      2026-05-25T09:59:44Z
+    Last Transition Time:     2026-05-25T01:33:43Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     Available
+    Last Heartbeat Time:      2026-05-25T09:59:44Z
+    Last Transition Time:     2026-05-25T09:38:51Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   False
+    Type:                     Progressing
+    Last Heartbeat Time:      2026-05-25T09:59:44Z
+    Last Transition Time:     2026-05-25T01:33:43Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   False
+    Type:                     Degraded
+    Last Heartbeat Time:      2026-05-25T09:59:44Z
+    Last Transition Time:     2026-05-25T05:18:16Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     Upgradeable
+  Current Mon Count:          3
+  Default Ceph Device Class:  ssd
+  Failure Domain:             rack
+  Failure Domain Key:         topology.rook.io/rack
+  Failure Domain Values:
+    rack0
+    rack1
+    rack2
+  Images:
+    Ceph:
+      Actual Image:   registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
+      Desired Image:  registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
+    Noobaa Core:
+      Actual Image:   registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
+      Desired Image:  registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
+    Noobaa DB:
+      Actual Image:   registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
+      Desired Image:  registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
+  Kms Server Connection:
+  Node Topologies:
+    Labels:
+      kubernetes.io/hostname:
+        master1.airtelvvt.samsungbsc.local
+        master2.airtelvvt.samsungbsc.local
+        master3.airtelvvt.samsungbsc.local
+      topology.rook.io/rack:
+        rack0
+        rack1
+        rack2
+  Phase:  Ready
+  Related Objects:
+    API Version:       ceph.rook.io/v1
+    Kind:              CephCluster
+    Name:              ocs-storagecluster-cephcluster
+    Namespace:         openshift-storage
+    Resource Version:  44270972
+    UID:               5e6eb884-3b56-4ebb-be03-8affa6b418c6
+    API Version:       noobaa.io/v1alpha1
+    Kind:              NooBaa
+    Name:              noobaa
+    Namespace:         openshift-storage
+    Resource Version:  44270963
+    UID:               a0db0f16-4293-4a08-8f3c-6814ff0bbfb2
+  Version:             4.18.17
+Events:                <none>
+[root@bastion ODF]#
