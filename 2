@@ -1,13 +1,175 @@
-[root@bastion ODF]# oc get jobs,pods -A | grep -i unpack
-[root@bastion ODF]# oc logs -n openshift-marketplace
-error: expected 'logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER]'.
-POD or TYPE/NAME is a required argument for the logs command
-See 'oc logs -h' for help and examples
-[root@bastion ODF]# oc get co marketplace olm operator-lifecycle-manager
-NAME                         VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-marketplace                  4.19.24   True        False         False      74d
-olm                          4.19.24   True        False         False      5h36m
-operator-lifecycle-manager   4.19.24   True        False         False      74d
-[root@bastion ODF]# oc adm release info registry.redhat.io/odf4/odf-operator-bundle-rhel9:v4.19.12
-error: unable to read image registry.redhat.io/odf4/odf-operator-bundle-rhel9:v4.19.12: Get "https://registry.redhat.io/v2/": context deadline exceeded
-[root@bastion ODF]#
+Since this is a disconnected cluster, the root cause is different.
+
+The failure is because OLM cannot find or unpack the odf-dependencies.v4.19.12-rhodf bundle from your mirrored catalog/index image.
+
+This line is the key symptom:
+
+bundle unpacking failed. Reason: DeadlineExceeded
+
+And earlier:
+
+InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf
+
+That usually means one of these in disconnected environments:
+
+1. Missing mirrored bundle image
+
+
+2. Missing related ODF images in mirror registry
+
+
+3. CatalogSource index image incomplete
+
+
+4. ICSP/ImageDigestMirrorSet issue
+
+
+5. Pull secret for local registry missing
+
+
+6. Catalog pod unable to pull bundle image
+
+
+
+You already cleaned the stale 4.18 CSV conflicts correctly.
+
+Now check the disconnected mirror side.
+
+1. Verify CatalogSource image
+
+Run:
+
+oc get catalogsource -n openshift-marketplace
+
+You should see your custom mirrored catalog, something like:
+
+redhat-operators-disconnected
+
+custom-operator-index
+
+etc.
+
+
+Then describe it:
+
+oc describe catalogsource <catalogsource-name> -n openshift-marketplace
+
+Check:
+
+image points to local registry
+
+pod is READY
+
+no pull errors
+
+
+
+---
+
+2. Check catalog pod logs
+
+oc get pod -n openshift-marketplace
+
+Find the catalog pod related to your disconnected index image.
+
+Then:
+
+oc logs -n openshift-marketplace <catalog-pod>
+
+Look for:
+
+manifest unknown
+
+unauthorized
+
+image pull backoff
+
+bundle not found
+
+
+
+---
+
+3. Verify ODF 4.19.12 bundle exists in mirror registry
+
+From bastion:
+
+podman login <your-local-registry>
+
+Then:
+
+skopeo inspect docker://<your-local-registry>/odf4/odf-operator-bundle-rhel9:v4.19.12
+
+or whatever mirrored repo structure you use.
+
+If this fails:
+
+bundle image was never mirrored
+
+or tag missing
+
+
+
+---
+
+4. Check IDMS / ICSP
+
+oc get imagedigestmirrorset,imagecontentsourcepolicy
+
+Then verify ODF registry mappings exist.
+
+
+---
+
+5. Most important check now
+
+See if unpack job is even being created:
+
+oc get jobs -A | grep -i unpack
+
+and:
+
+oc get pods -A | grep -Ei 'unpack|extract'
+
+If none exist:
+
+catalog resolution failing before unpack
+
+
+If they exist but fail:
+
+mirror image issue
+
+
+
+---
+
+6. Check package existence in catalog
+
+Very important:
+
+oc get packagemanifest | grep odf
+
+You MUST see:
+
+odf-dependencies
+
+odf-operator
+
+
+Then:
+
+oc describe packagemanifest odf-dependencies
+
+Verify:
+
+stable-4.19 channel exists
+
+currentCSV = odf-dependencies.v4.19.12-rhodf
+
+
+If not: your mirrored index image does not contain ODF 4.19.12 properly.
+
+Most likely root cause now:
+
+incomplete/missing ODF 4.19 catalog content in disconnected mirror registry.
