@@ -1,29 +1,78 @@
-[root@bastion ODF]# oc delete subscription odf-dependencies -n openshift-storage
-subscription.operators.coreos.com "odf-dependencies" deleted
-[root@bastion ODF]# cat <<EOF | oc apply -f -
-> apiVersion: operators.coreos.com/v1alpha1
-> kind: Subscription
-> metadata:
->   name: odf-dependencies
->   namespace: openshift-storage
-> spec:
->   channel: stable-4.19
->   name: odf-dependencies
->   source: redhat-operator-index
->   sourceNamespace: openshift-marketplace
-> EOF
-Warning: resource subscriptions/odf-dependencies is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by oc apply. oc apply should only be used on resources created declaratively by either oc create --save-config or oc apply. The missing annotation will be patched automatically.
-subscription.operators.coreos.com/odf-dependencies configured
-[root@bastion ODF]# watch -n 5 'oc get csv -n openshift-storage'
-[root@bastion ODF]# oc get csv -n openshift-storage
-NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
-cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.14-rhodf          Succeeded
-mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.14-rhodf              Succeeded
-ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.14-rhodf       Succeeded
-ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.14-rhodf              Succeeded
-odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.14-rhodf   Succeeded
-odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.18.17-rhodf              Succeeded
-odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.14-rhodf   Succeeded
-recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.14-rhodf                    Succeeded
-rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
-[root@bastion ODF]#
+odf-operator is now healthy and Succeeded, which is good.
+
+But the dependency operators are still stuck at 4.18.17 because OLM has not generated new InstallPlans for them yet.
+
+Next check the subscription status and current CSV mapping:
+
+oc describe sub odf-dependencies -n openshift-storage
+
+Look specifically for:
+
+CurrentCSV
+
+InstallPlan
+
+State
+
+
+Most likely it is still pinned or resolution failed.
+
+Then check catalog resolution errors:
+
+oc get installplan -n openshift-storage
+
+and:
+
+oc logs -n openshift-operator-lifecycle-manager deploy/catalog-operator --tail=100 | grep -i openshift-storage
+
+From your current state, the probable issue is:
+
+old 4.18 CSVs are still owning APIs/resources
+
+OLM dependency resolver is blocked
+
+
+You can safely force regeneration of the dependency chain now.
+
+Delete ONLY the old dependency CSVs (NOT odf-operator):
+
+oc delete csv \
+cephcsi-operator.v4.18.17-rhodf \
+mcg-operator.v4.18.17-rhodf \
+ocs-client-operator.v4.18.17-rhodf \
+ocs-operator.v4.18.17-rhodf \
+odf-csi-addons-operator.v4.18.17-rhodf \
+odf-prometheus-operator.v4.18.17-rhodf \
+recipe.v4.18.17-rhodf \
+rook-ceph-operator.v4.18.17-rhodf \
+-n openshift-storage
+
+Do NOT delete:
+
+odf-operator.v4.19.12-rhodf
+
+StorageCluster
+
+CephCluster
+
+pods/PVCs
+
+
+After deletion, OLM should immediately recreate InstallPlans and pull 4.19.12 dependency CSVs.
+
+Then monitor:
+
+watch -n 5 'oc get csv -n openshift-storage'
+
+Expected final state:
+
+CSV	Version
+
+odf-operator	4.19.12
+rook-ceph-operator	4.19.12
+ocs-operator	4.19.12
+mcg-operator	4.19.12
+cephcsi-operator	4.19.12
+
+
+Once all are Succeeded, the cluster is fully aligned again.
