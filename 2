@@ -1,37 +1,95 @@
-  Version:  v1
-    Group:
-    Kind:     ServiceAccount
-    Message:  Service account does not exist
-    Name:     ocs-operator
-    Status:   NotPresent
-    Version:  v1
-    Group:
-    Kind:     ServiceAccount
-    Message:  Service account does not exist
-    Name:     ux-backend-server
-    Status:   NotPresent
-    Version:  v1
-Events:
-  Type    Reason               Age        From                        Message
-  ----    ------               ----       ----                        -------
-  Normal  RequirementsUnknown  <invalid>  operator-lifecycle-manager  requirements not yet checked
-  Normal  RequirementsNotMet   <invalid>  operator-lifecycle-manager  one or more requirements couldn't be found
-[root@bastion odf-backup]#
-[root@bastion odf-backup]#
-[root@bastion odf-backup]#
-[root@bastion odf-backup]# oc get csv -A
-NAMESPACE                              NAME                                          DISPLAY                            VERSION               REPLACES                                      PHASE
-openshift-local-storage                local-storage-operator.v4.19.0-202602262001   Local Storage                      4.19.0-202602262001   local-storage-operator.v4.18.0-202603152157   Succeeded
-openshift-operator-lifecycle-manager   packageserver                                 Package Server                     0.0.1-snapshot                                                      Succeeded
-openshift-ptp                          ptp-operator.v4.19.0-202603031419             PTP Operator                       4.19.0-202603031419   ptp-operator.v4.18.0-202603171536             Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.19.0-202603100922   SR-IOV Network Operator            4.19.0-202603100922   sriov-network-operator.v4.18.0-202603111324   Succeeded
-openshift-storage                      cephcsi-operator.v4.18.17-rhodf               CephCSI operator                   4.18.17-rhodf         cephcsi-operator.v4.18.14-rhodf               Pending
-openshift-storage                      mcg-operator.v4.18.17-rhodf                   NooBaa Operator                    4.18.17-rhodf         mcg-operator.v4.18.14-rhodf                   Pending
-openshift-storage                      ocs-client-operator.v4.18.17-rhodf            OpenShift Data Foundation Client   4.18.17-rhodf         ocs-client-operator.v4.18.14-rhodf            Pending
-openshift-storage                      ocs-operator.v4.18.17-rhodf                   OpenShift Container Storage        4.18.17-rhodf         ocs-operator.v4.18.14-rhodf                   Pending
-openshift-storage                      odf-csi-addons-operator.v4.18.17-rhodf        CSI Addons                         4.18.17-rhodf         odf-csi-addons-operator.v4.18.14-rhodf        Pending
-openshift-storage                      odf-dependencies.v4.18.17-rhodf               Data Foundation Dependencies       4.18.17-rhodf         odf-dependencies.v4.18.14-rhodf               Succeeded
-openshift-storage                      odf-operator.v4.19.12-rhodf                   OpenShift Data Foundation          4.19.12-rhodf         odf-operator.v4.18.17-rhodf                   Succeeded
-openshift-storage                      odf-prometheus-operator.v4.18.17-rhodf        Prometheus Operator                4.18.17-rhodf         odf-prometheus-operator.v4.18.14-rhodf        Pending
-openshift-storage                      recipe.v4.18.17-rhodf                         Recipe                             4.18.17-rhodf         recipe.v4.18.14-rhodf                         Succeeded
-[root@bastion odf-backup]#
+Now the situation is much clearer.
+
+Your odf-dependencies.v4.18.17-rhodf got recreated successfully, but all dependent operators are stuck in Pending.
+
+The key error is:
+
+Service account does not exist
+Name: ocs-operator
+
+and:
+
+one or more requirements couldn't be found
+
+This means the CSVs were recreated, but their install resources were not fully restored after you deleted the CSVs manually.
+
+Right now you have an inconsistent OLM state:
+
+CSV exists
+
+but deployment/serviceaccount/RBAC objects are missing
+
+therefore CSV remains Pending
+
+
+This is no longer a mirror/catalog issue.
+
+The immediate problem is that these operators lost their generated install resources when the CSVs were deleted.
+
+Especially:
+
+serviceaccounts
+
+deployments
+
+RBAC
+
+webhooks
+
+
+Since:
+
+odf-dependencies.v4.18.17-rhodf = Succeeded
+
+the mirror/catalog side is actually working now.
+
+The safest recovery now is to force OLM to recreate the operator install resources cleanly.
+
+Run this carefully.
+
+First remove the broken Pending CSVs only:
+
+oc delete csv \
+cephcsi-operator.v4.18.17-rhodf \
+mcg-operator.v4.18.17-rhodf \
+ocs-client-operator.v4.18.17-rhodf \
+ocs-operator.v4.18.17-rhodf \
+odf-csi-addons-operator.v4.18.17-rhodf \
+odf-prometheus-operator.v4.18.17-rhodf \
+-n openshift-storage
+
+DO NOT delete:
+
+odf-dependencies
+
+odf-operator
+
+
+Then delete installplans:
+
+oc delete installplan --all -n openshift-storage
+
+Then restart catalog + olm operators:
+
+oc delete pod -n openshift-operator-lifecycle-manager -l app=catalog-operator
+
+oc delete pod -n openshift-operator-lifecycle-manager -l app=olm-operator
+
+Then monitor:
+
+watch 'oc get csv,installplan,pods -n openshift-storage'
+
+You should see:
+
+new installplans
+
+CSVs recreated
+
+deployments/serviceaccounts recreated properly
+
+Pending → Installing → Succeeded
+
+
+Important: DO NOT manually create serviceaccounts or deployments. OLM owns them.
+
+Also: DO NOT delete odf-dependencies.v4.18.17-rhodf because it is now the anchor that restored dependency resolution.
