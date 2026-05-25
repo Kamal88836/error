@@ -1,19 +1,807 @@
-NAME                                                 PACKAGE            SOURCE                  CHANNEL
-subscription.operators.coreos.com/odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
-subscription.operators.coreos.com/odf-operator       odf-operator       redhat-operator-index   stable-4.19
+[root@bastion ODF]# oc get csv
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.14-rhodf          Succeeded
+mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.14-rhodf              Succeeded
+ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.14-rhodf       Succeeded
+ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.14-rhodf              Succeeded
+odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.14-rhodf   Succeeded
+odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.18.17-rhodf              Installing
+odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.14-rhodf   Succeeded
+recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.14-rhodf                    Succeeded
+rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
+[root@bastion ODF]# oc describe csv odf-operator.v4.19.12-rhodf
+Name:         odf-operator.v4.19.12-rhodf
+Namespace:    openshift-storage
+Labels:       full_version=4.19.12-1
+              odf.openshift.io/odf-operator=true
+              olm.managed=true
+              operatorframework.io/arch.amd64=supported
+              operatorframework.io/arch.ppc64le=supported
+              operatorframework.io/arch.s390x=supported
+              operators.coreos.com/odf-operator.openshift-storage=
+Annotations:  alm-examples: []
+              capabilities: Deep Insights
+              categories: Storage
+              console.openshift.io/plugins: ["odf-console"]
+              containerImage: registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4
+              createdAt: 2026-03-02T04:21:09Z
+              description: OpenShift Data Foundation provides a common control plane for storage solutions on OpenShift Container Platform.
+              features.operators.openshift.io/cnf: false
+              features.operators.openshift.io/cni: false
+              features.operators.openshift.io/csi: true
+              features.operators.openshift.io/disconnected: true
+              features.operators.openshift.io/fips-compliant: true
+              features.operators.openshift.io/proxy-aware: true
+              features.operators.openshift.io/tls-profiles: false
+              features.operators.openshift.io/token-auth-aws: true
+              features.operators.openshift.io/token-auth-azure: false
+              features.operators.openshift.io/token-auth-gcp: false
+              olm.operatorGroup: openshift-storage-operatorgroup
+              olm.operatorNamespace: openshift-storage
+              olm.properties: [{"type": "olm.maxOpenShiftVersion", "value": "4.20"}]
+              olm.skipRange: >=4.2.0 <4.19.12-rhodf
+              olm.targetNamespaces: openshift-storage
+              operatorframework.io/initialization-link: /odf/resource/odf.openshift.io~v1alpha1~StorageSystem/create/~new
+              operatorframework.io/properties:
+                {"properties":[{"type":"olm.maxOpenShiftVersion","value":"4.20"},{"type":"olm.package","value":{"packageName":"odf-operator","version":"4....
+              operatorframework.io/suggested-namespace: openshift-storage
+              operators.openshift.io/infrastructure-features: ["disconnected"]
+              operators.openshift.io/valid-subscription:
+                ["OpenShift Platform Plus","OpenShift Data Foundation Essentials","OpenShift Data Foundation Advanced"]
+              operators.operatorframework.io/builder: operator-sdk-v1.31.0
+              operators.operatorframework.io/operator-type: standalone
+              operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+              repository: https://github.com/red-hat-storage/odf-operator
+              support: Red Hat
+              vendors.odf.openshift.io/kind: ["storagecluster.ocs.openshift.io/v1", "flashsystemcluster.odf.ibm.com/v1alpha1"]
+API Version:  operators.coreos.com/v1alpha1
+Kind:         ClusterServiceVersion
+Metadata:
+  Creation Timestamp:  2026-05-25T05:16:57Z
+  Finalizers:
+    operators.coreos.com/csv-cleanup
+  Generation:        1
+  Resource Version:  44278448
+  UID:               fd30df08-0474-4735-aacb-ef3325aa7ced
+Spec:
+  Apiservicedefinitions:
+  Cleanup:
+    Enabled:  false
+  Customresourcedefinitions:
+  Description:  **Red Hat OpenShift Data Foundation** deploys three operators.
 
-NAME                                                                                DISPLAY                            VERSION         REPLACES                                 PHASE
-clusterserviceversion.operators.coreos.com/cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.14-rhodf          Succeeded
-clusterserviceversion.operators.coreos.com/mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.14-rhodf              Succeeded
-clusterserviceversion.operators.coreos.com/ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.14-rhodf       Succeeded
-clusterserviceversion.operators.coreos.com/ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.14-rhodf              Succeeded
-clusterserviceversion.operators.coreos.com/odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.14-rhodf   Succeeded
-clusterserviceversion.operators.coreos.com/odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.18.17-rhodf              Installing
-clusterserviceversion.operators.coreos.com/odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.14-rhodf   Succeeded
-clusterserviceversion.operators.coreos.com/recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.14-rhodf                    Succeeded
-clusterserviceversion.operators.coreos.com/rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
+### OpenShift Data Foundation
+The OpenShift Data Foundation operator is the primary operator for
+OpenShift Data Foundation. It serves to facilitate the other operators in
+OpenShift Data Foundation by performing administrative tasks outside their
+scope as well as watching and configuring their CustomResources.
 
-NAME                                             CSV                                 APPROVAL    APPROVED
-installplan.operators.coreos.com/install-h8p47   rook-ceph-operator.v4.18.17-rhodf   Automatic   true
-installplan.operators.coreos.com/install-q8knl   odf-operator.v4.18.14-rhodf         Automatic   true
-installplan.operators.coreos.com/install-rkpq9   odf-operator.v4.19.12-rhodf         Automatic   true
+### Rook
+[Rook][1] deploys and manages Ceph on OpenShift, which provides block,
+file and object storage.
+
+### NooBaa operator
+The NooBaa operator deploys and manages the [NooBaa][2] Multi-Cloud Gateway
+on OpenShift, which provides object storage.
+
+# Core Capabilities
+* **Self-managing service:** No matter which supported storage technologies
+you choose, OpenShift Data Foundation ensures that resources can be
+deployed and managed automatically.
+
+* **Hyper-scale or hyper-converged:** With OpenShift Data Foundation you
+can either build dedicated storage clusters or hyper-converged clusters
+where your apps run alongside storage.
+
+* **File, Block, and Object provided by OpenShift Data Foundation:**
+OpenShift Data Foundation integrates Ceph with multiple storage
+presentations including object storage (compatible with S3), block storage,
+and POSIX-compliant shared file system.
+
+* **Your data, protected:** OpenShift Data Foundation efficiently
+distributes and replicates your data across your cluster to minimize the
+risk of data loss. With snapshots, cloning, and versioning, no more losing
+sleep over your data.
+
+* **Elastic storage in your datacenter:** Scale is now possible in your
+datacenter. Get started with a few terabytes, and easily scale up.
+
+* **Simplified data management:** Easily create hybrid and multi-cloud data
+storage for your workloads, using a single namespace.
+
+# Subscriptions
+OpenShift Data Foundation requires a matching 1:1 ratio with the OpenShift
+subscription used. The Essential subscription is included in the OpenShift
+Platform Plus subscription. Disaster Recovery features, external mode, and
+KMS integration for encryption at rest require a bundle of OpenShift
+Platform Plus with OpenShift Data Foundation Advanced subscription.
+
+[1]: https://rook.io
+[2]: https://www.noobaa.io
+
+  Display Name:  OpenShift Data Foundation
+  Icon:
+    base64data:  PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTQ1Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UwMDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPlJlZEhhdC1Mb2dvLUhhdC1Db2xvcjwvdGl0bGU+PHBhdGggZD0iTTE1Ny43Nyw2Mi42MWExNCwxNCwwLDAsMSwuMzEsMy40MmMwLDE0Ljg4LTE4LjEsMTcuNDYtMzAuNjEsMTcuNDZDNzguODMsODMuNDksNDIuNTMsNTMuMjYsNDIuNTMsNDRhNi40Myw2LjQzLDAsMCwxLC4yMi0xLjk0bC0zLjY2LDkuMDZhMTguNDUsMTguNDUsMCwwLDAtMS41MSw3LjMzYzAsMTguMTEsNDEsNDUuNDgsODcuNzQsNDUuNDgsMjAuNjksMCwzNi40My03Ljc2LDM2LjQzLTIxLjc3LDAtMS4wOCwwLTEuOTQtMS43My0xMC4xM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMjcuNDcsODMuNDljMTIuNTEsMCwzMC42MS0yLjU4LDMwLjYxLTE3LjQ2YTE0LDE0LDAsMCwwLS4zMS0zLjQybC03LjQ1LTMyLjM2Yy0xLjcyLTcuMTItMy4yMy0xMC4zNS0xNS43My0xNi42QzEyNC44OSw4LjY5LDEwMy43Ni41LDk3LjUxLjUsOTEuNjkuNSw5MCw4LDgzLjA2LDhjLTYuNjgsMC0xMS42NC01LjYtMTcuODktNS42LTYsMC05LjkxLDQuMDktMTIuOTMsMTIuNSwwLDAtOC40MSwyMy43Mi05LjQ5LDI3LjE2QTYuNDMsNi40MywwLDAsMCw0Mi41Myw0NGMwLDkuMjIsMzYuMywzOS40NSw4NC45NCwzOS40NU0xNjAsNzIuMDdjMS43Myw4LjE5LDEuNzMsOS4wNSwxLjczLDEwLjEzLDAsMTQtMTUuNzQsMjEuNzctMzYuNDMsMjEuNzdDNzguNTQsMTA0LDM3LjU4LDc2LjYsMzcuNTgsNTguNDlhMTguNDUsMTguNDUsMCwwLDEsMS41MS03LjMzQzIyLjI3LDUyLC41LDU1LC41LDc0LjIyYzAsMzEuNDgsNzQuNTksNzAuMjgsMTMzLjY1LDcwLjI4LDQ1LjI4LDAsNTYuNy0yMC40OCw1Ni43LTM2LjY1LDAtMTIuNzItMTEtMjcuMTYtMzAuODMtMzUuNzgiLz48L3N2Zz4=
+    Mediatype:   image/svg+xml
+  Install:
+    Spec:
+      Cluster Permissions:
+        Rules:
+          API Groups:
+
+          Resources:
+            configmaps
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+
+          Resources:
+            services
+          Verbs:
+            create
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            admissionregistration.k8s.io
+          Resources:
+            mutatingwebhookconfigurations
+          Verbs:
+            create
+            get
+            list
+            update
+            watch
+          API Groups:
+            apiextensions.k8s.io
+          Resources:
+            customresourcedefinitions
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+            apps
+          Resources:
+            deployments
+          Verbs:
+            create
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            apps
+          Resources:
+            deployments/finalizers
+          Verbs:
+            update
+          API Groups:
+            ceph.rook.io
+          Resources:
+            cephclusters
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+            config.openshift.io
+          Resources:
+            clusterversions
+          Verbs:
+            create
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            config.openshift.io
+          Resources:
+            clusterversions/finalizers
+          Verbs:
+            update
+          API Groups:
+            config.openshift.io
+          Resources:
+            clusterversions/status
+          Verbs:
+            get
+            patch
+            update
+          API Groups:
+            console.openshift.io
+          Resources:
+            consoleclidownloads
+            consoleplugins
+          Verbs:
+            create
+            get
+            update
+          API Groups:
+            console.openshift.io
+          Resources:
+            consolequickstarts
+          Verbs:
+            create
+            delete
+            get
+            list
+            update
+          API Groups:
+            monitoring.coreos.com
+          Resources:
+            alertmanagers
+            prometheuses
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+            noobaa.io
+          Resources:
+            noobaas
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+            ocs.openshift.io
+          Resources:
+            storageclusters
+          Verbs:
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            odf.ibm.com
+          Resources:
+            flashsystemclusters
+          Verbs:
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            odf.openshift.io
+          Resources:
+            storagesystems
+          Verbs:
+            create
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            odf.openshift.io
+          Resources:
+            storagesystems/finalizers
+          Verbs:
+            update
+          API Groups:
+            operators.coreos.com
+          Resources:
+            clusterserviceversions
+            installplans
+            subscriptions
+          Verbs:
+            create
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            operators.coreos.com
+          Resources:
+            clusterserviceversions/finalizers
+            subscriptions/finalizers
+          Verbs:
+            update
+          API Groups:
+            operators.coreos.com
+          Resources:
+            operatorconditions
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+            authentication.k8s.io
+          Resources:
+            tokenreviews
+          Verbs:
+            create
+          API Groups:
+            authorization.k8s.io
+          Resources:
+            subjectaccessreviews
+          Verbs:
+            create
+        Service Account Name:  odf-operator-controller-manager
+      Deployments:
+        Label:
+          app.kubernetes.io/name:  odf-operator
+          Control - Plane:         controller-manager
+        Name:                      odf-operator-controller-manager
+        Spec:
+          Replicas:  1
+          Selector:
+            Match Labels:
+              Control - Plane:  controller-manager
+          Strategy:
+          Template:
+            Metadata:
+              Annotations:
+                kubectl.kubernetes.io/default-container:  manager
+              Creation Timestamp:                         <nil>
+              Labels:
+                app.kubernetes.io/name:  odf-operator
+                Control - Plane:         controller-manager
+            Spec:
+              Containers:
+                Args:
+                  --health-probe-bind-address=:8081
+                  --metrics-bind-address=:8443
+                  --leader-elect
+                  --odf-console-port=9001
+                Command:
+                  /manager
+                Env:
+                  Name:   PKGS_CONFIG_MAP_NAME
+                  Value:  odf-operator-pkgs-config-4.19.12-rhodf
+                  Name:   OPERATOR_NAMESPACE
+                  Value From:
+                    Field Ref:
+                      Field Path:  metadata.namespace
+                Env From:
+                  Config Map Ref:
+                    Name:           odf-operator-manager-config
+                Image:              registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4
+                Image Pull Policy:  Always
+                Liveness Probe:
+                  Http Get:
+                    Path:                 /healthz
+                    Port:                 8081
+                  Initial Delay Seconds:  15
+                  Period Seconds:         20
+                Name:                     manager
+                Ports:
+                  Container Port:  9443
+                  Name:            webhook-server
+                  Protocol:        TCP
+                  Container Port:  8443
+                  Name:            https
+                  Protocol:        TCP
+                Readiness Probe:
+                  Http Get:
+                    Path:                 /readyz
+                    Port:                 8081
+                  Initial Delay Seconds:  5
+                  Period Seconds:         10
+                  Timeout Seconds:        90
+                Resources:
+                  Limits:
+                    Cpu:     200m
+                    Memory:  400Mi
+                  Requests:
+                    Cpu:     200m
+                    Memory:  400Mi
+                Security Context:
+                  Allow Privilege Escalation:  false
+                  Capabilities:
+                    Drop:
+                      ALL
+                  Read Only Root Filesystem:  true
+                Volume Mounts:
+                  Mount Path:       /tmp/k8s-webhook-server/serving-certs
+                  Name:             cert
+                  Read Only:        true
+              Priority Class Name:  system-cluster-critical
+              Security Context:
+                Run As Non Root:                 true
+              Service Account Name:              odf-operator-controller-manager
+              Termination Grace Period Seconds:  10
+              Tolerations:
+                Effect:    NoSchedule
+                Key:       node.ocs.openshift.io/storage
+                Operator:  Equal
+                Value:     true
+              Volumes:
+                Name:  cert
+                Secret:
+                  Default Mode:  420
+                  Secret Name:   odf-operator-webhook-server-cert
+        Label:
+          App:  odf-console
+        Name:   odf-console
+        Spec:
+          Replicas:  1
+          Selector:
+            Match Labels:
+              App:  odf-console
+          Strategy:
+          Template:
+            Metadata:
+              Creation Timestamp:  <nil>
+              Labels:
+                App:  odf-console
+            Spec:
+              Automount Service Account Token:  false
+              Containers:
+                Image:  registry.redhat.io/odf4/odf-console-rhel9@sha256:faa3559af65d4301c25a6d9e28f17e790d037c03f58a441a11d301eccd9d5aa6
+                Liveness Probe:
+                  Http Get:
+                    Path:                 /plugin-manifest.json
+                    Port:                 9001
+                    Scheme:               HTTPS
+                  Initial Delay Seconds:  1000
+                  Period Seconds:         60
+                Name:                     odf-console
+                Ports:
+                  Container Port:  9001
+                  Protocol:        TCP
+                Resources:
+                  Limits:
+                    Cpu:     100m
+                    Memory:  512Mi
+                Security Context:
+                  Allow Privilege Escalation:  false
+                  Capabilities:
+                    Drop:
+                      ALL
+                  Read Only Root Filesystem:  true
+                  Seccomp Profile:
+                    Type:  RuntimeDefault
+                Volume Mounts:
+                  Mount Path:       /var/serving-cert
+                  Name:             odf-console-serving-cert
+                  Read Only:        true
+                  Mount Path:       /etc/nginx/nginx.conf
+                  Name:             odf-console-nginx-conf
+                  Sub Path:         nginx.conf
+                  Mount Path:       /var/log/nginx
+                  Name:             odf-console-nginx-log
+                  Mount Path:       /var/lib/nginx/tmp
+                  Name:             odf-console-nginx-tmp
+              Priority Class Name:  system-cluster-critical
+              Security Context:
+                Run As Non Root:  true
+              Tolerations:
+                Effect:    NoSchedule
+                Key:       node.ocs.openshift.io/storage
+                Operator:  Equal
+                Value:     true
+              Volumes:
+                Name:  odf-console-serving-cert
+                Secret:
+                  Secret Name:  odf-console-serving-cert
+                Config Map:
+                  Name:  odf-console-nginx-conf
+                Name:    odf-console-nginx-conf
+                Empty Dir:
+                Name:  odf-console-nginx-log
+                Empty Dir:
+                Name:  odf-console-nginx-tmp
+      Permissions:
+        Rules:
+          API Groups:
+
+          Resources:
+            configmaps
+          Verbs:
+            get
+            list
+            watch
+            create
+            update
+            patch
+            delete
+          API Groups:
+            coordination.k8s.io
+          Resources:
+            leases
+          Verbs:
+            get
+            list
+            watch
+            create
+            update
+            patch
+            delete
+          API Groups:
+
+          Resources:
+            events
+          Verbs:
+            create
+            patch
+        Service Account Name:  odf-operator-controller-manager
+    Strategy:                  deployment
+  Install Modes:
+    Supported:  true
+    Type:       OwnNamespace
+    Supported:  true
+    Type:       SingleNamespace
+    Supported:  false
+    Type:       MultiNamespace
+    Supported:  false
+    Type:       AllNamespaces
+  Keywords:
+    operator
+    data
+    storage
+  Links:
+    Name:  Source Code
+    URL:   https://github.com/red-hat-storage/odf-operator
+  Maintainers:
+    Email:   ocs-support@redhat.com
+    Name:    Red Hat Support
+  Maturity:  alpha
+  Provider:
+    Name:  Red Hat
+  Related Images:
+    Image:   registry.redhat.io/odf4/odf-rhel9-operator@sha256:8288817557233c318cbd40d730dec1fa03ab8dfd70fd9d1b65980212dc0ca3e4
+    Name:    odf-operator
+    Image:   registry.redhat.io/odf4/odf-console-rhel9@sha256:faa3559af65d4301c25a6d9e28f17e790d037c03f58a441a11d301eccd9d5aa6
+    Name:    odf-console
+  Replaces:  odf-operator.v4.18.17-rhodf
+  Version:   4.19.12-rhodf
+Status:
+  Cleanup:
+  Conditions:
+    Last Transition Time:  2026-05-25T11:00:31Z
+    Last Update Time:      2026-05-25T11:00:31Z
+    Message:               waiting for install components to report healthy
+    Phase:                 Installing
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-05-25T11:00:31Z
+    Last Update Time:      2026-05-25T11:00:32Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Installing
+    Reason:                InstallWaiting
+    Last Transition Time:  2026-05-25T11:01:41Z
+    Last Update Time:      2026-05-25T11:01:41Z
+    Message:               install strategy completed with no errors
+    Phase:                 Succeeded
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-05-25T11:02:31Z
+    Last Update Time:      2026-05-25T11:02:31Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Failed
+    Reason:                ComponentUnhealthy
+    Last Transition Time:  2026-05-25T11:02:32Z
+    Last Update Time:      2026-05-25T11:02:32Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Pending
+    Reason:                NeedsReinstall
+    Last Transition Time:  2026-05-25T11:02:32Z
+    Last Update Time:      2026-05-25T11:02:32Z
+    Message:               all requirements found, attempting install
+    Phase:                 InstallReady
+    Reason:                AllRequirementsMet
+    Last Transition Time:  2026-05-25T11:02:32Z
+    Last Update Time:      2026-05-25T11:02:32Z
+    Message:               waiting for install components to report healthy
+    Phase:                 Installing
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-05-25T11:02:32Z
+    Last Update Time:      2026-05-25T11:02:32Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Installing
+    Reason:                InstallWaiting
+    Last Transition Time:  2026-05-25T11:03:14Z
+    Last Update Time:      2026-05-25T11:03:14Z
+    Message:               install strategy completed with no errors
+    Phase:                 Succeeded
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-05-25T11:06:58Z
+    Last Update Time:      2026-05-25T11:06:58Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Failed
+    Reason:                ComponentUnhealthy
+    Last Transition Time:  2026-05-25T11:06:58Z
+    Last Update Time:      2026-05-25T11:06:58Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Pending
+    Reason:                NeedsReinstall
+    Last Transition Time:  2026-05-25T11:06:58Z
+    Last Update Time:      2026-05-25T11:06:58Z
+    Message:               all requirements found, attempting install
+    Phase:                 InstallReady
+    Reason:                AllRequirementsMet
+    Last Transition Time:  2026-05-25T11:06:58Z
+    Last Update Time:      2026-05-25T11:06:58Z
+    Message:               waiting for install components to report healthy
+    Phase:                 Installing
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-05-25T11:06:58Z
+    Last Update Time:      2026-05-25T11:06:58Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Installing
+    Reason:                InstallWaiting
+    Last Transition Time:  2026-05-25T11:08:09Z
+    Last Update Time:      2026-05-25T11:08:09Z
+    Message:               install strategy completed with no errors
+    Phase:                 Succeeded
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-05-25T11:10:49Z
+    Last Update Time:      2026-05-25T11:10:49Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Failed
+    Reason:                ComponentUnhealthy
+    Last Transition Time:  2026-05-25T11:10:50Z
+    Last Update Time:      2026-05-25T11:10:50Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Pending
+    Reason:                NeedsReinstall
+    Last Transition Time:  2026-05-25T11:10:50Z
+    Last Update Time:      2026-05-25T11:10:50Z
+    Message:               all requirements found, attempting install
+    Phase:                 InstallReady
+    Reason:                AllRequirementsMet
+    Last Transition Time:  2026-05-25T11:10:50Z
+    Last Update Time:      2026-05-25T11:10:50Z
+    Message:               waiting for install components to report healthy
+    Phase:                 Installing
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-05-25T11:10:50Z
+    Last Update Time:      2026-05-25T11:10:50Z
+    Message:               installing: waiting for deployment odf-operator-controller-manager to become ready: waiting for spec update of deployment "odf-operator-controller-manager" to be observed...
+    Phase:                 Installing
+    Reason:                InstallWaiting
+  Last Transition Time:    2026-05-25T11:10:50Z
+  Last Update Time:        2026-05-25T11:10:50Z
+  Message:                 installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+  Phase:                   Installing
+  Reason:                  InstallWaiting
+  Requirement Status:
+    Dependents:
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":[""],"resources":["configmaps"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":[""],"resources":["services"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","get","list","update","watch"],"apiGroups":["admissionregistration.k8s.io"],"resources":["mutatingwebhookconfigurations"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":["apiextensions.k8s.io"],"resources":["customresourcedefinitions"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":["apps"],"resources":["deployments"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["update"],"apiGroups":["apps"],"resources":["deployments/finalizers"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":["ceph.rook.io"],"resources":["cephclusters"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":["config.openshift.io"],"resources":["clusterversions"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["update"],"apiGroups":["config.openshift.io"],"resources":["clusterversions/finalizers"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","patch","update"],"apiGroups":["config.openshift.io"],"resources":["clusterversions/status"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","get","update"],"apiGroups":["console.openshift.io"],"resources":["consoleclidownloads","consoleplugins"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","update"],"apiGroups":["console.openshift.io"],"resources":["consolequickstarts"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":["monitoring.coreos.com"],"resources":["alertmanagers","prometheuses"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":["noobaa.io"],"resources":["noobaas"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["delete","get","list","patch","update","watch"],"apiGroups":["ocs.openshift.io"],"resources":["storageclusters"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["delete","get","list","patch","update","watch"],"apiGroups":["odf.ibm.com"],"resources":["flashsystemclusters"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":["odf.openshift.io"],"resources":["storagesystems"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["update"],"apiGroups":["odf.openshift.io"],"resources":["storagesystems/finalizers"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":["operators.coreos.com"],"resources":["clusterserviceversions","installplans","subscriptions"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["update"],"apiGroups":["operators.coreos.com"],"resources":["clusterserviceversions/finalizers","subscriptions/finalizers"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":["operators.coreos.com"],"resources":["operatorconditions"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create"],"apiGroups":["authentication.k8s.io"],"resources":["tokenreviews"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create"],"apiGroups":["authorization.k8s.io"],"resources":["subjectaccessreviews"]}
+      Status:   Satisfied
+      Version:  v1
+    Group:
+    Kind:       ServiceAccount
+    Message:
+    Name:       odf-operator-controller-manager
+    Status:     Present
+    Version:    v1
+Events:
+  Type     Reason              Age                            From                        Message
+  ----     ------              ----                           ----                        -------
+  Normal   InstallSucceeded    <invalid> (x4 over <invalid>)  operator-lifecycle-manager  install strategy completed with no errors
+  Warning  ComponentUnhealthy  <invalid> (x7 over <invalid>)  operator-lifecycle-manager  installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+  Normal   NeedsReinstall      <invalid> (x7 over <invalid>)  operator-lifecycle-manager  installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+  Normal   AllRequirementsMet  <invalid> (x7 over <invalid>)  operator-lifecycle-manager  all requirements found, attempting install
+  Normal   InstallSucceeded    <invalid> (x7 over <invalid>)  operator-lifecycle-manager  waiting for install components to report healthy
+  Normal   InstallWaiting      <invalid>                      operator-lifecycle-manager  installing: waiting for deployment odf-operator-controller-manager to become ready: waiting for spec update of deployment "odf-operator-controller-manager" to be observed...
+  Normal   InstallWaiting      <invalid> (x7 over <invalid>)  operator-lifecycle-manager  installing: waiting for deployment odf-operator-controller-manager to become ready: deployment "odf-operator-controller-manager" not available: Deployment does not have minimum availability.
+[root@bastion ODF]#
