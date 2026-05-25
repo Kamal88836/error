@@ -1,176 +1,70 @@
-[root@bastion upgrade]# oc get storagecluster ocs-storagecluster -n openshift-storage -o yaml
-apiVersion: ocs.openshift.io/v1
-kind: StorageCluster
-metadata:
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"ocs.openshift.io/v1","kind":"StorageCluster","metadata":{"annotations":{},"name":"ocs-storagecluster","namespace":"openshift-storage"},"spec":{"manageNodes":false,"monDataDirHostPath":"/var/lib/rook","resources":{"mds":{"limits":{"cpu":"3","memory":"8Gi"},"requests":{"cpu":"3","memory":"8Gi"}}},"storageDeviceSets":[{"count":1,"dataPVCTemplate":{"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"850Gi"}},"storageClassName":"local-volume","volumeMode":"Block"}},"name":"ocs-deviceset","placement":{},"portable":false,"replica":3,"resources":{"limits":{"cpu":"2","memory":"5Gi"},"requests":{"cpu":"2","memory":"5Gi"}}}]}}
-    uninstall.ocs.openshift.io/cleanup-policy: delete
-    uninstall.ocs.openshift.io/mode: graceful
-  creationTimestamp: "2026-03-11T14:09:14Z"
-  finalizers:
-  - storagecluster.ocs.openshift.io
-  generation: 2
-  name: ocs-storagecluster
-  namespace: openshift-storage
-  ownerReferences:
-  - apiVersion: odf.openshift.io/v1alpha1
-    kind: StorageSystem
-    name: ocs-storagecluster-storagesystem
-    uid: 31a38370-e95f-4cd0-83a1-f895b9924372
-  resourceVersion: "44198445"
-  uid: 6023ee82-5d67-4bf6-a760-05908d58e490
-spec:
-  arbiter: {}
-  encryption:
-    keyRotation:
-      schedule: '@weekly'
-    kms: {}
-  externalStorage: {}
-  managedResources:
-    cephBlockPools: {}
-    cephCluster: {}
-    cephConfig: {}
-    cephDashboard: {}
-    cephFilesystems:
-      dataPoolSpec:
-        application: ""
-        erasureCoded:
-          codingChunks: 0
-          dataChunks: 0
-        mirroring: {}
-        quotas: {}
-        replicated:
-          size: 0
-        statusCheck:
-          mirror: {}
-    cephNonResilientPools:
-      count: 1
-      resources: {}
-      volumeClaimTemplate:
-        metadata: {}
-        spec:
-          resources: {}
-        status: {}
-    cephObjectStoreUsers: {}
-    cephObjectStores: {}
-    cephRBDMirror:
-      daemonCount: 1
-    cephToolbox: {}
-  monDataDirHostPath: /var/lib/rook
-  resources:
-    mds:
-      limits:
-        cpu: "3"
-        memory: 8Gi
-      requests:
-        cpu: "3"
-        memory: 8Gi
-  storageDeviceSets:
-  - config: {}
-    count: 1
-    dataPVCTemplate:
-      metadata: {}
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 850Gi
-        storageClassName: local-volume
-        volumeMode: Block
-      status: {}
-    name: ocs-deviceset
-    placement: {}
-    preparePlacement: {}
-    replica: 3
-    resources:
-      limits:
-        cpu: "2"
-        memory: 5Gi
-      requests:
-        cpu: "2"
-        memory: 5Gi
-status:
-  conditions:
-  - lastHeartbeatTime: "2026-03-11T14:09:30Z"
-    lastTransitionTime: "2026-03-11T14:09:30Z"
-    message: Version check successful
-    reason: VersionMatched
-    status: "False"
-    type: VersionMismatch
-  - lastHeartbeatTime: "2026-05-25T07:05:55Z"
-    lastTransitionTime: "2026-05-25T07:04:54Z"
-    message: Reconcile completed successfully
-    reason: ReconcileCompleted
-    status: "True"
-    type: ReconcileComplete
-  - lastHeartbeatTime: "2026-05-25T07:05:55Z"
-    lastTransitionTime: "2026-05-25T01:33:43Z"
-    message: Reconcile completed successfully
-    reason: ReconcileCompleted
-    status: "True"
-    type: Available
-  - lastHeartbeatTime: "2026-05-25T07:05:55Z"
-    lastTransitionTime: "2026-05-25T05:18:16Z"
-    message: Reconcile completed successfully
-    reason: ReconcileCompleted
-    status: "False"
-    type: Progressing
-  - lastHeartbeatTime: "2026-05-25T07:05:55Z"
-    lastTransitionTime: "2026-05-25T01:33:43Z"
-    message: Reconcile completed successfully
-    reason: ReconcileCompleted
-    status: "False"
-    type: Degraded
-  - lastHeartbeatTime: "2026-05-25T07:05:55Z"
-    lastTransitionTime: "2026-05-25T05:18:16Z"
-    message: Reconcile completed successfully
-    reason: ReconcileCompleted
-    status: "True"
-    type: Upgradeable
-  currentMonCount: 3
-  defaultCephDeviceClass: ssd
-  failureDomain: rack
-  failureDomainKey: topology.rook.io/rack
-  failureDomainValues:
-  - rack0
-  - rack1
-  - rack2
-  images:
-    ceph:
-      actualImage: registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
-      desiredImage: registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
-    noobaaCore:
-      actualImage: registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
-      desiredImage: registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
-    noobaaDB:
-      actualImage: registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
-      desiredImage: registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
-  kmsServerConnection: {}
-  nodeTopologies:
-    labels:
-      kubernetes.io/hostname:
-      - master1.airtelvvt.samsungbsc.local
-      - master2.airtelvvt.samsungbsc.local
-      - master3.airtelvvt.samsungbsc.local
-      topology.rook.io/rack:
-      - rack0
-      - rack1
-      - rack2
-  phase: Ready
-  relatedObjects:
-  - apiVersion: ceph.rook.io/v1
-    kind: CephCluster
-    name: ocs-storagecluster-cephcluster
-    namespace: openshift-storage
-    resourceVersion: "44198437"
-    uid: 5e6eb884-3b56-4ebb-be03-8affa6b418c6
-  - apiVersion: noobaa.io/v1alpha1
-    kind: NooBaa
-    name: noobaa
-    namespace: openshift-storage
-    resourceVersion: "44198406"
-    uid: a0db0f16-4293-4a08-8f3c-6814ff0bbfb2
-  version: 4.18.17
-[root@bastion upgrade]#
+This output confirms the actual situation clearly now.
+
+Your storage stack itself is still on:
+
+status.version: 4.18.17
+
+even though:
+
+odf-operator upgraded to 4.19.12
+
+supporting operator bundles for 4.19.12 exist in catalog
+
+
+So the ODF reconciliation that upgrades the StorageCluster-managed components has not happened yet.
+
+The key line is:
+
+VersionMatched
+status: "False"
+type: VersionMismatch
+
+That means the operator currently thinks the deployed storage version matches the expected managed version (4.18.17), not 4.19.12.
+
+This usually happens because the StorageCluster CR itself was never reconciled for a generation change after the operator upgrade.
+
+You can trigger reconciliation safely.
+
+First annotate the StorageCluster:
+
+oc annotate storagecluster ocs-storagecluster -n openshift-storage force-reconcile=$(date +%s) --overwrite
+
+Then restart the odf operator pod:
+
+oc delete pod -n openshift-storage -l app.kubernetes.io/name=odf-operator-controller-manager
+
+Now monitor:
+
+oc get storagecluster -n openshift-storage -w
+
+and:
+
+oc get csv -A -w
+
+and:
+
+oc get installplan -A -w
+
+What you expect:
+
+StorageCluster version changes toward 4.19.12
+
+new installplans appear
+
+supporting operators move to 4.19.12-rhodf
+
+
+Also watch Ceph health during rollout:
+
+oc get cephcluster -n openshift-storage -w
+
+Because this is a live storage upgrade, temporary:
+
+Progressing=True
+
+HEALTH_WARN
+
+
+can occur during daemon restarts.
+
+Do NOT manually delete old CSVs while this reconciliation is occurring.
