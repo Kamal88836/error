@@ -1,122 +1,34 @@
-Good — this changes the diagnosis significantly.
-
-Your catalog source itself is healthy now.
-
-These logs prove:
-
-grpc is working
-
-ListBundles works
-
-ListPackages works
-
-OLM can query the catalog successfully
-
-
-So the old:
-
-connection refused
-
-errors are stale historical conditions.
-
-Now the REAL issue is:
-
-ODF operator upgraded to 4.19.12, but supporting operators never generated InstallPlans.
-
-This usually happens when:
-
-subscriptions were manually modified
-
-old installplan references remain
-
-or OLM resolution graph got stuck midway during disconnected upgrade
-
-
-The strongest clue is:
-
-InstallPlan not found for CSV ...v4.19.12-rhodf
-
-AND:
-
-state: AtLatestKnown
-currentCSV: *.v4.18.17-rhodf
-
-That means OLM thinks:
-
-> "No newer upgrade available"
-
-
-
-even though package manifest clearly contains:
-
-rook-ceph-operator.v4.19.12-rhodf
-
-So now this is an OLM resolver stuck-state issue.
-
-You are very close now.
-
-Do this carefully.
-
-First verify there are NO pending installplans:
-
-oc get installplan -A
-
-Then delete ONLY the supporting subscriptions (NOT odf-operator subscription)
-
-Delete these:
-
-oc delete sub -n openshift-storage \
-rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
-cephcsi-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
-mcg-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
-ocs-client-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
-ocs-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
-odf-csi-addons-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
-odf-prometheus-operator-stable-4.18-redhat-operator-index-openshift-marketplace \
-recipe-stable-4.18-redhat-operator-index-openshift-marketplace \
-odf-dependencies
-
-Do NOT delete:
-
-CSVs
-
-installplans
-
-odf-operator subscription
-
-
-Then restart OLM:
-
-oc delete pod -n openshift-operator-lifecycle-manager -l app=catalog-operator
-oc delete pod -n openshift-operator-lifecycle-manager -l app=olm-operator
-
-Then wait 2-3 minutes.
-
-ODF operator should recreate all dependent subscriptions automatically.
-
-Then immediately check:
-
-oc get sub -n openshift-storage
-
-You should now see:
-
-fresh generations
-
-new installplans
-
-supporting CSVs moving to 4.19.12
-
-
-Then watch:
-
-watch oc get csv -n openshift-storage
-
-Finally verify:
-
-oc get storagecluster -n openshift-storage
-
-Expected:
-
-VERSION   4.19.12
-
-Right now your cluster is stuck because stale Subscription objects survived the partial upgrade attempt.
+rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
+[root@bastion upgrade]# oc get sub -n openshift-storage
+NAME               PACKAGE            SOURCE                  CHANNEL
+odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
+odf-operator       odf-operator       redhat-operator-index   stable-4.19
+[root@bastion upgrade]# oc get storagecluster -n openshift-storage
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   74d   Ready              2026-03-11T14:09:14Z   4.18.17
+[root@bastion upgrade]# oc get storagecluster -n openshift-storage
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   74d   Ready              2026-03-11T14:09:14Z   4.18.17
+[root@bastion upgrade]# oc get csv
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.14-rhodf          Succeeded
+mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.14-rhodf              Succeeded
+ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.14-rhodf       Succeeded
+ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.14-rhodf              Succeeded
+odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.14-rhodf   Succeeded
+odf-dependencies.v4.18.17-rhodf          Data Foundation Dependencies       4.18.17-rhodf   odf-dependencies.v4.18.14-rhodf          Succeeded
+odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.18.17-rhodf              Succeeded
+odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.14-rhodf   Succeeded
+recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.14-rhodf                    Succeeded
+rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
+[root@bastion upgrade]# oc get sub -n openshift-storage
+NAME               PACKAGE            SOURCE                  CHANNEL
+odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
+odf-operator       odf-operator       redhat-operator-index   stable-4.19
+[root@bastion upgrade]# oc get installplan
+NAME            CSV                                 APPROVAL    APPROVED
+install-g7dq2   odf-dependencies.v4.18.14-rhodf     Automatic   true
+install-h8p47   rook-ceph-operator.v4.18.17-rhodf   Automatic   true
+install-q8knl   odf-operator.v4.18.14-rhodf         Automatic   true
+install-rkpq9   odf-operator.v4.19.12-rhodf         Automatic   true
+[root@bastion upgrade]#
