@@ -1,70 +1,10 @@
-This output confirms the actual situation clearly now.
-
-Your storage stack itself is still on:
-
-status.version: 4.18.17
-
-even though:
-
-odf-operator upgraded to 4.19.12
-
-supporting operator bundles for 4.19.12 exist in catalog
-
-
-So the ODF reconciliation that upgrades the StorageCluster-managed components has not happened yet.
-
-The key line is:
-
-VersionMatched
-status: "False"
-type: VersionMismatch
-
-That means the operator currently thinks the deployed storage version matches the expected managed version (4.18.17), not 4.19.12.
-
-This usually happens because the StorageCluster CR itself was never reconciled for a generation change after the operator upgrade.
-
-You can trigger reconciliation safely.
-
-First annotate the StorageCluster:
-
-oc annotate storagecluster ocs-storagecluster -n openshift-storage force-reconcile=$(date +%s) --overwrite
-
-Then restart the odf operator pod:
-
-oc delete pod -n openshift-storage -l app.kubernetes.io/name=odf-operator-controller-manager
-
-Now monitor:
-
-oc get storagecluster -n openshift-storage -w
-
-and:
-
-oc get csv -A -w
-
-and:
-
-oc get installplan -A -w
-
-What you expect:
-
-StorageCluster version changes toward 4.19.12
-
-new installplans appear
-
-supporting operators move to 4.19.12-rhodf
-
-
-Also watch Ceph health during rollout:
-
-oc get cephcluster -n openshift-storage -w
-
-Because this is a live storage upgrade, temporary:
-
-Progressing=True
-
-HEALTH_WARN
-
-
-can occur during daemon restarts.
-
-Do NOT manually delete old CSVs while this reconciliation is occurring.
+[root@bastion upgrade]# oc get storagecluster
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   74d   Ready              2026-03-11T14:09:14Z   4.18.17
+[root@bastion upgrade]# oc annotate storagecluster ocs-storagecluster -n openshift-storage force-reconcile=$(date +%s) --overwrite
+storagecluster.ocs.openshift.io/ocs-storagecluster annotated
+[root@bastion upgrade]# oc delete pod -n openshift-storage -l app.kubernetes.io/name=odf-operator-controller-manager
+No resources found
+[root@bastion upgrade]# oc get storagecluster -n openshift-storage -w
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   74d   Ready              2026-03-11T14:09:14Z   4.18.17
