@@ -1,70 +1,104 @@
-[root@bastion ODF]# oc delete  pod odf-operator-controller-manager-79cdcbd66f-dhl8k -n openshift-storage
-pod "odf-operator-controller-manager-79cdcbd66f-dhl8k" deleted
-[root@bastion ODF]#  oc get csv -n openshift-storage
-NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
-cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.14-rhodf          Succeeded
-mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.14-rhodf              Succeeded
-ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.14-rhodf       Succeeded
-ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.14-rhodf              Succeeded
-odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.14-rhodf   Succeeded
-odf-dependencies.v4.18.17-rhodf          Data Foundation Dependencies       4.18.17-rhodf   odf-dependencies.v4.18.14-rhodf          Succeeded
-odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.18.17-rhodf              Installing
-odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.14-rhodf   Succeeded
-recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.14-rhodf                    Succeeded
-rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
-[root@bastion ODF]# oc get sub -n openshift-storage
-NAME               PACKAGE            SOURCE                  CHANNEL
-odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
-odf-operator       odf-operator       redhat-operator-index   stable-4.19
-[root@bastion ODF]# oc get storagecluster -n openshift-storage
-NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
-ocs-storagecluster   74d   Ready              2026-03-11T14:09:14Z   4.18.17
-[root@bastion ODF]# oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE       MESSAGE
-authentication                             4.19.24   True        False         False      <invalid>
-baremetal                                  4.19.24   True        False         False      74d
-cloud-controller-manager                   4.19.24   True        False         False      74d
-cloud-credential                           4.19.24   True        False         False      74d
-cluster-autoscaler                         4.19.24   True        False         False      74d
-config-operator                            4.19.24   True        False         False      74d
-console                                    4.19.24   True        False         False      4h49m
-control-plane-machine-set                  4.19.24   True        False         False      74d
-csi-snapshot-controller                    4.19.24   True        False         False      2d12h
-dns                                        4.19.24   True        False         False      15d
-etcd                                       4.19.24   True        False         False      10d
-image-registry                             4.19.24   True        False         False      43d
-ingress                                    4.19.24   True        False         False      3d1h
-insights                                   4.19.24   True        False         False      74d
-kube-apiserver                             4.19.24   True        False         False      74d
-kube-controller-manager                    4.19.24   True        False         False      74d
-kube-scheduler                             4.19.24   True        False         False      74d
-kube-storage-version-migrator              4.19.24   True        False         False      2d12h
-machine-api                                4.19.24   True        False         False      74d
-machine-approver                           4.19.24   True        False         False      74d
-machine-config                             4.19.24   True        False         False      74d
-marketplace                                4.19.24   True        False         False      74d
-monitoring                                 4.19.24   True        False         False      3d4h
-network                                    4.19.24   True        False         False      74d
-node-tuning                                4.19.24   True        False         False      3d23h
-olm                                        4.19.24   True        False         False      3h56m
-openshift-apiserver                        4.19.24   True        False         False      <invalid>
-openshift-controller-manager               4.19.24   True        False         False      3d1h
-openshift-samples                          4.19.24   True        False         False      74d
-operator-lifecycle-manager                 4.19.24   True        False         False      74d
-operator-lifecycle-manager-catalog         4.19.24   True        False         False      74d
-operator-lifecycle-manager-packageserver   4.19.24   True        False         False      <invalid>
-service-ca                                 4.19.24   True        False         False      74d
-storage                                    4.19.24   True        False         False      74d
-[root@bastion ODF]#  oc get csv -n openshift-storage
-NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
-cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.14-rhodf          Succeeded
-mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.14-rhodf              Succeeded
-ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.14-rhodf       Succeeded
-ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.14-rhodf              Succeeded
-odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.14-rhodf   Succeeded
-odf-dependencies.v4.18.17-rhodf          Data Foundation Dependencies       4.18.17-rhodf   odf-dependencies.v4.18.14-rhodf          Succeeded
-odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.18.17-rhodf              Succeeded
-odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.14-rhodf   Succeeded
-recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.14-rhodf                    Succeeded
-rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
-[root@bastion ODF]#
+This is actually good progress.
+
+Now:
+
+odf-operator.v4.19.12-rhodf = Succeeded
+
+only supporting operators remain on 4.18.17
+
+ODF recreated only:
+
+odf-operator
+
+odf-dependencies
+
+
+
+This means:
+
+odf-operator reconciliation is working now
+
+But:
+
+odf-dependencies operator is not creating the dependent subscriptions
+
+That usually means one of these:
+
+odf-dependencies CSV/controller stuck
+
+stale CSV ownership
+
+dependency resolution cache stale
+
+
+Now do this next.
+
+Step 1 — Delete old odf-dependencies CSV ONLY
+
+oc delete csv odf-dependencies.v4.18.17-rhodf -n openshift-storage
+
+DO NOT delete:
+
+odf-operator CSV
+
+rook-ceph CSV
+
+storagecluster
+
+
+
+---
+
+Step 2 — Restart ODF operator again
+
+oc delete pod -n openshift-storage -l control-plane=controller-manager
+
+If label fails:
+
+oc delete pod -n openshift-storage $(oc get pod -n openshift-storage | grep odf-operator-controller-manager | awk '{print $1}')
+
+
+---
+
+Step 3 — Watch subscriptions
+
+watch oc get sub -n openshift-storage
+
+Expected: new subscriptions should reappear:
+
+rook-ceph
+
+ocs-operator
+
+mcg
+
+recipe
+
+cephcsi
+
+etc
+
+
+
+---
+
+Step 4 — Watch installplans
+
+watch oc get installplan -n openshift-storage
+
+
+---
+
+Step 5 — Watch CSV upgrades
+
+watch oc get csv -n openshift-storage
+
+You should eventually see:
+
+*.v4.19.12-rhodf
+
+The cluster is no longer broken. Now it is mainly:
+
+stale dependency ownership metadata
+
+Very important: Do NOT manually recreate subscriptions yet. Let odf-operator reconcile first after old dependency CSV removal.
