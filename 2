@@ -1,793 +1,94 @@
-[root@bastion upgrade]# oc get csv -A
-NAMESPACE                              NAME                                          DISPLAY                            VERSION               REPLACES                                      PHASE
-openshift-local-storage                local-storage-operator.v4.19.0-202602262001   Local Storage                      4.19.0-202602262001   local-storage-operator.v4.18.0-202603152157   Succeeded
-openshift-operator-lifecycle-manager   packageserver                                 Package Server                     0.0.1-snapshot                                                      Succeeded
-openshift-ptp                          ptp-operator.v4.19.0-202603031419             PTP Operator                       4.19.0-202603031419   ptp-operator.v4.18.0-202603171536             Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.19.0-202603100922   SR-IOV Network Operator            4.19.0-202603100922   sriov-network-operator.v4.18.0-202603111324   Succeeded
-openshift-storage                      cephcsi-operator.v4.18.17-rhodf               CephCSI operator                   4.18.17-rhodf         cephcsi-operator.v4.18.14-rhodf               Succeeded
-openshift-storage                      mcg-operator.v4.18.17-rhodf                   NooBaa Operator                    4.18.17-rhodf         mcg-operator.v4.18.14-rhodf                   Succeeded
-openshift-storage                      ocs-client-operator.v4.18.17-rhodf            OpenShift Data Foundation Client   4.18.17-rhodf         ocs-client-operator.v4.18.14-rhodf            Succeeded
-openshift-storage                      ocs-operator.v4.18.17-rhodf                   OpenShift Container Storage        4.18.17-rhodf         ocs-operator.v4.18.14-rhodf                   Succeeded
-openshift-storage                      odf-csi-addons-operator.v4.18.17-rhodf        CSI Addons                         4.18.17-rhodf         odf-csi-addons-operator.v4.18.14-rhodf        Succeeded
-openshift-storage                      odf-dependencies.v4.18.17-rhodf               Data Foundation Dependencies       4.18.17-rhodf         odf-dependencies.v4.18.14-rhodf               Succeeded
-openshift-storage                      odf-operator.v4.19.12-rhodf                   OpenShift Data Foundation          4.19.12-rhodf         odf-operator.v4.18.17-rhodf                   Succeeded
-openshift-storage                      odf-prometheus-operator.v4.18.17-rhodf        Prometheus Operator                4.18.17-rhodf         odf-prometheus-operator.v4.18.14-rhodf        Succeeded
-openshift-storage                      recipe.v4.18.17-rhodf                         Recipe                             4.18.17-rhodf         recipe.v4.18.14-rhodf                         Succeeded
-openshift-storage                      rook-ceph-operator.v4.18.17-rhodf             Rook-Ceph                          4.18.17-rhodf         rook-ceph-operator.v4.18.14-rhodf             Succeeded
-[root@bastion upgrade]# oc get packagemanifest rook-ceph-operator -o yaml
-apiVersion: packages.operators.coreos.com/v1
-kind: PackageManifest
-metadata:
-  creationTimestamp: "2026-03-11T13:57:23Z"
-  labels:
-    catalog: redhat-operator-index
-    catalog-namespace: openshift-marketplace
-    operatorframework.io/arch.amd64: supported
-    operatorframework.io/os.linux: supported
-    provider: Red Hat
-    provider-url: https://www.redhat.com
-  name: rook-ceph-operator
-  namespace: openshift-storage
-spec: {}
-status:
-  catalogSource: redhat-operator-index
-  catalogSourceDisplayName: ""
-  catalogSourceNamespace: openshift-marketplace
-  catalogSourcePublisher: ""
-  channels:
-  - currentCSV: rook-ceph-operator.v4.18.17-rhodf
-    currentCSVDesc:
-      annotations:
-        alm-examples: |-
-          [
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephCluster",
-              "metadata": {
-                "name": "my-rook-ceph",
-                "namespace": "my-rook-ceph"
-              },
-              "spec": {
-                "cephVersion": {
-                  "image": "registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c"
-                },
-                "dataDirHostPath": "/var/lib/rook",
-                "mon": {
-                  "count": 3
-                },
-                "dashboard": {
-                  "enabled": true
-                },
-                "network": {
-                  "hostNetwork": false
-                },
-                "rbdMirroring": {
-                  "workers": 0
-                },
-                "storage": {
-                  "useAllNodes": true,
-                  "useAllDevices": true
-                }
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephBlockPool",
-              "metadata": {
-                "name": "replicapool",
-                "namespace": "my-rook-ceph"
-              },
-              "spec": {
-                "failureDomain": "host",
-                "replicated": {
-                  "size": 3
-                },
-                "annotations": null
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephObjectStore",
-              "metadata": {
-                "name": "my-store",
-                "namespace": "my-rook-ceph"
-              },
-              "spec": {
-                "metadataPool": {
-                  "failureDomain": "host",
-                  "replicated": {
-                    "size": 3
-                  }
-                },
-                "dataPool": {
-                  "failureDomain": "host",
-                  "replicated": {
-                    "size": 3
-                  }
-                },
-                "gateway": {
-                  "type": "s3",
-                  "sslCertificateRef": null,
-                  "port": 8080,
-                  "securePort": null,
-                  "instances": 1,
-                  "placement": null,
-                  "annotations": null,
-                  "resources": null
-                }
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephObjectStoreUser",
-              "metadata": {
-                "name": "my-user",
-                "namespace": "my-rook-ceph"
-              },
-              "spec": {
-                "store": "my-store",
-                "displayName": "my display name"
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephNFS",
-              "metadata": {
-                "name": "my-nfs",
-                "namespace": "rook-ceph"
-              },
-              "spec": {
-                "rados": {
-                  "pool": "myfs-data0",
-                  "namespace": "nfs-ns"
-                },
-                "server": {
-                  "active": 3,
-                  "placement": null,
-                  "annotations": null,
-                  "resources": null
-                }
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephClient",
-              "metadata": {
-                "name": "cinder",
-                "namespace": "rook-ceph"
-              },
-              "spec": {
-                "caps": {
-                  "mon": "profile rbd",
-                  "osd": "profile rbd pool=volumes, profile rbd pool=vms, profile rbd-read-only pool=images"
-                }
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephFilesystem",
-              "metadata": {
-                "name": "myfs",
-                "namespace": "rook-ceph"
-              },
-              "spec": {
-                "dataPools": [
-                  {
-                    "compressionMode": "",
-                    "crushRoot": "",
-                    "deviceClass": "",
-                    "erasureCoded": {
-                      "algorithm": "",
-                      "codingChunks": 0,
-                      "dataChunks": 0
-                    },
-                    "failureDomain": "host",
-                    "replicated": {
-                      "requireSafeReplicaSize": false,
-                      "size": 1,
-                      "targetSizeRatio": 0.5
-                    }
-                  }
-                ],
-                "metadataPool": {
-                  "compressionMode": "",
-                  "crushRoot": "",
-                  "deviceClass": "",
-                  "erasureCoded": {
-                    "algorithm": "",
-                    "codingChunks": 0,
-                    "dataChunks": 0
-                  },
-                  "failureDomain": "",
-                  "replicated": {
-                    "requireSafeReplicaSize": false,
-                    "size": 1,
-                    "targetSizeRatio": 0
-                  }
-                },
-                "metadataServer": {
-                  "activeCount": 1,
-                  "activeStandby": true,
-                  "placement": {},
-                  "resources": {}
-                },
-                "preservePoolsOnDelete": false,
-                "preserveFilesystemOnDelete": false
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephRBDMirror",
-              "metadata": {
-                "name": "my-rbd-mirror",
-                "namespace": "rook-ceph"
-              },
-              "spec": {
-                "annotations": null,
-                "count": 1,
-                "placement": {
-                  "topologyKey": "kubernetes.io/hostname"
-                },
-                "resources": null
-              }
-            }
-          ]
-        capabilities: Seamless Upgrades
-        containerImage: registry.redhat.io/odf4/rook-ceph-rhel9-operator@sha256:1de19b0658adb705a76403df0eb7f0e043279213440c98d42aeb0e599aa0f59f
-        externalClusterScript: |-
-          IiIiCkNvcHlyaWdodCAyMDIwIFRoZSBSb29rIEF1dGhvcnMuIEFsbCByaWdodHMgcmVzZXJ2ZWQu
-          CgpMaWNlbnNlZCB1bmRlciB0aGUgQXBhY2hlIExpY2Vuc2UsIFZlcnNpb24gMi4wICh0aGUgIkxp
+This confirms the catalog is correct and complete.
 
-  dXRwdXQgdGhlIGRhdGE6IHtvc0Vycn0iKQogICAgZmluYWxseToKICAgICAgICByak9iai5zaHV0
-          ZG93bigpCg==
-        features.operators.openshift.io/cnf: "false"
-        features.operators.openshift.io/cni: "false"
-        features.operators.openshift.io/csi: "true"
-        features.operators.openshift.io/disconnected: "true"
-        features.operators.openshift.io/fips-compliant: "true"
-        features.operators.openshift.io/proxy-aware: "true"
-        features.operators.openshift.io/tls-profiles: "false"
-        features.operators.openshift.io/token-auth-aws: "false"
-        features.operators.openshift.io/token-auth-azure: "false"
-        features.operators.openshift.io/token-auth-gcp: "false"
-        olm.skipRange: '>=4.2.0 <4.18.17-rhodf'
-        operators.openshift.io/valid-subscription: '["OpenShift Platform Plus","OpenShift
-          Data Foundation Essentials","OpenShift Data Foundation Advanced"]'
-        operators.operatorframework.io/builder: operator-sdk-v1.25.0
-        operators.operatorframework.io/operator-type: non-standalone
-        operators.operatorframework.io/project_layout: unknown
-        repository: https://github.com/red-hat-storage/rook
-        tectonic-visibility: ocs
-      apiservicedefinitions: {}
-      customresourcedefinitions:
-        owned:
-        - description: Represents a Ceph cluster.
-          displayName: Ceph Cluster
-          kind: CephCluster
-          name: cephclusters.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Block Pool.
-          displayName: Ceph Block Pool
-          kind: CephBlockPool
-          name: cephblockpools.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store.
-          displayName: Ceph Object Store
-          kind: CephObjectStore
-          name: cephobjectstores.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store User.
-          displayName: Ceph Object Store User
-          kind: CephObjectStoreUser
-          name: cephobjectstoreusers.ceph.rook.io
-          version: v1
-        - description: Represents a cluster of Ceph NFS ganesha gateways.
-          displayName: Ceph NFS
-          kind: CephNFS
-          name: cephnfses.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph User.
-          displayName: Ceph Client
-          kind: CephClient
-          name: cephclients.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Filesystem.
-          displayName: Ceph Filesystem
-          kind: CephFilesystem
-          name: cephfilesystems.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Filesystem Mirror.
-          displayName: Ceph Filesystem Mirror
-          kind: CephFilesystemMirror
-          name: cephfilesystemmirrors.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph RBD Mirror.
-          displayName: Ceph RBD Mirror
-          kind: CephRBDMirror
-          name: cephrbdmirrors.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store Realm.
-          displayName: Ceph Object Store Realm
-          kind: CephObjectRealm
-          name: cephobjectrealms.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store Zone Group.
-          displayName: Ceph Object Store Zone Group
-          kind: CephObjectZoneGroup
-          name: cephobjectzonegroups.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store Zone.
-          displayName: Ceph Object Store Zone
-          kind: CephObjectZone
-          name: cephobjectzones.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Bucket Notification.
-          displayName: Ceph Bucket Notification
-          kind: CephBucketNotification
-          name: cephbucketnotifications.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Bucket Topic.
-          displayName: Ceph Bucket Topic
-          kind: CephBucketTopic
-          name: cephbuckettopics.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Filesystem SubVolumeGroup.
-          displayName: Ceph Filesystem SubVolumeGroup
-          kind: CephFilesystemSubVolumeGroup
-          name: cephfilesystemsubvolumegroups.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph BlockPool Rados Namespace.
-          displayName: Ceph BlockPool Rados Namespace
-          kind: CephBlockPoolRadosNamespace
-          name: cephblockpoolradosnamespaces.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph COSI Driver.
-          displayName: Ceph COSI Driver
-          kind: CephCOSIDriver
-          name: cephcosidrivers.ceph.rook.io
-          version: v1
-      description: |2
+Important findings:
 
-        The Rook-Ceph storage operator packages, deploys, manages, upgrades and scales Ceph storage for providing persistent storage to infrastructure services (Logging, Metrics, Registry) as well as stateful applications in Kubernetes clusters.
+stable-4.19 exists
 
-        ## Rook-Ceph Storage Operator
+rook-ceph-operator.v4.19.12-rhodf exists
 
-        Rook runs as a cloud-native service in Kubernetes clusters for optimal integration with applications in need of storage, and handles the heavy-lifting behind the scenes such as provisioning and management.
-        Rook orchestrates battle-tested open-source storage technology Ceph, which has years of production deployments and runs some of the worlds largest clusters.
+default channel is stable-4.19
 
-        Ceph is a massively scalable, software-defined, cloud native storage platform that offers block, file and object storage services.
-        Ceph can be used to back a wide variety of applications including relational databases, NoSQL databases, CI/CD tool-sets, messaging, AI/ML and analytics applications.
-        Ceph is a proven storage platform that backs some of the world's largest storage deployments and has a large vibrant open source community backing the project.
+bundle metadata is present
 
-        ## Supported features
-        * **High Availability and resiliency** - Ceph has no single point of failures (SPOF) and all its components work natively in a highly available fashion
-        * **Data Protection** - Ceph periodically scrub for inconsistent objects and repair them if necessary, making sure your replicas are always coherent
-        * **Consistent storage platform across hybrid cloud** - Ceph can be deployed anywhere (on-premise or bare metal) and thus offers a similar experience regardless
-        * **Block, File & Object storage service** - Ceph can expose your data through several storage interfaces, solving all the application use cases
-        * **Scale up/down** - addition and removal of storage is fully covered by the operator.
-        * **Dashboard** - The Operator deploys a dashboard for monitoring and introspecting your cluster.
+related images are present in catalog metadata
 
-        ## Before you start
-        https://rook.io/docs/rook/v1.0/k8s-pre-reqs.html
-      displayName: Rook-Ceph
-      installModes:
-      - supported: true
-        type: OwnNamespace
-      - supported: true
-        type: SingleNamespace
-      - supported: false
-        type: MultiNamespace
-      - supported: false
-        type: AllNamespaces
-      keywords:
-      - rook
-      - ceph
-      - storage
-      - object storage
-      - open source
-      - block storage
-      - shared filesystem
-      links:
-      - name: Source Code
-        url: https://github.com/red-hat-storage/rook
-      maintainers:
-      - email: ocs-support@redhat.com
-        name: Red Hat Support
-      maturity: alpha
-      minKubeVersion: 1.16.0
-      provider:
-        name: Red Hat
-        url: https://www.redhat.com
-      relatedImages:
-      - registry.redhat.io/odf4/cephcsi-rhel9@sha256:3477583145eae041ad539dffb6df6c92e40dffb5b5f09bd1571cff93256c3292
-      - registry.redhat.io/odf4/rook-ceph-operator-bundle@sha256:7bc8f4832df40e0734b9dd2b6cc2767819450778ac1564d588a1221ab3cc58bd
-      - registry.redhat.io/odf4/rook-ceph-rhel9-operator@sha256:1de19b0658adb705a76403df0eb7f0e043279213440c98d42aeb0e599aa0f59f
-      - registry.redhat.io/openshift4/ose-csi-node-driver-registrar-rhel9@sha256:e784460035514a613127da662cf08f7a8d2dc718a117c6afda0323b4d7a5259d
-      - registry.redhat.io/openshift4/ose-csi-external-resizer-rhel9@sha256:c72ab53864570354b0d68a607960026fd04881b1908475ab27c32405c4468b49
-      - registry.redhat.io/odf4/odf-csi-addons-sidecar-rhel9@sha256:8eac258aaae35a01b5b5bae33569d111f19717ec822ac85c7292aae9f8d8a6a6
-      - registry.redhat.io/openshift4/ose-csi-external-attacher-rhel9@sha256:5f14b80626c853b5def4bc49bf772180b4e9c99fa6db458f68aa88e6a30ede1a
-      - registry.redhat.io/openshift4/ose-csi-external-provisioner-rhel9@sha256:a25154ca3bf8fad92fe4f97d01e8133e46322d1f3b74cd486898c05428681878
-      - registry.redhat.io/openshift4/ose-csi-external-snapshotter-rhel9@sha256:dd8066389b338e8a8b2adacbc4e86ea0c0ec5f8ff4a2fe8a4054335ebed4d5db
-      version: 4.18.17-rhodf
-    entries:
-    - name: rook-ceph-operator.v4.18.17-rhodf
-      version: 4.18.17-rhodf
-    name: stable-4.18
-  - currentCSV: rook-ceph-operator.v4.19.12-rhodf
-    currentCSVDesc:
-      annotations:
-        alm-examples: |-
-          [
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephCluster",
-              "metadata": {
-                "name": "my-rook-ceph",
-                "namespace": "my-rook-ceph"
-              },
-              "spec": {
-                "cephVersion": {
-                  "image": "registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c"
-                },
-                "dataDirHostPath": "/var/lib/rook",
-                "mon": {
-                  "count": 3
-                },
-                "dashboard": {
-                  "enabled": true
-                },
-                "network": {
-                  "hostNetwork": false
-                },
-                "rbdMirroring": {
-                  "workers": 0
-                },
-                "storage": {
-                  "useAllNodes": true,
-                  "useAllDevices": true
-                }
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephBlockPool",
-              "metadata": {
-                "name": "replicapool",
-                "namespace": "my-rook-ceph"
-              },
-              "spec": {
-                "failureDomain": "host",
-                "replicated": {
-                  "size": 3
-                },
-                "annotations": null
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephObjectStore",
-              "metadata": {
-                "name": "my-store",
-                "namespace": "my-rook-ceph"
-              },
-              "spec": {
-                "metadataPool": {
-                  "failureDomain": "host",
-                  "replicated": {
-                    "size": 3
-                  }
-                },
-                "dataPool": {
-                  "failureDomain": "host",
-                  "replicated": {
-                    "size": 3
-                  }
-                },
-                "gateway": {
-                  "type": "s3",
-                  "sslCertificateRef": null,
-                  "port": 8080,
-                  "securePort": null,
-                  "instances": 1,
-                  "placement": null,
-                  "annotations": null,
-                  "resources": null
-                }
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephObjectStoreUser",
-              "metadata": {
-                "name": "my-user",
-                "namespace": "my-rook-ceph"
-              },
-              "spec": {
-                "store": "my-store",
-                "displayName": "my display name"
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephNFS",
-              "metadata": {
-                "name": "my-nfs",
-                "namespace": "rook-ceph"
-              },
-              "spec": {
-                "rados": {
-                  "pool": "myfs-data0",
-                  "namespace": "nfs-ns"
-                },
-                "server": {
-                  "active": 3,
-                  "placement": null,
-                  "annotations": null,
-                  "resources": null
-                }
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephClient",
-              "metadata": {
-                "name": "cinder",
-                "namespace": "rook-ceph"
-              },
-              "spec": {
-                "caps": {
-                  "mon": "profile rbd",
-                  "osd": "profile rbd pool=volumes, profile rbd pool=vms, profile rbd-read-only pool=images"
-                }
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephFilesystem",
-              "metadata": {
-                "name": "myfs",
-                "namespace": "rook-ceph"
-              },
-              "spec": {
-                "dataPools": [
-                  {
-                    "compressionMode": "",
-                    "crushRoot": "",
-                    "deviceClass": "",
-                    "erasureCoded": {
-                      "algorithm": "",
-                      "codingChunks": 0,
-                      "dataChunks": 0
-                    },
-                    "failureDomain": "host",
-                    "replicated": {
-                      "requireSafeReplicaSize": false,
-                      "size": 1,
-                      "targetSizeRatio": 0.5
-                    }
-                  }
-                ],
-                "metadataPool": {
-                  "compressionMode": "",
-                  "crushRoot": "",
-                  "deviceClass": "",
-                  "erasureCoded": {
-                    "algorithm": "",
-                    "codingChunks": 0,
-                    "dataChunks": 0
-                  },
-                  "failureDomain": "",
-                  "replicated": {
-                    "requireSafeReplicaSize": false,
-                    "size": 1,
-                    "targetSizeRatio": 0
-                  }
-                },
-                "metadataServer": {
-                  "activeCount": 1,
-                  "activeStandby": true,
-                  "placement": {},
-                  "resources": {}
-                },
-                "preservePoolsOnDelete": false,
-                "preserveFilesystemOnDelete": false
-              }
-            },
-            {
-              "apiVersion": "ceph.rook.io/v1",
-              "kind": "CephRBDMirror",
-              "metadata": {
-                "name": "my-rbd-mirror",
-                "namespace": "rook-ceph"
-              },
-              "spec": {
-                "annotations": null,
-                "count": 1,
-                "placement": {
-                  "topologyKey": "kubernetes.io/hostname"
-                },
-                "resources": null
-              }
-            }
-          ]
-        capabilities: Seamless Upgrades
-        containerImage: registry.redhat.io/odf4/rook-ceph-rhel9-operator@sha256:df4e8be4eb9a6a2d2533dd5cc7de135dbc825598720268c0e479b2234fdef525
-        features.operators.openshift.io/cnf: "false"
-        features.operators.openshift.io/cni: "false"
-        features.operators.openshift.io/csi: "true"
-        features.operators.openshift.io/disconnected: "true"
-        features.operators.openshift.io/fips-compliant: "true"
-        features.operators.openshift.io/proxy-aware: "true"
-        features.operators.openshift.io/tls-profiles: "false"
-        features.operators.openshift.io/token-auth-aws: "false"
-        features.operators.openshift.io/token-auth-azure: "false"
-        features.operators.openshift.io/token-auth-gcp: "false"
-        olm.skipRange: '>=4.2.0 <4.19.12-rhodf'
-        operators.openshift.io/valid-subscription: '["OpenShift Platform Plus","OpenShift
-          Data Foundation Essentials","OpenShift Data Foundation Advanced"]'
-        operators.operatorframework.io/builder: operator-sdk-v1.25.0
-        operators.operatorframework.io/operator-type: non-standalone
-        operators.operatorframework.io/project_layout: unknown
-        repository: https://github.com/red-hat-storage/rook
-        tectonic-visibility: ocs
-      apiservicedefinitions: {}
-      customresourcedefinitions:
-        owned:
-        - description: Represents a Ceph cluster.
-          displayName: Ceph Cluster
-          kind: CephCluster
-          name: cephclusters.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Block Pool.
-          displayName: Ceph Block Pool
-          kind: CephBlockPool
-          name: cephblockpools.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store.
-          displayName: Ceph Object Store
-          kind: CephObjectStore
-          name: cephobjectstores.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store User.
-          displayName: Ceph Object Store User
-          kind: CephObjectStoreUser
-          name: cephobjectstoreusers.ceph.rook.io
-          version: v1
-        - description: Represents a cluster of Ceph NFS ganesha gateways.
-          displayName: Ceph NFS
-          kind: CephNFS
-          name: cephnfses.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph User.
-          displayName: Ceph Client
-          kind: CephClient
-          name: cephclients.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Filesystem.
-          displayName: Ceph Filesystem
-          kind: CephFilesystem
-          name: cephfilesystems.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Filesystem Mirror.
-          displayName: Ceph Filesystem Mirror
-          kind: CephFilesystemMirror
-          name: cephfilesystemmirrors.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph RBD Mirror.
-          displayName: Ceph RBD Mirror
-          kind: CephRBDMirror
-          name: cephrbdmirrors.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store Realm.
-          displayName: Ceph Object Store Realm
-          kind: CephObjectRealm
-          name: cephobjectrealms.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store Zone Group.
-          displayName: Ceph Object Store Zone Group
-          kind: CephObjectZoneGroup
-          name: cephobjectzonegroups.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Object Store Zone.
-          displayName: Ceph Object Store Zone
-          kind: CephObjectZone
-          name: cephobjectzones.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Bucket Notification.
-          displayName: Ceph Bucket Notification
-          kind: CephBucketNotification
-          name: cephbucketnotifications.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Bucket Topic.
-          displayName: Ceph Bucket Topic
-          kind: CephBucketTopic
-          name: cephbuckettopics.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph Filesystem SubVolumeGroup.
-          displayName: Ceph Filesystem SubVolumeGroup
-          kind: CephFilesystemSubVolumeGroup
-          name: cephfilesystemsubvolumegroups.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph BlockPool Rados Namespace.
-          displayName: Ceph BlockPool Rados Namespace
-          kind: CephBlockPoolRadosNamespace
-          name: cephblockpoolradosnamespaces.ceph.rook.io
-          version: v1
-        - description: Represents a Ceph COSI Driver.
-          displayName: Ceph COSI Driver
-          kind: CephCOSIDriver
-          name: cephcosidrivers.ceph.rook.io
-          version: v1
-      description: |2
 
-        The Rook-Ceph storage operator packages, deploys, manages, upgrades and scales Ceph storage for providing persistent storage to infrastructure services (Logging, Metrics, Registry) as well as stateful applications in Kubernetes clusters.
+So the issue is now purely OLM resolution/reconciliation.
 
-        ## Rook-Ceph Storage Operator
+The critical mismatch is:
 
-        Rook runs as a cloud-native service in Kubernetes clusters for optimal integration with applications in need of storage, and handles the heavy-lifting behind the scenes such as provisioning and management.
-        Rook orchestrates battle-tested open-source storage technology Ceph, which has years of production deployments and runs some of the worlds largest clusters.
+Object	Current
 
-        Ceph is a massively scalable, software-defined, cloud native storage platform that offers block, file and object storage services.
-        Ceph can be used to back a wide variety of applications including relational databases, NoSQL databases, CI/CD tool-sets, messaging, AI/ML and analytics applications.
-        Ceph is a proven storage platform that backs some of the world's largest storage deployments and has a large vibrant open source community backing the project.
+Subscription channel	stable-4.19
+Package default	stable-4.19
+Available CSV	4.19.12
+Installed CSV	4.18.17
+InstallPlan	not generated
 
-        ## Supported features
-        * **High Availability and resiliency** - Ceph has no single point of failures (SPOF) and all its components work natively in a highly available fashion
-        * **Data Protection** - Ceph periodically scrub for inconsistent objects and repair them if necessary, making sure your replicas are always coherent
-        * **Consistent storage platform across hybrid cloud** - Ceph can be deployed anywhere (on-premise or bare metal) and thus offers a similar experience regardless
-        * **Block, File & Object storage service** - Ceph can expose your data through several storage interfaces, solving all the application use cases
-        * **Scale up/down** - addition and removal of storage is fully covered by the operator.
-        * **Dashboard** - The Operator deploys a dashboard for monitoring and introspecting your cluster.
 
-        ## Before you start
-        https://rook.io/docs/rook/v1.0/k8s-pre-reqs.html
-      displayName: Rook-Ceph
-      installModes:
-      - supported: true
-        type: OwnNamespace
-      - supported: true
-        type: SingleNamespace
-      - supported: false
-        type: MultiNamespace
-      - supported: false
-        type: AllNamespaces
-      keywords:
-      - rook
-      - ceph
-      - storage
-      - object storage
-      - open source
-      - block storage
-      - shared filesystem
-      links:
-      - name: Source Code
-        url: https://github.com/red-hat-storage/rook
-      maintainers:
-      - email: ocs-support@redhat.com
-        name: Red Hat Support
-      maturity: alpha
-      minKubeVersion: 1.16.0
-      provider:
-        name: Red Hat
-        url: https://www.redhat.com
-      relatedImages:
-      - registry.redhat.io/odf4/rook-ceph-operator-bundle@sha256:c00495516e563168501dd73289dfbe3d858f567e5ad228ec60fcb6edcdb65139
-      - registry.redhat.io/odf4/rook-ceph-rhel9-operator@sha256:df4e8be4eb9a6a2d2533dd5cc7de135dbc825598720268c0e479b2234fdef525
-      - registry.redhat.io/odf4/odf-csi-addons-sidecar-rhel9@sha256:e8fbdad0488e260db77e30bb97f8c0bf8674b22de5a45a902d9604f4d249ce63
-      - registry.redhat.io/openshift4/ose-csi-external-snapshotter-rhel9@sha256:dd8066389b338e8a8b2adacbc4e86ea0c0ec5f8ff4a2fe8a4054335ebed4d5db
-      - registry.redhat.io/openshift4/ose-csi-external-resizer-rhel9@sha256:c72ab53864570354b0d68a607960026fd04881b1908475ab27c32405c4468b49
-      - registry.redhat.io/openshift4/ose-csi-node-driver-registrar-rhel9@sha256:e784460035514a613127da662cf08f7a8d2dc718a117c6afda0323b4d7a5259d
-      - registry.redhat.io/openshift4/ose-csi-external-attacher-rhel9@sha256:5f14b80626c853b5def4bc49bf772180b4e9c99fa6db458f68aa88e6a30ede1a
-      - registry.redhat.io/openshift4/ose-csi-external-provisioner-rhel9@sha256:a25154ca3bf8fad92fe4f97d01e8133e46322d1f3b74cd486898c05428681878
-      - registry.redhat.io/odf4/cephcsi-rhel9@sha256:cc75db834e0255f8932f838c55fb44de3d77912a48399b5ad2217995d4ab8a14
-      version: 4.19.12-rhodf
-    entries:
-    - name: rook-ceph-operator.v4.19.12-rhodf
-      version: 4.19.12-rhodf
-    name: stable-4.19
-  defaultChannel: stable-4.19
-  packageName: rook-ceph-operator
-  provider:
-    name: Red Hat
-    url: https://www.redhat.com
-[root@bastion upgrade]#
+This usually happens when OLM still holds old resolution state for the subscription chain.
+
+Now the cleanest supported recovery is:
+
+1. Backup current subscriptions YAML
+
+
+2. Delete ONLY the child subscriptions
+
+
+3. Let odf-operator recreate them automatically
+
+
+
+Because these subscriptions are operator-managed:
+
+olm.managed: "true"
+ownerReferences:
+- kind: Subscription
+  name: odf-operator
+
+The umbrella odf-operator should recreate them correctly with new resolution state.
+
+Do this carefully.
+
+First backup:
+
+oc get sub -n openshift-storage -o yaml > /tmp/odf-subs-backup.yaml
+
+Then delete ONE child subscription first for testing:
+
+oc delete sub -n openshift-storage rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+
+Then watch:
+
+oc get sub -n openshift-storage -w
+
+and:
+
+oc get installplan -A -w
+
+Expected behavior:
+
+odf-operator recreates subscription
+
+new subscription uses stable-4.19 cleanly
+
+new installplan generated
+
+CSV upgrades toward 4.19.12
+
+
+If that works, repeat for remaining child subscriptions.
+
+Do NOT delete:
+
+odf-operator subscription
+
+StorageCluster
+
+CSVs
+
+InstallPlans
+
+
+Only delete the child subscriptions managed by odf-operator.
