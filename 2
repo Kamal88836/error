@@ -1,87 +1,29 @@
-Now the issue is identified properly.
-
-Your deployment itself is healthy now:
-
-odf-operator-controller-manager → 1/1 Available
-
-pod is Running
-
-deployment condition is healthy
-
-
-But the operator keeps reconciling with this error:
-
-InstallPlan not found for CSV odf-dependencies.v4.19.12-rhodf
-
-This happened because you manually deleted:
-
-oc delete csv odf-dependencies.v4.18.17-rhodf
-
-OLM upgraded odf-operator to 4.19.12, but the dependent CSVs (odf-dependencies, rook-ceph, ocs-operator, etc.) never upgraded to 4.19.12.
-
-So now you have a mixed state:
-
-Component	Version
-
-odf-operator	4.19.12
-all other ODF operators	4.18.17
-
-
-That mismatch is what is causing continuous reconciliation errors.
-
-The fix is to force OLM to regenerate missing InstallPlans for all dependent operators.
-
-Run these commands carefully.
-
-First check whether catalog has 4.19 bundles:
-
-oc get packagemanifest -n openshift-marketplace | grep -i odf
-
-Then delete the stale subscriptions so OLM recreates proper dependency graph:
-
-oc delete subscription odf-dependencies -n openshift-storage
-
-Wait 20 seconds.
-
-Then recreate it:
-
-cat <<EOF | oc apply -f -
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: odf-dependencies
-  namespace: openshift-storage
-spec:
-  channel: stable-4.19
-  name: odf-dependencies
-  source: redhat-operator-index
-  sourceNamespace: openshift-marketplace
-EOF
-
-Then monitor:
-
-watch -n 5 'oc get csv -n openshift-storage'
-
-You should start seeing:
-
-odf-dependencies.v4.19.12-rhodf
-
-rook-ceph-operator.v4.19.12-rhodf
-
-ocs-operator.v4.19.12-rhodf
-
-mcg-operator.v4.19.12-rhodf
-
-etc.
-
-
-Once all move to 4.19.12:
-
-reconciliation errors stop
-
-CSV becomes Succeeded
-
-ODF stabilizes completely
-
-
-Do NOT delete the StorageCluster or Ceph resources. Your data plane is healthy. This is only an OLM/operator version skew issue.
+[root@bastion ODF]# oc delete subscription odf-dependencies -n openshift-storage
+subscription.operators.coreos.com "odf-dependencies" deleted
+[root@bastion ODF]# cat <<EOF | oc apply -f -
+> apiVersion: operators.coreos.com/v1alpha1
+> kind: Subscription
+> metadata:
+>   name: odf-dependencies
+>   namespace: openshift-storage
+> spec:
+>   channel: stable-4.19
+>   name: odf-dependencies
+>   source: redhat-operator-index
+>   sourceNamespace: openshift-marketplace
+> EOF
+Warning: resource subscriptions/odf-dependencies is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by oc apply. oc apply should only be used on resources created declaratively by either oc create --save-config or oc apply. The missing annotation will be patched automatically.
+subscription.operators.coreos.com/odf-dependencies configured
+[root@bastion ODF]# watch -n 5 'oc get csv -n openshift-storage'
+[root@bastion ODF]# oc get csv -n openshift-storage
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.14-rhodf          Succeeded
+mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.14-rhodf              Succeeded
+ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.14-rhodf       Succeeded
+ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.14-rhodf              Succeeded
+odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.14-rhodf   Succeeded
+odf-operator.v4.19.12-rhodf              OpenShift Data Foundation          4.19.12-rhodf   odf-operator.v4.18.17-rhodf              Succeeded
+odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.14-rhodf   Succeeded
+recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.14-rhodf                    Succeeded
+rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.14-rhodf        Succeeded
+[root@bastion ODF]#
