@@ -1,59 +1,66 @@
-The resolver is still seeing stale 4.18 CSV objects internally even after deletion.
-This usually happens because the CSVs are stuck in OLM cache/finalizer state.
-
-Now verify whether those CSV objects actually still exist in API:
-
-oc get csv -n openshift-storage -o name
-
-I suspect one of these still exists hidden/stuck:
-
-mcg-operator.v4.18.17-rhodf
-
-odf-prometheus-operator.v4.18.17-rhodf
-
-ocs-client-operator.v4.18.17-rhodf
-
-etc.
-
-
-If they still appear, force-remove them:
-
-oc patch csv mcg-operator.v4.18.17-rhodf \
--n openshift-storage \
---type merge \
--p '{"metadata":{"finalizers":[]}}'
-
-Then delete:
-
-oc delete csv mcg-operator.v4.18.17-rhodf -n openshift-storage --force --grace-period=0
-
-Repeat for every remaining 4.18 CSV.
-
-Then clean resolver cache completely:
-
-oc delete pod -n openshift-operator-lifecycle-manager -l app=catalog-operator
-oc delete pod -n openshift-operator-lifecycle-manager -l app=olm-operator
-
-Then remove stale installplans again:
-
-oc delete installplan --all -n openshift-storage
-
-After that monitor:
-
-watch -n 5 'oc get csv,installplan -n openshift-storage'
-
-You should finally see:
-
-fresh 4.19 installplans
-
-recreated dependency CSVs
-
-no more ConstraintsNotSatisfiable
-
-
-The key evidence is this line:
-
-clusterserviceversion odf-prometheus-operator.v4.18.17-rhodf exists
-
-OLM still thinks old CSVs exist somewhere.
-That is the remaining blocker.
+[root@bastion ODF]# oc logs openshift-operator-lifecycle-manager deploy/catalog-operator --tail=50
+error: error from server (NotFound): pods "openshift-operator-lifecycle-manager" not found in namespace "openshift-storage"
+[root@bastion ODF]# oc logs -n  openshift-operator-lifecycle-manager deploy/catalog-operator --tail=50
+time="2026-05-25T11:37:15Z" level=info msg="checking if subscriptions need update" id=G96Q5 namespace=openshift-oauth-apiserver
+time="2026-05-25T11:37:16Z" level=info msg="No subscriptions were found in namespace openshift-nutanix-infra" id=cM85O namespace=openshift-nutanix-infra
+time="2026-05-25T11:37:16Z" level=info msg="resolving sources" id=1+8wz namespace=openshift-openstack-infra
+time="2026-05-25T11:37:16Z" level=info msg="checking if subscriptions need update" id=1+8wz namespace=openshift-openstack-infra
+time="2026-05-25T11:37:16Z" level=info msg="No subscriptions were found in namespace openshift-oauth-apiserver" id=G96Q5 namespace=openshift-oauth-apiserver
+time="2026-05-25T11:37:16Z" level=info msg="resolving sources" id=tgEAM namespace=openshift-operator-controller
+time="2026-05-25T11:37:16Z" level=info msg="checking if subscriptions need update" id=tgEAM namespace=openshift-operator-controller
+time="2026-05-25T11:37:16Z" level=info msg="No subscriptions were found in namespace openshift-openstack-infra" id=1+8wz namespace=openshift-openstack-infra
+time="2026-05-25T11:37:16Z" level=info msg="resolving sources" id=4dStg namespace=openshift-operator-lifecycle-manager
+time="2026-05-25T11:37:16Z" level=info msg="checking if subscriptions need update" id=4dStg namespace=openshift-operator-lifecycle-manager
+time="2026-05-25T11:37:16Z" level=info msg="No subscriptions were found in namespace openshift-operator-controller" id=tgEAM namespace=openshift-operator-controller
+time="2026-05-25T11:37:16Z" level=info msg="resolving sources" id=PiPkz namespace=openshift-operators
+time="2026-05-25T11:37:16Z" level=info msg="checking if subscriptions need update" id=PiPkz namespace=openshift-operators
+time="2026-05-25T11:37:16Z" level=info msg="No subscriptions were found in namespace openshift-operator-lifecycle-manager" id=4dStg namespace=openshift-operator-lifecycle-manager
+time="2026-05-25T11:37:16Z" level=info msg="resolving sources" id=IcAk/ namespace=openshift-ovirt-infra
+time="2026-05-25T11:37:16Z" level=info msg="checking if subscriptions need update" id=IcAk/ namespace=openshift-ovirt-infra
+time="2026-05-25T11:37:17Z" level=info msg="No subscriptions were found in namespace openshift-operators" id=PiPkz namespace=openshift-operators
+time="2026-05-25T11:37:17Z" level=info msg="resolving sources" id=5evJY namespace=openshift-ovn-kubernetes
+time="2026-05-25T11:37:17Z" level=info msg="checking if subscriptions need update" id=5evJY namespace=openshift-ovn-kubernetes
+time="2026-05-25T11:37:17Z" level=info msg="No subscriptions were found in namespace openshift-ovirt-infra" id=IcAk/ namespace=openshift-ovirt-infra
+time="2026-05-25T11:37:17Z" level=info msg="resolving sources" id=RQZAx namespace=openshift-ptp
+time="2026-05-25T11:37:17Z" level=info msg="checking if subscriptions need update" id=RQZAx namespace=openshift-ptp
+time="2026-05-25T11:37:17Z" level=info msg="No subscriptions were found in namespace openshift-ovn-kubernetes" id=5evJY namespace=openshift-ovn-kubernetes
+time="2026-05-25T11:37:17Z" level=info msg="resolving sources" id=LIHzX namespace=openshift-route-controller-manager
+time="2026-05-25T11:37:17Z" level=info msg="checking if subscriptions need update" id=LIHzX namespace=openshift-route-controller-manager
+time="2026-05-25T11:37:17Z" level=info msg="No subscriptions were found in namespace openshift-route-controller-manager" id=LIHzX namespace=openshift-route-controller-manager
+time="2026-05-25T11:37:17Z" level=info msg="resolving sources" id=2eGDq namespace=openshift-service-ca
+time="2026-05-25T11:37:17Z" level=info msg="checking if subscriptions need update" id=2eGDq namespace=openshift-service-ca
+time="2026-05-25T11:37:18Z" level=info msg="resolving subscriptions in namespace" id=RQZAx namespace=openshift-ptp
+time="2026-05-25T11:37:18Z" level=info msg="No subscriptions were found in namespace openshift-service-ca" id=2eGDq namespace=openshift-service-ca
+time="2026-05-25T11:37:18Z" level=info msg="resolving sources" id=1C780 namespace=openshift-service-ca-operator
+time="2026-05-25T11:37:18Z" level=info msg="checking if subscriptions need update" id=1C780 namespace=openshift-service-ca-operator
+time="2026-05-25T11:37:18Z" level=info msg="no subscriptions were updated" id=RQZAx namespace=openshift-ptp
+time="2026-05-25T11:37:18Z" level=info msg="No subscriptions were found in namespace openshift-service-ca-operator" id=1C780 namespace=openshift-service-ca-operator
+time="2026-05-25T11:37:18Z" level=info msg="resolving sources" id=AwLba namespace=openshift-sriov-network-operator
+time="2026-05-25T11:37:18Z" level=info msg="checking if subscriptions need update" id=AwLba namespace=openshift-sriov-network-operator
+time="2026-05-25T11:37:19Z" level=info msg="resolving sources" id=Of3U7 namespace=openshift-storage
+time="2026-05-25T11:37:19Z" level=info msg="checking if subscriptions need update" id=Of3U7 namespace=openshift-storage
+time="2026-05-25T11:37:19Z" level=info msg="resolving subscriptions in namespace" id=AwLba namespace=openshift-sriov-network-operator
+time="2026-05-25T11:37:19Z" level=info msg="checking for existing installplan" channel=stable-4.19 id=Of3U7 namespace=openshift-storage pkg=odf-dependencies source=redhat-operator-index sub=odf-dependencies
+time="2026-05-25T11:37:19Z" level=info msg="no subscriptions were updated" id=AwLba namespace=openshift-sriov-network-operator
+time="2026-05-25T11:37:20Z" level=info msg="resolving subscriptions in namespace" id=Of3U7 namespace=openshift-storage
+time="2026-05-25T11:37:20Z" level=info msg="unpacking bundles" id=Of3U7 namespace=openshift-storage
+time="2026-05-25T11:37:20Z" level=info msg="bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job was active longer than specified deadline" id=Of3U7 namespace=openshift-storage
+time="2026-05-25T11:37:20Z" level=info msg="resolving sources" id=w1aOS namespace=openshift-user-workload-monitoring
+time="2026-05-25T11:37:20Z" level=info msg="checking if subscriptions need update" id=w1aOS namespace=openshift-user-workload-monitoring
+time="2026-05-25T11:37:20Z" level=info msg="resolving sources" id=RdI/p namespace=openshift-vsphere-infra
+time="2026-05-25T11:37:20Z" level=info msg="checking if subscriptions need update" id=RdI/p namespace=openshift-vsphere-infra
+time="2026-05-25T11:37:20Z" level=info msg="No subscriptions were found in namespace openshift-user-workload-monitoring" id=w1aOS namespace=openshift-user-workload-monitoring
+time="2026-05-25T11:37:21Z" level=info msg="No subscriptions were found in namespace openshift-vsphere-infra" id=RdI/p namespace=openshift-vsphere-infra
+[root@bastion ODF]#
+[root@bastion ODF]#
+[root@bastion ODF]#
+[root@bastion ODF]# oc get csv -n openshift-storage -o name
+clusterserviceversion.operators.coreos.com/odf-operator.v4.19.12-rhodf
+[root@bastion ODF]# oc patch csv mcg-operator.v4.18.17-rhodf \
+> -n openshift-storage \
+> --type merge \
+> -p '{"metadata":{"finalizers":[]}}'
+Error from server (NotFound): clusterserviceversions.operators.coreos.com "mcg-operator.v4.18.17-rhodf" not found
+[root@bastion ODF]# oc delete installplan --all -n openshift-storage
+No resources found
+[root@bastion ODF]#
