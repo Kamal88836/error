@@ -1,66 +1,13 @@
-Now the real root cause is visible:
-
-bundle unpacking failed. Reason: DeadlineExceeded
-
-So this is no longer a CSV conflict problem.
-OLM cannot unpack the operator bundle image for odf-dependencies.
-
-This usually happens because of:
-
-image pull issue
-
-registry connectivity
-
-insufficient resources
-
-unpack job stuck
-
-failed bundle unpack pod/job
-
-
-Check unpack jobs:
-
-oc get jobs,pods -A | grep -i unpack
-
-Then describe the failed unpack job/pod:
-
-oc describe job -n openshift-marketplace <unpack-job-name>
-
-and:
-
-oc logs -n openshift-marketplace <unpack-pod-name>
-
-Also check if marketplace operators are healthy:
-
-oc get pods -n openshift-marketplace
-
-and:
-
-oc get co marketplace olm operator-lifecycle-manager
-
-Very commonly on disconnected or unstable registry environments, the unpack pod cannot pull the bundle image.
-
-Also verify pull manually:
-
-oc adm release info registry.redhat.io/odf4/odf-operator-bundle-rhel9:v4.19.12
-
-If unpack pods are stuck in:
-
-ImagePullBackOff
-
-ErrImagePull
-
-Pending
-
-DeadlineExceeded
-
-
-then we can fix the exact underlying issue directly.
-
-The important update:
-
-OLM resolver is now working
-
-old CSV conflicts are gone
-
-current blocker is bundle unpacking failure only
+[root@bastion ODF]# oc get jobs,pods -A | grep -i unpack
+[root@bastion ODF]# oc logs -n openshift-marketplace
+error: expected 'logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER]'.
+POD or TYPE/NAME is a required argument for the logs command
+See 'oc logs -h' for help and examples
+[root@bastion ODF]# oc get co marketplace olm operator-lifecycle-manager
+NAME                         VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+marketplace                  4.19.24   True        False         False      74d
+olm                          4.19.24   True        False         False      5h36m
+operator-lifecycle-manager   4.19.24   True        False         False      74d
+[root@bastion ODF]# oc adm release info registry.redhat.io/odf4/odf-operator-bundle-rhel9:v4.19.12
+error: unable to read image registry.redhat.io/odf4/odf-operator-bundle-rhel9:v4.19.12: Get "https://registry.redhat.io/v2/": context deadline exceeded
+[root@bastion ODF]#
