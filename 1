@@ -1,95 +1,384 @@
-Your operators are in a mixed but mostly healthy upgraded state.
-
-The important observation is:
-
-Cluster operators like:
-
-local-storage
-
-ptp
-
-sriov
-
-odf-operator
-
-
-
-have already moved to 4.19 CSVs.
-
-But most ODF dependency operators are still running 4.18.17-rhodf even though their subscriptions are on stable-4.19.
-
-This is normal behavior in many ODF upgrades because:
-
-odf-operator upgrades first
-
-dependent operators upgrade later based on compatibility gates
-
-OLM waits for dependency resolution and health checks
-
-
-Current state appears consistent because all CSVs show:
-
-PHASE   Succeeded
-
-which means OLM considers them healthy.
-
-The only slightly unusual thing is this mismatch:
-
-Operator	Subscription Channel	Running CSV
-
-cephcsi	stable-4.19	4.18.17
-rook-ceph	stable-4.19	4.18.17
-mcg	stable-4.19	4.18.17
-
-
-That usually means:
-
-either newer CSVs are not yet published in catalog
-
-or upgrade graph intentionally pins them
-
-or upgrade conditions are not yet satisfied
-
-
-You can verify whether updates are available:
-
-oc describe sub -n openshift-storage odf-operator
-
-and check:
-
-CurrentCSV:
-InstalledCSV:
-State:
-
-Also verify catalog health:
-
-oc get pods -n openshift-marketplace
-oc get packagemanifest | grep -i odf
-
-Check if any CSV is pending:
-
-oc get csv -A | grep -vi succeeded
-
-and installplan issues:
-
-oc describe installplan -n openshift-storage install-rkpq9
-
-For ODF specifically, confirm cluster health before expecting remaining components to move:
-
-oc get storagecluster -n openshift-storage
-oc get cephcluster -n openshift-storage
-
-You want:
-
-PHASE=Ready
-
-HEALTH_OK
-
-
-Also check upgrade conditions:
-
-oc get co
-
-If all operators are healthy and no installplan is pending, then this is likely an expected staged upgrade state rather than a problem.
-
-The odf-operator.v4.19.12-rhodf already being installed is the main indicator that the upgrade path is progressing correctly.
+[root@bastion clusterconfigs]# oc describe sub -n openshift-storage odf-operator
+Name:         odf-operator
+Namespace:    openshift-storage
+Labels:       operators.coreos.com/odf-operator.openshift-storage=
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         Subscription
+Metadata:
+  Creation Timestamp:  2026-03-11T14:03:58Z
+  Generation:          2
+  Resource Version:    44147513
+  UID:                 893796ad-d0e0-4c6b-92e3-019fd00cb2ce
+Spec:
+  Channel:                stable-4.19
+  Install Plan Approval:  Automatic
+  Name:                   odf-operator
+  Source:                 redhat-operator-index
+  Source Namespace:       openshift-marketplace
+Status:
+  Catalog Health:
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              certified-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  44145295
+      UID:               bac4ebdc-3db7-4752-bddd-4fa7758daaf9
+    Healthy:             true
+    Last Updated:        2026-05-25T05:28:36Z
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              redhat-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  44145063
+      UID:               3d956717-8403-437d-b3b6-a8401a0ccf12
+    Healthy:             true
+    Last Updated:        2026-05-25T05:28:36Z
+  Conditions:
+    Last Transition Time:   2026-05-25T05:28:38Z
+    Message:                all available catalogsources are healthy
+    Reason:                 AllCatalogSourcesHealthy
+    Status:                 False
+    Type:                   CatalogSourcesUnhealthy
+    Reason:                 UnpackingInProgress
+    Status:                 True
+    Type:                   BundleUnpacking
+    Message:                error using catalogsource openshift-marketplace/certified-operator-index: failed to list bundles: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 172.25.23.129:50051: connect: connection refused"
+    Reason:                 ErrorPreventedResolution
+    Status:                 True
+    Type:                   ResolutionFailed
+    Message:                bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job was active longer than specified deadline
+    Reason:                 BundleUnpackFailed
+    Status:                 True
+    Type:                   BundleUnpackFailed
+  Current CSV:              odf-operator.v4.19.12-rhodf
+  Install Plan Generation:  4
+  Install Plan Ref:
+    API Version:       operators.coreos.com/v1alpha1
+    Kind:              InstallPlan
+    Name:              install-rkpq9
+    Namespace:         openshift-storage
+    Resource Version:  44133501
+    UID:               3667f623-3001-4f94-a184-771a72191b8d
+  Installed CSV:       odf-operator.v4.19.12-rhodf
+  Installplan:
+    API Version:  operators.coreos.com/v1alpha1
+    Kind:         InstallPlan
+    Name:         install-rkpq9
+    Uuid:         3667f623-3001-4f94-a184-771a72191b8d
+  Last Updated:   2026-05-25T05:32:36Z
+  State:          AtLatestKnown
+Events:           <none>
+[root@bastion clusterconfigs]#  oc get  csv -A
+NAMESPACE                              NAME                                          DISPLAY                            VERSION               REPLACES                                      PHASE
+openshift-local-storage                local-storage-operator.v4.19.0-202602262001   Local Storage                      4.19.0-202602262001   local-storage-operator.v4.18.0-202603152157   Succeeded
+openshift-operator-lifecycle-manager   packageserver                                 Package Server                     0.0.1-snapshot                                                      Succeeded
+openshift-ptp                          ptp-operator.v4.19.0-202603031419             PTP Operator                       4.19.0-202603031419   ptp-operator.v4.18.0-202603171536             Succeeded
+openshift-sriov-network-operator       sriov-network-operator.v4.19.0-202603100922   SR-IOV Network Operator            4.19.0-202603100922   sriov-network-operator.v4.18.0-202603111324   Succeeded
+openshift-storage                      cephcsi-operator.v4.18.17-rhodf               CephCSI operator                   4.18.17-rhodf         cephcsi-operator.v4.18.14-rhodf               Succeeded
+openshift-storage                      mcg-operator.v4.18.17-rhodf                   NooBaa Operator                    4.18.17-rhodf         mcg-operator.v4.18.14-rhodf                   Succeeded
+openshift-storage                      ocs-client-operator.v4.18.17-rhodf            OpenShift Data Foundation Client   4.18.17-rhodf         ocs-client-operator.v4.18.14-rhodf            Succeeded
+openshift-storage                      ocs-operator.v4.18.17-rhodf                   OpenShift Container Storage        4.18.17-rhodf         ocs-operator.v4.18.14-rhodf                   Succeeded
+openshift-storage                      odf-csi-addons-operator.v4.18.17-rhodf        CSI Addons                         4.18.17-rhodf         odf-csi-addons-operator.v4.18.14-rhodf        Succeeded
+openshift-storage                      odf-dependencies.v4.18.17-rhodf               Data Foundation Dependencies       4.18.17-rhodf         odf-dependencies.v4.18.14-rhodf               Succeeded
+openshift-storage                      odf-operator.v4.19.12-rhodf                   OpenShift Data Foundation          4.19.12-rhodf         odf-operator.v4.18.17-rhodf                   Succeeded
+openshift-storage                      odf-prometheus-operator.v4.18.17-rhodf        Prometheus Operator                4.18.17-rhodf         odf-prometheus-operator.v4.18.14-rhodf        Succeeded
+openshift-storage                      recipe.v4.18.17-rhodf                         Recipe                             4.18.17-rhodf         recipe.v4.18.14-rhodf                         Succeeded
+openshift-storage                      rook-ceph-operator.v4.18.17-rhodf             Rook-Ceph                          4.18.17-rhodf         rook-ceph-operator.v4.18.14-rhodf             Succeeded
+[root@bastion clusterconfigs]# oc get pods -n openshift-marketplace
+NAME                                   READY   STATUS    RESTARTS   AGE
+certified-operator-index-hp6kt         1/1     Running   0          31m
+marketplace-operator-58d57c9fd-gsrrx   1/1     Running   0          33m
+redhat-operator-index-4jcsn            1/1     Running   0          31m
+[root@bastion clusterconfigs]# oc get packagemanifest | grep -i odf
+odf-prometheus-operator                                  74d
+odf-csi-addons-operator                                  74d
+odf-dependencies                                         74d
+odf-operator                                             74d
+[root@bastion clusterconfigs]# oc get csv -A | grep -vi succeeded
+NAMESPACE                              NAME                                          DISPLAY                            VERSION               REPLACES                                      PHASE
+[root@bastion clusterconfigs]# oc describe installplan -n openshift-storage install-rkpq9
+Name:         install-rkpq9
+Namespace:    openshift-storage
+Labels:       operators.coreos.com/odf-operator.openshift-storage=
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         InstallPlan
+Metadata:
+  Creation Timestamp:  2026-05-25T05:16:54Z
+  Generate Name:       install-
+  Generation:          1
+  Owner References:
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  cephcsi-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+    UID:                   41ebfc13-71f9-4c56-925e-813334bc5724
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  mcg-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+    UID:                   23d6c613-aafc-4ba2-9c84-0637c71aaee7
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  ocs-client-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+    UID:                   de61d828-0b16-4df2-ac93-455c26477df1
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  ocs-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+    UID:                   92df3cd3-6819-451e-a281-915e1364d6c9
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  odf-csi-addons-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+    UID:                   2e95129a-d530-4523-bbb0-80f158a91edd
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  odf-dependencies
+    UID:                   a7eeb813-bd62-45ad-91ea-8c5bfb398586
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  odf-operator
+    UID:                   893796ad-d0e0-4c6b-92e3-019fd00cb2ce
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  odf-prometheus-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+    UID:                   a0a7361b-d5c2-4602-88ab-42e9d9afa28e
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  recipe-stable-4.18-redhat-operator-index-openshift-marketplace
+    UID:                   5a004602-f3d4-411b-9e38-9f6400f9d9d1
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  false
+    Controller:            false
+    Kind:                  Subscription
+    Name:                  rook-ceph-operator-stable-4.18-redhat-operator-index-openshift-marketplace
+    UID:                   53853faa-01cb-4da0-a2c8-b89bc84c6019
+  Resource Version:        44134187
+  UID:                     3667f623-3001-4f94-a184-771a72191b8d
+Spec:
+  Approval:  Automatic
+  Approved:  true
+  Cluster Service Version Names:
+    odf-operator.v4.19.12-rhodf
+  Generation:  4
+Status:
+  Bundle Lookups:
+    Catalog Source Ref:
+      Name:       redhat-operator-index
+      Namespace:  openshift-marketplace
+    Identifier:   odf-operator.v4.19.12-rhodf
+    Path:         registry.redhat.io/odf4/odf-operator-bundle@sha256:98f63402542e24449d4ac9ea58f4b04108df1336b3f692fe6ef95ab9488cf786
+    Properties:   {"properties":[{"type":"olm.maxOpenShiftVersion","value":"4.20"},{"type":"olm.package","value":{"packageName":"odf-operator","version":"4.19.12-rhodf"}}]}
+    Replaces:     odf-operator.v4.18.17-rhodf
+  Catalog Sources:
+    redhat-operator-index
+  Conditions:
+    Last Transition Time:  2026-05-25T05:17:07Z
+    Last Update Time:      2026-05-25T05:17:07Z
+    Status:                True
+    Type:                  Installed
+  Phase:                   Complete
+  Plan:
+    Resolving:  odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             operators.coreos.com
+      Kind:              ClusterServiceVersion
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator.v4.19.12-rhodf
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1alpha1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:
+      Kind:              Service
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-controller-manager-metrics-service
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:
+      Kind:              ConfigMap
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-manager-config
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             monitoring.coreos.com
+      Kind:              ServiceMonitor
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-controller-manager-metrics-monitor
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             rbac.authorization.k8s.io
+      Kind:              RoleBinding
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-controller-manager-metrics-service
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             rbac.authorization.k8s.io
+      Kind:              ClusterRole
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-metrics-reader
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:
+      Kind:              Service
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-webhook-server-service
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             rbac.authorization.k8s.io
+      Kind:              Role
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-controller-manager-metrics-service
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:
+      Kind:              ConfigMap
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-pkgs-config-4.19.12-rhodf
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:
+      Kind:              ServiceAccount
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator-controller-manager
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             rbac.authorization.k8s.io
+      Kind:              Role
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator.v4.19.12-rh-bO4IbpHH7JTBP6Mxqls0tQp4hzulquZJYJSmlV
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             rbac.authorization.k8s.io
+      Kind:              RoleBinding
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator.v4.19.12-rh-bO4IbpHH7JTBP6Mxqls0tQp4hzulquZJYJSmlV
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             rbac.authorization.k8s.io
+      Kind:              ClusterRole
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator.v4.19.12-rh-6RrKmz1LhVfw2GNcyItSWFdi9vlLRqGMxUXmli
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+    Resolving:           odf-operator.v4.19.12-rhodf
+    Resource:
+      Group:             rbac.authorization.k8s.io
+      Kind:              ClusterRoleBinding
+      Manifest:          {"kind":"ConfigMap","name":"0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7","namespace":"openshift-marketplace","catalogSourceName":"redhat-operator-index","catalogSourceNamespace":"openshift-marketplace","replaces":"odf-operator.v4.18.17-rhodf","properties":"{\"properties\":[{\"type\":\"olm.maxOpenShiftVersion\",\"value\":\"4.20\"},{\"type\":\"olm.package\",\"value\":{\"packageName\":\"odf-operator\",\"version\":\"4.19.12-rhodf\"}}]}"}
+      Name:              odf-operator.v4.19.12-rh-6RrKmz1LhVfw2GNcyItSWFdi9vlLRqGMxUXmli
+      Source Name:       redhat-operator-index
+      Source Namespace:  openshift-marketplace
+      Version:           v1
+    Status:              Present
+  Start Time:            2026-05-25T05:17:07Z
+Events:                  <none>
+[root@bastion clusterconfigs]# oc get storagecluster -n openshift-storage
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   74d   Ready              2026-03-11T14:09:14Z   4.18.17
+[root@bastion clusterconfigs]# oc get cephcluster -n openshift-storage
+NAME                             DATADIRHOSTPATH   MONCOUNT   AGE   PHASE   MESSAGE                        HEALTH        EXTERNAL   FSID
+ocs-storagecluster-cephcluster   /var/lib/rook     3          74d   Ready   Cluster created successfully   HEALTH_WARN              6a907545-d70d-499d-950f-81cd83c0f538
+[root@bastion clusterconfigs]# oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE       MESSAGE
+authentication                             4.19.24   True        False         False      <invalid>
+baremetal                                  4.19.24   True        False         False      74d
+cloud-controller-manager                   4.19.24   True        False         False      74d
+cloud-credential                           4.19.24   True        False         False      74d
+cluster-autoscaler                         4.19.24   True        False         False      74d
+config-operator                            4.19.24   True        False         False      74d
+console                                    4.19.24   True        False         False      15m
+control-plane-machine-set                  4.19.24   True        False         False      74d
+csi-snapshot-controller                    4.19.24   True        False         False      2d7h
+dns                                        4.19.24   True        True          False      14d         DNS "default" reports Progressing=True: "Have 2 available DNS pods, want 3."
+etcd                                       4.19.24   True        False         False      10d
+image-registry                             4.19.24   True        False         False      43d
+ingress                                    4.19.24   True        True          False      2d20h       ingresscontroller "default" is progressing: IngressControllerProgressing: One or more status conditions indicate progressing: DeploymentRollingOut=True (DeploymentRollingOut: Waiting for router deployment rollout to finish: 1 of 2 updated replica(s) are available......
+insights                                   4.19.24   True        False         False      74d
+kube-apiserver                             4.19.24   True        False         False      74d
+kube-controller-manager                    4.19.24   True        False         False      74d
+kube-scheduler                             4.19.24   True        False         False      74d
+kube-storage-version-migrator              4.19.24   True        False         False      2d7h
+machine-api                                4.19.24   True        False         False      74d
+machine-approver                           4.19.24   True        False         False      74d
+machine-config                             4.19.24   True        False         False      74d
+marketplace                                4.19.24   True        False         False      74d
+monitoring                                 4.19.24   True        False         False      2d23h
+network                                    4.19.24   True        False         False      74d
+node-tuning                                4.19.24   True        False         False      3d18h
+olm                                        4.19.24   False       True          True       15m         CatalogdDeploymentCatalogdControllerManagerAvailable: Waiting for Deployment
+openshift-apiserver                        4.19.24   True        False         False      <invalid>
+openshift-controller-manager               4.19.24   True        False         False      2d20h
+openshift-samples                          4.19.24   True        False         False      74d
+operator-lifecycle-manager                 4.19.24   True        False         False      74d
+operator-lifecycle-manager-catalog         4.19.24   True        False         False      74d
+operator-lifecycle-manager-packageserver   4.19.24   True        False         False      38m
+service-ca                                 4.19.24   True        False         False      74d
+storage                                    4.19.24   True        False         False      74d
+[root@bastion clusterconfigs]#
