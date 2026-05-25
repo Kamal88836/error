@@ -1,12 +1,50 @@
-[root@bastion upgrade]# docker search nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index:v4.19 --list-tags --tls-verify=false
-Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
-NAME                                                                   TAG
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index  v4.12
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index  v4.14
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index  v4.15
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index  v4.16
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index  v4.17
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index  v4.18
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index  v4.19
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index  v4.20
-[root@bastion upgrade]#
+The registry has the v4.19 catalog image, but that alone does not guarantee newer RHODF supporting bundles are present inside the catalog currently used by OLM.
+
+Right now your subscriptions still resolve to:
+
+4.18.17-rhodf
+
+and OLM says:
+
+AtLatestKnown
+
+So either:
+
+Red Hat intentionally kept those component versions at 4.18.17 for RHODF 4.19
+
+OR your catalog pod is still using older cached index data
+
+
+You can verify what bundle versions are actually visible to OLM.
+
+Check available channels:
+
+oc get packagemanifest rook-ceph-operator -o jsonpath='{.status.channels[*].currentCSV}'
+
+and:
+
+oc get packagemanifest ocs-operator -o jsonpath='{.status.channels[*].currentCSV}'
+
+Also:
+
+oc get packagemanifest mcg-operator -o jsonpath='{.status.channels[*].currentCSV}'
+
+If they still show:
+
+4.18.17-rhodf
+
+
+then your catalog itself does not expose newer component CSVs.
+
+In that case, this is expected/supported RHODF packaging behavior and there is nothing to upgrade.
+
+If you do see newer 4.19.x-rhodf CSVs available but subscriptions are stuck, then refresh marketplace cache:
+
+oc delete pod -n openshift-marketplace --all
+
+Wait a few minutes and recheck:
+
+oc get installplan -A
+oc get csv -A
+
+But based on all the outputs so far, this looks like an intentional RHODF component version mapping rather than a failed upgrade.
