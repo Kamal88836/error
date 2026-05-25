@@ -1,64 +1,142 @@
-[root@bastion ODF]# oc get catalogsource -n openshift-marketplace
-NAME                       DISPLAY   TYPE   PUBLISHER   AGE
-certified-operator-index             grpc               74d
-redhat-operator-index                grpc               74d
-[root@bastion ODF]# oc describe catalogsource certified-operator-index -n openshift-marketplace
-Name:         certified-operator-index
-Namespace:    openshift-marketplace
-Labels:       <none>
-Annotations:  <none>
-API Version:  operators.coreos.com/v1alpha1
-Kind:         CatalogSource
-Metadata:
-  Creation Timestamp:  2026-03-11T13:57:23Z
-  Generation:          2
-  Resource Version:    44288871
-  UID:                 bac4ebdc-3db7-4752-bddd-4fa7758daaf9
-Spec:
-  Image:        nwharbor.sec.samsung.net/team-ocp/ocp/redhat/certified-operator-index:v4.19
-  Source Type:  grpc
-Status:
-  Connection State:
-    Address:              certified-operator-index.openshift-marketplace.svc:50051
-    Last Connect:         2026-05-25T11:37:06Z
-    Last Observed State:  READY
-  Registry Service:
-    Created At:         2026-05-25T08:14:19Z
-    Port:               50051
-    Protocol:           grpc
-    Service Name:       certified-operator-index
-    Service Namespace:  openshift-marketplace
-Events:                 <none>
-[root@bastion ODF]# oc describe catalogsource redhat-operator-index -n openshift-marketplace
-Name:         redhat-operator-index
-Namespace:    openshift-marketplace
-Labels:       <none>
-Annotations:  <none>
-API Version:  operators.coreos.com/v1alpha1
-Kind:         CatalogSource
-Metadata:
-  Creation Timestamp:  2026-03-11T13:57:23Z
-  Generation:          2
-  Resource Version:    44288874
-  UID:                 3d956717-8403-437d-b3b6-a8401a0ccf12
-Spec:
-  Image:        nwharbor.sec.samsung.net/team-ocp/ocp/redhat/redhat-operator-index:v4.19
-  Source Type:  grpc
-Status:
-  Connection State:
-    Address:              redhat-operator-index.openshift-marketplace.svc:50051
-    Last Connect:         2026-05-25T11:37:06Z
-    Last Observed State:  READY
-  Registry Service:
-    Created At:         2026-05-25T08:14:21Z
-    Port:               50051
-    Protocol:           grpc
-    Service Name:       redhat-operator-index
-    Service Namespace:  openshift-marketplace
-Events:                 <none>
-[root@bastion ODF]# oc get pod -n openshift-marketplace
-NAME                                   READY   STATUS    RESTARTS        AGE
-certified-operator-index-lq4q6         1/1     Running   0               3h39m
-marketplace-operator-58d57c9fd-mk8ls   1/1     Running   1 (3h39m ago)   3h39m
-redhat-operator-index-ljgv2            1/1     Running   0               3h39m
-[root@bastion ODF]#
+Your catalog sources themselves are healthy.
+
+The important part:
+
+Last Observed State: READY
+
+for both:
+
+certified-operator-index
+
+redhat-operator-index
+
+
+So OLM can talk to the catalog successfully.
+
+Now the remaining issue is almost certainly:
+
+missing ODF 4.19 bundle/package inside mirrored index OR
+
+bundle extraction image pull failure from harbor
+
+
+Next checks:
+
+Verify package manifests
+
+Run:
+
+oc get packagemanifest | grep -E 'odf|ocs|ceph|mcg'
+
+Then especially:
+
+oc describe packagemanifest odf-dependencies
+
+You need to confirm:
+
+package exists
+
+channel stable-4.19 exists
+
+currentCSV = odf-dependencies.v4.19.12-rhodf
+
+
+
+---
+
+Very important: inspect catalog pod logs
+
+Since catalog is READY but unpack fails, check for missing bundles.
+
+Run:
+
+oc logs -n openshift-marketplace redhat-operator-index-ljgv2 | grep -i odf
+
+and:
+
+oc logs -n openshift-marketplace redhat-operator-index-ljgv2 | grep -Ei 'error|fail|missing|manifest'
+
+You are looking for:
+
+manifest unknown
+
+image not found
+
+package missing
+
+bundle missing
+
+
+
+---
+
+Most likely issue
+
+You mirrored:
+
+redhat-operator-index:v4.19
+
+but the actual bundle image:
+
+odf-operator-bundle-rhel9:v4.19.12
+
+or dependent bundle images were NOT mirrored.
+
+In disconnected ODF upgrades, mirroring only the index image is NOT enough.
+
+You must mirror:
+
+index image
+
+all related ODF bundles
+
+related operands
+
+
+
+---
+
+Check whether bundle image exists in Harbor
+
+From bastion:
+
+skopeo inspect docker://nwharbor.sec.samsung.net/team-ocp/ocp/redhat/odf4/odf-operator-bundle-rhel9:v4.19.12
+
+Also check:
+
+skopeo inspect docker://nwharbor.sec.samsung.net/team-ocp/ocp/redhat/odf4/odf-rhel9-operator:v4.19.12
+
+If these fail: that is the root cause.
+
+
+---
+
+Another strong clue
+
+Your unpack jobs are NOT even appearing:
+
+oc get jobs -A | grep unpack
+→ nothing
+
+That typically means: catalog resolution succeeds partially, but required bundle metadata/images are missing from the mirrored catalog content.
+
+
+---
+
+Likely fix
+
+You probably need to re-mirror ODF 4.19 content completely using either:
+
+oc mirror OR
+
+oc adm catalog mirror
+
+
+including:
+
+redhat-operator-index:v4.19
+
+all referenced ODF bundles/images
+
+
+Your current mirror appears incomplete for ODF 4.19.12.
