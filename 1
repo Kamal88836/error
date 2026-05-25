@@ -1,43 +1,69 @@
-[root@bastion upgrade]#
-[root@bastion upgrade]# oc get pod -n openshift-storage
-NAME                                                              READY   STATUS    RESTARTS          AGE
-ceph-csi-controller-manager-6f65bbd578-tvztk                      2/2     Running   5 (5h58m ago)     2d23h
-csi-addons-controller-manager-696c476d88-th8x9                    2/2     Running   3 (5h58m ago)     2d23h
-csi-cephfsplugin-64zvv                                            3/3     Running   64 (2d23h ago)    43d
-csi-cephfsplugin-kmmbn                                            3/3     Running   28                43d
-csi-cephfsplugin-provisioner-7b7cb5988d-kp628                     7/7     Running   2 (2d22h ago)     3d
-csi-cephfsplugin-provisioner-7b7cb5988d-rrnv8                     7/7     Running   2 (92m ago)       5h51m
-csi-cephfsplugin-zvg6m                                            3/3     Running   141 (2d20h ago)   43d
-csi-rbdplugin-7t7kh                                               4/4     Running   266 (90m ago)     41d
-csi-rbdplugin-9dwv7                                               4/4     Running   119 (2d23h ago)   41d
-csi-rbdplugin-9kcph                                               4/4     Running   70 (2d22h ago)    40d
-csi-rbdplugin-provisioner-5489bb4b89-j9std                        7/7     Running   0                 3d
-csi-rbdplugin-provisioner-5489bb4b89-tlrcv                        7/7     Running   1 (90m ago)       5h51m
-noobaa-core-0                                                     2/2     Running   0                 6h26m
-noobaa-db-pg-0                                                    1/1     Running   0                 3d
-noobaa-endpoint-84c4d44cdb-f2znr                                  1/1     Running   0                 6h26m
-noobaa-operator-5f56ccb4cd-hdl5c                                  1/1     Running   15 (87m ago)      6h26m
-ocs-metrics-exporter-5759d5dbbd-tp56x                             3/3     Running   1 (6h29m ago)     2d23h
-ocs-operator-968899ffb-m9sks                                      1/1     Running   3 (5h57m ago)     2d23h
-odf-console-69695b478d-8fqz5                                      1/1     Running   1 (90m ago)       136m
-odf-operator-controller-manager-79cdcbd66f-vdk9t                  1/1     Running   3 (95m ago)       136m
-rook-ceph-crashcollector-master1.airtelvvt.samsungbsc.locaqzkv7   1/1     Running   0                 5h43m
-rook-ceph-crashcollector-master2.airtelvvt.samsungbsc.loca6kgrl   1/1     Running   0                 6h26m
-rook-ceph-crashcollector-master3.airtelvvt.samsungbsc.locantck6   1/1     Running   0                 2d13h
-rook-ceph-exporter-master1.airtelvvt.samsungbsc.local-b6bb9sgvk   1/1     Running   0                 5h43m
-rook-ceph-exporter-master2.airtelvvt.samsungbsc.local-b4cbb8fr5   1/1     Running   0                 6h24m
-rook-ceph-exporter-master3.airtelvvt.samsungbsc.local-8489jgsk2   1/1     Running   0                 2d13h
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-8467df47npq78   2/2     Running   1 (2d13h ago)     2d13h
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-65d59ffbj4c87   2/2     Running   0                 6h26m
-rook-ceph-mgr-a-86f6d94965-8gnpx                                  3/3     Running   2 (35h ago)       2d13h
-rook-ceph-mgr-b-69cc6f7dcd-lchc7                                  3/3     Running   0                 5h54m
-rook-ceph-mon-n-78d57f7bdd-jt5wl                                  2/2     Running   0                 3d
-rook-ceph-mon-w-7856d5955b-b58c6                                  2/2     Running   3 (3h14m ago)     2d20h
-rook-ceph-mon-x-58b74db99f-pdmdm                                  2/2     Running   0                 5h39m
-rook-ceph-operator-6668964b7b-dwrv8                               1/1     Running   0                 2d23h
-rook-ceph-osd-0-796f6b65d5-chzv4                                  2/2     Running   1 (5h35m ago)     5h51m
-rook-ceph-osd-1-bfbbc977d-pr72r                                   2/2     Running   0                 3d
-rook-ceph-osd-2-b5ccbf78-pmvzq                                    2/2     Running   2 (2d20h ago)     2d21h
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-86dd4db5r87j   2/2     Running   0                 6h26m
-ux-backend-server-7bcb7df8fc-7f92k                                2/2     Running   0                 2d23h
-[root@bastion upgrade]#
+Now we can see the ODF operator pod correctly:
+
+odf-operator-controller-manager-79cdcbd66f-vdk9t
+
+Restart it once explicitly:
+
+oc delete pod odf-operator-controller-manager-79cdcbd66f-vdk9t -n openshift-storage
+
+Then immediately monitor:
+
+oc logs -f deploy/odf-operator-controller-manager -n openshift-storage
+
+and:
+
+oc get storagecluster -n openshift-storage -w
+
+However, from your pod list there is another very important observation:
+
+Most storage components were recreated recently:
+
+many pods age 5h
+
+some 6h
+
+some 2d
+
+operator restarted recently
+
+
+This suggests a partial reconciliation already happened earlier.
+
+Now verify whether the newer CSV object actually exists in cluster:
+
+oc get csv -n openshift-storage rook-ceph-operator.v4.19.12-rhodf
+
+and:
+
+oc get csv -n openshift-storage ocs-operator.v4.19.12-rhodf
+
+This is critical.
+
+If those CSV objects do NOT exist:
+
+catalog advertises them
+
+but bundle/image resolution failed
+
+disconnected mirror incomplete
+
+
+If they DO exist but are Pending/Failed:
+
+OLM resolution problem
+
+
+If they do not exist at all, then check whether the bundle image is mirrored:
+
+Example:
+
+podman pull --tls-verify=false nwharbor.sec.samsung.net/<path-to-rhodf-bundle>
+
+because disconnected environments often mirror:
+
+index image but miss:
+
+actual operator bundle images
+
+
+Your cluster currently remains healthy, so avoid deleting subscriptions/CSVs aggressively until we confirm bundle availability.
