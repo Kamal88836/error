@@ -1,4 +1,67 @@
-[root@bastion odf-backup]# oc get csv
-NAME                          DISPLAY                     VERSION         REPLACES                      PHASE
 odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.19.11-rhodf   Succeeded
+[root@bastion odf-backup]# oc get sub
+NAME               PACKAGE            SOURCE                  CHANNEL
+odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
+odf-operator       odf-operator       redhat-operator-index   stable-4.19
+[root@bastion odf-backup]# oc describe sub odf-dependencies
+Name:         odf-dependencies
+Namespace:    openshift-storage
+Labels:       operators.coreos.com/odf-dependencies.openshift-storage=
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         Subscription
+Metadata:
+  Creation Timestamp:  2026-05-26T08:19:50Z
+  Generation:          1
+  Owner References:
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  true
+    Controller:            true
+    Kind:                  Subscription
+    Name:                  odf-operator
+    UID:                   adac02f8-399e-4cb4-8d80-aeeb7424c854
+  Resource Version:        44612902
+  UID:                     ebf6cc2b-ea2f-469a-8dc4-c6dfe3ee1200
+Spec:
+  Channel:  stable-4.19
+  Config:
+  Name:              odf-dependencies
+  Source:            redhat-operator-index
+  Source Namespace:  openshift-marketplace
+  Starting CSV:      odf-dependencies.v4.19.12-rhodf
+Status:
+  Catalog Health:
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              certified-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  44608477
+      UID:               bac4ebdc-3db7-4752-bddd-4fa7758daaf9
+    Healthy:             true
+    Last Updated:        2026-05-26T08:19:56Z
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              redhat-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  44608474
+      UID:               3d956717-8403-437d-b3b6-a8401a0ccf12
+    Healthy:             true
+    Last Updated:        2026-05-26T08:19:56Z
+  Conditions:
+    Last Transition Time:  2026-05-26T08:19:57Z
+    Message:               all available catalogsources are healthy
+    Reason:                AllCatalogSourcesHealthy
+    Status:                False
+    Type:                  CatalogSourcesUnhealthy
+    Reason:                UnpackingInProgress
+    Status:                True
+    Type:                  BundleUnpacking
+    Message:               bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job was active longer than specified deadline
+    Reason:                BundleUnpackFailed
+    Status:                True
+    Type:                  BundleUnpackFailed
+  Last Updated:            2026-05-26T08:30:58Z
+Events:                    <none>
 [root@bastion odf-backup]#
