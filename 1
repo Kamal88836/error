@@ -1,254 +1,48 @@
-[root@bastion SHN]# oc get po -n openshift-marketplace -w
-NAME                                                              READY   STATUS     RESTARTS            AGE
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Init:0/2   0                   <invalid>
-certified-operator-index-dqjnz                                    1/1     Running    0                   16h
-marketplace-operator-58d57c9fd-dt6c5                              1/1     Running    8 (<invalid> ago)   14h
-redhat-operator-index-bv67l                                       1/1     Running    0                   <invalid>
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Init:0/2   0                   <invalid>
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Init:1/2   0                   <invalid>
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     PodInitializing   0                   <invalid>
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed         0                   <invalid>
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed         0                   <invalid>
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed         0                   <invalid>
-^C[root@bastion SHN]# oc get po -n openshift-marketplace
-NAME                                                              READY   STATUS      RESTARTS            AGE
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed   0                   7s
-certified-operator-index-dqjnz                                    1/1     Running     0                   16h
-marketplace-operator-58d57c9fd-dt6c5                              1/1     Running     8 (<invalid> ago)   14h
-redhat-operator-index-bv67l                                       1/1     Running     0                   <invalid>
-[root@bastion SHN]# oc delete po -n openshift-operator-lifecycle-manager -l app=catalog-operator
-pod "catalog-operator-5ccd6b95b-c6tmv" deleted
-[root@bastion SHN]# oc describe sub odf-operator
-Name:         odf-operator
-Namespace:    openshift-storage
-Labels:       operators.coreos.com/odf-operator.openshift-storage=
-Annotations:  <none>
-API Version:  operators.coreos.com/v1alpha1
-Kind:         Subscription
-Metadata:
-  Creation Timestamp:  2026-05-26T04:50:42Z
-  Generation:          1
-  Resource Version:    44607931
-  UID:                 adac02f8-399e-4cb4-8d80-aeeb7424c854
-Spec:
-  Channel:                stable-4.19
-  Install Plan Approval:  Automatic
-  Name:                   odf-operator
-  Source:                 redhat-operator-index
-  Source Namespace:       openshift-marketplace
-Status:
-  Catalog Health:
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              certified-operator-index
-      Namespace:         openshift-marketplace
-      Resource Version:  44596550
-      UID:               bac4ebdc-3db7-4752-bddd-4fa7758daaf9
-    Healthy:             true
-    Last Updated:        2026-05-26T07:36:29Z
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              redhat-operator-index
-      Namespace:         openshift-marketplace
-      Resource Version:  44596560
-      UID:               3d956717-8403-437d-b3b6-a8401a0ccf12
-    Healthy:             true
-    Last Updated:        2026-05-26T07:36:29Z
-  Conditions:
-    Last Transition Time:   2026-05-26T07:36:29Z
-    Message:                all available catalogsources are healthy
-    Reason:                 AllCatalogSourcesHealthy
-    Status:                 False
-    Type:                   CatalogSourcesUnhealthy
-  Current CSV:              odf-operator.v4.19.12-rhodf
-  Install Plan Generation:  1
-  Install Plan Ref:
-    API Version:       operators.coreos.com/v1alpha1
-    Kind:              InstallPlan
-    Name:              install-72h8h
-    Namespace:         openshift-storage
-    Resource Version:  44607706
-    UID:               3e0c5b00-5d4f-4814-a475-91afda8a27ff
-  Installed CSV:       odf-operator.v4.19.12-rhodf
-  Installplan:
-    API Version:  operators.coreos.com/v1alpha1
-    Kind:         InstallPlan
-    Name:         install-72h8h
-    Uuid:         3e0c5b00-5d4f-4814-a475-91afda8a27ff
-  Last Updated:   2026-05-26T08:16:32Z
-  State:          AtLatestKnown
-Events:           <none>
-[root@bastion SHN]# oc get installplan -w
-NAME            CSV                           APPROVAL    APPROVED
-install-72h8h   odf-operator.v4.19.12-rhodf   Automatic   true
-^C[root@bastion SHN]# oc get csv -w
-NAME                          DISPLAY                     VERSION         REPLACES                      PHASE
-odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.19.11-rhodf   Installing
-^C[root@bastion SHN]# oc get po -n openshift-marketplace
-error: unknown command "c" for "oc"
 
-Did you mean this?
-        cancel-build
-        cluster-info
-        completion
-        config
-        cp
-        create
-[root@bastion SHN]# oc  get po -n openshift-marketplace
-NAME                                                              READY   STATUS            RESTARTS      AGE
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed         0             174m
-17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7   0/1     Init:1/2          0             171m
-2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6agmlfz   0/1     Init:1/2          0             171m
-463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef2136xw97k   0/1     Init:1/2          0             171m
-47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce72862l9p   0/1     Completed         0             171m
-53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5c78fhq   0/1     Init:1/2          0             171m
-8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d48phr   0/1     Init:1/2          0             171m
-8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb59jq45   0/1     Init:1/2          0             171m
-certified-operator-index-dqjnz                                    1/1     Running           0             18h
-dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e0zhg5f   1/1     Running           0             171m
-f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db98hh2d   0/1     PodInitializing   0             171m
-marketplace-operator-58d57c9fd-dt6c5                              1/1     Running           8 (51m ago)   17h
-redhat-operator-index-bv67l                                       1/1     Running           0             5m
-[root@bastion SHN]# oc  get po -n openshift-marketplace
-NAME                                                              READY   STATUS      RESTARTS      AGE
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed   0             174m
-17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7   0/1     Init:1/2    0             172m
-2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6agmlfz   0/1     Init:1/2    0             172m
-463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef2136xw97k   0/1     Init:1/2    0             172m
-47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce72862l9p   0/1     Completed   0             172m
-53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5c78fhq   0/1     Init:1/2    0             172m
-8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d48phr   0/1     Init:1/2    0             172m
-8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb59jq45   0/1     Init:1/2    0             172m
-certified-operator-index-dqjnz                                    1/1     Running     0             18h
-dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e0zhg5f   0/1     Completed   0             172m
-f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db98hh2d   0/1     Completed   0             172m
-marketplace-operator-58d57c9fd-dt6c5                              1/1     Running     8 (51m ago)   17h
-redhat-operator-index-bv67l                                       1/1     Running     0             5m22s
-[root@bastion SHN]# oc logs 17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7 -n openshift-marketplace
+[root@bastion SHN]# oc get po -n openshift-marketplace  -o wide
+NAME                                                              READY   STATUS      RESTARTS             AGE         IP            NODE                                 NOMINATED NODE   READINESS GATES
+0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed   0                    9m51s       10.30.0.65    master3.airtelvvt.samsungbsc.local   <none>           <none>
+17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7   0/1     Completed   0                    7m36s       10.30.0.81    master3.airtelvvt.samsungbsc.local   <none>           <none>
+2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6agmlfz   0/1     Completed   0                    7m35s       10.30.0.83    master3.airtelvvt.samsungbsc.local   <none>           <none>
+463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef2136xw97k   0/1     Completed   0                    7m36s       10.30.0.82    master3.airtelvvt.samsungbsc.local   <none>           <none>
+47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce72862l9p   0/1     Completed   0                    7m37s       10.30.0.79    master3.airtelvvt.samsungbsc.local   <none>           <none>
+53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5c78fhq   0/1     Completed   0                    7m39s       10.30.0.70    master3.airtelvvt.samsungbsc.local   <none>           <none>
+8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d48phr   0/1     Completed   0                    7m39s       10.30.0.77    master3.airtelvvt.samsungbsc.local   <none>           <none>
+8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb59jq45   0/1     Error       0                    7m40s       10.30.0.69    master3.airtelvvt.samsungbsc.local   <none>           <none>
+certified-operator-index-dqjnz                                    1/1     Running     0                    16h         10.30.0.179   master3.airtelvvt.samsungbsc.local   <none>           <none>
+dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e0zhg5f   0/1     Completed   0                    7m37s       10.30.0.80    master3.airtelvvt.samsungbsc.local   <none>           <none>
+f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db98hh2d   0/1     Completed   0                    7m37s       10.30.0.78    master3.airtelvvt.samsungbsc.local   <none>           <none>
+marketplace-operator-58d57c9fd-dt6c5                              1/1     Running     10 (<invalid> ago)   15h         10.30.0.178   master3.airtelvvt.samsungbsc.local   <none>           <none>
+redhat-operator-index-bv67l                                       1/1     Running     0                    <invalid>   10.30.0.64    master3.airtelvvt.samsungbsc.local   <none>           <none>
+[root@bastion SHN]# oc logs 8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb59jq45 -n openshift-marketplace
 Defaulted container "extract" out of: extract, util (init), pull (init)
-Error from server (BadRequest): container "extract" in pod "17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7" is waiting to start: PodInitializing
-[root@bastion SHN]# oc  get po -n openshift-marketplace
-NAME                                                              READY   STATUS      RESTARTS            AGE
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed   0                   4m13s
-17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7   0/1     Init:1/2    0                   118s
-2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6agmlfz   0/1     Init:1/2    0                   117s
-463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef2136xw97k   0/1     Init:1/2    0                   118s
-47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce72862l9p   0/1     Completed   0                   119s
-53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5c78fhq   0/1     Init:1/2    0                   2m1s
-8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d48phr   0/1     Init:1/2    0                   2m1s
-8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb59jq45   0/1     Init:1/2    0                   2m2s
-certified-operator-index-dqjnz                                    1/1     Running     0                   16h
-dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e0zhg5f   0/1     Completed   0                   119s
-f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db98hh2d   0/1     Completed   0                   119s
-marketplace-operator-58d57c9fd-dt6c5                              1/1     Running     8 (<invalid> ago)   14h
-redhat-operator-index-bv67l                                       1/1     Running     0                   <invalid>
-[root@bastion SHN]# oc logs 17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7 -n openshift-marketplace
-Defaulted container "extract" out of: extract, util (init), pull (init)
-Error from server: Get "https://20.1.30.152:10250/containerLogs/openshift-marketplace/17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7/extract": net/http: TLS handshake timeout
-[root@bastion SHN]# oc logs 17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7 -n openshift-marketplace
-Defaulted container "extract" out of: extract, util (init), pull (init)
-Error from server: Get "https://20.1.30.152:10250/containerLogs/openshift-marketplace/17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7/extract": net/http: TLS handshake timeout
-[root@bastion SHN]# oc  get po -n openshift-marketplace
-NAME                                                              READY   STATUS      RESTARTS      AGE
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed   0             176m
-17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7   0/1     Init:1/2    0             174m
-2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6agmlfz   0/1     Init:1/2    0             174m
-463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef2136xw97k   0/1     Init:1/2    0             174m
-47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce72862l9p   0/1     Completed   0             174m
-53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5c78fhq   0/1     Init:1/2    0             174m
-8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d48phr   0/1     Init:1/2    0             174m
-8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb59jq45   0/1     Init:1/2    0             174m
-certified-operator-index-dqjnz                                    1/1     Running     0             19h
-dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e0zhg5f   0/1     Completed   0             174m
-f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db98hh2d   0/1     Completed   0             174m
-marketplace-operator-58d57c9fd-dt6c5                              1/1     Running     8 (53m ago)   17h
-redhat-operator-index-bv67l                                       1/1     Running     0             7m29s
-[root@bastion SHN]# oc describe sub odf-operator
-Name:         odf-operator
-Namespace:    openshift-storage
-Labels:       operators.coreos.com/odf-operator.openshift-storage=
-Annotations:  <none>
-API Version:  operators.coreos.com/v1alpha1
-Kind:         Subscription
-Metadata:
-  Creation Timestamp:  2026-05-26T04:50:42Z
-  Generation:          1
-  Resource Version:    44608879
-  UID:                 adac02f8-399e-4cb4-8d80-aeeb7424c854
-Spec:
-  Channel:                stable-4.19
-  Install Plan Approval:  Automatic
-  Name:                   odf-operator
-  Source:                 redhat-operator-index
-  Source Namespace:       openshift-marketplace
-Status:
-  Catalog Health:
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              certified-operator-index
-      Namespace:         openshift-marketplace
-      Resource Version:  44596550
-      UID:               bac4ebdc-3db7-4752-bddd-4fa7758daaf9
-    Healthy:             true
-    Last Updated:        2026-05-26T07:36:29Z
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              redhat-operator-index
-      Namespace:         openshift-marketplace
-      Resource Version:  44596560
-      UID:               3d956717-8403-437d-b3b6-a8401a0ccf12
-    Healthy:             true
-    Last Updated:        2026-05-26T07:36:29Z
-  Conditions:
-    Last Transition Time:   2026-05-26T07:36:29Z
-    Message:                all available catalogsources are healthy
-    Reason:                 AllCatalogSourcesHealthy
-    Status:                 False
-    Type:                   CatalogSourcesUnhealthy
-    Reason:                 UnpackingInProgress
-    Status:                 True
-    Type:                   BundleUnpacking
-  Current CSV:              odf-operator.v4.19.12-rhodf
-  Install Plan Generation:  1
-  Install Plan Ref:
-    API Version:       operators.coreos.com/v1alpha1
-    Kind:              InstallPlan
-    Name:              install-72h8h
-    Namespace:         openshift-storage
-    Resource Version:  44607706
-    UID:               3e0c5b00-5d4f-4814-a475-91afda8a27ff
-  Installed CSV:       odf-operator.v4.19.12-rhodf
-  Installplan:
-    API Version:  operators.coreos.com/v1alpha1
-    Kind:         InstallPlan
-    Name:         install-72h8h
-    Uuid:         3e0c5b00-5d4f-4814-a475-91afda8a27ff
-  Last Updated:   2026-05-26T08:19:56Z
-  State:          AtLatestKnown
-Events:           <none>
+time="2026-05-26T08:26:18Z" level=info msg="Using in-cluster kube client config"
+Error: error loading manifests from directory: Unauthorized
+Usage:
+  opm alpha bundle extract [flags]
+
+Flags:
+  -c, --configmapname string   name of configmap to write bundle data
+  -l, --datalimit uint         maximum limit in bytes for total bundle data (default 1048576)
+      --debug                  enable debug logging
+  -z, --gzip                   enable gzip compression of configmap data
+  -h, --help                   help for extract
+  -k, --kubeconfig string      absolute path to kubeconfig file
+  -m, --manifestsdir string    path to directory containing manifests (default "/")
+  -n, --namespace string       namespace to write configmap data (default "openshift-operator-lifecycle-manager")
+
+Global Flags:
+      --skip-tls-verify   skip TLS certificate verification for container image registries while pulling bundles
+      --use-http          use plain HTTP for container image registries while pulling bundles
+
+[root@bastion SHN]# oc get csv
+NAME                          DISPLAY                     VERSION         REPLACES                      PHASE
+odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.19.11-rhodf   Succeeded
 [root@bastion SHN]# oc get installplan
 NAME            CSV                           APPROVAL    APPROVED
 install-72h8h   odf-operator.v4.19.12-rhodf   Automatic   true
-[root@bastion SHN]# oc get csv
-NAME                          DISPLAY                     VERSION         REPLACES                      PHASE
-odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.19.11-rhodf   Installing
-[root@bastion SHN]# oc get po -n openshift-marketplace
-NAME                                                              READY   STATUS      RESTARTS            AGE
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04fnlw58   0/1     Completed   0                   5m56s
-17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47wmnm7   0/1     Init:1/2    0                   3m41s
-2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6agmlfz   0/1     Init:1/2    0                   3m40s
-463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef2136xw97k   0/1     Init:1/2    0                   3m41s
-47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce72862l9p   0/1     Completed   0                   3m42s
-53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5c78fhq   0/1     Init:1/2    0                   3m44s
-8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d48phr   0/1     Init:1/2    0                   3m44s
-8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb59jq45   0/1     Init:1/2    0                   3m45s
-certified-operator-index-dqjnz                                    1/1     Running     0                   16h
-dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e0zhg5f   0/1     Completed   0                   3m42s
-f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db98hh2d   0/1     Completed   0                   3m42s
-marketplace-operator-58d57c9fd-dt6c5                              0/1     Running     8 (<invalid> ago)   14h
-redhat-operator-index-bv67l                                       1/1     Running     0                   <invalid>
+[root@bastion SHN]# oc get sub
+NAME               PACKAGE            SOURCE                  CHANNEL
+odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
+odf-operator       odf-operator       redhat-operator-index   stable-4.19
 [root@bastion SHN]#
