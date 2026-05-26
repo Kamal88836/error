@@ -65,3 +65,75 @@ Status:
   Last Updated:            2026-05-26T08:30:58Z
 Events:                    <none>
 [root@bastion odf-backup]#
+
+[root@bastion odf-backup]# oc describe sub odf-operator
+Name:         odf-operator
+Namespace:    openshift-storage
+Labels:       operators.coreos.com/odf-operator.openshift-storage=
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         Subscription
+Metadata:
+  Creation Timestamp:  2026-05-26T04:50:42Z
+  Generation:          1
+  Resource Version:    44612901
+  UID:                 adac02f8-399e-4cb4-8d80-aeeb7424c854
+Spec:
+  Channel:                stable-4.19
+  Install Plan Approval:  Automatic
+  Name:                   odf-operator
+  Source:                 redhat-operator-index
+  Source Namespace:       openshift-marketplace
+Status:
+  Catalog Health:
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              certified-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  44596550
+      UID:               bac4ebdc-3db7-4752-bddd-4fa7758daaf9
+    Healthy:             true
+    Last Updated:        2026-05-26T07:36:29Z
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              redhat-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  44596560
+      UID:               3d956717-8403-437d-b3b6-a8401a0ccf12
+    Healthy:             true
+    Last Updated:        2026-05-26T07:36:29Z
+  Conditions:
+    Last Transition Time:   2026-05-26T07:36:29Z
+    Message:                all available catalogsources are healthy
+    Reason:                 AllCatalogSourcesHealthy
+    Status:                 False
+    Type:                   CatalogSourcesUnhealthy
+    Reason:                 UnpackingInProgress
+    Status:                 True
+    Type:                   BundleUnpacking
+    Message:                bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job was active longer than specified deadline
+    Reason:                 BundleUnpackFailed
+    Status:                 True
+    Type:                   BundleUnpackFailed
+  Current CSV:              odf-operator.v4.19.12-rhodf
+  Install Plan Generation:  1
+  Install Plan Ref:
+    API Version:       operators.coreos.com/v1alpha1
+    Kind:              InstallPlan
+    Name:              install-72h8h
+    Namespace:         openshift-storage
+    Resource Version:  44607706
+    UID:               3e0c5b00-5d4f-4814-a475-91afda8a27ff
+  Installed CSV:       odf-operator.v4.19.12-rhodf
+  Installplan:
+    API Version:  operators.coreos.com/v1alpha1
+    Kind:         InstallPlan
+    Name:         install-72h8h
+    Uuid:         3e0c5b00-5d4f-4814-a475-91afda8a27ff
+  Last Updated:   2026-05-26T08:30:58Z
+  State:          AtLatestKnown
+Events:           <none>
+[root@bastion odf-backup]#
+
