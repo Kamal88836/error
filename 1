@@ -1,339 +1,76 @@
-[root@bastion ODF]# for OPERATOR in ocs-operator mcg-operator odf-operator odf-csi-addons-operator cephcsi-operator ocs-client-operator odf-prometheus-operator rook-ceph-operator recipe odf-dependencies odf-external-snapshotter-operator; do export OPERATOR; oc get job -n openshift-marketplace -o json | jq -r '.items[] | select(.spec.template.spec.containers[].env[].value|contains (env.OPERATOR)) | .metadata.name' >> /tmp/jobs; done
-error: You must be logged in to the server (Unauthorized)
-[root@bastion ODF]#
-[root@bastion ODF]#
-[root@bastion ODF]#
-[root@bastion ODF]#
-[root@bastion ODF]# oc get no
-NAME                                 STATUS   ROLES                         AGE   VERSION
-master1.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   75d   v1.32.10
-master2.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   75d   v1.32.10
-master3.airtelvvt.samsungbsc.local   Ready    control-plane,master,worker   75d   v1.32.10
-[root@bastion ODF]#
-[root@bastion ODF]#
-[root@bastion ODF]#
-[root@bastion ODF]# for OPERATOR in ocs-operator mcg-operator odf-operator odf-csi-addons-operator cephcsi-operator ocs-client-operator odf-prometheus-operator rook-ceph-operator recipe odf-dependencies odf-external-snapshotter-operator; do export OPERATOR; oc get job -n openshift-marketplace -o json | jq -r '.items[] | select(.spec.template.spec.containers[].env[].value|contains (env.OPERATOR)) | .metadata.name' >> /tmp/jobs; done
-[root@bastion ODF]# cat /tmp/jobs
-33558a56fc06092568ddb3eed9b1df7ea16eb30c5f33231d82fe41e5fb6fdb4
-5ac8c31de3e6df4820234dfddbebc1147a2b2c37e0e1f2bd79206ccad11fe8e
-dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e097326
-03fc5f81191d4c965b47deeb454738bb74369054657e6abbd009ce25d2155c2
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7
-b351f69df407d37ecab27c0102d7af5131032e9e3c99448e77c1421563f07b1
-47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce7287ddf5
-af9df2d149a50d4f4fbd845b25fc983484e4e8753894e07f4d8147e31651ccd
-e0d051d436e4fb7f986956aec9b09359fe5e25a722646bb825059b0c272e240
-1d30bb3979d301e4e324dfc504e35c0d33d9f6a4310d71dae5b7d5170ecfdbd
-ec44ed6b8105f4edcea083a7e75db92ae9b674462ac2b6150c0ddbc50d18bef
-f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db958eab
-1ca952de129962fa755b28feb94d65c1db50dee0c370a9e7d962012292f0c7a
-8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d675c5
-bee11fa1379ee2a3a8808993a76502c641c498423f118adf18757b8a3a63aed
-0c464f9904cbce4c158eed29dfe668ca2cac41c8c490fc8ab5449de0094f539
-2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6afe3dd
-981f912e720cb1517b38ee2490f80c515f3c9bd26ae7c09d35a834e1bd55da1
-17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47f4b94
-24861703e008403c90f33392bbed4ea1bdc9e1100237d5d7c712107bff41839
-e1cba075e13224814c6ea4f47cf38d3cc722427e3e918cc13e5dc7ce333b455
-20b6a6412780a2674edbd394c1ba2ea7e4aeadbb4d747b4c9ea5c0e967cf657
-463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef21364bc10
-7153d650cb16460039480b9547d339e795f95a39730ad27ca3e86dd2b1911f0
-3ca49e580c81b0a9c3a01e232c8c25206f657df4ec47b55c3295028370be8ee
-4e7f56ad2308f8a80f97bda14889fe8c8606fb1da64339702a32f5620ddc03e
-53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5ca8e52
-8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb582c3a
-b53fd4846fd2db9c5d7c4f69580009982be3ffe8cb8b31cbb1ba1a0ec80ab20
-bb67bd73ddb850e1aec70ba2d01bd6435978419828436aab967a8f279cc3eb4
-33558a56fc06092568ddb3eed9b1df7ea16eb30c5f33231d82fe41e5fb6fdb4
-5ac8c31de3e6df4820234dfddbebc1147a2b2c37e0e1f2bd79206ccad11fe8e
-dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e097326
-03fc5f81191d4c965b47deeb454738bb74369054657e6abbd009ce25d2155c2
-0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7
-b351f69df407d37ecab27c0102d7af5131032e9e3c99448e77c1421563f07b1
-47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce7287ddf5
-af9df2d149a50d4f4fbd845b25fc983484e4e8753894e07f4d8147e31651ccd
-e0d051d436e4fb7f986956aec9b09359fe5e25a722646bb825059b0c272e240
-1d30bb3979d301e4e324dfc504e35c0d33d9f6a4310d71dae5b7d5170ecfdbd
-ec44ed6b8105f4edcea083a7e75db92ae9b674462ac2b6150c0ddbc50d18bef
-f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db958eab
-1ca952de129962fa755b28feb94d65c1db50dee0c370a9e7d962012292f0c7a
-8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d675c5
-bee11fa1379ee2a3a8808993a76502c641c498423f118adf18757b8a3a63aed
-0c464f9904cbce4c158eed29dfe668ca2cac41c8c490fc8ab5449de0094f539
-2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6afe3dd
-981f912e720cb1517b38ee2490f80c515f3c9bd26ae7c09d35a834e1bd55da1
-17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47f4b94
-24861703e008403c90f33392bbed4ea1bdc9e1100237d5d7c712107bff41839
-e1cba075e13224814c6ea4f47cf38d3cc722427e3e918cc13e5dc7ce333b455
-20b6a6412780a2674edbd394c1ba2ea7e4aeadbb4d747b4c9ea5c0e967cf657
-463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef21364bc10
-7153d650cb16460039480b9547d339e795f95a39730ad27ca3e86dd2b1911f0
-3ca49e580c81b0a9c3a01e232c8c25206f657df4ec47b55c3295028370be8ee
-4e7f56ad2308f8a80f97bda14889fe8c8606fb1da64339702a32f5620ddc03e
-53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5ca8e52
-[root@bastion ODF]# for i in `cat /tmp/jobs`; do oc delete job $i -n openshift-marketplace; oc delete configmap $i -n openshift-marketplace; done
-job.batch "33558a56fc06092568ddb3eed9b1df7ea16eb30c5f33231d82fe41e5fb6fdb4" deleted
-configmap "33558a56fc06092568ddb3eed9b1df7ea16eb30c5f33231d82fe41e5fb6fdb4" deleted
-job.batch "5ac8c31de3e6df4820234dfddbebc1147a2b2c37e0e1f2bd79206ccad11fe8e" deleted
-configmap "5ac8c31de3e6df4820234dfddbebc1147a2b2c37e0e1f2bd79206ccad11fe8e" deleted
-job.batch "dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e097326" deleted
-configmap "dee77ee1c048bc6152470eccab2bc4544ecbe664e7464b61def351e2e097326" deleted
-job.batch "03fc5f81191d4c965b47deeb454738bb74369054657e6abbd009ce25d2155c2" deleted
-configmap "03fc5f81191d4c965b47deeb454738bb74369054657e6abbd009ce25d2155c2" deleted
-job.batch "0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7" deleted
-configmap "0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04ff40f7" deleted
-job.batch "b351f69df407d37ecab27c0102d7af5131032e9e3c99448e77c1421563f07b1" deleted
-configmap "b351f69df407d37ecab27c0102d7af5131032e9e3c99448e77c1421563f07b1" deleted
-job.batch "47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce7287ddf5" deleted
-configmap "47f2e865104a0442b390a71e74833954ac6a60fe834cb545fa1b9ce7287ddf5" deleted
-job.batch "af9df2d149a50d4f4fbd845b25fc983484e4e8753894e07f4d8147e31651ccd" deleted
-configmap "af9df2d149a50d4f4fbd845b25fc983484e4e8753894e07f4d8147e31651ccd" deleted
-job.batch "e0d051d436e4fb7f986956aec9b09359fe5e25a722646bb825059b0c272e240" deleted
-configmap "e0d051d436e4fb7f986956aec9b09359fe5e25a722646bb825059b0c272e240" deleted
-job.batch "1d30bb3979d301e4e324dfc504e35c0d33d9f6a4310d71dae5b7d5170ecfdbd" deleted
-configmap "1d30bb3979d301e4e324dfc504e35c0d33d9f6a4310d71dae5b7d5170ecfdbd" deleted
-job.batch "ec44ed6b8105f4edcea083a7e75db92ae9b674462ac2b6150c0ddbc50d18bef" deleted
-configmap "ec44ed6b8105f4edcea083a7e75db92ae9b674462ac2b6150c0ddbc50d18bef" deleted
-job.batch "f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db958eab" deleted
-configmap "f03de227c6d8b653bcc15bd9df4f4701bb2052c9c1eafc6668c1bd1db958eab" deleted
-job.batch "1ca952de129962fa755b28feb94d65c1db50dee0c370a9e7d962012292f0c7a" deleted
-configmap "1ca952de129962fa755b28feb94d65c1db50dee0c370a9e7d962012292f0c7a" deleted
-job.batch "8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d675c5" deleted
-configmap "8716a340965dc800b403b0fb648d4efb78fd53a06262dee0dce2723d9d675c5" deleted
-job.batch "bee11fa1379ee2a3a8808993a76502c641c498423f118adf18757b8a3a63aed" deleted
-configmap "bee11fa1379ee2a3a8808993a76502c641c498423f118adf18757b8a3a63aed" deleted
-job.batch "0c464f9904cbce4c158eed29dfe668ca2cac41c8c490fc8ab5449de0094f539" deleted
-configmap "0c464f9904cbce4c158eed29dfe668ca2cac41c8c490fc8ab5449de0094f539" deleted
-job.batch "2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6afe3dd" deleted
-configmap "2861cdff04059a2c9e85fee0405d790b98bbc11a11aa498ea19bfbda6afe3dd" deleted
-job.batch "981f912e720cb1517b38ee2490f80c515f3c9bd26ae7c09d35a834e1bd55da1" deleted
-configmap "981f912e720cb1517b38ee2490f80c515f3c9bd26ae7c09d35a834e1bd55da1" deleted
-job.batch "17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47f4b94" deleted
-configmap "17f0347cf5875e39ba75e0effd4977c9118c1a7c485890a8881af3fd47f4b94" deleted
-job.batch "24861703e008403c90f33392bbed4ea1bdc9e1100237d5d7c712107bff41839" deleted
-configmap "24861703e008403c90f33392bbed4ea1bdc9e1100237d5d7c712107bff41839" deleted
-job.batch "e1cba075e13224814c6ea4f47cf38d3cc722427e3e918cc13e5dc7ce333b455" deleted
-configmap "e1cba075e13224814c6ea4f47cf38d3cc722427e3e918cc13e5dc7ce333b455" deleted
-job.batch "20b6a6412780a2674edbd394c1ba2ea7e4aeadbb4d747b4c9ea5c0e967cf657" deleted
-configmap "20b6a6412780a2674edbd394c1ba2ea7e4aeadbb4d747b4c9ea5c0e967cf657" deleted
-job.batch "463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef21364bc10" deleted
-configmap "463ee870d90f55143f5c6c9390895721ae3103afddea23a80eaaef21364bc10" deleted
-job.batch "7153d650cb16460039480b9547d339e795f95a39730ad27ca3e86dd2b1911f0" deleted
-configmap "7153d650cb16460039480b9547d339e795f95a39730ad27ca3e86dd2b1911f0" deleted
-job.batch "3ca49e580c81b0a9c3a01e232c8c25206f657df4ec47b55c3295028370be8ee" deleted
-configmap "3ca49e580c81b0a9c3a01e232c8c25206f657df4ec47b55c3295028370be8ee" deleted
-job.batch "4e7f56ad2308f8a80f97bda14889fe8c8606fb1da64339702a32f5620ddc03e" deleted
-configmap "4e7f56ad2308f8a80f97bda14889fe8c8606fb1da64339702a32f5620ddc03e" deleted
-job.batch "53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5ca8e52" deleted
-configmap "53bb7c1a87d64bf3eef541e5700952efb63ad7485739c56ce4b1773a5ca8e52" deleted
-job.batch "8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb582c3a" deleted
-configmap "8f5536e228a8e6d03ae2301f3dbd3bb1b6de13381e5041494c23580fb582c3a" deleted
-job.batch "b53fd4846fd2db9c5d7c4f69580009982be3ffe8cb8b31cbb1ba1a0ec80ab20" deleted
-configmap "b53fd4846fd2db9c5d7c4f69580009982be3ffe8cb8b31cbb1ba1a0ec80ab20" deleted
-job.batch "bb67bd73ddb850e1aec70ba2d01bd6435978419828436aab967a8f279cc3eb4" deleted
-configmap "bb67bd73ddb850e1aec70ba2d01bd6435978419828436aab967a8f279cc3eb4" deleted
-Error from server (NotFound): jobs.batch "33558a56fc06092568ddb3eed9b1df7ea16eb30c5f33231d82fe41e5fb6fdb4" not found
-Error from server (NotFound): configmaps "33558a56fc06092568ddb3eed9b1df7ea16eb30c5f33231d82fe41e5fb6fdb4" not found
-Error from server (NotFound): jobs.batch "5ac8c31de3e6df4820234dfddbebc1147a2b2c37e0e1f2bd79206ccad11fe8e" not found
-Error from server (NotFound): configmaps "5ac8c31de3e6df4820234dfddbebc1147a2b2c37e0e1f2bd79206ccad11fe8e" not found
-Unable to connect to the server: read tcp 20.1.30.148:43938->20.1.30.160:6443: read: connection reset by peer
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-The connection to the server api.airtelvvt.samsungbsc.local:6443 was refused - did you specify the right host or port?
-[root@bastion ODF]# oc delete installplans -n openshift-storage --all
-installplan.operators.coreos.com "install-q8knl" deleted
-installplan.operators.coreos.com "install-rkpq9" deleted
-[root@bastion ODF]# oc delete subs odf-operator -n openshift-storage
-subscription.operators.coreos.com "odf-operator" deleted
-[root@bastion ODF]# oc get subs -n openshift-storage
-No resources found in openshift-storage namespace.
-[root@bastion ODF]# for i in $(oc get csv -n openshift-storage -o name | grep rhodf); do oc delete $i -n openshift-storage; done
-clusterserviceversion.operators.coreos.com "odf-operator.v4.19.12-rhodf" deleted
-[root@bastion ODF]# oc get catalogsource -n openshift-marketplace|grep redhat-operators
-[root@bastion ODF]# oc get catalogsource -n openshift-marketplace
-NAME                       DISPLAY   TYPE   PUBLISHER   AGE
-certified-operator-index             grpc               75d
-redhat-operator-index                grpc               75d
-[root@bastion ODF]# oc get catalogsource -n openshift-marketplace|grep redhat-operator
-redhat-operator-index                grpc               75d
-[root@bastion ODF]# oc delete pods -l 'app in (catalog-operator, olm-operator)' -n openshift-operator-lifecycle-manager
-pod "catalog-operator-5ccd6b95b-sbh9s" deleted
-pod "olm-operator-5d45d7ffdc-whlrn" deleted
-[root@bastion ODF]# ll
-total 32
--rw-r--r--. 1 root root  644 May 15  2024 1
--rw-r--r--. 1 root root  644 May 15  2024 1-local-storage-operator.yaml
--rw-r--r--. 1 root root  340 Mar 21  2024 2-local-volume-discovery.yaml
--rw-r--r--. 1 root root  540 Mar 22  2024 3-local-volume-set.yaml
--rw-r--r--. 1 root root  564 Mar 21  2024 4-odf-operator.yaml
--rw-r--r--. 1 root root  727 Mar 22  2024 5-odf-cluster.yaml
--rw-r--r--. 1 root root  502 May 25 18:55 CatalogSource.yaml
--rw-r--r--. 1 root root 2047 Mar 21  2024 ImageContentSourcePolicy.yaml
-[root@bastion ODF]# cd ..
-[root@bastion SHN]# ll
-total 627040
--rw-r--r--. 1 root root      3623 Mar 21  2024 agent-config.yaml
-drwxr-xr-x. 4 root root      4096 Apr  1 15:36 backup
-drwxr-xr-x. 5 root root      4096 Mar 11 15:49 dual_stack
--rw-r--r--. 1 root root        70 Sep 11  2025 htpasswd_40
--rw-r--r--. 1 root root       233 Sep 11  2025 htpasswd_cr.yaml
--rw-r--r--. 1 root root      3359 Mar 20  2024 install-config.yaml
-drwxr-xr-x. 3 root root       154 Jun 12  2025 OCP
-drwxr-xr-x. 2 root root      4096 May 25 18:55 ODF
--rw-r--r--. 1 root root  73352593 Jul 23  2025 openshift-client-linux-4.18.17.tar.gz
--rw-r--r--. 1 root root  73125104 Mar 10 10:33 openshift-client-linux-amd64-rhel8.tar.gz
--rw-r--r--. 1 root root  63934636 Jun  4  2025 openshift-client-linux.tar_old.gz
--rw-r--r--. 1 root root 431618170 Mar 10 10:33 openshift-install-linux.tar.gz
--rw-r--r--. 1 root root      1288 Sep 24  2024 performance-patch.yaml
-drwxr-xr-x. 3 root root      4096 Apr 11 14:52 PTP
--rw-r--r--. 1 root root       950 Jan 28  2025 README.md
--rw-r--r--. 1 root root      1229 Apr 16  2024 temp
-drwxr-xr-x. 2 root root      4096 May 21 13:41 upgrade
-[root@bastion SHN]# vi  subscription.yaml
-[root@bastion SHN]#
-[root@bastion SHN]#
-[root@bastion SHN]#
-[root@bastion SHN]# oc apply -f subscription.yaml
-subscription.operators.coreos.com/odf-operator created
-[root@bastion SHN]# oc get pods -n openshift-storage
+[root@bastion SHN]# oc describe sub odf-operator
+Name:         odf-operator
+Namespace:    openshift-storage
+Labels:       operators.coreos.com/odf-operator.openshift-storage=
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         Subscription
+Metadata:
+  Creation Timestamp:  2026-05-26T04:50:42Z
+  Generation:          1
+  Resource Version:    44601130
+  UID:                 adac02f8-399e-4cb4-8d80-aeeb7424c854
+Spec:
+  Channel:                stable-4.19
+  Install Plan Approval:  Automatic
+  Name:                   odf-operator
+  Source:                 redhat-operator-index
+  Source Namespace:       openshift-marketplace
+Status:
+  Catalog Health:
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              certified-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  44596550
+      UID:               bac4ebdc-3db7-4752-bddd-4fa7758daaf9
+    Healthy:             true
+    Last Updated:        2026-05-26T07:36:29Z
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              redhat-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  44596560
+      UID:               3d956717-8403-437d-b3b6-a8401a0ccf12
+    Healthy:             true
+    Last Updated:        2026-05-26T07:36:29Z
+  Conditions:
+    Last Transition Time:  2026-05-26T07:36:29Z
+    Message:               all available catalogsources are healthy
+    Reason:                AllCatalogSourcesHealthy
+    Status:                False
+    Type:                  CatalogSourcesUnhealthy
+    Reason:                UnpackingInProgress
+    Status:                True
+    Type:                  BundleUnpacking
+    Message:               bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job was active longer than specified deadline
+    Reason:                BundleUnpackFailed
+    Status:                True
+    Type:                  BundleUnpackFailed
+  Last Updated:            2026-05-26T07:47:29Z
+Events:                    <none>
+[root@bastion SHN]# oc delete po -n openshift-marketplace
+error: resource(s) were provided, but no name was specified
+[root@bastion SHN]# oc get po -n openshift-marketplace
 NAME                                                              READY   STATUS    RESTARTS            AGE
-noobaa-core-0                                                     2/2     Running   0                   28h
-noobaa-db-pg-0                                                    1/1     Running   0                   3d21h
-noobaa-endpoint-84c4d44cdb-f2znr                                  1/1     Running   0                   28h
-ocs-metrics-exporter-5759d5dbbd-tp56x                             3/3     Running   1 (28h ago)         3d20h
-rook-ceph-crashcollector-master3.airtelvvt.samsungbsc.locantck6   1/1     Running   0                   3d11h
-rook-ceph-exporter-master3.airtelvvt.samsungbsc.local-8489jgsk2   1/1     Running   0                   3d11h
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-8467df47npq78   2/2     Running   1 (3d11h ago)       3d11h
-rook-ceph-mgr-a-86f6d94965-8gnpx                                  3/3     Running   2 (2d9h ago)        3d11h
-rook-ceph-mon-n-78d57f7bdd-jt5wl                                  2/2     Running   0                   3d21h
-rook-ceph-mon-w-7856d5955b-b58c6                                  2/2     Running   4 (<invalid> ago)   3d18h
-rook-ceph-osd-1-bfbbc977d-pr72r                                   2/2     Running   0                   3d22h
-rook-ceph-osd-2-b5ccbf78-pmvzq                                    2/2     Running   2 (3d18h ago)       3d18h
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-86dd4db5r87j   2/2     Running   0                   28h
-[root@bastion SHN]# oc get storagecluster -o yaml | grep -A12 conditions
-    conditions:
-    - lastHeartbeatTime: "2026-03-11T14:09:30Z"
-      lastTransitionTime: "2026-03-11T14:09:30Z"
-      message: Version check successful
-      reason: VersionMatched
-      status: "False"
-      type: VersionMismatch
-    - lastHeartbeatTime: "2026-05-25T10:29:11Z"
-      lastTransitionTime: "2026-05-25T09:50:37Z"
-      message: Reconcile completed successfully
-      reason: ReconcileCompleted
-      status: "True"
-      type: ReconcileComplete
-[root@bastion SHN]#  oc get csv
-No resources found in openshift-storage namespace.
-[root@bastion SHN]#  oc get csv -A
-NAMESPACE                              NAME                                          DISPLAY                   VERSION               REPLACES                                      PHASE
-openshift-local-storage                local-storage-operator.v4.19.0-202602262001   Local Storage             4.19.0-202602262001   local-storage-operator.v4.18.0-202603152157   Succeeded
-openshift-operator-lifecycle-manager   packageserver                                 Package Server            0.0.1-snapshot                                                      Succeeded
-openshift-ptp                          ptp-operator.v4.19.0-202603031419             PTP Operator              4.19.0-202603031419   ptp-operator.v4.18.0-202603171536             Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.19.0-202603100922   SR-IOV Network Operator   4.19.0-202603100922   sriov-network-operator.v4.18.0-202603111324   Succeeded
-[root@bastion SHN]# oc get storagecluster -o yaml | grep -A12 conditions
-    conditions:
-    - lastHeartbeatTime: "2026-03-11T14:09:30Z"
-      lastTransitionTime: "2026-03-11T14:09:30Z"
-      message: Version check successful
-      reason: VersionMatched
-      status: "False"
-      type: VersionMismatch
-    - lastHeartbeatTime: "2026-05-25T10:29:11Z"
-      lastTransitionTime: "2026-05-25T09:50:37Z"
-      message: Reconcile completed successfully
-      reason: ReconcileCompleted
-      status: "True"
-      type: ReconcileComplete
-[root@bastion SHN]# oc delete  -f subscription.yaml
-subscription.operators.coreos.com "odf-operator" deleted
-[root@bastion SHN]# vi subscription.yaml
-[root@bastion SHN]# oc get catalogsource -n openshift-marketplace
-NAME                       DISPLAY   TYPE   PUBLISHER   AGE
-certified-operator-index             grpc               75d
-redhat-operator-index                grpc               75d
-[root@bastion SHN]# vi subscription.yaml
+0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04f8dkq7   0/1     Error     0                   <invalid>
+certified-operator-index-dqjnz                                    1/1     Running   0                   15h
+marketplace-operator-58d57c9fd-dt6c5                              1/1     Running   8 (<invalid> ago)   14h
+redhat-operator-index-5ts98                                       1/1     Running   0                   15h
+[root@bastion SHN]# oc get delete -n openshift-marketplace  0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04f8dkq7
+error: the server doesn't have a resource type "delete"
+[root@bastion SHN]# oc get delete -n openshift-marketplace  0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04f8dkq7
+error: the server doesn't have a resource type "delete"
+[root@bastion SHN]# oc get po -n openshift-marketplace
+NAME                                                              READY   STATUS    RESTARTS            AGE
+0c1156eea690a61cc3b96cec341a3f18db0fa92339dd903b03e8e6d04f8dkq7   0/1     Error     0                   <invalid>
+certified-operator-index-dqjnz                                    1/1     Running   0                   15h
+marketplace-operator-58d57c9fd-dt6c5                              1/1     Running   8 (<invalid> ago)   14h
+redhat-operator-index-5ts98                                       1/1     Running   0                   15h
+[root@bastion SHN]# oc get po -n openshift-marketplace  -l olm.catalogSorce=redhat-operator-index
+No resources found in openshift-marketplace namespace.
 [root@bastion SHN]#
 [root@bastion SHN]#
-[root@bastion SHN]# oc apply -f subscription.yaml
-subscription.operators.coreos.com/odf-operator created
-[root@bastion SHN]#  oc get csv -A
-NAMESPACE                              NAME                                          DISPLAY                   VERSION               REPLACES                                      PHASE
-openshift-local-storage                local-storage-operator.v4.19.0-202602262001   Local Storage             4.19.0-202602262001   local-storage-operator.v4.18.0-202603152157   Succeeded
-openshift-operator-lifecycle-manager   packageserver                                 Package Server            0.0.1-snapshot                                                      Succeeded
-openshift-ptp                          ptp-operator.v4.19.0-202603031419             PTP Operator              4.19.0-202603031419   ptp-operator.v4.18.0-202603171536             Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.19.0-202603100922   SR-IOV Network Operator   4.19.0-202603100922   sriov-network-operator.v4.18.0-202603111324   Succeeded
-[root@bastion SHN]# oc get storagecluster -o yaml | grep -A12 conditions
-    conditions:
-    - lastHeartbeatTime: "2026-03-11T14:09:30Z"
-      lastTransitionTime: "2026-03-11T14:09:30Z"
-      message: Version check successful
-      reason: VersionMatched
-      status: "False"
-      type: VersionMismatch
-    - lastHeartbeatTime: "2026-05-25T10:29:11Z"
-      lastTransitionTime: "2026-05-25T09:50:37Z"
-      message: Reconcile completed successfully
-      reason: ReconcileCompleted
-      status: "True"
-      type: ReconcileComplete
-[root@bastion SHN]#  oc get csv -A
-NAMESPACE                              NAME                                          DISPLAY                   VERSION               REPLACES                                      PHASE
-openshift-local-storage                local-storage-operator.v4.19.0-202602262001   Local Storage             4.19.0-202602262001   local-storage-operator.v4.18.0-202603152157   Succeeded
-openshift-operator-lifecycle-manager   packageserver                                 Package Server            0.0.1-snapshot                                                      Succeeded
-openshift-ptp                          ptp-operator.v4.19.0-202603031419             PTP Operator              4.19.0-202603031419   ptp-operator.v4.18.0-202603171536             Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.19.0-202603100922   SR-IOV Network Operator   4.19.0-202603100922   sriov-network-operator.v4.18.0-202603111324   Succeeded
-[root@bastion SHN]#  oc get sub -A
-NAMESPACE                          NAME                                  PACKAGE                  SOURCE                  CHANNEL
-openshift-local-storage            local-storage-operator                local-storage-operator   redhat-operator-index   stable
-openshift-ptp                      ptp-operator-subscription             ptp-operator             redhat-operator-index   stable
-openshift-sriov-network-operator   sriov-network-operator-subscription   sriov-network-operator   redhat-operator-index   stable
-openshift-storage                  odf-operator                          odf-operator             redhat-operator-index   stable-4.19
 [root@bastion SHN]#
