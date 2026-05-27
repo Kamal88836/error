@@ -1,139 +1,63 @@
-odf-operator.v4.19.12-rhodf   OpenShift Data Foundation   4.19.12-rhodf   odf-operator.v4.19.11-rhodf   Succeeded
-[root@bastion odf-backup]# oc get sub
-NAME               PACKAGE            SOURCE                  CHANNEL
-odf-dependencies   odf-dependencies   redhat-operator-index   stable-4.19
-odf-operator       odf-operator       redhat-operator-index   stable-4.19
-[root@bastion odf-backup]# oc describe sub odf-dependencies
-Name:         odf-dependencies
-Namespace:    openshift-storage
-Labels:       operators.coreos.com/odf-dependencies.openshift-storage=
+[root@bastion01 ~]# oc get catalogsource -A
+NAMESPACE               NAME                       DISPLAY   TYPE   PUBLISHER   AGE
+openshift-marketplace   certified-operator-index             grpc               497d
+openshift-marketplace   redhat-operator-index                grpc               497d
+[root@bastion01 ~]# oc describe  catalogsource  redhat-operator-index -n openshift-marketplace
+Name:         redhat-operator-index
+Namespace:    openshift-marketplace
+Labels:       <none>
 Annotations:  <none>
 API Version:  operators.coreos.com/v1alpha1
-Kind:         Subscription
+Kind:         CatalogSource
 Metadata:
-  Creation Timestamp:  2026-05-26T08:19:50Z
-  Generation:          1
-  Owner References:
-    API Version:           operators.coreos.com/v1alpha1
-    Block Owner Deletion:  true
-    Controller:            true
-    Kind:                  Subscription
-    Name:                  odf-operator
-    UID:                   adac02f8-399e-4cb4-8d80-aeeb7424c854
-  Resource Version:        44612902
-  UID:                     ebf6cc2b-ea2f-469a-8dc4-c6dfe3ee1200
+  Creation Timestamp:  2025-01-15T06:40:54Z
+  Generation:          3
+  Resource Version:    993267686
+  UID:                 3f25e630-dcd5-4b5b-85b4-1b063713f5c1
 Spec:
-  Channel:  stable-4.19
-  Config:
-  Name:              odf-dependencies
-  Source:            redhat-operator-index
-  Source Namespace:  openshift-marketplace
-  Starting CSV:      odf-dependencies.v4.19.12-rhodf
+  Image:        nwharbor.sec.samsung.net/team-ocp/ocp/redhat/redhat-operator-index:v4.16
+  Source Type:  grpc
 Status:
-  Catalog Health:
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              certified-operator-index
-      Namespace:         openshift-marketplace
-      Resource Version:  44608477
-      UID:               bac4ebdc-3db7-4752-bddd-4fa7758daaf9
-    Healthy:             true
-    Last Updated:        2026-05-26T08:19:56Z
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              redhat-operator-index
-      Namespace:         openshift-marketplace
-      Resource Version:  44608474
-      UID:               3d956717-8403-437d-b3b6-a8401a0ccf12
-    Healthy:             true
-    Last Updated:        2026-05-26T08:19:56Z
-  Conditions:
-    Last Transition Time:  2026-05-26T08:19:57Z
-    Message:               all available catalogsources are healthy
-    Reason:                AllCatalogSourcesHealthy
-    Status:                False
-    Type:                  CatalogSourcesUnhealthy
-    Reason:                UnpackingInProgress
-    Status:                True
-    Type:                  BundleUnpacking
-    Message:               bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job was active longer than specified deadline
-    Reason:                BundleUnpackFailed
-    Status:                True
-    Type:                  BundleUnpackFailed
-  Last Updated:            2026-05-26T08:30:58Z
-Events:                    <none>
-[root@bastion odf-backup]#
-
-[root@bastion odf-backup]# oc describe sub odf-operator
-Name:         odf-operator
-Namespace:    openshift-storage
-Labels:       operators.coreos.com/odf-operator.openshift-storage=
-Annotations:  <none>
-API Version:  operators.coreos.com/v1alpha1
-Kind:         Subscription
-Metadata:
-  Creation Timestamp:  2026-05-26T04:50:42Z
-  Generation:          1
-  Resource Version:    44612901
-  UID:                 adac02f8-399e-4cb4-8d80-aeeb7424c854
-Spec:
-  Channel:                stable-4.19
-  Install Plan Approval:  Automatic
-  Name:                   odf-operator
-  Source:                 redhat-operator-index
-  Source Namespace:       openshift-marketplace
-Status:
-  Catalog Health:
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              certified-operator-index
-      Namespace:         openshift-marketplace
-      Resource Version:  44596550
-      UID:               bac4ebdc-3db7-4752-bddd-4fa7758daaf9
-    Healthy:             true
-    Last Updated:        2026-05-26T07:36:29Z
-    Catalog Source Ref:
-      API Version:       operators.coreos.com/v1alpha1
-      Kind:              CatalogSource
-      Name:              redhat-operator-index
-      Namespace:         openshift-marketplace
-      Resource Version:  44596560
-      UID:               3d956717-8403-437d-b3b6-a8401a0ccf12
-    Healthy:             true
-    Last Updated:        2026-05-26T07:36:29Z
-  Conditions:
-    Last Transition Time:   2026-05-26T07:36:29Z
-    Message:                all available catalogsources are healthy
-    Reason:                 AllCatalogSourcesHealthy
-    Status:                 False
-    Type:                   CatalogSourcesUnhealthy
-    Reason:                 UnpackingInProgress
-    Status:                 True
-    Type:                   BundleUnpacking
-    Message:                bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job was active longer than specified deadline
-    Reason:                 BundleUnpackFailed
-    Status:                 True
-    Type:                   BundleUnpackFailed
-  Current CSV:              odf-operator.v4.19.12-rhodf
-  Install Plan Generation:  1
-  Install Plan Ref:
-    API Version:       operators.coreos.com/v1alpha1
-    Kind:              InstallPlan
-    Name:              install-72h8h
-    Namespace:         openshift-storage
-    Resource Version:  44607706
-    UID:               3e0c5b00-5d4f-4814-a475-91afda8a27ff
-  Installed CSV:       odf-operator.v4.19.12-rhodf
-  Installplan:
-    API Version:  operators.coreos.com/v1alpha1
-    Kind:         InstallPlan
-    Name:         install-72h8h
-    Uuid:         3e0c5b00-5d4f-4814-a475-91afda8a27ff
-  Last Updated:   2026-05-26T08:30:58Z
-  State:          AtLatestKnown
-Events:           <none>
-[root@bastion odf-backup]#
-
+  Connection State:
+    Address:              redhat-operator-index.openshift-marketplace.svc:50051
+    Last Connect:         2026-05-27T07:26:32Z
+    Last Observed State:  READY
+  Registry Service:
+    Created At:         2026-05-27T07:13:40Z
+    Port:               50051
+    Protocol:           grpc
+    Service Name:       redhat-operator-index
+    Service Namespace:  openshift-marketplace
+Events:                 <none>
+[root@bastion01 ~]# oc get sub -A
+NAMESPACE                          NAME                                                                              PACKAGE                   SOURCE                  CHANNEL
+openshift-local-storage            local-storage-operator                                                            local-storage-operator    redhat-operator-index   stable
+openshift-sriov-network-operator   sriov-network-operator                                                            sriov-network-operator    redhat-operator-index   stable
+openshift-storage                  mcg-operator-stable-4.14-redhat-operator-index-openshift-marketplace              mcg-operator              redhat-operator-index   stable-4.15
+openshift-storage                  ocs-operator-stable-4.14-redhat-operator-index-openshift-marketplace              ocs-operator              redhat-operator-index   stable-4.15
+openshift-storage                  odf-csi-addons-operator-stable-4.14-redhat-operator-index-openshift-marketplace   odf-csi-addons-operator   redhat-operator-index   stable-4.15
+openshift-storage                  odf-operator                                                                      odf-operator              redhat-operator-index   stable-4.15
+[root@bastion01 ~]# oc get installplan -A
+NAMESPACE                          NAME            CSV                                           APPROVAL    APPROVED
+openshift-local-storage            install-2qhvd   local-storage-operator.v4.16.0-202510211319   Automatic   true
+openshift-local-storage            install-59jhj   local-storage-operator.v4.15.0-202503170806   Automatic   true
+openshift-local-storage            install-kp8xs   local-storage-operator.v4.14.0-202412170209   Automatic   true
+openshift-local-storage            install-rd88z   local-storage-operator.v4.14.0-202501280211   Automatic   true
+openshift-local-storage            install-zrbd5   local-storage-operator.v4.14.0-202508260116   Automatic   true
+openshift-sriov-network-operator   install-gq2gj   sriov-network-operator.v4.15.0-202503100605   Automatic   true
+openshift-sriov-network-operator   install-h7rwj   sriov-network-operator.v4.14.0-202508260116   Automatic   true
+openshift-sriov-network-operator   install-tvnlw   sriov-network-operator.v4.14.0-202412180606   Automatic   true
+openshift-sriov-network-operator   install-zm5nl   sriov-network-operator.v4.14.0-202501281905   Automatic   true
+openshift-storage                  install-6clrj   odf-operator.v4.14.12-rhodf                   Automatic   true
+openshift-storage                  install-cllbd   odf-operator.v4.15.13-rhodf                   Automatic   true
+openshift-storage                  install-gkw9z   mcg-operator.v4.15.13-rhodf                   Automatic   true
+openshift-storage                  install-wjcp5   ocs-operator.v4.14.14-rhodf                   Automatic   true
+openshift-storage                  install-zwcrz   odf-csi-addons-operator.v4.14.22-rhodf        Automatic   true
+[root@bastion01 ~]# oc get po -n openshift-marketplace
+NAME                                   READY   STATUS    RESTARTS   AGE
+certified-operator-index-7kfbt         1/1     Running   0          45m
+marketplace-operator-c86c65ff5-psvhw   1/1     Running   0          46m
+redhat-operator-index-z8z45            1/1     Running   0          45m
+[root@bastion01 ~]#
+[root@bastion01 ~]#
+[root@bastion01 ~]#
