@@ -1,97 +1,79 @@
-Your ODF 4.19 bundle images are NOT properly mirrored in disconnected registry.
-
-That is why:
-
-unpack job timed out
-
-CSVs stay Pending
-
-ServiceAccounts are never created
-
-install strategy never executes
-
-
-Fix it directly.
-
-First identify missing image.
-
-Run:
-
-oc get packagemanifest odf-operator -n openshift-marketplace -o yaml | grep -A5 -i relatedImages
-
-You will see images like:
-
-registry.redhat.io/odf4/...
-registry.redhat.io/rhceph/...
-quay.io/...
-
-Now mirror ALL missing ODF 4.19 images into harbor.
-
-Example:
-
-oc adm catalog mirror \
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat/redhat-operator-index:v4.19 \
-nwharbor.sec.samsung.net/team-ocp/ocp/redhat \
--a pull-secret.txt
-
-OR if already mirrored partially, manually mirror missing bundle image:
-
-skopeo copy \
-docker://registry.redhat.io/odf4/odf-operator-bundle-rhel9:v4.19.12 \
-docker://nwharbor.sec.samsung.net/team-ocp/ocp/redhat/odf4/odf-operator-bundle-rhel9:v4.19.12
-
-Also mirror:
-
-cephcsi
-
-rook
-
-noobaa/mcg
-
-prometheus
-
-recipe
-
-csi addons
-
-
-After mirroring, restart marketplace + OLM:
-
-oc delete pod -n openshift-marketplace --all
-
-oc delete pod -n openshift-operator-lifecycle-manager --all
-
-Then delete broken pending CSVs again:
-
-oc delete csv \
-cephcsi-operator.v4.18.17-rhodf \
-mcg-operator.v4.18.17-rhodf \
-ocs-client-operator.v4.18.17-rhodf \
-ocs-operator.v4.18.17-rhodf \
-odf-csi-addons-operator.v4.18.17-rhodf \
-odf-prometheus-operator.v4.18.17-rhodf \
-recipe.v4.18.17-rhodf \
-odf-dependencies.v4.18.17-rhodf \
--n openshift-storage
-
-Then force reconcile:
-
-oc annotate sub odf-operator \
--n openshift-storage \
-force-reconcile="$(date +%s)" --overwrite
-
-Then monitor:
-
-watch 'oc get csv,pods -n openshift-storage'
-
-This time:
-
-unpack succeeds
-
-installplan created
-
-ServiceAccounts created
-
-Deployments created
-
-CSVs become Succeeded.
+[root@bastion01 ~]# oc get installplan -A | grep sriov
+openshift-sriov-network-operator   install-gq2gj   sriov-network-operator.v4.15.0-202503100605   Automatic   true
+openshift-sriov-network-operator   install-h7rwj   sriov-network-operator.v4.14.0-202508260116   Automatic   true
+openshift-sriov-network-operator   install-tvnlw   sriov-network-operator.v4.14.0-202412180606   Automatic   true
+openshift-sriov-network-operator   install-zm5nl   sriov-network-operator.v4.14.0-202501281905   Automatic   true
+[root@bastion01 ~]# oc describe sub sriov-network-operator -n openshift-sriov-network-operator
+Name:         sriov-network-operator
+Namespace:    openshift-sriov-network-operator
+Labels:       operators.coreos.com/sriov-network-operator.openshift-sriov-network-operator=
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         Subscription
+Metadata:
+  Creation Timestamp:  2025-01-15T08:23:08Z
+  Generation:          1
+  Resource Version:    993257049
+  UID:                 17c1a4ed-457a-4869-905e-697737e0d937
+Spec:
+  Channel:                stable
+  Install Plan Approval:  Automatic
+  Name:                   sriov-network-operator
+  Source:                 redhat-operator-index
+  Source Namespace:       openshift-marketplace
+  Starting CSV:           sriov-network-operator.v4.14.0-202412180606
+Status:
+  Catalog Health:
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              certified-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  992547084
+      UID:               17b93346-9a37-492b-9d1a-bf05c55572fd
+    Healthy:             true
+    Last Updated:        2026-05-26T09:24:49Z
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              redhat-operator-index
+      Namespace:         openshift-marketplace
+      Resource Version:  992547158
+      UID:               3f25e630-dcd5-4b5b-85b4-1b063713f5c1
+    Healthy:             true
+    Last Updated:        2026-05-26T09:24:49Z
+  Conditions:
+    Last Transition Time:   2026-05-26T09:24:51Z
+    Message:                all available catalogsources are healthy
+    Reason:                 AllCatalogSourcesHealthy
+    Status:                 False
+    Type:                   CatalogSourcesUnhealthy
+    Reason:                 UnpackingInProgress
+    Status:                 True
+    Type:                   BundleUnpacking
+    Message:                bundle unpacking failed. Reason: BackoffLimitExceeded, and Message: Job has reached the specified backoff limit
+    Reason:                 BundleUnpackFailed
+    Status:                 True
+    Type:                   BundleUnpackFailed
+  Current CSV:              sriov-network-operator.v4.15.0-202503100605
+  Install Plan Generation:  4
+  Install Plan Ref:
+    API Version:       operators.coreos.com/v1alpha1
+    Kind:              InstallPlan
+    Name:              install-gq2gj
+    Namespace:         openshift-sriov-network-operator
+    Resource Version:  991424170
+    UID:               869606a9-92a5-4d71-bf82-2569d52d500d
+  Installed CSV:       sriov-network-operator.v4.15.0-202503100605
+  Installplan:
+    API Version:  operators.coreos.com/v1alpha1
+    Kind:         InstallPlan
+    Name:         install-gq2gj
+    Uuid:         869606a9-92a5-4d71-bf82-2569d52d500d
+  Last Updated:   2026-05-27T07:10:43Z
+  State:          AtLatestKnown
+Events:           <none>
+[root@bastion01 ~]# oc get csv -n openshift-sriov-network-operator
+NAME                                          DISPLAY                   VERSION               REPLACES                                      PHASE
+sriov-network-operator.v4.15.0-202503100605   SR-IOV Network Operator   4.15.0-202503100605   sriov-network-operator.v4.14.0-202508260116   Succeeded
+[root@bastion01 ~]#
