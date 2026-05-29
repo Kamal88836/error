@@ -1,3 +1,39 @@
-[airtel@c13-vdu-jump ~]$ oc logs -f sriov-network-operator-767f8bc9d5-l96zd -n openshift-sriov-network-operator
-2026-05-26T13:45:43.408501811Z  ERROR   sriov-network-operator/main.go:103      warning, unable to get cluster infrastructure status, using HA cluster values for leader election    {"error": "openshiftControlPlaneTopologyStatus(): Failed to get Infrastructure (name: cluster): failed to get API group resources: unable to retrieve the complete list of server APIs: config.openshift.io/v1: Get \"https://11.128.0.1:443/apis/config.openshift.io/v1\": dial tcp 11.128.0.1:443: i/o timeout"}
-2026-05-26T13:46:13.410731741Z  ERROR   setup   runtime/proc.go:271     unable to create index field for cache  {"error": "failed to get API group resources: unable to retrieve the complete list of server APIs: sriovnetwork.openshift.io/v1: Get \"https://11.128.0.1:443/apis/sriovnetwork.openshift.io/v1\": dial tcp 11.128.0.1:443: i/o timeout"}
+[core@airtbsc ~]$ cat /sys/fs/cgroup/cpuset.
+cpuset.cpus.effective  cpuset.cpus.isolated   cpuset.mems.effective
+[core@airtbsc ~]$ cat /sys/fs/cgroup/cpuset.cpus.isolated
+
+[core@airtbsc ~]$ cat /sys/fs/cgroup/cpuset.cpus.effective
+0-111
+[core@airtbsc ~]$ cat /sys/fs/cgroup/cpuset.mems.effective
+0-1
+[core@airtbsc ~]$
+[core@airtbsc ~]$
+[core@airtbsc ~]$ vi /var/lib/kubelet/kubeconfig
+[core@airtbsc ~]$ sudo vi /var/lib/kubelet/kubeconfig
+[core@airtbsc ~]$
+[core@airtbsc ~]$
+[core@airtbsc ~]$
+[core@airtbsc ~]$ sudo cat /var/lib/kubelet/cpu_manager_state
+{"policyName":"static","defaultCpuSet":"26-27,55,82-83,111","entries":{"4683ab44-a161-4d3f-8084-ff485509b93b":{"bip":"2-12,58-68"},"7f0ef484-65f9-4715-9bbc-3e276b0d5242":{"cmp":"1,57","install":"1,57"},"b4174849-b0e2-4fcc-9877-a73537e502a1":{"bpp":"13-25,69-81"},"bb64550a-3769-4716-bb41-8f358c7320f9":{"bpp":"30-54,86-110"}},"checksum":1829357702}[core@airtbsc ~]$
+[core@airtbsc ~]$
+[core@airtbsc ~]$
+[core@airtbsc ~]$ exit
+logout
+Connection to airtbsc.airt-sno-bsc.samsungci.local closed.
+[airtel@c13-vdu-jump config]$ oc describe node  | grep -i topology
+                    topology.topolvm.io/node=airtbsc.airt-sno-bsc.samsungci.local
+                    machineconfiguration.openshift.io/controlPlaneTopology: SingleReplica
+[airtel@c13-vdu-jump config]$
+[airtel@c13-vdu-jump config]$
+[airtel@c13-vdu-jump config]$ oc get pods
+NAME                            READY   STATUS    RESTARTS   AGE
+bscf221-bip0-5b898f6cd6-dnj87   1/1     Running   0          124m
+bscf221-bpp0-c67b4cc8-vxwml     2/2     Running   0          100m
+bscf221-bpp1-6665886d56-jvmzx   2/2     Running   0          100m
+bscf221-cmp0-5d9ccfcb64-pqrvw   1/1     Running   0          30m
+bscf221-dmp0-7b9585c65f-8krpl   0/1     Pending   0          26m
+bscf221-pmp0-f7bc6f7df-t2m45    1/1     Running   0          31m
+[airtel@c13-vdu-jump config]$ oc describe pod bscf221-dmp0-7b9585c65f-8krpl | tail -n 3
+  ----     ------            ----               ----               -------
+  Warning  FailedScheduling  30m                default-scheduler  0/1 nodes are available: 1 Insufficient cpu. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+  Warning  FailedScheduling  17m (x3 over 25m)  default-scheduler  0/1 nodes are available: 1 Insufficient cpu. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
