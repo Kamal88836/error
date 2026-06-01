@@ -1,15 +1,92 @@
-[root@bastion-sno mirror-reg]# curl -vk https://bastion-sno.lab.ocp.lan:8443/v2/
-*   Trying 72.1.0.172:8443...
-* Connected to bastion-sno.lab.ocp.lan (72.1.0.172) port 8443 (#0)
-* ALPN, offering h2
-* ALPN, offering http/1.1
-*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
-* TLSv1.0 (OUT), TLS header, Certificate Status (22):
-* TLSv1.3 (OUT), TLS handshake, Client hello (1):
-^C
-[root@bastion-sno mirror-reg]# openssl s_client -connect bastion-sno.lab.ocp.lan:8443 -brief
-
-^C
-[root@bastion-sno mirror-reg]# podman exec quay-app ss -lntp
-Error: crun: executable file `ss` not found in $PATH: No such file or directory: OCI runtime attempted to invoke a command that was not found
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS         PORTS                                                 NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 6 weeks     0.0.0.0:8443->8443/tcp                                f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 6 weeks     0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks     0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
+5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 15 minutes  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]# podman restart quay-redis
+quay-redis
+[root@bastion-sno mirror-reg]# podman restart f3014e616657-infra
+WARN[0010] StopSignal SIGTERM failed to stop container f3014e616657-infra in 10 seconds, resorting to SIGKILL
+ERRO[0010] Unable to clean up network for container 6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42: "netavark: code: 1, msg: iptables: No chain/target/match by that name.\n"
+f3014e616657-infra
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS         PORTS                                                 NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 5 seconds   0.0.0.0:8443->8443/tcp                                f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 23 seconds  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks     0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
+5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 20 minutes  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
+[root@bastion-sno mirror-reg]# podman restart quay-postgres
+quay-postgres
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS         PORTS                                                 NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 22 seconds  0.0.0.0:8443->8443/tcp                                f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 40 seconds  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 1 second    0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
+5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 20 minutes  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]# podman restart quay-app
+WARN[0010] StopSignal SIGTERM failed to stop container quay-app in 10 seconds, resorting to SIGKILL
+quay-app
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 53 seconds      0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 32 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 40 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 43 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 45 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 47 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]# podman ps -A
+Error: unknown shorthand flag: 'A' in -A
+See 'podman ps --help'
+[root@bastion-sno mirror-reg]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]# podman ps a
+Error: `podman ps` takes no arguments
+[root@bastion-sno mirror-reg]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]#
 [root@bastion-sno mirror-reg]#
