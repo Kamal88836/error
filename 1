@@ -1,25 +1,29 @@
+[root@bastion-sno mirror-reg]# ./mirror-registry
 
+   __   __
+  /  \ /  \     ______   _    _     __   __   __
+ / /\ / /\ \   /  __  \ | |  | |   /  \  \ \ / /
+/ /  / /  \ \  | |  | | | |  | |  / /\ \  \   /
+\ \  \ \  / /  | |__| | | |__| | / ____ \  | |
+ \ \/ \ \/ /   \_  ___/  \____/ /_/    \_\ |_|
+  \__/ \__/      \ \__
+                  \___\ by Red Hat
+ Build, Store, and Distribute your Containers
 
-[root@bastion-sno quay-rootCA]# curl -vk  https://bastion-sno.lab.ocp.lan:8443/v2
-*   Trying 72.1.0.172:8443...
-* Connected to bastion-sno.lab.ocp.lan (72.1.0.172) port 8443 (#0)
-* ALPN, offering h2
-* ALPN, offering http/1.1
-*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
-* TLSv1.0 (OUT), TLS header, Certificate Status (22):
-* TLSv1.3 (OUT), TLS handshake, Client hello (1):
-^C
-[root@bastion-sno quay-rootCA]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS      PORTS                                                 NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp                                f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
-5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
-[root@bastion-sno quay-rootCA]# podman logs quay-app --tail=200
-Error: no container with name or ID "--tail=200" found: no such container
-[root@bastion-sno quay-rootCA]# podman exec -it quay-app bash
-bash-4.4$  curl -vk  https://loaclhost:8443/v2
-^C
-bash-4.4$  curl -vk  https://loaclhost:8080/v2
-^C
-bash-4.4$ exit
+Usage:
+  mirror-registry [command]
+
+Available Commands:
+  help        Help about any command
+  install     Install Quay and its required dependencies.
+  uninstall   uninstall will remove all Quay dependencies.
+  upgrade     Upgrade all mirror registry images.
+
+Flags:
+  -h, --help       help for mirror-registry
+  -c, --no-color   Control colored output
+  -v, --verbose    Display verbose logs
+      --version    version for mirror-registry
+
+Use "mirror-registry [command] --help" for more information about a command.
+[root@bastion-sno mirror-reg]# cat export.sh
