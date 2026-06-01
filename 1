@@ -1,5 +1,15 @@
-curl -vk https://bastion-sno.lab.ocp.lan:8443/v2/
+[root@bastion-sno mirror-reg]# curl -vk https://bastion-sno.lab.ocp.lan:8443/v2/
+*   Trying 72.1.0.172:8443...
+* Connected to bastion-sno.lab.ocp.lan (72.1.0.172) port 8443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+* TLSv1.0 (OUT), TLS header, Certificate Status (22):
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+^C
+[root@bastion-sno mirror-reg]# openssl s_client -connect bastion-sno.lab.ocp.lan:8443 -brief
 
-openssl s_client -connect bastion-sno.lab.ocp.lan:8443 -brief
-
-podman exec quay-app ss -lntp
+^C
+[root@bastion-sno mirror-reg]# podman exec quay-app ss -lntp
+Error: crun: executable file `ss` not found in $PATH: No such file or directory: OCI runtime attempted to invoke a command that was not found
+[root@bastion-sno mirror-reg]#
