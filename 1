@@ -1,7 +1,30 @@
-ImageDigestSources:
-- mirrors:
-  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release
-  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-- mirrors:
-  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images
-  source: quay.io/openshift-release-dev/ocp-release
+For OCP 4.20.21 and the mirror layout shown in your screenshot, try finding the release image like this:
+
+oc adm release info \
+  --registry-config pull-secret.json \
+  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64
+
+If that works, use:
+
+export OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE=bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64
+
+openshift-install agent create image --dir clusterconfigs
+
+To verify the installer can get the RHCOS content offline:
+
+oc adm release info \
+  --image-for=machine-os-images \
+  $OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE
+
+If it returns something like:
+
+bastion-sno.lab.ocp.lan:8443/...@sha256:xxxxx
+
+then the installer will extract the RHCOS artifacts from your mirrored release payload. No internet access and no separate ISO file in the registry are required.
+
+If you're not sure of the exact tag, run:
+
+skopeo list-tags \
+docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images
+
+and paste the output. That will show the exact tag you should use for OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE.
