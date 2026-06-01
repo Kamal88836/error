@@ -1,10 +1,27 @@
-
-[root@bastion-sno cluster-resources]# openssl s_client --connect bastion-sno.lab.ocp.lan:8443
-CONNECTED(00000003)
+[root@bastion-sno quay-rootCA]# ss  | grep 8443
+u_str ESTAB      0      0                     /run/dbus/system_bus_socket 159761184                     * 159784435
+u_str ESTAB      0      0                                               * 159749659                     * 159784436
+u_str ESTAB      0      0                       /run/user/1001/pipewire-0 159774454                     * 159784439
+u_str ESTAB      0      0                              /run/user/1001/bus 159786149                     * 159784438
+u_str ESTAB      0      0                              /run/user/1001/bus 159784436                     * 159749659
+u_str ESTAB      0      0                                               * 159784435                     * 159761184
+u_str ESTAB      0      0                                               * 159784438                     * 159786149
+u_str ESTAB      0      0                                               * 159784439                     * 159774454
+[root@bastion-sno quay-rootCA]# ss -tulpn  | grep 8443
+tcp   LISTEN 517    4096                                  0.0.0.0:8443       0.0.0.0:*    users:(("conmon",pid=5105,fd=5))
+[root@bastion-sno quay-rootCA]# curl -vk  https://bastion-sno.lab.ocp.lan:8443/v2
+*   Trying 72.1.0.172:8443...
+* Connected to bastion-sno.lab.ocp.lan (72.1.0.172) port 8443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+* TLSv1.0 (OUT), TLS header, Certificate Status (22):
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
 ^C
-[root@bastion-sno cluster-resources]# openssl s_client --connect bastion-sno.lab.ocp.lan:8443 -showcerts
-CONNECTED(00000003)
-
-^C
-[root@bastion-sno cluster-resources]# openssl s_client -connect bastion-sno.lab.ocp.lan:8443 -showcerts
-CONNECTED(00000003)
+[root@bastion-sno quay-rootCA]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS      PORTS                                                 NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp                                f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
+5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
+[root@bastion-sno quay-rootCA]#
