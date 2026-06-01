@@ -1,32 +1,102 @@
-[root@bastion-sno mirror-reg]# podman restart  quay-app
-WARN[0010] StopSignal SIGTERM failed to stop container quay-app in 10 seconds, resorting to SIGKILL
-quay-app
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS        PORTS                                                 NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 6 weeks    0.0.0.0:8443->8443/tcp                                f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 6 weeks    0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks    0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
-5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 4 seconds  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
-[root@bastion-sno mirror-reg]# free -mh
-               total        used        free      shared  buff/cache   available
-Mem:           124Gi        60Gi        16Gi       2.8Gi        51Gi        64Gi
-Swap:          4.0Gi       1.1Gi       2.9Gi
-[root@bastion-sno mirror-reg]# df -Th  -mh
-Filesystem            Type      Size  Used Avail Use% Mounted on
-devtmpfs              devtmpfs  4.0M     0  4.0M   0% /dev
-tmpfs                 tmpfs      63G   84K   63G   1% /dev/shm
-tmpfs                 tmpfs      25G  2.6G   23G  11% /run
-/dev/mapper/rhel-root xfs       1.8T  1.2T  605G  67% /
-/dev/sda1             xfs       1.8T   13G  1.8T   1% /data
-/dev/sdb2             xfs       960M  293M  668M  31% /boot
-/dev/sdb1             vfat      599M  7.0M  592M   2% /boot/efi
-tmpfs                 tmpfs      13G  124K   13G   1% /run/user/0
-shm                   tmpfs      63M  292K   63M   1% /var/lib/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata/shm
-overlay               overlay   1.8T  1.2T  605G  67% /var/lib/containers/storage/overlay/d9a7b902cc8279ee93c738c25ccb60a85a3726e5a377b071d3574f93cdfd66e9/merged
-overlay               overlay   1.8T  1.2T  605G  67% /var/lib/containers/storage/overlay/badf7d4102217d90195ff051b4ce7f6e0d9580d159a768fe640fac0bc34d38e4/merged
-overlay               overlay   1.8T  1.2T  605G  67% /var/lib/containers/storage/overlay/4473b00c71ae4602ad40ffb68d0193c1bc7799ec835f4505e1ffc9f8778a91f6/merged
-overlay               overlay   1.8T  1.2T  605G  67% /var/lib/containers/storage/overlay/4bb9be20d4028ad96704aebb080f839a842ffe9c326613732d6d0cd67b6fceca/merged
-tmpfs                 tmpfs      13G  108K   13G   1% /run/user/1000
-tmpfs                 tmpfs      13G  100K   13G   1% /run/user/1001
-tmpfs                 tmpfs      13G   52K   13G   1% /run/user/42
+[root@bastion-sno mirror-reg]# podman logs --tail 100 quay-app
+manifestbackfillworker stdout | 2026-06-01 10:05:53,423 [62] [INFO] [apscheduler.scheduler] Added job "ManifestBackfillWorker._backfill_manifests" to job store "default"
+gunicorn-registry stdout | 2026-06-01 10:05:53,425 [58] [INFO] [data.database] Connection pooling enabled for postgresql; stale timeout: None; max connection count: None
+gunicorn-registry stdout | 2026-06-01 10:05:53,426 [58] [INFO] [data.secscan_model] ===============================
+gunicorn-registry stdout | 2026-06-01 10:05:53,426 [58] [INFO] [data.secscan_model] Using split secscan model: `[<data.secscan_model.secscan_v4_model.NoopV4SecurityScanner object at 0x7f0f883c12e0>]`
+gunicorn-registry stdout | 2026-06-01 10:05:53,426 [58] [INFO] [data.secscan_model] ===============================
+gunicorn-registry stdout | 2026-06-01 10:05:53,426 [58] [INFO] [data.logs_model] ===============================
+gunicorn-registry stdout | 2026-06-01 10:05:53,426 [58] [INFO] [data.logs_model] Using logs model `<data.logs_model.table_logs_model.TableLogsModel object at 0x7f0f883c1a60>`
+gunicorn-registry stdout | 2026-06-01 10:05:53,426 [58] [INFO] [data.logs_model] ===============================
+queuecleanupworker stdout | 2026-06-01 10:05:53,430 [77] [INFO] [apscheduler.scheduler] Scheduler started
+notificationworker stdout | 2026-06-01 10:05:53,433 [66] [INFO] [apscheduler.scheduler] Added job "QueueWorker.poll_queue" to job store "default"
+notificationworker stdout | 2026-06-01 10:05:53,433 [66] [INFO] [apscheduler.scheduler] Added job "QueueWorker.update_queue_metrics" to job store "default"
+notificationworker stdout | 2026-06-01 10:05:53,433 [66] [INFO] [apscheduler.scheduler] Added job "QueueWorker.run_watchdog" to job store "default"
+gunicorn-secscan stderr | Traceback (most recent call last):
+gunicorn-secscan stderr |   File "src/gevent/_abstract_linkable.py", line 287, in gevent._gevent_c_abstract_linkable.AbstractLinkable._notify_links
+gunicorn-secscan stderr |   File "src/gevent/_abstract_linkable.py", line 333, in gevent._gevent_c_abstract_linkable.AbstractLinkable._notify_links
+gunicorn-secscan stderr | AssertionError: (None, <callback at 0x7f3515a5bc00 args=([],)>)
+gunicorn-secscan stderr | 2026-06-01T10:05:53Z <callback at 0x7f3515a5bc00 args=([],)> failed with AssertionError
+servicekey stdout | 2026-06-01 10:05:53,438 [88] [INFO] [apscheduler.scheduler] Scheduler started
+gcworker stdout | 2026-06-01 10:05:53,440 [56] [INFO] [apscheduler.scheduler] Added job "GarbageCollectionWorker._garbage_collection_repos" to job store "default"
+namespacegcworker stdout | 2026-06-01 10:05:53,444 [64] [INFO] [apscheduler.scheduler] Added job "QueueWorker.poll_queue" to job store "default"
+namespacegcworker stdout | 2026-06-01 10:05:53,444 [64] [INFO] [apscheduler.scheduler] Added job "QueueWorker.update_queue_metrics" to job store "default"
+namespacegcworker stdout | 2026-06-01 10:05:53,444 [64] [INFO] [apscheduler.scheduler] Added job "QueueWorker.run_watchdog" to job store "default"
+globalpromstats stdout | 2026-06-01 10:05:53,446 [57] [INFO] [apscheduler.scheduler] Scheduler started
+queuecleanupworker stdout | 2026-06-01 10:05:53,476 [77] [INFO] [apscheduler.scheduler] Added job "QueueCleanupWorker._cleanup_queue" to job store "default"
+servicekey stdout | 2026-06-01 10:05:53,484 [88] [INFO] [apscheduler.scheduler] Added job "ServiceKeyWorker._refresh_service_key" to job store "default"
+globalpromstats stdout | 2026-06-01 10:05:53,492 [57] [INFO] [apscheduler.scheduler] Added job "GlobalPrometheusStatsWorker._try_report_stats" to job store "default"
+buildlogsarchiver stdout | 2026-06-01 10:05:53,502 [51] [INFO] [apscheduler.scheduler] Scheduler started
+exportactionlogsworker stdout | 2026-06-01 10:05:53,505 [55] [INFO] [apscheduler.scheduler] Scheduler started
+buildlogsarchiver stdout | 2026-06-01 10:05:53,549 [51] [INFO] [apscheduler.scheduler] Added job "ArchiveBuildLogsWorker._archive_redis_buildlogs" to job store "default"
+exportactionlogsworker stdout | 2026-06-01 10:05:53,609 [55] [INFO] [apscheduler.scheduler] Added job "QueueWorker.poll_queue" to job store "default"
+exportactionlogsworker stdout | 2026-06-01 10:05:53,609 [55] [INFO] [apscheduler.scheduler] Added job "QueueWorker.update_queue_metrics" to job store "default"
+exportactionlogsworker stdout | 2026-06-01 10:05:53,609 [55] [INFO] [apscheduler.scheduler] Added job "QueueWorker.run_watchdog" to job store "default"
+gunicorn-registry stderr | Traceback (most recent call last):
+gunicorn-registry stderr |   File "src/gevent/_abstract_linkable.py", line 287, in gevent._gevent_c_abstract_linkable.AbstractLinkable._notify_links
+gunicorn-registry stderr |   File "src/gevent/_abstract_linkable.py", line 333, in gevent._gevent_c_abstract_linkable.AbstractLinkable._notify_links
+gunicorn-registry stderr | AssertionError: (None, <callback at 0x7f0f8833ba00 args=([],)>)
+gunicorn-registry stderr | 2026-06-01T10:05:53Z <callback at 0x7f0f8833ba00 args=([],)> failed with AssertionError
+gunicorn-web stderr | Traceback (most recent call last):
+gunicorn-web stderr |   File "src/gevent/_abstract_linkable.py", line 287, in gevent._gevent_c_abstract_linkable.AbstractLinkable._notify_links
+gunicorn-web stderr |   File "src/gevent/_abstract_linkable.py", line 333, in gevent._gevent_c_abstract_linkable.AbstractLinkable._notify_links
+gunicorn-web stderr | AssertionError: (None, <callback at 0x7f08abfab400 args=([],)>)
+gunicorn-web stderr | 2026-06-01T10:05:53Z <callback at 0x7f08abfab400 args=([],)> failed with AssertionError
+notificationworker stdout | 2026-06-01 10:05:54,434 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:05:54 UTC)" (scheduled at 2026-06-01 10:05:54.434427+00:00)
+notificationworker stdout | 2026-06-01 10:05:54,435 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:05:54 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:05:59,385 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:09 UTC)" (scheduled at 2026-06-01 10:05:59.383824+00:00)
+notificationworker stdout | 2026-06-01 10:05:59,390 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:09 UTC)" executed successfully
+buildlogsarchiver stdout | 2026-06-01 10:05:59,504 [51] [INFO] [apscheduler.executors.default] Running job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-06-01 10:05:59 UTC)" (scheduled at 2026-06-01 10:05:59.503943+00:00)
+buildlogsarchiver stdout | 2026-06-01 10:05:59,509 [51] [INFO] [apscheduler.executors.default] Job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-06-01 10:06:29 UTC)" executed successfully
+gcworker stdout | 2026-06-01 10:06:05,393 [56] [INFO] [apscheduler.executors.default] Running job "GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-06-01 10:06:05 UTC)" (scheduled at 2026-06-01 10:06:05.392655+00:00)
+gcworker stdout | 2026-06-01 10:06:05,400 [56] [INFO] [apscheduler.executors.default] Job "GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-06-01 10:06:35 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:06:09,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:19 UTC)" (scheduled at 2026-06-01 10:06:09.383824+00:00)
+notificationworker stdout | 2026-06-01 10:06:09,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:19 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:06:19,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:29 UTC)" (scheduled at 2026-06-01 10:06:19.383824+00:00)
+notificationworker stdout | 2026-06-01 10:06:19,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:29 UTC)" executed successfully
+repositorygcworker stdout | 2026-06-01 10:06:25,364 [83] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:01:00], next run at: 2026-06-01 10:06:25 UTC)" (scheduled at 2026-06-01 10:06:25.364389+00:00)
+repositorygcworker stdout | 2026-06-01 10:06:25,370 [83] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:25 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:06:29,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:39 UTC)" (scheduled at 2026-06-01 10:06:29.383824+00:00)
+notificationworker stdout | 2026-06-01 10:06:29,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:39 UTC)" executed successfully
+buildlogsarchiver stdout | 2026-06-01 10:06:29,505 [51] [INFO] [apscheduler.executors.default] Running job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-06-01 10:06:59 UTC)" (scheduled at 2026-06-01 10:06:29.503943+00:00)
+buildlogsarchiver stdout | 2026-06-01 10:06:29,510 [51] [INFO] [apscheduler.executors.default] Job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-06-01 10:06:59 UTC)" executed successfully
+gcworker stdout | 2026-06-01 10:06:35,393 [56] [INFO] [apscheduler.executors.default] Running job "GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-06-01 10:07:05 UTC)" (scheduled at 2026-06-01 10:06:35.392655+00:00)
+gcworker stdout | 2026-06-01 10:06:35,399 [56] [INFO] [apscheduler.executors.default] Job "GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-06-01 10:07:05 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:06:39,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:49 UTC)" (scheduled at 2026-06-01 10:06:39.383824+00:00)
+notificationworker stdout | 2026-06-01 10:06:39,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:49 UTC)" executed successfully
+namespacegcworker stdout | 2026-06-01 10:06:39,446 [64] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:06:39 UTC)" (scheduled at 2026-06-01 10:06:39.445485+00:00)
+namespacegcworker stdout | 2026-06-01 10:06:39,446 [64] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:39 UTC)" executed successfully
+repositorygcworker stdout | 2026-06-01 10:06:46,417 [83] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:46 UTC)" (scheduled at 2026-06-01 10:06:46.414725+00:00)
+repositorygcworker stdout | 2026-06-01 10:06:46,417 [83] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:46 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:06:49,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:59 UTC)" (scheduled at 2026-06-01 10:06:49.383824+00:00)
+notificationworker stdout | 2026-06-01 10:06:49,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:06:59 UTC)" executed successfully
+namespacegcworker stdout | 2026-06-01 10:06:49,398 [64] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:49 UTC)" (scheduled at 2026-06-01 10:06:49.397017+00:00)
+namespacegcworker stdout | 2026-06-01 10:06:49,403 [64] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:49 UTC)" executed successfully
+exportactionlogsworker stdout | 2026-06-01 10:06:51,507 [55] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:01:00], next run at: 2026-06-01 10:06:51 UTC)" (scheduled at 2026-06-01 10:06:51.506768+00:00)
+exportactionlogsworker stdout | 2026-06-01 10:06:51,512 [55] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:51 UTC)" executed successfully
+exportactionlogsworker stdout | 2026-06-01 10:06:51,612 [55] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:51 UTC)" (scheduled at 2026-06-01 10:06:51.610440+00:00)
+exportactionlogsworker stdout | 2026-06-01 10:06:51,612 [55] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:51 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:06:54,434 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:54 UTC)" (scheduled at 2026-06-01 10:06:54.434427+00:00)
+notificationworker stdout | 2026-06-01 10:06:54,435 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:07:54 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:06:59,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:09 UTC)" (scheduled at 2026-06-01 10:06:59.383824+00:00)
+notificationworker stdout | 2026-06-01 10:06:59,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:09 UTC)" executed successfully
+buildlogsarchiver stdout | 2026-06-01 10:06:59,504 [51] [INFO] [apscheduler.executors.default] Running job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-06-01 10:07:29 UTC)" (scheduled at 2026-06-01 10:06:59.503943+00:00)
+buildlogsarchiver stdout | 2026-06-01 10:06:59,509 [51] [INFO] [apscheduler.executors.default] Job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-06-01 10:07:29 UTC)" executed successfully
+gcworker stdout | 2026-06-01 10:07:05,393 [56] [INFO] [apscheduler.executors.default] Running job "GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-06-01 10:07:35 UTC)" (scheduled at 2026-06-01 10:07:05.392655+00:00)
+gcworker stdout | 2026-06-01 10:07:05,399 [56] [INFO] [apscheduler.executors.default] Job "GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-06-01 10:07:35 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:07:09,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:19 UTC)" (scheduled at 2026-06-01 10:07:09.383824+00:00)
+notificationworker stdout | 2026-06-01 10:07:09,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:19 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:07:19,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:29 UTC)" (scheduled at 2026-06-01 10:07:19.383824+00:00)
+notificationworker stdout | 2026-06-01 10:07:19,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:29 UTC)" executed successfully
+repositorygcworker stdout | 2026-06-01 10:07:25,364 [83] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:01:00], next run at: 2026-06-01 10:08:25 UTC)" (scheduled at 2026-06-01 10:07:25.364389+00:00)
+repositorygcworker stdout | 2026-06-01 10:07:25,369 [83] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:01:00], next run at: 2026-06-01 10:08:25 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:07:29,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:39 UTC)" (scheduled at 2026-06-01 10:07:29.383824+00:00)
+notificationworker stdout | 2026-06-01 10:07:29,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:39 UTC)" executed successfully
+buildlogsarchiver stdout | 2026-06-01 10:07:29,504 [51] [INFO] [apscheduler.executors.default] Running job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-06-01 10:07:59 UTC)" (scheduled at 2026-06-01 10:07:29.503943+00:00)
+buildlogsarchiver stdout | 2026-06-01 10:07:29,509 [51] [INFO] [apscheduler.executors.default] Job "ArchiveBuildLogsWorker._archive_redis_buildlogs (trigger: interval[0:00:30], next run at: 2026-06-01 10:07:59 UTC)" executed successfully
+gcworker stdout | 2026-06-01 10:07:35,393 [56] [INFO] [apscheduler.executors.default] Running job "GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-06-01 10:08:05 UTC)" (scheduled at 2026-06-01 10:07:35.392655+00:00)
+gcworker stdout | 2026-06-01 10:07:35,398 [56] [INFO] [apscheduler.executors.default] Job "GarbageCollectionWorker._garbage_collection_repos (trigger: interval[0:00:30], next run at: 2026-06-01 10:08:05 UTC)" executed successfully
+notificationworker stdout | 2026-06-01 10:07:39,384 [66] [INFO] [apscheduler.executors.default] Running job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:49 UTC)" (scheduled at 2026-06-01 10:07:39.383824+00:00)
+notificationworker stdout | 2026-06-01 10:07:39,389 [66] [INFO] [apscheduler.executors.default] Job "QueueWorker.poll_queue (trigger: interval[0:00:10], next run at: 2026-06-01 10:07:49 UTC)" executed successfully
+namespacegcworker stdout | 2026-06-01 10:07:39,445 [64] [INFO] [apscheduler.executors.default] Running job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:08:39 UTC)" (scheduled at 2026-06-01 10:07:39.445485+00:00)
+namespacegcworker stdout | 2026-06-01 10:07:39,446 [64] [INFO] [apscheduler.executors.default] Job "QueueWorker.run_watchdog (trigger: interval[0:01:00], next run at: 2026-06-01 10:08:39 UTC)" executed successfully
 [root@bastion-sno mirror-reg]#
