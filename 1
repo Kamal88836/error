@@ -1,29 +1,32 @@
-[root@bastion-sno mirror-reg]# ./mirror-registry
-
-   __   __
-  /  \ /  \     ______   _    _     __   __   __
- / /\ / /\ \   /  __  \ | |  | |   /  \  \ \ / /
-/ /  / /  \ \  | |  | | | |  | |  / /\ \  \   /
-\ \  \ \  / /  | |__| | | |__| | / ____ \  | |
- \ \/ \ \/ /   \_  ___/  \____/ /_/    \_\ |_|
-  \__/ \__/      \ \__
-                  \___\ by Red Hat
- Build, Store, and Distribute your Containers
-
-Usage:
-  mirror-registry [command]
-
-Available Commands:
-  help        Help about any command
-  install     Install Quay and its required dependencies.
-  uninstall   uninstall will remove all Quay dependencies.
-  upgrade     Upgrade all mirror registry images.
-
-Flags:
-  -h, --help       help for mirror-registry
-  -c, --no-color   Control colored output
-  -v, --verbose    Display verbose logs
-      --version    version for mirror-registry
-
-Use "mirror-registry [command] --help" for more information about a command.
-[root@bastion-sno mirror-reg]# cat export.sh
+[root@bastion-sno mirror-reg]# podman restart  quay-app
+WARN[0010] StopSignal SIGTERM failed to stop container quay-app in 10 seconds, resorting to SIGKILL
+quay-app
+[root@bastion-sno mirror-reg]# podman ps
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS        PORTS                                                 NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 6 weeks    0.0.0.0:8443->8443/tcp                                f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 6 weeks    0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks    0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
+5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 4 seconds  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
+[root@bastion-sno mirror-reg]# free -mh
+               total        used        free      shared  buff/cache   available
+Mem:           124Gi        60Gi        16Gi       2.8Gi        51Gi        64Gi
+Swap:          4.0Gi       1.1Gi       2.9Gi
+[root@bastion-sno mirror-reg]# df -Th  -mh
+Filesystem            Type      Size  Used Avail Use% Mounted on
+devtmpfs              devtmpfs  4.0M     0  4.0M   0% /dev
+tmpfs                 tmpfs      63G   84K   63G   1% /dev/shm
+tmpfs                 tmpfs      25G  2.6G   23G  11% /run
+/dev/mapper/rhel-root xfs       1.8T  1.2T  605G  67% /
+/dev/sda1             xfs       1.8T   13G  1.8T   1% /data
+/dev/sdb2             xfs       960M  293M  668M  31% /boot
+/dev/sdb1             vfat      599M  7.0M  592M   2% /boot/efi
+tmpfs                 tmpfs      13G  124K   13G   1% /run/user/0
+shm                   tmpfs      63M  292K   63M   1% /var/lib/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata/shm
+overlay               overlay   1.8T  1.2T  605G  67% /var/lib/containers/storage/overlay/d9a7b902cc8279ee93c738c25ccb60a85a3726e5a377b071d3574f93cdfd66e9/merged
+overlay               overlay   1.8T  1.2T  605G  67% /var/lib/containers/storage/overlay/badf7d4102217d90195ff051b4ce7f6e0d9580d159a768fe640fac0bc34d38e4/merged
+overlay               overlay   1.8T  1.2T  605G  67% /var/lib/containers/storage/overlay/4473b00c71ae4602ad40ffb68d0193c1bc7799ec835f4505e1ffc9f8778a91f6/merged
+overlay               overlay   1.8T  1.2T  605G  67% /var/lib/containers/storage/overlay/4bb9be20d4028ad96704aebb080f839a842ffe9c326613732d6d0cd67b6fceca/merged
+tmpfs                 tmpfs      13G  108K   13G   1% /run/user/1000
+tmpfs                 tmpfs      13G  100K   13G   1% /run/user/1001
+tmpfs                 tmpfs      13G   52K   13G   1% /run/user/42
+[root@bastion-sno mirror-reg]#
