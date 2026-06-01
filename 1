@@ -1,30 +1,23 @@
-srib@ocp-haproxy-1:~$ apt install libzstd.so.1
-E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)
-E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$
-srib@ocp-haproxy-1:~$ sudo -i
-[sudo] password for srib:
-root@ocp-haproxy-1:~#
-root@ocp-haproxy-1:~#
-root@ocp-haproxy-1:~# apt install libzstd.so.1
-Reading package lists... Done
-Building dependency tree
-Reading state information... Done
-E: Unable to locate package libzstd.so.1
-E: Couldn't find any package by glob 'libzstd.so.1'
-root@ocp-haproxy-1:~# cat /etc/os-release
-NAME="Ubuntu"
-VERSION="20.04.6 LTS (Focal Fossa)"
-ID=ubuntu
-ID_LIKE=debian
-PRETTY_NAME="Ubuntu 20.04.6 LTS"
-VERSION_ID="20.04"
-HOME_URL="https://www.ubuntu.com/"
-SUPPORT_URL="https://help.ubuntu.com/"
-BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
-PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
-VERSION_CODENAME=focal
-UBUNTU_CODENAME=focal
-root@ocp-haproxy-1:~#
+sno4@haproxy:~$ ldd ./coreos-installer
+./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.32' not found (required by ./coreos-installer)
+./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by ./coreos-installer)
+./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found (required by ./coreos-installer)
+./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /lib/x86_64-linux-gnu/libcrypto.so.3)
+./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found (required by /lib/x86_64-linux-gnu/libcrypto.so.3)
+        linux-vdso.so.1 (0x00007ffd257fe000)
+        libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x00007f4369cfc000)
+        liblzma.so.5 => /lib/x86_64-linux-gnu/liblzma.so.5 (0x00007f4369cd3000)
+        libssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007f4369c2d000)
+        libcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007f43697fb000)
+        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f43697e0000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f4369691000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f436949d000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f436a920000)
+        libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f436947a000)
+        libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007f436945e000)
+sno4@haproxy:~$ find /usr -name "libssl.so.*"
+/usr/lib/x86_64-linux-gnu/libssl.so.1.1
+/usr/lib/x86_64-linux-gnu/libssl.so.3
+sno4@haproxy:~$ find /usr -name "libc.so.*"
+/usr/lib/x86_64-linux-gnu/libc.so.6
+sno4@haproxy:~$
