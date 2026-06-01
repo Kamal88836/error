@@ -1,3 +1,22 @@
 sno4@haproxy:~$ ./coreos-installer iso kargs modify -a "rd.neednet=1 ip=72.1.0.182::72.1.0.1:255.255.252.0:sno4:ens3f0:none nameserver=72.1.0.172" rhcos-live.iso
 ./coreos-installer: error while loading shared libraries: libssl.so.3: cannot open shared object file: No such file or directory
+sno4@haproxy:~$ cat /etc/os-release
+NAME="Ubuntu"
+VERSION="20.04.6 LTS (Focal Fossa)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 20.04.6 LTS"
+VERSION_ID="20.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=focal
+UBUNTU_CODENAME=focal
 sno4@haproxy:~$
+sno4@haproxy:~$
+sno4@haproxy:~$ find /usr -name "libssl.so.*"
+/usr/lib/x86_64-linux-gnu/libssl.so.1.1
+sno4@haproxy:~$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+
