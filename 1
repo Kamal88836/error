@@ -1,85 +1,3 @@
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS         PORTS                                                 NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 6 weeks     0.0.0.0:8443->8443/tcp                                f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 6 weeks     0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks     0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
-5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 15 minutes  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]# podman restart quay-redis
-quay-redis
-[root@bastion-sno mirror-reg]# podman restart f3014e616657-infra
-WARN[0010] StopSignal SIGTERM failed to stop container f3014e616657-infra in 10 seconds, resorting to SIGKILL
-ERRO[0010] Unable to clean up network for container 6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42: "netavark: code: 1, msg: iptables: No chain/target/match by that name.\n"
-f3014e616657-infra
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS         PORTS                                                 NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 5 seconds   0.0.0.0:8443->8443/tcp                                f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 23 seconds  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks     0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
-5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 20 minutes  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
-[root@bastion-sno mirror-reg]# podman restart quay-postgres
-quay-postgres
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS         PORTS                                                 NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 22 seconds  0.0.0.0:8443->8443/tcp                                f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 40 seconds  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 1 second    0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
-5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 20 minutes  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]# podman restart quay-app
-WARN[0010] StopSignal SIGTERM failed to stop container quay-app in 10 seconds, resorting to SIGKILL
-quay-app
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 53 seconds      0.0.0.0:8443->8443/tcp            f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 32 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 40 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 43 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 45 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-[root@bastion-sno mirror-reg]# podman ps
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 47 seconds      0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-[root@bastion-sno mirror-reg]# podman ps -A
-Error: unknown shorthand flag: 'A' in -A
-See 'podman ps --help'
-[root@bastion-sno mirror-reg]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]#
-[root@bastion-sno mirror-reg]# podman ps -a
-CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
-6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
-cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
-b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
-[root@bastion-sno mirror-reg]# podman ps a
-Error: `podman ps` takes no arguments
 [root@bastion-sno mirror-reg]# podman ps -a
 CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS             PORTS                             NAMES
 6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up About a minute  0.0.0.0:8443->8443/tcp            f3014e616657-infra
@@ -89,4 +7,332 @@ b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postg
 [root@bastion-sno mirror-reg]#
 [root@bastion-sno mirror-reg]#
 [root@bastion-sno mirror-reg]#
+[root@bastion-sno mirror-reg]# podman container ls 0a
+Error: `podman container list` takes no arguments
+[root@bastion-sno mirror-reg]# podman container ls -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS        PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 3 minutes  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 3 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 3 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]# podman pod ps
+POD ID        NAME        STATUS      CREATED      INFRA ID      # OF CONTAINERS
+f3014e616657  quay-pod    Running     6 weeks ago  6fbb7e0d3de7  3
+[root@bastion-sno mirror-reg]# podman inspect f3014e616657-infra
+[
+     {
+          "Id": "6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42",
+          "Created": "2026-04-13T12:31:47.033959939Z",
+          "Path": "sleep",
+          "Args": [
+               "infinity"
+          ],
+          "State": {
+               "OciVersion": "1.2.0",
+               "Status": "running",
+               "Running": true,
+               "Paused": false,
+               "Restarting": false,
+               "OOMKilled": false,
+               "Dead": false,
+               "Pid": 1661699,
+               "ConmonPid": 1661696,
+               "ExitCode": 0,
+               "Error": "",
+               "StartedAt": "2026-06-01T10:25:56.107776871Z",
+               "FinishedAt": "2026-06-01T10:25:55.799713176Z",
+               "CgroupPath": "/machine.slice/machine-libpod_pod_f3014e61665747efdf97bef12f7da40d40683cf69b1d99bce2bf5a1dc7028235.slice/libpod-6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42.scope",
+               "CheckpointedAt": "0001-01-01T00:00:00Z",
+               "RestoredAt": "0001-01-01T00:00:00Z"
+          },
+          "Image": "76bf06db7a03e54f6ed09e0115ad70558e12bc6b4947545bd4f63daefa423976",
+          "ImageDigest": "sha256:9e6a0a47f0093839fb9f918aaeb7383538cbc4206f946602aea096bb3ee69021",
+          "ImageName": "registry.access.redhat.com/ubi8/pause:8.7-6",
+          "Rootfs": "",
+          "Pod": "f3014e61665747efdf97bef12f7da40d40683cf69b1d99bce2bf5a1dc7028235",
+          "ResolvConfPath": "/run/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata/resolv.conf",
+          "HostnamePath": "/run/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata/hostname",
+          "HostsPath": "/run/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata/hosts",
+          "StaticDir": "/var/lib/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata",
+          "OCIConfigPath": "/var/lib/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata/config.json",
+          "OCIRuntime": "crun",
+          "ConmonPidFile": "/run/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata/conmon.pid",
+          "PidFile": "/run/containers/storage/overlay-containers/6fbb7e0d3de77f451f3d246952934ac27b3227d1fb2d1e21218d81c4a9482e42/userdata/pidfile",
+          "Name": "f3014e616657-infra",
+          "RestartCount": 0,
+          "Driver": "overlay",
+          "MountLabel": "system_u:object_r:container_file_t:s0:c226,c441",
+          "ProcessLabel": "system_u:system_r:container_t:s0:c226,c441",
+          "AppArmorProfile": "",
+          "EffectiveCaps": [
+               "CAP_CHOWN",
+               "CAP_DAC_OVERRIDE",
+               "CAP_FOWNER",
+               "CAP_FSETID",
+               "CAP_KILL",
+               "CAP_NET_BIND_SERVICE",
+               "CAP_SETFCAP",
+               "CAP_SETGID",
+               "CAP_SETPCAP",
+               "CAP_SETUID",
+               "CAP_SYS_CHROOT"
+          ],
+          "BoundingCaps": [
+               "CAP_CHOWN",
+               "CAP_DAC_OVERRIDE",
+               "CAP_FOWNER",
+               "CAP_FSETID",
+               "CAP_KILL",
+               "CAP_NET_BIND_SERVICE",
+               "CAP_SETFCAP",
+               "CAP_SETGID",
+               "CAP_SETPCAP",
+               "CAP_SETUID",
+               "CAP_SYS_CHROOT"
+          ],
+          "ExecIDs": [],
+          "GraphDriver": {
+               "Name": "overlay",
+               "Data": {
+                    "LowerDir": "/var/lib/containers/storage/overlay/bd87c5e38685ad1819c06d5eb434b5880cc47fa0e8aac247d7e142626dc1b6c1/diff",
+                    "MergedDir": "/var/lib/containers/storage/overlay/d9a7b902cc8279ee93c738c25ccb60a85a3726e5a377b071d3574f93cdfd66e9/merged",
+                    "UpperDir": "/var/lib/containers/storage/overlay/d9a7b902cc8279ee93c738c25ccb60a85a3726e5a377b071d3574f93cdfd66e9/diff",
+                    "WorkDir": "/var/lib/containers/storage/overlay/d9a7b902cc8279ee93c738c25ccb60a85a3726e5a377b071d3574f93cdfd66e9/work"
+               }
+          },
+          "Mounts": [],
+          "Dependencies": [],
+          "NetworkSettings": {
+               "EndpointID": "",
+               "Gateway": "10.88.0.1",
+               "IPAddress": "10.88.0.3",
+               "IPPrefixLen": 16,
+               "IPv6Gateway": "",
+               "GlobalIPv6Address": "",
+               "GlobalIPv6PrefixLen": 0,
+               "MacAddress": "72:58:7f:38:56:99",
+               "Bridge": "",
+               "SandboxID": "",
+               "HairpinMode": false,
+               "LinkLocalIPv6Address": "",
+               "LinkLocalIPv6PrefixLen": 0,
+               "Ports": {
+                    "8443/tcp": [
+                         {
+                              "HostIp": "0.0.0.0",
+                              "HostPort": "8443"
+                         }
+                    ]
+               },
+               "SandboxKey": "/run/netns/netns-92896c89-9cae-3a6c-0bbf-f9526523c56d",
+               "Networks": {
+                    "podman": {
+                         "EndpointID": "",
+                         "Gateway": "10.88.0.1",
+                         "IPAddress": "10.88.0.3",
+                         "IPPrefixLen": 16,
+                         "IPv6Gateway": "",
+                         "GlobalIPv6Address": "",
+                         "GlobalIPv6PrefixLen": 0,
+                         "MacAddress": "72:58:7f:38:56:99",
+                         "NetworkID": "podman",
+                         "DriverOpts": null,
+                         "IPAMConfig": null,
+                         "Links": null,
+                         "Aliases": [
+                              "6fbb7e0d3de7",
+                              "quay-pod"
+                         ]
+                    }
+               }
+          },
+          "Namespace": "",
+          "IsInfra": true,
+          "IsService": false,
+          "KubeExitCodePropagation": "invalid",
+          "lockNumber": 1,
+          "Config": {
+               "Hostname": "quay-pod",
+               "Domainname": "",
+               "User": "",
+               "AttachStdin": false,
+               "AttachStdout": false,
+               "AttachStderr": false,
+               "Tty": false,
+               "OpenStdin": false,
+               "StdinOnce": false,
+               "Env": [
+                    "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                    "container=oci",
+                    "HOSTNAME=quay-pod",
+                    "HOME=/root"
+               ],
+               "Cmd": [
+                    "infinity"
+               ],
+               "Image": "registry.access.redhat.com/ubi8/pause:8.7-6",
+               "Volumes": null,
+               "WorkingDir": "/",
+               "Entrypoint": [
+                    "sleep"
+               ],
+               "OnBuild": null,
+               "Labels": null,
+               "Annotations": {
+                    "io.container.manager": "libpod",
+                    "org.opencontainers.image.stopSignal": "15",
+                    "org.systemd.property.KillSignal": "15",
+                    "org.systemd.property.TimeoutStopUSec": "uint64 10000000"
+               },
+               "StopSignal": "SIGTERM",
+               "HealthcheckOnFailureAction": "none",
+               "HealthLogDestination": "local",
+               "HealthcheckMaxLogCount": 5,
+               "HealthcheckMaxLogSize": 500,
+               "CreateCommand": [
+                    "/usr/bin/podman",
+                    "pod",
+                    "create",
+                    "--name",
+                    "quay-pod",
+                    "--infra-image",
+                    "registry.access.redhat.com/ubi8/pause:8.7-6",
+                    "--publish",
+                    "8443:8443",
+                    "--pod-id-file",
+                    "/run/quay-pod.service-pod-id",
+                    "--replace"
+               ],
+               "Umask": "0022",
+               "Timeout": 0,
+               "StopTimeout": 10,
+               "Passwd": true,
+               "sdNotifyMode": "container",
+               "ExposedPorts": {
+                    "8443/tcp": {}
+               }
+          },
+          "HostConfig": {
+               "Binds": [],
+               "CgroupManager": "systemd",
+               "CgroupMode": "private",
+               "ContainerIDFile": "",
+               "LogConfig": {
+                    "Type": "journald",
+                    "Config": null,
+                    "Path": "",
+                    "Tag": "",
+                    "Size": "0B"
+               },
+               "NetworkMode": "bridge",
+               "PortBindings": {
+                    "8443/tcp": [
+                         {
+                              "HostIp": "0.0.0.0",
+                              "HostPort": "8443"
+                         }
+                    ]
+               },
+               "RestartPolicy": {
+                    "Name": "no",
+                    "MaximumRetryCount": 0
+               },
+               "AutoRemove": false,
+               "AutoRemoveImage": false,
+               "Annotations": {
+                    "io.container.manager": "libpod",
+                    "org.opencontainers.image.stopSignal": "15",
+                    "org.systemd.property.KillSignal": "15",
+                    "org.systemd.property.TimeoutStopUSec": "uint64 10000000"
+               },
+               "VolumeDriver": "",
+               "VolumesFrom": null,
+               "CapAdd": [],
+               "CapDrop": [],
+               "Dns": [],
+               "DnsOptions": [],
+               "DnsSearch": [],
+               "ExtraHosts": [],
+               "GroupAdd": [],
+               "IpcMode": "shareable",
+               "Cgroup": "",
+               "Cgroups": "default",
+               "Links": null,
+               "OomScoreAdj": 0,
+               "PidMode": "private",
+               "Privileged": false,
+               "PublishAllPorts": false,
+               "ReadonlyRootfs": false,
+               "SecurityOpt": [],
+               "Tmpfs": {},
+               "UTSMode": "private",
+               "UsernsMode": "",
+               "ShmSize": 65536000,
+               "Runtime": "oci",
+               "ConsoleSize": [
+                    0,
+                    0
+               ],
+               "Isolation": "",
+               "CpuShares": 0,
+               "Memory": 0,
+               "NanoCpus": 0,
+               "CgroupParent": "machine.slice/machine-libpod_pod_f3014e61665747efdf97bef12f7da40d40683cf69b1d99bce2bf5a1dc7028235.slice",
+               "BlkioWeight": 0,
+               "BlkioWeightDevice": null,
+               "BlkioDeviceReadBps": null,
+               "BlkioDeviceWriteBps": null,
+               "BlkioDeviceReadIOps": null,
+               "BlkioDeviceWriteIOps": null,
+               "CpuPeriod": 0,
+               "CpuQuota": 0,
+               "CpuRealtimePeriod": 0,
+               "CpuRealtimeRuntime": 0,
+               "CpusetCpus": "",
+               "CpusetMems": "",
+               "Devices": [],
+               "DiskQuota": 0,
+               "KernelMemory": 0,
+               "MemoryReservation": 0,
+               "MemorySwap": 0,
+               "MemorySwappiness": 0,
+               "OomKillDisable": false,
+               "PidsLimit": 0,
+               "Ulimits": [
+                    {
+                         "Name": "RLIMIT_NPROC",
+                         "Soft": 4194304,
+                         "Hard": 4194304
+                    }
+               ],
+               "CpuCount": 0,
+               "CpuPercent": 0,
+               "IOMaximumIOps": 0,
+               "IOMaximumBandwidth": 0,
+               "CgroupConf": null
+          }
+     }
+]
+[root@bastion-sno mirror-reg]# systemctl status quay-app
+● quay-app.service - Quay Container
+     Loaded: loaded (/etc/systemd/system/quay-app.service; enabled; preset: disabled)
+     Active: activating (auto-restart) (Result: exit-code) since Mon 2026-06-01 10:30:22 UTC; 10s ago
+    Process: 1662843 ExecStartPre=/bin/rm -f /run/quay-app.service-pid /run/quay-app.service-cid (code=exited, status=0/SUCCESS)
+    Process: 1662844 ExecStart=/usr/bin/podman run --name quay-app -v /root/quay-install/quay-config:/quay-registry/conf/stack:Z -v quay-storage:/datastorage:Z --pod=quay-pod --conmon-pidfile /run/quay-app>
+    Process: 1662962 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile /run/quay-app.service-cid (code=exited, status=0/SUCCESS)
+   Main PID: 1662844 (code=exited, status=1/FAILURE)
+        CPU: 314ms
+
+[root@bastion-sno mirror-reg]# systemctl list-units | grep -i quay
+  quay-app.service                                                                                                                     loaded activating auto-restart Quay Container
+  quay-pod.service                                                                                                                     loaded active     exited       Infra Container for Quay
+  quay-postgres.service                                                                                                                loaded active     running      PostgreSQL Podman Container for Quay
+  quay-redis.service                                                                                                                   loaded active     running      Redis Podman Container for Quay
+[root@bastion-sno mirror-reg]# podman ps -a
+CONTAINER ID  IMAGE                                                    COMMAND         CREATED      STATUS        PORTS                             NAMES
+6fbb7e0d3de7  registry.access.redhat.com/ubi8/pause:8.7-6              infinity        6 weeks ago  Up 5 minutes  0.0.0.0:8443->8443/tcp            f3014e616657-infra
+cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 5 minutes  0.0.0.0:8443->8443/tcp, 6379/tcp  quay-redis
+b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 5 minutes  0.0.0.0:8443->8443/tcp, 5432/tcp  quay-postgres
+[root@bastion-sno mirror-reg]# podman pod ps
+POD ID        NAME        STATUS      CREATED      INFRA ID      # OF CONTAINERS
+f3014e616657  quay-pod    Running     6 weeks ago  6fbb7e0d3de7  3
 [root@bastion-sno mirror-reg]#
