@@ -1,14 +1,5 @@
-[root@bastion-sno quay-rootCA]# ss  | grep 8443
-u_str ESTAB      0      0                     /run/dbus/system_bus_socket 159761184                     * 159784435
-u_str ESTAB      0      0                                               * 159749659                     * 159784436
-u_str ESTAB      0      0                       /run/user/1001/pipewire-0 159774454                     * 159784439
-u_str ESTAB      0      0                              /run/user/1001/bus 159786149                     * 159784438
-u_str ESTAB      0      0                              /run/user/1001/bus 159784436                     * 159749659
-u_str ESTAB      0      0                                               * 159784435                     * 159761184
-u_str ESTAB      0      0                                               * 159784438                     * 159786149
-u_str ESTAB      0      0                                               * 159784439                     * 159774454
-[root@bastion-sno quay-rootCA]# ss -tulpn  | grep 8443
-tcp   LISTEN 517    4096                                  0.0.0.0:8443       0.0.0.0:*    users:(("conmon",pid=5105,fd=5))
+
+
 [root@bastion-sno quay-rootCA]# curl -vk  https://bastion-sno.lab.ocp.lan:8443/v2
 *   Trying 72.1.0.172:8443...
 * Connected to bastion-sno.lab.ocp.lan (72.1.0.172) port 8443 (#0)
@@ -24,4 +15,11 @@ CONTAINER ID  IMAGE                                                    COMMAND  
 cdc8a49231b2  registry.redhat.io/rhel8/redis-6:1-92.1669834635         run-redis       6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 6379/tcp                      quay-redis
 b151dbb177b9  registry.redhat.io/rhel8/postgresql-10:1-203.1669834630  run-postgresql  6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 5432/tcp                      quay-postgres
 5d8d7f240345  registry.redhat.io/quay/quay-rhel8:v3.8.14               registry        6 weeks ago  Up 6 weeks  0.0.0.0:8443->8443/tcp, 7443/tcp, 8080/tcp, 8443/tcp  quay-app
-[root@bastion-sno quay-rootCA]#
+[root@bastion-sno quay-rootCA]# podman logs quay-app --tail=200
+Error: no container with name or ID "--tail=200" found: no such container
+[root@bastion-sno quay-rootCA]# podman exec -it quay-app bash
+bash-4.4$  curl -vk  https://loaclhost:8443/v2
+^C
+bash-4.4$  curl -vk  https://loaclhost:8080/v2
+^C
+bash-4.4$ exit
