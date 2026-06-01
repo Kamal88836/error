@@ -1,23 +1,89 @@
-sno4@haproxy:~$ ldd ./coreos-installer
-./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.32' not found (required by ./coreos-installer)
-./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by ./coreos-installer)
-./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found (required by ./coreos-installer)
-./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /lib/x86_64-linux-gnu/libcrypto.so.3)
-./coreos-installer: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found (required by /lib/x86_64-linux-gnu/libcrypto.so.3)
-        linux-vdso.so.1 (0x00007ffd257fe000)
-        libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x00007f4369cfc000)
-        liblzma.so.5 => /lib/x86_64-linux-gnu/liblzma.so.5 (0x00007f4369cd3000)
-        libssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007f4369c2d000)
-        libcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007f43697fb000)
-        libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f43697e0000)
-        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f4369691000)
-        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f436949d000)
-        /lib64/ld-linux-x86-64.so.2 (0x00007f436a920000)
-        libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f436947a000)
-        libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007f436945e000)
-sno4@haproxy:~$ find /usr -name "libssl.so.*"
-/usr/lib/x86_64-linux-gnu/libssl.so.1.1
-/usr/lib/x86_64-linux-gnu/libssl.so.3
-sno4@haproxy:~$ find /usr -name "libc.so.*"
-/usr/lib/x86_64-linux-gnu/libc.so.6
+  journalctl -b -f -u release-image.service -u bootkube.service
+[systemd]
+Failed Units: 1
+  NetworkManager-wait-online.service
+[core@sno4 ~]$ journalctl -b -f -u release-image.service -u bootkube.service
+Jun 01 09:21:53 sno4 release-image-download.sh[18252]: Error: initializing source docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25: pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": net/http: TLS handshake timeout
+Jun 01 09:21:53 sno4 podman[18252]: 2026-06-01 09:20:30.023413642 +0000 UTC m=+0.019895825 image pull  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25
+Jun 01 09:21:53 sno4 release-image-download.sh[3539]: Pull failed. Retrying bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25...
+Jun 01 09:22:13 sno4 release-image-download.sh[18288]: time="2026-06-01T09:22:13Z" level=warning msg="Failed, retrying in 1s ... (1/3). Error: initializing source docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25: pinging container registry bastion-sno.lab.ocp.lan:8443: Get \"https://bastion-sno.lab.ocp.lan:8443/v2/\": net/http: TLS handshake timeout"
+Jun 01 09:22:34 sno4 release-image-download.sh[18288]: time="2026-06-01T09:22:34Z" level=warning msg="Failed, retrying in 1s ... (2/3). Error: initializing source docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25: pinging container registry bastion-sno.lab.ocp.lan:8443: Get \"https://bastion-sno.lab.ocp.lan:8443/v2/\": net/http: TLS handshake timeout"
+Jun 01 09:22:55 sno4 release-image-download.sh[18288]: time="2026-06-01T09:22:55Z" level=warning msg="Failed, retrying in 1s ... (3/3). Error: initializing source docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25: pinging container registry bastion-sno.lab.ocp.lan:8443: Get \"https://bastion-sno.lab.ocp.lan:8443/v2/\": net/http: TLS handshake timeout"
+Jun 01 09:23:16 sno4 release-image-download.sh[18288]: Error: initializing source docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25: pinging container registry bastion-sno.lab.ocp.lan:8443: Get "https://bastion-sno.lab.ocp.lan:8443/v2/": net/http: TLS handshake timeout
+Jun 01 09:23:16 sno4 podman[18288]: 2026-06-01 09:21:53.149401578 +0000 UTC m=+0.018297092 image pull  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25
+Jun 01 09:23:16 sno4 release-image-download.sh[3539]: Pull failed. Retrying bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25...
+Jun 01 09:23:36 sno4 release-image-download.sh[18320]: time="2026-06-01T09:23:36Z" level=warning msg="Failed, retrying in 1s ... (1/3). Error: initializing source docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25: pinging container registry bastion-sno.lab.ocp.lan:8443: Get \"https://bastion-sno.lab.ocp.lan:8443/v2/\": net/http: TLS handshake timeout"
+Jun 01 09:23:57 sno4 release-image-download.sh[18320]: time="2026-06-01T09:23:57Z" level=warning msg="Failed, retrying in 1s ... (2/3). Error: initializing source docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25: pinging container registry bastion-sno.lab.ocp.lan:8443: Get \"https://bastion-sno.lab.ocp.lan:8443/v2/\": net/http: TLS handshake timeout"
+Jun 01 09:24:18 sno4 release-image-download.sh[18320]: time="2026-06-01T09:24:18Z" level=warning msg="Failed, retrying in 1s ... (3/3). Error: initializing source docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4@sha256:2bda857a6a92b9a6cd353e707029218a78ba1b4a60a762d849a2bc0eb4234e25: pinging container registry bastion-sno.lab.ocp.lan:8443: Get \"https://bastion-sno.lab.ocp.lan:8443/v2/\": net/http: TLS handshake timeout"
+^C
+[core@sno4 ~]$
+logout
+Connection to 72.1.0.182 closed.
+sno4@haproxy:~$ cat kamal/install-config.yaml
+apiVersion: v1
+baseDomain: ocp.lan                                                                                # Planned main domain-name (added in DNS Server)
+imageContentSources:
+- mirrors:
+  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images
+  source: quay.io/openshift-release-dev/ocp-release
+
+compute:
+  - hyperthreading: Enabled
+    name: worker
+    replicas: 0                                                                                             # Must be set to 0 for User Provisioned Installation as worker nodes will be manually deployed.
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 1                                                                                               # Must be set to 1 for SNO
+metadata:
+  name: lab4                                                                                                # Planned cluster-name
+networking:
+  clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+    - cidr: fd01::/48
+      hostPrefix: 64
+  networkType: OVNKubernetes
+  serviceNetwork:
+    - 172.30.0.0/16
+    - fd02::/112
+  machineNetwork:
+    - cidr: 72.1.0.0/16                                                                                     # Current Cluster IPv4 address with subbnet
+    - cidr: 2405:100:200:72::/64
+platform:
+  none: {}
+bootstrapInPlace:
+  installationDisk: /dev/sdb
+fips: false
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA==","email":"issaac.k@samsung.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA==","email":"issaac.k@samsung.com"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA==","email":"issaac.k@samsung.com"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA==","email":"issaac.k@samsung.com"},"bastion-sno.lab.ocp.lan:8443": {"auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="}}}'                                 # PullSecret from Mirror-Registry without newline
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCVdIBLoJoH9Ysxw+4FvFR59+brIi4go2epLt6u+xnVxQKcC/Pd1QPkBi7WvCYyOyD2Vk2U1J8vF4CfvaxbcvswSGC8goDhJlkihoAA6esQjx0pSiPLbSzpkF5Sd/k6A5HU+UD9gUsIGVf69qU5BMO2nBla9M/IFvExzsSuO92RPxa0TRkCaKGHYfXhxai9wA0gq6g864b3f6j93J1X7YDOGrxcsxuknVAaEy/5p7PJLqGNFhwRdGUBZ86kBKfRIc+kCtaJ9WpyfuOo8mZAHTdUb09vJYvFU6SwhWp0+05awRLj+VgKewHpJpjnrGH44uGwAO8pcm9oxltEZyeaww7isFX9DZpZDqvZ+7XAqkH8W6MBiu3eTLXQ/6aqPBGli36AM4nkwoPpIJ9lab1NTvKfR/vWMJllNF5gp2urmdvkxzZhW9KU3Qt+R9rYzpGs2Td1pPuBv4TedulDHU0OExAIn7A5+tOjfAYlSrOVjCCxIR2YUYvQRr5Rw+Q3uuGLaYk= sno4@haproxy.lab4.ocp.lan
+'                                            # SSH Pub Key from above step 7.1
+# Get root ca cert from Mirror Registry Server and keep proper indentation while pasting here (cat /root/quay-install/quay-rootCA/rootCA.pem)
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIID6zCCAtOgAwIBAgIUeBtKZdvPaXAzpfSqL8/4tyv5mKQwDQYJKoZIhvcNAQEL
+  BQAwcTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+  azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xIDAeBgNVBAMMF2Jh
+  c3Rpb24tc25vLmxhYi5vY3AubGFuMB4XDTI2MDQwOTA5MzI1NloXDTI5MDEyNzA5
+  MzI1NlowcTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcg
+  WW9yazENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xIDAeBgNVBAMM
+  F2Jhc3Rpb24tc25vLmxhYi5vY3AubGFuMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+  MIIBCgKCAQEAtcVlDf+Ukew+T24jA8zV2PHrdLLU1rAHgU+8GAZJebcg487FFNmi
+  nwnV98Y27InZmqQElr5KNO4kPifCzqhLhBiy5SpR/M5HTQJ1NeawqzM3NK9EmZyo
+  R7KBRSuo+0JkwdPMzICsUE1oIu2l/4eWGOR1cCmDQ/icSenWYPSzYj2iphkUkI1c
+  +3585nR6ZiFvByzAtwGNls6o9Xjeie1feHzNGeKHsUXtr7wZCAxzcpz6329LegxK
+  Isfrtk2qXmX63VkrUZIlfzKshR5csHmo2imx9ibecVw63GvY9T3FkNqrIlkTSS4G
+  X81wEzxwtMSIcHrNfhkTgMGwGAf94BDpgQIDAQABo3sweTALBgNVHQ8EBAMCAuQw
+  EwYDVR0lBAwwCgYIKwYBBQUHAwEwIgYDVR0RBBswGYIXYmFzdGlvbi1zbm8ubGFi
+  Lm9jcC5sYW4wEgYDVR0TAQH/BAgwBgEB/wIBATAdBgNVHQ4EFgQU7uGgS6BZan1t
+  pr+H34uL7gGU7agwDQYJKoZIhvcNAQELBQADggEBACbU5uJWKAhWdggqLgURMd0E
+  gRmbA1v0mUPnJo5qfjR9I9msoX+4qQtkfmAjHjtFp6Z9I+J+G56oMoOCzwVw3bJl
+  eyWeWcBJhATCXvbeZka5a5hMXpxuk90cYUXpqvP2p10S5CYX8LRvss7zH28dZ6+L
+  unVvZIKZWEZ1XQobeNlD9kSxl6CEFVTLiwXvDrr6RDrrAPmNAWMlkKqGTe5SrXp2
+  9LwfEwKwZsT7rTyn3T7yQ8lumldA9KDmSsX75KU7u50SrFQbyH1icqRd/CPGNyfK
+  v3ARZymvQt73UmkODWnddxVILhLYGZDdwqlC2bFJm1g/xNdGq8AlzDgAjqFRHO4=
+  -----END CERTIFICATE-----
 sno4@haproxy:~$
