@@ -1,9 +1,78 @@
+Good news: you have moved past the NMState validation problem.
+
+The current log shows:
+
 INFO Extracting base ISO from release payload
-DEBUG Using mirror configuration
-DEBUG Fetching image from OCP release ([oc adm release info --image-for=machine-os-images --filter-by-os=linux/amd64 --insecure=true --icsp-file=/tmp/icsp-file2271084425 quay.io/openshift-release-dev/ocp-release@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72])
 WARNING Failed to extract base ISO from release payload - check registry configuration
 INFO Downloading base ISO
-DEBUG Obtaining RHCOS image file from 'https://rhcos.mirror.openshift.com/art/storage/prod/streams/rhel-9.6/builds/9.6.20260217-1/x86_64/rhcos-9.6.20260217-1-live-iso.x86_64.iso'
-DEBUG image download content length: 1371537408
-DEBUG Unpacking file into "/root/.cache/agent/image_cache/rhcos-9.6.20260217-1-live-iso.x86_64.iso"...
+DEBUG Obtaining RHCOS image file from 'https://rhcos.mirror.openshift.com/...'
+
+This means:
+
+✅ agent-config.yaml was accepted
+
+✅ NMState validation passed
+
+✅ Agent manifests and ignition were generated
+
+✅ Installer started creating the ISO
+
+The installer is now failing to pull the RHCOS ISO from your mirrored release image and is falling back to the public RHCOS mirror.
+
+The suspicious line is:
+
+WARNING Failed to extract base ISO from release payload - check registry configuration
+
+Given your config:
+
+ImageDigestSources:
+- mirrors:
+  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release
+
+and
+
+additionalTrustBundle:
+
+I'd verify the mirrored release image actually contains the machine-os-images reference.
+
+Run:
+
+oc adm release info \
+--image-for=machine-os-images \
+--insecure=true \
+--icsp-file=/tmp/icsp-file2271084425 \
+quay.io/openshift-release-dev/ocp-release@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72
+
+Also verify directly from the bastion:
+
+podman login bastion-sno.lab.ocp.lan:8443
+
+and
+
+oc adm release info \
+bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21 \
+--insecure
+
+(or whatever tag you mirrored).
+
+If that works, the warning is usually harmless because the installer downloads the ISO directly from:
+
+https://rhcos.mirror.openshift.com
+
+and continues.
+
+The important question is:
+
+Did the command eventually complete and produce:
+
+agent.x86_64.iso
+
+Check:
+
+ls -lh *.iso
+
+If the ISO exists, the warning can be ignored. If the build later fails, paste the lines after:
+
 DEBUG no known archive format detected for image, assuming no decompression necessary
+
+because that's where the next failure would appear.
