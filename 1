@@ -1,3 +1,760 @@
-oc describe csv ocs-operator.v4.20.10-rhodf -n openshift-storage
-oc describe csv odf-csi-addons-operator.v4.20.10-rhodf -n openshift-storage
-oc get pods -n openshift-storage
+[root@bastion ~]# oc describe csv odf-csi-addons-operator.v4.20.10-rhodf -n openshift-storage
+Name:         odf-csi-addons-operator.v4.20.10-rhodf
+Namespace:    openshift-storage
+Labels:       olm.managed=true
+              operators.coreos.com/odf-csi-addons-operator.openshift-storage=
+Annotations:  alm-examples: []
+              capabilities: Seamless Upgrades
+              createdAt: 2026-04-17T05:18:03Z
+              features.operators.openshift.io/cnf: false
+              features.operators.openshift.io/cni: false
+              features.operators.openshift.io/csi: true
+              features.operators.openshift.io/disconnected: true
+              features.operators.openshift.io/fips-compliant: true
+              features.operators.openshift.io/proxy-aware: true
+              features.operators.openshift.io/tls-profiles: false
+              features.operators.openshift.io/token-auth-aws: false
+              features.operators.openshift.io/token-auth-azure: false
+              features.operators.openshift.io/token-auth-gcp: false
+              olm.operatorGroup: openshift-storage-operatorgroup
+              olm.operatorNamespace: openshift-storage
+              olm.skipRange: >=4.2.0 <4.20.10-rhodf
+              olm.targetNamespaces: openshift-storage
+              operatorframework.io/properties:
+                {"properties":[{"type":"olm.gvk","value":{"group":"csiaddons.openshift.io","kind":"CSIAddonsNode","version":"v1alpha1"}},{"type":"olm.gvk"...
+              operators.openshift.io/valid-subscription:
+                ["OpenShift Platform Plus","OpenShift Data Foundation Essentials","OpenShift Data Foundation Advanced"]
+              operators.operatorframework.io/builder: operator-sdk-unknown
+              operators.operatorframework.io/operator-type: non-standalone
+              operators.operatorframework.io/project_layout: go.kubebuilder.io/v4
+API Version:  operators.coreos.com/v1alpha1
+Kind:         ClusterServiceVersion
+Metadata:
+  Creation Timestamp:  2026-06-02T06:25:25Z
+  Finalizers:
+    operators.coreos.com/csv-cleanup
+  Generation:  1
+  Owner References:
+    API Version:           operators.coreos.com/v1alpha1
+    Block Owner Deletion:  true
+    Controller:            true
+    Kind:                  Subscription
+    Name:                  odf-operator
+    UID:                   adac02f8-399e-4cb4-8d80-aeeb7424c854
+  Resource Version:        50245200
+  UID:                     f9b651d9-6075-47a6-b9c4-a2b6a8866339
+Spec:
+  Apiservicedefinitions:
+  Cleanup:
+    Enabled:  false
+  Customresourcedefinitions:
+    Owned:
+      Description:   CSIAddonsNode is the Schema for the csiaddonsnode API
+      Display Name:  CSIAddons Node
+      Kind:          CSIAddonsNode
+      Name:          csiaddonsnodes.csiaddons.openshift.io
+      Version:       v1alpha1
+      Description:   EncryptionKeyRotationCronJob is the Schema for the encryptionkeyrotationcronjobs API
+      Display Name:  EncryptionKeyRotation CronJob
+      Kind:          EncryptionKeyRotationCronJob
+      Name:          encryptionkeyrotationcronjobs.csiaddons.openshift.io
+      Version:       v1alpha1
+      Description:   EncryptionKeyRotationJob is the Schema for the encryptionkeyrotationjobs API
+      Display Name:  EncryptionKeyRotation Job
+      Kind:          EncryptionKeyRotationJob
+      Name:          encryptionkeyrotationjobs.csiaddons.openshift.io
+      Version:       v1alpha1
+      Description:   NetworkFenceClass is the Schema for the networkfenceclasses API
+      Display Name:  Network Fence Class
+      Kind:          NetworkFenceClass
+      Name:          networkfenceclasses.csiaddons.openshift.io
+      Version:       v1alpha1
+      Description:   NetworkFence is the Schema for the networkfences API
+      Display Name:  Network Fence
+      Kind:          NetworkFence
+      Name:          networkfences.csiaddons.openshift.io
+      Version:       v1alpha1
+      Description:   ReclaimSpaceCronJob is the Schema for the reclaimspacecronjobs API
+      Display Name:  Reclaim Space CronJob
+      Kind:          ReclaimSpaceCronJob
+      Name:          reclaimspacecronjobs.csiaddons.openshift.io
+      Version:       v1alpha1
+      Description:   ReclaimSpaceJob is the Schema for the reclaimspacejobs API
+      Display Name:  Reclaim Space Job
+      Kind:          ReclaimSpaceJob
+      Name:          reclaimspacejobs.csiaddons.openshift.io
+      Version:       v1alpha1
+      Description:   VolumeGroupReplicationClass is the Schema for the volumegroupreplicationclasses API
+      Display Name:  Volume Group Replication Class
+      Kind:          VolumeGroupReplicationClass
+      Name:          volumegroupreplicationclasses.replication.storage.openshift.io
+      Version:       v1alpha1
+      Description:   VolumeGroupReplicationContent is the Schema for the volumegroupreplicationcontents API
+      Display Name:  Volume Group Replication Content
+      Kind:          VolumeGroupReplicationContent
+      Name:          volumegroupreplicationcontents.replication.storage.openshift.io
+      Version:       v1alpha1
+      Kind:          VolumeGroupReplication
+      Name:          volumegroupreplications.replication.storage.openshift.io
+      Version:       v1alpha1
+      Description:   VolumeReplicationClass is the Schema for the volumereplicationclasses API
+      Display Name:  Volume Replication Class
+      Kind:          VolumeReplicationClass
+      Name:          volumereplicationclasses.replication.storage.openshift.io
+      Version:       v1alpha1
+      Description:   VolumeReplication is the Schema for the volumereplications API
+      Display Name:  Volume Replication
+      Kind:          VolumeReplication
+      Name:          volumereplications.replication.storage.openshift.io
+      Version:       v1alpha1
+  Description:       CSI Addons provides the CSI Addons Controller that enables advanced storage operations for CSI-drivers.
+  Display Name:      CSI Addons
+  Icon:
+    base64data:  PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTQ1Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UwMDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPlJlZEhhdC1Mb2dvLUhhdC1Db2xvcjwvdGl0bGU+PHBhdGggZD0iTTE1Ny43Nyw2Mi42MWExNCwxNCwwLDAsMSwuMzEsMy40MmMwLDE0Ljg4LTE4LjEsMTcuNDYtMzAuNjEsMTcuNDZDNzguODMsODMuNDksNDIuNTMsNTMuMjYsNDIuNTMsNDRhNi40Myw2LjQzLDAsMCwxLC4yMi0xLjk0bC0zLjY2LDkuMDZhMTguNDUsMTguNDUsMCwwLDAtMS41MSw3LjMzYzAsMTguMTEsNDEsNDUuNDgsODcuNzQsNDUuNDgsMjAuNjksMCwzNi40My03Ljc2LDM2LjQzLTIxLjc3LDAtMS4wOCwwLTEuOTQtMS43My0xMC4xM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMjcuNDcsODMuNDljMTIuNTEsMCwzMC42MS0yLjU4LDMwLjYxLTE3LjQ2YTE0LDE0LDAsMCwwLS4zMS0zLjQybC03LjQ1LTMyLjM2Yy0xLjcyLTcuMTItMy4yMy0xMC4zNS0xNS43My0xNi42QzEyNC44OSw4LjY5LDEwMy43Ni41LDk3LjUxLjUsOTEuNjkuNSw5MCw4LDgzLjA2LDhjLTYuNjgsMC0xMS42NC01LjYtMTcuODktNS42LTYsMC05LjkxLDQuMDktMTIuOTMsMTIuNSwwLDAtOC40MSwyMy43Mi05LjQ5LDI3LjE2QTYuNDMsNi40MywwLDAsMCw0Mi41Myw0NGMwLDkuMjIsMzYuMywzOS40NSw4NC45NCwzOS40NU0xNjAsNzIuMDdjMS43Myw4LjE5LDEuNzMsOS4wNSwxLjczLDEwLjEzLDAsMTQtMTUuNzQsMjEuNzctMzYuNDMsMjEuNzdDNzguNTQsMTA0LDM3LjU4LDc2LjYsMzcuNTgsNTguNDlhMTguNDUsMTguNDUsMCwwLDEsMS41MS03LjMzQzIyLjI3LDUyLC41LDU1LC41LDc0LjIyYzAsMzEuNDgsNzQuNTksNzAuMjgsMTMzLjY1LDcwLjI4LDQ1LjI4LDAsNTYuNy0yMC40OCw1Ni43LTM2LjY1LDAtMTIuNzItMTEtMjcuMTYtMzAuODMtMzUuNzgiLz48L3N2Zz4=
+    Mediatype:   image/svg+xml
+  Install:
+    Spec:
+      Cluster Permissions:
+        Rules:
+          API Groups:
+
+          Resources:
+            events
+          Verbs:
+            create
+            patch
+          API Groups:
+
+          Resources:
+            namespaces
+            pods
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+
+          Resources:
+            persistentvolumeclaims
+          Verbs:
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+
+          Resources:
+            persistentvolumeclaims/finalizers
+          Verbs:
+            update
+          API Groups:
+
+          Resources:
+            persistentvolumes
+          Verbs:
+            get
+            list
+            update
+            watch
+          API Groups:
+            coordination.k8s.io
+          Resources:
+            leases
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+            csiaddons.openshift.io
+          Resources:
+            csiaddonsnodes
+            encryptionkeyrotationcronjobs
+            encryptionkeyrotationjobs
+            networkfenceclasses
+            networkfences
+            reclaimspacecronjobs
+            reclaimspacejobs
+          Verbs:
+            create
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            csiaddons.openshift.io
+          Resources:
+            csiaddonsnodes/finalizers
+            encryptionkeyrotationcronjobs/finalizers
+            encryptionkeyrotationjobs/finalizers
+            networkfenceclasses/finalizers
+            networkfences/finalizers
+            reclaimspacecronjobs/finalizers
+            reclaimspacejobs/finalizers
+          Verbs:
+            update
+          API Groups:
+            csiaddons.openshift.io
+          Resources:
+            csiaddonsnodes/status
+            encryptionkeyrotationcronjobs/status
+            encryptionkeyrotationjobs/status
+            networkfenceclasses/status
+            networkfences/status
+            reclaimspacecronjobs/status
+            reclaimspacejobs/status
+          Verbs:
+            get
+            patch
+            update
+          API Groups:
+            replication.storage.openshift.io
+          Resources:
+            volumegroupreplicationclasses
+            volumereplicationclasses
+          Verbs:
+            get
+            list
+            watch
+          API Groups:
+            replication.storage.openshift.io
+          Resources:
+            volumegroupreplicationcontents
+          Verbs:
+            create
+            delete
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            replication.storage.openshift.io
+          Resources:
+            volumegroupreplicationcontents/finalizers
+            volumegroupreplications/finalizers
+            volumereplications/finalizers
+          Verbs:
+            update
+          API Groups:
+            replication.storage.openshift.io
+          Resources:
+            volumegroupreplicationcontents/status
+            volumegroupreplications/status
+          Verbs:
+            get
+            patch
+            update
+          API Groups:
+            replication.storage.openshift.io
+          Resources:
+            volumegroupreplications
+          Verbs:
+            get
+            list
+            patch
+            update
+            watch
+          API Groups:
+            replication.storage.openshift.io
+          Resources:
+            volumereplications
+          Verbs:
+            create
+            delete
+            get
+            list
+            update
+            watch
+          API Groups:
+            replication.storage.openshift.io
+          Resources:
+            volumereplications/status
+          Verbs:
+            get
+            list
+            update
+          API Groups:
+            storage.k8s.io
+          Resources:
+            storageclasses
+            volumeattachments
+          Verbs:
+            get
+            list
+            watch
+        Service Account Name:  csi-addons-controller-manager
+      Deployments:
+        Label:
+          app.kubernetes.io/name:  csi-addons
+        Name:                      csi-addons-controller-manager
+        Spec:
+          Replicas:  1
+          Selector:
+            Match Labels:
+              app.kubernetes.io/name:  csi-addons
+          Strategy:
+          Template:
+            Metadata:
+              Annotations:
+                kubectl.kubernetes.io/default-container:  manager
+              Creation Timestamp:                         <nil>
+              Labels:
+                app.kubernetes.io/name:  csi-addons
+                Control - Plane:         controller-manager
+            Spec:
+              Containers:
+                Args:
+                  --namespace=$(POD_NAMESPACE)
+                  --schedule-precedence=storageclass
+                  --leader-elect
+                  --automaxprocs
+                Command:
+                  /csi-addons-manager
+                Env:
+                  Name:  POD_NAMESPACE
+                  Value From:
+                    Field Ref:
+                      Field Path:  metadata.namespace
+                Image:             registry.redhat.io/odf4/odf-csi-addons-rhel9-operator@sha256:212d7f41f4adec45d6f9c4971c821a75c376a86a0cc8886ce3bf1bdb502d85ff
+                Liveness Probe:
+                  Http Get:
+                    Path:                 /healthz
+                    Port:                 8081
+                  Initial Delay Seconds:  15
+                  Period Seconds:         20
+                Name:                     manager
+                Ports:
+                  Container Port:  8443
+                  Name:            metrics
+                  Protocol:        TCP
+                Readiness Probe:
+                  Http Get:
+                    Path:                 /readyz
+                    Port:                 8081
+                  Initial Delay Seconds:  5
+                  Period Seconds:         10
+                Resources:
+                  Limits:
+                    Cpu:     1
+                    Memory:  512Mi
+                  Requests:
+                    Cpu:     10m
+                    Memory:  64Mi
+                Security Context:
+                  Allow Privilege Escalation:  false
+                  Read Only Root Filesystem:   true
+                Termination Message Policy:    FallbackToLogsOnError
+              Security Context:
+                Run As Non Root:                 true
+              Service Account Name:              csi-addons-controller-manager
+              Termination Grace Period Seconds:  10
+              Tolerations:
+                Effect:    NoSchedule
+                Key:       node.ocs.openshift.io/storage
+                Operator:  Equal
+                Value:     true
+      Permissions:
+        Rules:
+          API Groups:
+
+          Resources:
+            configmaps
+          Verbs:
+            get
+            list
+            watch
+            create
+            update
+            patch
+            delete
+          API Groups:
+            coordination.k8s.io
+          Resources:
+            leases
+          Verbs:
+            get
+            list
+            watch
+            create
+            update
+            patch
+            delete
+          API Groups:
+
+          Resources:
+            events
+          Verbs:
+            create
+            patch
+        Service Account Name:  csi-addons-controller-manager
+    Strategy:                  deployment
+  Install Modes:
+    Supported:  true
+    Type:       OwnNamespace
+    Supported:  false
+    Type:       SingleNamespace
+    Supported:  false
+    Type:       MultiNamespace
+    Supported:  true
+    Type:       AllNamespaces
+  Keywords:
+    storage
+    csi
+  Links:
+    Name:  CSI Addons
+    URL:   https://csi-addons.github.io
+  Maintainers:
+    Email:   csi-addons@redhat.com
+    Name:    CSI Addons Community
+  Maturity:  alpha
+  Provider:
+    Name:  CSI Addons Community
+  Related Images:
+    Image:   registry.redhat.io/odf4/odf-csi-addons-rhel9-operator@sha256:212d7f41f4adec45d6f9c4971c821a75c376a86a0cc8886ce3bf1bdb502d85ff
+    Name:    odf-csi-addons-operator
+    Image:   registry.redhat.io/odf4/odf-csi-addons-sidecar-rhel9@sha256:7724622a8bbaf4f3576133940ece32126ad37ab2f913b363a825a1d5c31e5058
+    Name:    csi-addons-sidecar
+    Image:   registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:3ea0ee7dfd5669815239bc61b06d7cc81d6950b90db35679d18fb4b8034564f6
+    Name:    rbac-proxy
+  Replaces:  odf-csi-addons-operator.v4.19.15-rhodf
+  Version:   4.20.10-rhodf
+Status:
+  Cleanup:
+  Conditions:
+    Last Transition Time:  2026-06-02T06:25:25Z
+    Last Update Time:      2026-06-02T06:25:25Z
+    Message:               requirements not yet checked
+    Phase:                 Pending
+    Reason:                RequirementsUnknown
+    Last Transition Time:  2026-06-02T06:25:25Z
+    Last Update Time:      2026-06-02T06:25:26Z
+    Message:               one or more requirements couldn't be found
+    Phase:                 Pending
+    Reason:                RequirementsNotMet
+    Last Transition Time:  2026-06-02T06:27:02Z
+    Last Update Time:      2026-06-02T06:27:02Z
+    Message:               all requirements found, attempting install
+    Phase:                 InstallReady
+    Reason:                AllRequirementsMet
+    Last Transition Time:  2026-06-02T06:27:04Z
+    Last Update Time:      2026-06-02T06:27:04Z
+    Message:               waiting for install components to report healthy
+    Phase:                 Installing
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-06-02T06:27:04Z
+    Last Update Time:      2026-06-02T06:27:06Z
+    Message:               installing: waiting for deployment csi-addons-controller-manager to become ready: deployment "csi-addons-controller-manager" waiting for 1 outdated replica(s) to be terminated
+    Phase:                 Installing
+    Reason:                InstallWaiting
+    Last Transition Time:  2026-06-02T06:27:41Z
+    Last Update Time:      2026-06-02T06:27:41Z
+    Message:               install strategy completed with no errors
+    Phase:                 Succeeded
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-06-02T09:32:34Z
+    Last Update Time:      2026-06-02T09:32:34Z
+    Message:               installing: waiting for deployment csi-addons-controller-manager to become ready: deployment "csi-addons-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Failed
+    Reason:                ComponentUnhealthy
+    Last Transition Time:  2026-06-02T09:32:35Z
+    Last Update Time:      2026-06-02T09:32:35Z
+    Message:               installing: waiting for deployment csi-addons-controller-manager to become ready: deployment "csi-addons-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Pending
+    Reason:                NeedsReinstall
+    Last Transition Time:  2026-06-02T09:32:36Z
+    Last Update Time:      2026-06-02T09:32:36Z
+    Message:               all requirements found, attempting install
+    Phase:                 InstallReady
+    Reason:                AllRequirementsMet
+    Last Transition Time:  2026-06-02T09:32:36Z
+    Last Update Time:      2026-06-02T09:32:36Z
+    Message:               waiting for install components to report healthy
+    Phase:                 Installing
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-06-02T09:32:36Z
+    Last Update Time:      2026-06-02T09:32:36Z
+    Message:               installing: waiting for deployment csi-addons-controller-manager to become ready: waiting for spec update of deployment "csi-addons-controller-manager" to be observed...
+    Phase:                 Installing
+    Reason:                InstallWaiting
+    Last Transition Time:  2026-06-02T09:37:35Z
+    Last Update Time:      2026-06-02T09:37:35Z
+    Message:               install timeout
+    Phase:                 Failed
+    Reason:                InstallCheckFailed
+    Last Transition Time:  2026-06-02T09:37:36Z
+    Last Update Time:      2026-06-02T09:37:36Z
+    Message:               installing: waiting for deployment csi-addons-controller-manager to become ready: deployment "csi-addons-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Pending
+    Reason:                NeedsReinstall
+    Last Transition Time:  2026-06-02T09:37:36Z
+    Last Update Time:      2026-06-02T09:37:36Z
+    Message:               all requirements found, attempting install
+    Phase:                 InstallReady
+    Reason:                AllRequirementsMet
+    Last Transition Time:  2026-06-02T09:37:37Z
+    Last Update Time:      2026-06-02T09:37:37Z
+    Message:               waiting for install components to report healthy
+    Phase:                 Installing
+    Reason:                InstallSucceeded
+    Last Transition Time:  2026-06-02T09:37:37Z
+    Last Update Time:      2026-06-02T09:37:38Z
+    Message:               installing: waiting for deployment csi-addons-controller-manager to become ready: deployment "csi-addons-controller-manager" not available: Deployment does not have minimum availability.
+    Phase:                 Installing
+    Reason:                InstallWaiting
+    Last Transition Time:  2026-06-02T09:38:59Z
+    Last Update Time:      2026-06-02T09:38:59Z
+    Message:               install strategy completed with no errors
+    Phase:                 Succeeded
+    Reason:                InstallSucceeded
+  Last Transition Time:    2026-06-02T09:38:59Z
+  Last Update Time:        2026-06-02T09:38:59Z
+  Message:                 install strategy completed with no errors
+  Phase:                   Succeeded
+  Reason:                  InstallSucceeded
+  Requirement Status:
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     csiaddonsnodes.csiaddons.openshift.io
+    Status:   Present
+    Uuid:     0077601b-2296-4b69-ba22-3221ac7ab7f4
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     encryptionkeyrotationcronjobs.csiaddons.openshift.io
+    Status:   Present
+    Uuid:     3d424534-d61d-4701-b991-2dc0da210ebd
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     encryptionkeyrotationjobs.csiaddons.openshift.io
+    Status:   Present
+    Uuid:     58208d16-44cb-442c-adf9-a3994e66d36e
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     networkfenceclasses.csiaddons.openshift.io
+    Status:   Present
+    Uuid:     73f30f27-910b-45ef-8161-56137708f827
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     networkfences.csiaddons.openshift.io
+    Status:   Present
+    Uuid:     2b30e766-d089-48d3-9e3e-4e1299917a66
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     reclaimspacecronjobs.csiaddons.openshift.io
+    Status:   Present
+    Uuid:     95adf568-556c-4474-a360-4b532e669411
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     reclaimspacejobs.csiaddons.openshift.io
+    Status:   Present
+    Uuid:     701daec1-852e-4930-8ac5-ae440a698810
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     volumegroupreplicationclasses.replication.storage.openshift.io
+    Status:   Present
+    Uuid:     e5970f44-44f3-4dae-b95d-c5d73bdf1d51
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     volumegroupreplicationcontents.replication.storage.openshift.io
+    Status:   Present
+    Uuid:     3d6c7660-c92c-41c2-8dd6-619a03493731
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     volumegroupreplications.replication.storage.openshift.io
+    Status:   Present
+    Uuid:     b7517169-2cdc-455b-9412-4fd0ce537162
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     volumereplicationclasses.replication.storage.openshift.io
+    Status:   Present
+    Uuid:     56458eca-4753-49b7-a1b8-a999ac766b76
+    Version:  v1
+    Group:    apiextensions.k8s.io
+    Kind:     CustomResourceDefinition
+    Message:  CRD is present and Established condition is true
+    Name:     volumereplications.replication.storage.openshift.io
+    Status:   Present
+    Uuid:     e7b24eaf-a730-42ec-802b-f87eb4662686
+    Version:  v1
+    Dependents:
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","patch"],"apiGroups":[""],"resources":["events"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":[""],"resources":["namespaces","pods"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","patch","update","watch"],"apiGroups":[""],"resources":["persistentvolumeclaims"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["update"],"apiGroups":[""],"resources":["persistentvolumeclaims/finalizers"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","update","watch"],"apiGroups":[""],"resources":["persistentvolumes"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":["coordination.k8s.io"],"resources":["leases"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":["csiaddons.openshift.io"],"resources":["csiaddonsnodes","encryptionkeyrotationcronjobs","encryptionkeyrotationjobs","networkfenceclasses","networkfences","reclaimspacecronjobs","reclaimspacejobs"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["update"],"apiGroups":["csiaddons.openshift.io"],"resources":["csiaddonsnodes/finalizers","encryptionkeyrotationcronjobs/finalizers","encryptionkeyrotationjobs/finalizers","networkfenceclasses/finalizers","networkfences/finalizers","reclaimspacecronjobs/finalizers","reclaimspacejobs/finalizers"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","patch","update"],"apiGroups":["csiaddons.openshift.io"],"resources":["csiaddonsnodes/status","encryptionkeyrotationcronjobs/status","encryptionkeyrotationjobs/status","networkfenceclasses/status","networkfences/status","reclaimspacecronjobs/status","reclaimspacejobs/status"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":["replication.storage.openshift.io"],"resources":["volumegroupreplicationclasses","volumereplicationclasses"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","patch","update","watch"],"apiGroups":["replication.storage.openshift.io"],"resources":["volumegroupreplicationcontents"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["update"],"apiGroups":["replication.storage.openshift.io"],"resources":["volumegroupreplicationcontents/finalizers","volumegroupreplications/finalizers","volumereplications/finalizers"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","patch","update"],"apiGroups":["replication.storage.openshift.io"],"resources":["volumegroupreplicationcontents/status","volumegroupreplications/status"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","patch","update","watch"],"apiGroups":["replication.storage.openshift.io"],"resources":["volumegroupreplications"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["create","delete","get","list","update","watch"],"apiGroups":["replication.storage.openshift.io"],"resources":["volumereplications"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","update"],"apiGroups":["replication.storage.openshift.io"],"resources":["volumereplications/status"]}
+      Status:   Satisfied
+      Version:  v1
+      Group:    rbac.authorization.k8s.io
+      Kind:     PolicyRule
+      Message:  cluster rule:{"verbs":["get","list","watch"],"apiGroups":["storage.k8s.io"],"resources":["storageclasses","volumeattachments"]}
+      Status:   Satisfied
+      Version:  v1
+    Group:
+    Kind:       ServiceAccount
+    Message:
+    Name:       csi-addons-controller-manager
+    Status:     Present
+    Version:    v1
+Events:
+  Type     Reason              Age                    From                        Message
+  ----     ------              ----                   ----                        -------
+  Warning  ComponentUnhealthy  13m                    operator-lifecycle-manager  installing: waiting for deployment csi-addons-controller-manager to become ready: deployment "csi-addons-controller-manager" not available: Deployment does not have minimum availability.
+  Normal   InstallWaiting      13m                    operator-lifecycle-manager  installing: waiting for deployment csi-addons-controller-manager to become ready: waiting for spec update of deployment "csi-addons-controller-manager" to be observed...
+  Normal   NeedsReinstall      8m31s (x4 over 13m)    operator-lifecycle-manager  installing: waiting for deployment csi-addons-controller-manager to become ready: deployment "csi-addons-controller-manager" not available: Deployment does not have minimum availability.
+  Warning  InstallCheckFailed  8m31s (x2 over 8m31s)  operator-lifecycle-manager  install timeout
+  Normal   AllRequirementsMet  8m30s (x3 over 13m)    operator-lifecycle-manager  all requirements found, attempting install
+  Normal   InstallSucceeded    8m30s (x4 over 13m)    operator-lifecycle-manager  waiting for install components to report healthy
+  Normal   InstallWaiting      8m29s (x3 over 13m)    operator-lifecycle-manager  installing: waiting for deployment csi-addons-controller-manager to become ready: deployment "csi-addons-controller-manager" not available: Deployment does not have minimum availability.
+  Normal   InstallSucceeded    7m8s (x2 over 7m8s)    operator-lifecycle-manager  install strategy completed with no errors
+[root@bastion ~]# oc get pods -n openshift-storage
+NAME                                                              READY   STATUS                   RESTARTS        AGE
+ceph-csi-controller-manager-69648f56f5-sskp5                      1/1     Running                  1               3h17m
+cnpg-controller-manager-54c86f75c-z6m4r                           1/1     Running                  1               3h13m
+csi-addons-controller-manager-78d6655bf-2rzpn                     1/1     Running                  0               4m45s
+csi-addons-controller-manager-78d6655bf-5mtms                     1/1     Terminating              0               3h15m
+noobaa-core-0                                                     1/2     Running                  0               9m55s
+noobaa-db-pg-cluster-1                                            0/1     Running                  14 (67m ago)    26h
+noobaa-db-pg-cluster-2                                            1/1     Terminating              0               24h
+noobaa-endpoint-5d89f8b875-gmzm2                                  1/1     Running                  1               3h7m
+noobaa-operator-6dff4b774b-2rd9h                                  1/1     Running                  1               3h13m
+ocs-client-operator-console-c9df58b5b-gljzx                       1/1     Running                  1               3h14m
+ocs-client-operator-controller-manager-759cdd8968-6xfx2           1/1     Running                  1               3h14m
+ocs-metrics-exporter-7767d7f8b5-dh5sz                             3/3     Running                  3               3h15m
+ocs-operator-5dcf776bf7-5f7jg                                     1/1     Running                  0               4m45s
+ocs-operator-5dcf776bf7-ztbt7                                     1/1     Terminating              0               3h17m
+ocs-provider-server-59898b8869-6qlkj                              1/1     Running                  0               4m45s
+ocs-provider-server-59898b8869-q6vlk                              1/1     Terminating              0               3h15m
+odf-console-69fb5dc7c6-krbvv                                      1/1     Running                  1               3h21m
+odf-external-snapshotter-operator-5c457bb69c-26ths                1/1     Running                  1               3h14m
+odf-operator-controller-manager-fb8ff6bdc-d2lw9                   1/1     Running                  1               3h21m
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq   8/8     Running                  0               4m45s
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-8wftl   8/8     Running                  0               3h9m
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-wxsjn   8/8     Terminating              0               3h13m
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-4lwnf            3/3     Running                  0               3h9m
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-6b8kn            3/3     Running                  3               3h8m
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-xq5pf            3/3     Running                  0               3h11m
+openshift-storage.rbd.csi.ceph.com-ctrlplugin-6b57c857fc-n897h    8/8     Terminating              0               3h13m
+openshift-storage.rbd.csi.ceph.com-ctrlplugin-6b57c857fc-s9w52    8/8     Running                  0               4m45s
+openshift-storage.rbd.csi.ceph.com-ctrlplugin-6b57c857fc-tsshg    8/8     Running                  0               3h9m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-2n4pf               3/3     Running                  3               3h8m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-pm6sl    2/2     Running                  2               3h9m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-qswdn    2/2     Running                  0               3h10m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-w7k8z    2/2     Running                  0               3h8m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-h82hg               3/3     Running                  0               3h9m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-pskh6               3/3     Running                  0               3h11m
+rook-ceph-crashcollector-master1.airtelvvt.samsungbsc.locasbq2c   1/1     Running                  0               9m40s
+rook-ceph-crashcollector-master3.airtelvvt.samsungbsc.locax7mlf   1/1     Running                  0               3h15m
+rook-ceph-exporter-master1.airtelvvt.samsungbsc.local-9db7th4tv   1/1     Running                  0               9m36s
+rook-ceph-exporter-master3.airtelvvt.samsungbsc.local-6d97rtms8   1/1     Running                  0               3h11m
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-58d8f9f5fjf57   2/2     Running                  0               3h10m
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-d596c78bvgmgm   2/2     Running                  0               9m41s
+rook-ceph-mgr-a-69b6c55477-jd9vg                                  3/3     Running                  0               3h7m
+rook-ceph-mgr-b-78944959dc-jtp8d                                  3/3     Running                  0               9m41s
+rook-ceph-mon-ab-66d889df9-pmdxw                                  2/2     Running                  2               3h7m
+rook-ceph-mon-w-7cd76f6557-ff6ps                                  2/2     Running                  0               3h9m
+rook-ceph-mon-z-84464f5589-6v2lf                                  0/2     Pending                  0               4m45s
+rook-ceph-operator-6446945779-dl556                               1/1     Running                  1               3h16m
+rook-ceph-osd-0-5cf6f57dcb-lgd8s                                  2/2     Running                  2               3h6m
+rook-ceph-osd-1-6dc54cd6f8-7dwq2                                  0/2     Pending                  0               4m45s
+rook-ceph-osd-2-7bd85bc84d-fhgvq                                  2/2     Running                  0               3h4m
+rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-769bc868nclw   2/2     Running                  0               9m41s
+storageclient-737342087af10580-status-reporter-29673214-kgq4q     0/1     ContainerStatusUnknown   3 (6m16s ago)   7m47s
+storageclient-737342087af10580-status-reporter-29673222-xsv45     0/1     Completed                0               25s
+ux-backend-server-54bd7d89c-fq6zx                                 2/2     Running                  2               3h17m
+[root@bastion ~]#
