@@ -1,58 +1,8 @@
-Because the Subscription name is just an object name, not the current installed version.
+[root@bastion ~]# oc get sub ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace \
+> -n openshift-storage -o jsonpath='{.spec.channel}'
+stable-4.20[root@bastion ~]# oc get sub ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace \
+> -n openshift-storage -o jsonpath='{.status.installedCSV}'
+ocs-operator.v4.20.10-rhodf[root@bastion ~]# oc get csv -n openshift-storage | grep ocs-operator
+ocs-operator.v4.20.10-rhodf                        OpenShift Container Storage        4.20.10-rhodf   ocs-operator.v4.19.15-rhodf                       Succeeded
+[root@bastion ~]#
 
-For example:
-
-ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace
-
-is the metadata.name of the Subscription resource. OLM does not rename Subscription objects when you change channels or upgrade versions.
-
-Think of it like this:
-
-metadata:
-  name: ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace
-spec:
-  channel: stable-4.20
-
-The name stays the same, but the subscription tracks whatever channel is configured.
-
-What matters is:
-
-oc get sub ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace \
--n openshift-storage -o jsonpath='{.spec.channel}'
-
-You should get:
-
-stable-4.20
-
-And the installed CSV is:
-
-oc get sub ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace \
--n openshift-storage -o jsonpath='{.status.installedCSV}'
-
-Expected:
-
-ocs-operator.v4.20.10-rhodf
-
-That's the actual version OLM has installed.
-
-You can also verify directly:
-
-oc get csv -n openshift-storage | grep ocs-operator
-
-Output:
-
-ocs-operator.v4.20.10-rhodf   Succeeded
-
-So:
-
-Field	Value
-
-Subscription Name	ocs-operator-stable-4.19-...
-Channel	stable-4.20
-Installed CSV	ocs-operator.v4.20.10-rhodf
-StorageCluster Version	4.20.10
-
-
-The 4.19 in the Subscription name is merely a historical artifact from when the subscription was first created. It has no effect on the currently installed operator version.
-
-If it bothers you, you could delete and recreate the Subscription with a new name, but there is no technical benefit and it is generally not recommended on a running ODF cluster. The current state is correct.
