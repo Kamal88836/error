@@ -1,10 +1,59 @@
-[root@bastion ~]# oc get po noobaa-db-pg-cluster-1 -n openshift-storage
-NAME                     READY   STATUS    RESTARTS   AGE
-noobaa-db-pg-cluster-1   1/1     Running   0          4m41s
-[root@bastion ~]# oc get cluster -n openshift-storage
-NAME                   AGE    INSTANCES   READY   STATUS                     PRIMARY
-noobaa-db-pg-cluster   6d9h   2           2       Cluster in healthy state   noobaa-db-pg-cluster-2
-[root@bastion ~]# oc get  noobaa -n openshift-storage
-NAME     S3-ENDPOINTS                    STS-ENDPOINTS                   SYSLOG-ENDPOINTS   IMAGE                                                                                                            PHASE   AGE
-noobaa   ["https://20.1.30.150:31442"]   ["https://20.1.30.150:30601"]                      registry.redhat.io/odf4/mcg-core-rhel9@sha256:882e944f69757bf3f2abb4f55ab3c6395f89f7760e28408243a3ad89f3f27a70   Ready   82d
+[root@bastion ~]# oc get storagecluster  -n openshift-storage
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   82d   Ready              2026-03-11T14:09:14Z   4.20.10
+[root@bastion ~]# oc get csv -A
+NAMESPACE                              NAME                                               DISPLAY                            VERSION               REPLACES                                          PHASE
+openshift-local-storage                local-storage-operator.v4.20.0-202604140241        Local Storage                      4.20.0-202604140241   local-storage-operator.v4.19.0-202602262001       Succeeded
+openshift-operator-lifecycle-manager   packageserver                                      Package Server                     0.0.1-snapshot                                                          Succeeded
+openshift-ptp                          ptp-operator.v4.20.0-202604271747                  PTP Operator                       4.20.0-202604271747   ptp-operator.v4.19.0-202603031419                 Succeeded
+openshift-sriov-network-operator       sriov-network-operator.v4.20.0-202604241817        SR-IOV Network Operator            4.20.0-202604241817   sriov-network-operator.v4.19.0-202603100922       Succeeded
+openshift-storage                      cephcsi-operator.v4.20.10-rhodf                    CephCSI operator                   4.20.10-rhodf         cephcsi-operator.v4.19.15-rhodf                   Succeeded
+openshift-storage                      mcg-operator.v4.20.10-rhodf                        NooBaa Operator                    4.20.10-rhodf         mcg-operator.v4.19.15-rhodf                       Succeeded
+openshift-storage                      ocs-client-operator.v4.20.10-rhodf                 OpenShift Data Foundation Client   4.20.10-rhodf         ocs-client-operator.v4.19.15-rhodf                Succeeded
+openshift-storage                      ocs-operator.v4.20.10-rhodf                        OpenShift Container Storage        4.20.10-rhodf         ocs-operator.v4.19.15-rhodf                       Succeeded
+openshift-storage                      odf-csi-addons-operator.v4.20.10-rhodf             CSI Addons                         4.20.10-rhodf         odf-csi-addons-operator.v4.19.15-rhodf            Succeeded
+openshift-storage                      odf-dependencies.v4.20.10-rhodf                    Data Foundation Dependencies       4.20.10-rhodf         odf-dependencies.v4.19.15-rhodf                   Succeeded
+openshift-storage                      odf-external-snapshotter-operator.v4.20.10-rhodf   Snapshot Controller                4.20.10-rhodf         odf-external-snapshotter-operator.v4.20.9-rhodf   Succeeded
+openshift-storage                      odf-operator.v4.20.10-rhodf                        OpenShift Data Foundation          4.20.10-rhodf         odf-operator.v4.19.15-rhodf                       Succeeded
+openshift-storage                      odf-prometheus-operator.v4.20.10-rhodf             Prometheus Operator                4.20.10-rhodf         odf-prometheus-operator.v4.19.15-rhodf            Succeeded
+openshift-storage                      recipe.v4.20.10-rhodf                              Recipe                             4.20.10-rhodf         recipe.v4.19.15-rhodf                             Succeeded
+openshift-storage                      rook-ceph-operator.v4.20.10-rhodf                  Rook-Ceph                          4.20.10-rhodf         rook-ceph-operator.v4.19.15-rhodf                 Succeeded
+[root@bastion ~]# oc get sub  -A
+NAMESPACE                          NAME                                                                                        PACKAGE                             SOURCE                  CHANNEL
+openshift-local-storage            local-storage-operator                                                                      local-storage-operator              redhat-operator-index   stable
+openshift-ptp                      ptp-operator-subscription                                                                   ptp-operator                        redhat-operator-index   stable
+openshift-sriov-network-operator   sriov-network-operator-subscription                                                         sriov-network-operator              redhat-operator-index   stable
+openshift-storage                  cephcsi-operator-stable-4.19-redhat-operator-index-openshift-marketplace                    cephcsi-operator                    redhat-operator-index   stable-4.20
+openshift-storage                  mcg-operator-stable-4.19-redhat-operator-index-openshift-marketplace                        mcg-operator                        redhat-operator-index   stable-4.20
+openshift-storage                  ocs-client-operator-stable-4.19-redhat-operator-index-openshift-marketplace                 ocs-client-operator                 redhat-operator-index   stable-4.20
+openshift-storage                  ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace                        ocs-operator                        redhat-operator-index   stable-4.20
+openshift-storage                  odf-csi-addons-operator-stable-4.19-redhat-operator-index-openshift-marketplace             odf-csi-addons-operator             redhat-operator-index   stable-4.20
+openshift-storage                  odf-dependencies                                                                            odf-dependencies                    redhat-operator-index   stable-4.20
+openshift-storage                  odf-external-snapshotter-operator-stable-4.20-redhat-operator-index-openshift-marketplace   odf-external-snapshotter-operator   redhat-operator-index   stable-4.20
+openshift-storage                  odf-operator                                                                                odf-operator                        redhat-operator-index   stable-4.20
+openshift-storage                  odf-prometheus-operator-stable-4.19-redhat-operator-index-openshift-marketplace             odf-prometheus-operator             redhat-operator-index   stable-4.20
+openshift-storage                  recipe-stable-4.19-redhat-operator-index-openshift-marketplace                              recipe                              redhat-operator-index   stable-4.20
+openshift-storage                  rook-ceph-operator-stable-4.19-redhat-operator-index-openshift-marketplace                  rook-ceph-operator                  redhat-operator-index   stable-4.20
+[root@bastion ~]# oc get installplan -A
+NAMESPACE                          NAME            CSV                                           APPROVAL    APPROVED
+openshift-local-storage            install-mkwnz   local-storage-operator.v4.18.0-202512150311   Automatic   true
+openshift-local-storage            install-nk7k7   local-storage-operator.v4.20.0-202604140241   Automatic   true
+openshift-local-storage            install-p94cx   local-storage-operator.v4.18.0-202602272244   Automatic   true
+openshift-local-storage            install-snhm6   local-storage-operator.v4.18.0-202603152157   Automatic   true
+openshift-local-storage            install-xhk9k   local-storage-operator.v4.19.0-202602262001   Automatic   true
+openshift-ptp                      install-b7bhr   ptp-operator.v4.19.0-202603031419             Automatic   true
+openshift-ptp                      install-gfnjc   ptp-operator.v4.18.0-202602261953             Automatic   true
+openshift-ptp                      install-jwtkv   ptp-operator.v4.18.0-202603171536             Automatic   true
+openshift-ptp                      install-kxq4t   ptp-operator.v4.18.0-202512150311             Automatic   true
+openshift-ptp                      install-sfrpl   ptp-operator.v4.20.0-202604271747             Automatic   true
+openshift-sriov-network-operator   install-7nsjf   sriov-network-operator.v4.18.0-202603111324   Automatic   true
+openshift-sriov-network-operator   install-82h4z   sriov-network-operator.v4.20.0-202604241817   Automatic   true
+openshift-sriov-network-operator   install-htwgp   sriov-network-operator.v4.18.0-202601041256   Automatic   true
+openshift-sriov-network-operator   install-qbvz4   sriov-network-operator.v4.18.0-202602261953   Automatic   true
+openshift-sriov-network-operator   install-vlgjn   sriov-network-operator.v4.19.0-202603100922   Automatic   true
+openshift-storage                  install-4tqgn   cephcsi-operator.v4.19.15-rhodf               Automatic   true
+openshift-storage                  install-6tfxx   odf-operator.v4.20.10-rhodf                   Automatic   true
+openshift-storage                  install-lrsm4   ocs-operator.v4.20.10-rhodf                   Automatic   true
+openshift-storage                  install-ps57t   odf-csi-addons-operator.v4.19.12-rhodf        Automatic   true
+openshift-storage                  install-r42hr   cephcsi-operator.v4.19.12-rhodf               Automatic   true
 [root@bastion ~]#
