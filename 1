@@ -1,61 +1,172 @@
-[root@bastion ~]# oc get storagecluster  -n openshift-storage
-NAME                 AGE   PHASE         EXTERNAL   CREATED AT             VERSION
-ocs-storagecluster   82d   Progressing              2026-03-11T14:09:14Z   4.20.10
-[root@bastion ~]# oc get cephcluster -n openshift-storage
-NAME                             DATADIRHOSTPATH   MONCOUNT   AGE   PHASE   MESSAGE                        HEALTH        EXTERNAL   FSID
-ocs-storagecluster-cephcluster   /var/lib/rook     3          82d   Ready   Cluster created successfully   HEALTH_WARN              6a907545-d70d-499d-950f-81cd83c0f538
-[root@bastion ~]# oc get po -n openshift-storage
-NAME                                                              READY   STATUS            RESTARTS        AGE
-ceph-csi-controller-manager-69648f56f5-sskp5                      1/1     Running           1               3h28m
-cnpg-controller-manager-54c86f75c-z6m4r                           1/1     Running           1               3h24m
-csi-addons-controller-manager-78d6655bf-2rzpn                     1/1     Running           0               15m
-noobaa-core-0                                                     2/2     Running           0               21m
-noobaa-db-pg-cluster-1                                            0/1     Running           14 (78m ago)    26h
-noobaa-db-pg-cluster-2                                            1/1     Running           0               7m7s
-noobaa-endpoint-5d89f8b875-gmzm2                                  1/1     Running           1               3h18m
-noobaa-operator-6dff4b774b-2rd9h                                  1/1     Running           1               3h24m
-ocs-client-operator-console-c9df58b5b-gljzx                       1/1     Running           1               3h26m
-ocs-client-operator-controller-manager-759cdd8968-6xfx2           1/1     Running           1               3h26m
-ocs-metrics-exporter-7767d7f8b5-dh5sz                             3/3     Running           3               3h27m
-ocs-operator-5dcf776bf7-5f7jg                                     1/1     Running           0               15m
-ocs-provider-server-59898b8869-6qlkj                              1/1     Running           0               15m
-odf-console-69fb5dc7c6-krbvv                                      1/1     Running           1               3h32m
-odf-external-snapshotter-operator-5c457bb69c-26ths                1/1     Running           1               3h25m
-odf-operator-controller-manager-fb8ff6bdc-d2lw9                   1/1     Running           1               3h32m
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq   8/8     Running           0               15m
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-8wftl   8/8     Running           0               3h20m
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-4lwnf            3/3     Running           5 (7m37s ago)   3h20m
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-6b8kn            3/3     Running           3               3h19m
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-xq5pf            3/3     Running           0               3h22m
-openshift-storage.rbd.csi.ceph.com-ctrlplugin-6b57c857fc-s9w52    8/8     Running           0               15m
-openshift-storage.rbd.csi.ceph.com-ctrlplugin-6b57c857fc-tsshg    8/8     Running           0               3h20m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-2n4pf               3/3     Running           3               3h20m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-pm6sl    2/2     Running           2               3h20m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-qswdn    2/2     Running           0               3h21m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-w7k8z    2/2     Running           2               3h19m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-h82hg               3/3     Running           4 (7m43s ago)   3h20m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-pskh6               3/3     Running           0               3h22m
-rook-ceph-crashcollector-master1.airtelvvt.samsungbsc.locasbq2c   1/1     Running           0               20m
-rook-ceph-crashcollector-master2.airtelvvt.samsungbsc.loca689bn   1/1     Running           0               7m45s
-rook-ceph-crashcollector-master2.airtelvvt.samsungbsc.locat26sg   0/1     Init:0/2          0               5s
-rook-ceph-crashcollector-master3.airtelvvt.samsungbsc.locasdfjn   0/1     Pending           0               105s
-rook-ceph-crashcollector-master3.airtelvvt.samsungbsc.locavs5vb   0/1     Pending           0               57s
-rook-ceph-exporter-master1.airtelvvt.samsungbsc.local-9db7th4tv   1/1     Running           0               20m
-rook-ceph-exporter-master2.airtelvvt.samsungbsc.local-6848dstr7   0/1     Pending           0               0s
-rook-ceph-exporter-master3.airtelvvt.samsungbsc.local-7f849kc9h   0/1     Pending           0               57s
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-58d8f9f55ssqw   0/2     PodInitializing   0               105s
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-d596c78bvgmgm   2/2     Running           0               20m
-rook-ceph-mgr-a-69b6c55477-b8dlw                                  0/3     Init:0/1          0               105s
-rook-ceph-mgr-b-78944959dc-jtp8d                                  3/3     Running           0               20m
-rook-ceph-mon-ab-66d889df9-pmdxw                                  2/2     Running           2               3h18m
-rook-ceph-mon-w-7cd76f6557-ff6ps                                  2/2     Running           0               3h20m
-rook-ceph-mon-z-84464f5589-6v2lf                                  2/2     Running           0               15m
-rook-ceph-operator-6446945779-dl556                               1/1     Running           1               3h28m
-rook-ceph-osd-0-5cf6f57dcb-lgd8s                                  2/2     Running           2               3h17m
-rook-ceph-osd-1-6dc54cd6f8-7dwq2                                  2/2     Running           0               15m
-rook-ceph-osd-2-7bd85bc84d-fhgvq                                  2/2     Running           0               3h16m
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-769bc865ftrw   0/2     PodInitializing   0               105s
-storageclient-737342087af10580-status-reporter-29673230-q2svm     0/1     Completed         0               3m37s
-storageclient-737342087af10580-status-reporter-29673231-7hnwp     0/1     Terminating       0               2m37s
-ux-backend-server-54bd7d89c-fq6zx                                 2/2     Running           2               3h28m
+[root@bastion ~]# oc describe storagecluster ocs-storagecluster  -n openshift-storage
+Name:         ocs-storagecluster
+Namespace:    openshift-storage
+Labels:       <none>
+Annotations:  force-reconcile: 1779693253
+              uninstall.ocs.openshift.io/cleanup-policy: delete
+              uninstall.ocs.openshift.io/mode: graceful
+API Version:  ocs.openshift.io/v1
+Kind:         StorageCluster
+Metadata:
+  Creation Timestamp:  2026-03-11T14:09:14Z
+  Finalizers:
+    storagecluster.ocs.openshift.io
+  Generation:        2
+  Resource Version:  50259222
+  UID:               6023ee82-5d67-4bf6-a760-05908d58e490
+Spec:
+  Arbiter:
+  Encryption:
+    Key Rotation:
+      Schedule:  @weekly
+    Kms:
+  External Storage:
+  Managed Resources:
+    Ceph Block Pools:
+    Ceph Cluster:
+    Ceph Config:
+    Ceph Dashboard:
+    Ceph Filesystems:
+      Data Pool Spec:
+        Application:
+        Erasure Coded:
+          Coding Chunks:  0
+          Data Chunks:    0
+        Mirroring:
+        Quotas:
+        Replicated:
+          Size:  0
+        Status Check:
+          Mirror:
+    Ceph Non Resilient Pools:
+      Count:  1
+      Resources:
+      Volume Claim Template:
+        Metadata:
+        Spec:
+          Resources:
+        Status:
+    Ceph Object Store Users:
+    Ceph Object Stores:
+    Ceph RBD Mirror:
+      Daemon Count:  1
+    Ceph Toolbox:
+  Mon Data Dir Host Path:  /var/lib/rook
+  Resources:
+    Mds:
+      Limits:
+        Cpu:     3
+        Memory:  8Gi
+      Requests:
+        Cpu:     3
+        Memory:  8Gi
+  Storage Device Sets:
+    Config:
+    Count:  1
+    Data PVC Template:
+      Metadata:
+      Spec:
+        Access Modes:
+          ReadWriteOnce
+        Resources:
+          Requests:
+            Storage:         850Gi
+        Storage Class Name:  local-volume
+        Volume Mode:         Block
+      Status:
+    Name:  ocs-deviceset
+    Placement:
+    Prepare Placement:
+    Replica:  3
+    Resources:
+      Limits:
+        Cpu:     2
+        Memory:  5Gi
+      Requests:
+        Cpu:     2
+        Memory:  5Gi
+Status:
+  Conditions:
+    Last Heartbeat Time:      2026-03-11T14:09:30Z
+    Last Transition Time:     2026-03-11T14:09:30Z
+    Message:                  Version check successful
+    Reason:                   VersionMatched
+    Status:                   False
+    Type:                     VersionMismatch
+    Last Heartbeat Time:      2026-06-02T09:57:03Z
+    Last Transition Time:     2026-06-02T09:23:04Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     ReconcileComplete
+    Last Heartbeat Time:      2026-06-02T09:31:18Z
+    Last Transition Time:     2026-06-02T06:07:29Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     Available
+    Last Heartbeat Time:      2026-06-02T09:57:03Z
+    Last Transition Time:     2026-06-02T09:39:03Z
+    Message:                  Waiting on Nooba instance to finish initialization
+    Reason:                   NoobaaInitializing
+    Status:                   True
+    Type:                     Progressing
+    Last Heartbeat Time:      2026-06-02T09:31:18Z
+    Last Transition Time:     2026-06-02T06:07:29Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   False
+    Type:                     Degraded
+    Last Heartbeat Time:      2026-06-02T09:31:18Z
+    Last Transition Time:     2026-06-02T09:25:29Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     Upgradeable
+  Current Mon Count:          3
+  Default Ceph Device Class:  ssd
+  Failure Domain:             rack
+  Failure Domain Key:         topology.rook.io/rack
+  Failure Domain Values:
+    rack0
+    rack1
+    rack2
+  Images:
+    Ceph:
+      Actual Image:   registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:7e807c3c446a963c57859707359e41ccb74aba49896924eedd3594032d9a9acd
+      Desired Image:  registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:7e807c3c446a963c57859707359e41ccb74aba49896924eedd3594032d9a9acd
+    Noobaa Core:
+      Actual Image:   registry.redhat.io/odf4/mcg-core-rhel9@sha256:882e944f69757bf3f2abb4f55ab3c6395f89f7760e28408243a3ad89f3f27a70
+      Desired Image:  registry.redhat.io/odf4/mcg-core-rhel9@sha256:882e944f69757bf3f2abb4f55ab3c6395f89f7760e28408243a3ad89f3f27a70
+    Noobaa DB:
+      Actual Image:   registry.redhat.io/rhel9/postgresql-16@sha256:68a50a3476472a529cedd40b36d59dd85d668bfa9fac1f0b1bef149a16733923
+      Desired Image:  registry.redhat.io/rhel9/postgresql-16@sha256:68a50a3476472a529cedd40b36d59dd85d668bfa9fac1f0b1bef149a16733923
+  Kms Server Connection:
+  Node Topologies:
+    Labels:
+      kubernetes.io/hostname:
+        master1.airtelvvt.samsungbsc.local
+        master2.airtelvvt.samsungbsc.local
+        master3.airtelvvt.samsungbsc.local
+      topology.rook.io/rack:
+        rack0
+        rack1
+        rack2
+  Phase:  Progressing
+  Related Objects:
+    API Version:              ceph.rook.io/v1
+    Kind:                     CephCluster
+    Name:                     ocs-storagecluster-cephcluster
+    Namespace:                openshift-storage
+    Resource Version:         50258673
+    UID:                      5e6eb884-3b56-4ebb-be03-8affa6b418c6
+    API Version:              noobaa.io/v1alpha1
+    Kind:                     NooBaa
+    Name:                     noobaa
+    Namespace:                openshift-storage
+    Resource Version:         50259146
+    UID:                      a0db0f16-4293-4a08-8f3c-6814ff0bbfb2
+  Storage Provider Endpoint:  172.25.80.0:50051
+  Version:                    4.20.10
+Events:                       <none>
 [root@bastion ~]#
