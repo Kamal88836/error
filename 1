@@ -1,28 +1,12 @@
-[root@bastion ~]# oc get sub ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace \
-> -n openshift-storage -o jsonpath='{.spec.channel}'
-stable-4.20[root@bastion ~]# oc get sub ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace \
-> -n openshift-storage -o jsonpath='{.status.installedCSV}'
-ocs-operator.v4.20.10-rhodf[root@bastion ~]# oc get csv -n openshift-storage | grep ocs-operator
-ocs-operator.v4.20.10-rhodf                        OpenShift Container Storage        4.20.10-rhodf   ocs-operator.v4.19.15-rhodf                       Succeeded
-[root@bastion ~]# oc get sub ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace \
-> -n openshift-storage -o yaml | grep "^  name:"
-  name: ocs-operator-stable-4.19-redhat-operator-index-openshift-marketplace
-  name: ocs-operator
-[root@bastion ~]# oc get storagecluster -n openshift-storage
-NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
-ocs-storagecluster   82d   Ready              2026-03-11T14:09:14Z   4.20.10
-[root@bastion ~]# oc get csv -n openshift-storage
-NAME                                               DISPLAY                            VERSION         REPLACES                                          PHASE
-cephcsi-operator.v4.20.10-rhodf                    CephCSI operator                   4.20.10-rhodf   cephcsi-operator.v4.19.15-rhodf                   Succeeded
-mcg-operator.v4.20.10-rhodf                        NooBaa Operator                    4.20.10-rhodf   mcg-operator.v4.19.15-rhodf                       Succeeded
-ocs-client-operator.v4.20.10-rhodf                 OpenShift Data Foundation Client   4.20.10-rhodf   ocs-client-operator.v4.19.15-rhodf                Succeeded
-ocs-operator.v4.20.10-rhodf                        OpenShift Container Storage        4.20.10-rhodf   ocs-operator.v4.19.15-rhodf                       Succeeded
-odf-csi-addons-operator.v4.20.10-rhodf             CSI Addons                         4.20.10-rhodf   odf-csi-addons-operator.v4.19.15-rhodf            Succeeded
-odf-dependencies.v4.20.10-rhodf                    Data Foundation Dependencies       4.20.10-rhodf   odf-dependencies.v4.19.15-rhodf                   Succeeded
-odf-external-snapshotter-operator.v4.20.10-rhodf   Snapshot Controller                4.20.10-rhodf   odf-external-snapshotter-operator.v4.20.9-rhodf   Succeeded
-odf-operator.v4.20.10-rhodf                        OpenShift Data Foundation          4.20.10-rhodf   odf-operator.v4.19.15-rhodf                       Succeeded
-odf-prometheus-operator.v4.20.10-rhodf             Prometheus Operator                4.20.10-rhodf   odf-prometheus-operator.v4.19.15-rhodf            Succeeded
-recipe.v4.20.10-rhodf                              Recipe                             4.20.10-rhodf   recipe.v4.19.15-rhodf                             Succeeded
-rook-ceph-operator.v4.20.10-rhodf                  Rook-Ceph                          4.20.10-rhodf   rook-ceph-operator.v4.19.15-rhodf                 Succeeded
-[root@bastion ~]# oc get sub -n openshift-storage -o jsonpath='{.items[*].spec.channel}'
-stable-4.20 stable-4.20 stable-4.20 stable-4.20 stable-4.20 stable-4.20 stable-4.20 stable-4.20 stable-4.20 stable-4.20 stable-4.20[root@bastion ~]#
+[root@bastion-sno ~]# ./openshift-install agent create image --dir ocp
+WARNING Found override for release image (bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64). Release Image Architecture is unknown
+WARNING Found override for release image (bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64). Please be warned, this is not advised
+INFO Configuration has 1 master replicas, 0 arbiter replicas, and 0 worker replicas
+WARNING Found override for release image (bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64). Please be warned, this is not advised
+WARNING Found override for release image (bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64). Please be warned, this is not advised
+WARNING Found override for release image (bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64). Please be warned, this is not advised
+WARNING The imageDigestSources configuration in install-config.yaml should have at least one source field matching the releaseImage value bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64
+INFO The rendezvous host IP (node0 IP) is 72.1.0.182
+INFO Extracting base ISO from release payload
+INFO Verifying cached file
+INFO Using cached Base ISO /root/.cache/agent/image_cache/coreos-x86_64.iso
