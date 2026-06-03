@@ -1,221 +1,167 @@
-sno4@haproxy:~$ oc get packagemanifest ptp-operator -o yaml
-apiVersion: packages.operators.coreos.com/v1
-kind: PackageManifest
-metadata:
-  creationTimestamp: "2026-06-03T07:56:46Z"
-  labels:
-    catalog: cs-redhat-operator-index-v4-20
-    catalog-namespace: openshift-marketplace
-    operatorframework.io/arch.amd64: supported
-    operatorframework.io/os.linux: supported
-    provider: Red Hat
-    provider-url: ""
-  name: ptp-operator
-  namespace: openshift-marketplace
-spec: {}
-status:
-  catalogSource: cs-redhat-operator-index-v4-20
-  catalogSourceDisplayName: ""
-  catalogSourceNamespace: openshift-marketplace
-  catalogSourcePublisher: ""
-  channels:
-  - currentCSV: ptp-operator.v4.20.0-202603272224
-    currentCSVDesc:
-      annotations:
-        alm-examples: |-
-          [
-            {
-              "apiVersion": "ptp.openshift.io/v1",
-              "kind": "NodePtpDevice",
-              "metadata": {
-                "name": "node.example.com"
-              },
-              "spec": {}
-            },
-            {
-              "apiVersion": "ptp.openshift.io/v1",
-              "kind": "PtpConfig",
-              "metadata": {
-                "name": "example-ptpconfig"
-              },
-              "spec": {
-                "profile": [
-                  {
-                    "interface": "ens787f1",
-                    "name": "profile1",
-                    "phc2sysOpts": "-a -r",
-                    "ptp4lOpts": "-s -2",
-                    "ptpClockThreshold": {}
-                  }
-                ],
-                "recommend": [
-                  {
-                    "match": [
-                      {
-                        "nodeLabel": "node-role.kubernetes.io/worker=",
-                        "nodeName": "node.example.com"
-                      }
-                    ],
-                    "priority": 4,
-                    "profile": "profile1"
-                  }
-                ]
-              }
-            },
-            {
-              "apiVersion": "ptp.openshift.io/v1",
-              "kind": "PtpOperatorConfig",
-              "metadata": {
-                "name": "default"
-              },
-              "spec": {
-                "daemonNodeSelector": {
-                  "feature.node.kubernetes.io/ptp-capable": "yes",
-                  "node-role.kubernetes.io/worker": ""
-                },
-                "ptpEventConfig": {}
-              }
-            }
-          ]
-        capabilities: Basic Install
-        categories: Networking
-        certified: "false"
-        containerImage: registry.redhat.io/openshift4/ose-ptp-rhel9-operator@sha256:a73f28af4248c92004580eb3ebed888ddbabc5f52e45b1fd517670703f177d49
-        createdAt: "2024-06-12"
-        description: This software enables configuration of Precision Time Protocol(PTP)
-          on Kubernetes. It detects hardware capable PTP devices on each node, and
-          configures linuxptp processes such as ptp4l, phc2sys and timemaster.
-        features.operators.openshift.io/cnf: "false"
-        features.operators.openshift.io/cni: "false"
-        features.operators.openshift.io/csi: "false"
-        features.operators.openshift.io/disconnected: "true"
-        features.operators.openshift.io/fips-compliant: "true"
-        features.operators.openshift.io/proxy-aware: "false"
-        features.operators.openshift.io/tls-profiles: "false"
-        features.operators.openshift.io/token-auth-aws: "false"
-        features.operators.openshift.io/token-auth-azure: "false"
-        features.operators.openshift.io/token-auth-gcp: "false"
-        olm.skipRange: '>=4.3.0-0 <4.20.0-202603272224'
-        operatorframework.io/suggested-namespace: openshift-ptp
-        operators.openshift.io/infrastructure-features: '["disconnected"]'
-        operators.openshift.io/valid-subscription: '["OpenShift Kubernetes Engine",
-          "OpenShift Container Platform", "OpenShift Platform Plus"]'
-        operators.operatorframework.io/builder: operator-sdk-v1.22.0-ocp
-        operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
-        provider: Red Hat
-        repository: https://github.com/k8snetworkplumbingwg/ptp-operator
-        support: Red Hat
-      apiservicedefinitions: {}
-      customresourcedefinitions:
-        owned:
-        - description: NodePtpDevice is the Schema for the nodeptpdevices API
-          displayName: Node Ptp Device
-          kind: NodePtpDevice
-          name: nodeptpdevices.ptp.openshift.io
-          version: v1
-        - description: PtpConfig is the Schema for the ptpconfigs API
-          displayName: Ptp Config
-          kind: PtpConfig
-          name: ptpconfigs.ptp.openshift.io
-          version: v1
-        - description: PtpOperatorConfig is the Schema for the ptpoperatorconfigs
-            API
-          displayName: Ptp Operator Config
-          kind: PtpOperatorConfig
-          name: ptpoperatorconfigs.ptp.openshift.io
-          version: v1
-      description: |
-        # Precision Time Protocol (PTP) Operator for Openshift
+[root@bastion ~]# oc get po
+NAME                             READY   STATUS    RESTARTS   AGE
+bscf9901-bip0-54d5d9bcd8-8ntzd   0/1     Pending   0          60m
+bscf9901-bip1-7bb7b44cf-ks56c    0/1     Pending   0          60m
+bscf9901-bpp0-6dbd9bf986-t7czk   0/1     Pending   0          60m
+bscf9901-bpp1-9c95b65f5-8qrj6    0/1     Pending   0          60m
+bscf9901-bpp2-5fd7564bfb-l9lwr   0/1     Pending   0          60m
+bscf9901-bpp3-66dcc89857-2bwpn   0/1     Pending   0          60m
+bscf9901-cmp0-6d5778478b-9wmk8   0/1     Pending   0          60m
+bscf9901-cmp1-76685bbc8d-m6vcc   0/1     Pending   0          60m
+bscf9901-dmp0-68c4c86c-l29lz     0/1     Pending   0          60m
+bscf9901-pmp0-7666f66885-grzjt   0/1     Pending   0          60m
+[root@bastion ~]# oc decribe po bscf9901-bip1-7bb7b44cf-ks56c
+error: unknown command "decribe" for "oc"
 
-        ## Introdution
-        PTP Operator manages cluster wide PTP configuration.
-        This operator has to run in namespace 'openshift-ptp'. An Operator Group is also required to install this operator:
-        ```
-        $ oc create -f - <<EOF
-        apiVersion: v1
-        kind: Namespace
-        metadata:
-          name: openshift-ptp
-          labels:
-            name: openshift-ptp
-            openshift.io/cluster-monitoring: "true"
-        EOF
-
-        $ oc create -f - <<EOF
-        apiVersion: operators.coreos.com/v1
-        kind: OperatorGroup
-        metadata:
-          name: ptp-operators
-          namespace: openshift-ptp
-        spec:
-          targetNamespaces:
-          - openshift-ptp
-        EOF
-        ```
-      displayName: PTP Operator
-      installModes:
-      - supported: true
-        type: OwnNamespace
-      - supported: true
-        type: SingleNamespace
-      - supported: false
-        type: MultiNamespace
-      - supported: false
-        type: AllNamespaces
-      keywords:
-      - ptp
-      links:
-      - name: Documentation operator
-        url: https://github.com/k8snetworkplumbingwg/ptp-operator
-      - name: Documentation operand
-        url: https://github.com/k8snetworkplumbingwg/linuxptp-daemon
-      maintainers:
-      - email: support@redhat.com
-        name: Red Hat
-      maturity: alpha
-      provider:
-        name: Red Hat
-      relatedImages:
-      - registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:3ea0ee7dfd5669815239bc61b06d7cc81d6950b90db35679d18fb4b8034564f6
-      - registry.redhat.io/openshift4/ose-ptp-rhel9-operator@sha256:a73f28af4248c92004580eb3ebed888ddbabc5f52e45b1fd517670703f177d49
-      - registry.redhat.io/openshift4/ose-ptp-rhel9@sha256:3b28dd5b4ea29d84605224a0f117e06bb59630e362485b7bec0a2825ff91eee1
-      - registry.redhat.io/openshift4/ose-ptp-operator-bundle@sha256:e116616617ec0091a74a45217857f5ff5def37e2b3b77120e70f689f85e4c11e
-      - registry.redhat.io/openshift4/ose-cloud-event-proxy-rhel9@sha256:cb87c6711c834a2dd5be6a0bcb7581520cf8786fd62174250c8eecffa11a4dab
-      version: 4.20.0-202603272224
-    entries:
-    - name: ptp-operator.v4.20.0-202603272224
-      version: 4.20.0-202603272224
-    - name: ptp-operator.v4.20.0-202603160950
-      version: 4.20.0-202603160950
-    - name: ptp-operator.v4.20.0-202603030647
-      version: 4.20.0-202603030647
-    - name: ptp-operator.v4.20.0-202602161753
-      version: 4.20.0-202602161753
-    - name: ptp-operator.v4.20.0-202602032049
-      version: 4.20.0-202602032049
-    - name: ptp-operator.v4.20.0-202601280915
-      version: 4.20.0-202601280915
-    - name: ptp-operator.v4.20.0-202601161812
-      version: 4.20.0-202601161812
-    - name: ptp-operator.v4.20.0-202512151041
-      version: 4.20.0-202512151041
-    - name: ptp-operator.v4.20.0-202511252120
-      version: 4.20.0-202511252120
-    - name: ptp-operator.v4.20.0-202511181524
-      version: 4.20.0-202511181524
-    - name: ptp-operator.v4.20.0-202511102026
-      version: 4.20.0-202511102026
-    - name: ptp-operator.v4.20.0-202511042325
-      version: 4.20.0-202511042325
-    - name: ptp-operator.v4.20.0-202510221121
-      version: 4.20.0-202510221121
-    - name: ptp-operator.v4.20.0-202510211040
-      version: 4.20.0-202510211040
-    - name: ptp-operator.v4.20.0-202509262039
-      version: 4.20.0-202509262039
-    name: stable
-  defaultChannel: stable
-  packageName: ptp-operator
-  provider:
-    name: Red Hat
-sno4@haproxy:~$
+Did you mean this?
+        describe
+[root@bastion ~]# oc describe  po bscf9901-bip1-7bb7b44cf-ks56c
+Name:             bscf9901-bip1-7bb7b44cf-ks56c
+Namespace:        cnf-bscf
+Priority:         0
+Service Account:  bscf-sa
+Node:             <none>
+Labels:           app=bscf9901-bip1
+                  component=bscf9901-bip
+                  nename=bscf9901
+                  pod-template-hash=7bb7b44cf
+                  release=bscf9901
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.v1.cni.cncf.io/networks:
+                    [
+                    { "name": "bscf-bh0c-nad", "interface": "bh0_0" } , { "name": "bscf-bh0c-nad", "interface": "bh1" },
+                    { "name": "bscf-bh0c-1-nad", "interface": "bh0_1" } , { "name": "bscf-bh0c-1-nad", "interface": "bh2" } , { "name": "bscf-bond-nad", "inte...
+                  openshift.io/scc: privileged
+                  security.openshift.io/validated-scc-subject-type: serviceaccount
+Status:           Pending
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/bscf9901-bip1-7bb7b44cf
+Init Containers:
+  sleepy:
+    Image:      nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD62_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+      echo Sleepy has come && sleep 15
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:        500m
+      memory:     256Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-6xxqd (ro)
+  install:
+    Image:      nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD62_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+    Args:
+      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
+    Limits:
+      cpu:                                500m
+      memory:                             16Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Requests:
+      cpu:                                500m
+      memory:                             16Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Environment:                          <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf9901-bip-log (rw)
+      /mnt/storage/shared from bscf9901-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-6xxqd (ro)
+Containers:
+  bip:
+    Image:      nwharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR26ABSCUTDD62_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    Limits:
+      cpu:                                22
+      memory:                             16Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Requests:
+      cpu:                                22
+      memory:                             16Gi
+      openshift.io/pci_sriov_net_bh0c:    2
+      openshift.io/pci_sriov_net_bh0c_1:  2
+    Liveness:                             http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              Asia/Seoul
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+    Mounts:
+      /etc/config from env (rw)
+      /etc/podnetinfo from podnetinfo (ro)
+      /mnt/storage/log from bscf9901-bip-log (rw)
+      /mnt/storage/shared from bscf9901-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-6xxqd (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False
+Volumes:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf9901-bip1
+    Optional:  false
+  bscf9901-bip-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf9901-log-pvc
+    ReadOnly:   false
+  bscf9901-bip-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf9901-shared-pvc
+    ReadOnly:   false
+  kube-api-access-6xxqd:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    ConfigMapOptional:       <nil>
+  podnetinfo:
+    Type:  DownwardAPI (a volume populated by information about the pod)
+    Items:
+      metadata.labels -> labels
+      metadata.annotations -> annotations
+QoS Class:       Guaranteed
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age                  From               Message
+  ----     ------            ----                 ----               -------
+  Warning  FailedScheduling  16m                  default-scheduler  0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling  5m41s (x2 over 11m)  default-scheduler  0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+[root@bastion ~]# oc get pvc
+NAME                  STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS                VOLUMEATTRIBUTESCLASS   AGE
+bscf9901-db-pvc       Pending                                      ocs-storagecluster-cephfs   <unset>                 35m
+bscf9901-log-pvc      Pending                                      ocs-storagecluster-cephfs   <unset>                 35m
+bscf9901-shared-pvc   Pending                                      ocs-storagecluster-cephfs   <unset>                 35m
+[root@bastion ~]# oc get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                           STORAGECLASS                  VOLUMEATTRIBUTESCLASS   REASON   AGE
+local-pv-2eed2354                          894Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-0-data-0zcr8m   local-volume                  <unset>                          83d
+local-pv-3a97ed5c                          894Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-1-data-0km22q   local-volume                  <unset>                          83d
+local-pv-b41527b8                          894Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-2-data-0dzlv5   local-volume                  <unset>                          83d
+pvc-3101a03c-2fca-46c0-9179-368a47a3ce9e   50Gi       RWO            Delete           Bound    openshift-storage/db-noobaa-db-pg-0             ocs-storagecluster-ceph-rbd   <unset>                          83d
+pvc-7ee920cd-8682-4638-80b9-269f9cb22617   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-2        ocs-storagecluster-ceph-rbd   <unset>                          7d10h
+pvc-a8e34b88-1885-4dfc-b2a9-0b742ef98251   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-1        ocs-storagecluster-ceph-rbd   <unset>                          7d11h
+[root@bastion ~]#
