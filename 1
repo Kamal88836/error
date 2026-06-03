@@ -1,58 +1,26 @@
-[core@ocp-sno ~]$ journalctl -u assisted-service.service
-Jun 03 06:39:53 ocp-sno.lab4.ocp.lan systemd[1]: Starting Assisted Service container...
-Jun 03 06:39:53 ocp-sno.lab4.ocp.lan podman[4795]: Trying to pull quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b9f2059776e64d8f25f041ac8742c4610267ae68d6c302250eb7ca1a81919209...
-Jun 03 06:39:53 ocp-sno.lab4.ocp.lan podman[4795]: Pulling image //quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b9f2059776e64d8f25f041ac8742c4610267ae68d6c302250eb7ca1a81919209 inside systemd: set>
-Jun 03 06:39:54 ocp-sno.lab4.ocp.lan podman[4795]: Getting image source signatures
-Jun 03 06:39:54 ocp-sno.lab4.ocp.lan podman[4795]: Copying blob sha256:25c75c34b2e2b68ba9245d9cddeb6b8a0887371ed30744064f85241a75704d87
-Jun 03 06:39:54 ocp-sno.lab4.ocp.lan podman[4795]: Copying blob sha256:fbdb0743704bd1d2cdd8aae3e3c5a7659394094c91d94e6ca73d7024553ed6b1
-Jun 03 06:39:54 ocp-sno.lab4.ocp.lan podman[4795]: Copying blob sha256:a462f78448ece03e60e2124ebe7c745c7952705b554ff159774a8cd02cc6eb63
-Jun 03 06:39:54 ocp-sno.lab4.ocp.lan podman[4795]: Copying blob sha256:44df7fb14b556724e35eb9cda875b0ac55597f313006e063b1c5ed15d8efaed8
-Jun 03 06:40:13 ocp-sno.lab4.ocp.lan podman[4795]: Copying config sha256:becc07f094ef1649234e54279ec40d694655985d95f9c56da76210c059614392
-Jun 03 06:40:13 ocp-sno.lab4.ocp.lan podman[4795]: Writing manifest to image destination
-Jun 03 06:40:13 ocp-sno.lab4.ocp.lan podman[4795]: 2026-06-03 06:40:13.835486058 +0000 UTC m=+20.125273246 image pull becc07f094ef1649234e54279ec40d694655985d95f9c56da76210c059614392 quay.io/openshift-rele>
-Jun 03 06:40:13 ocp-sno.lab4.ocp.lan podman[4795]: 2026-06-03 06:40:13.907751138 +0000 UTC m=+20.197538321 container create 3735b371309fb27bab6114e3621a6eb92f220efc138e01f9822df670d5c0feb9 (image=quay.io/o>
-Jun 03 06:40:13 ocp-sno.lab4.ocp.lan podman[4795]: 2026-06-03 06:40:13.946269758 +0000 UTC m=+20.236056960 container init 3735b371309fb27bab6114e3621a6eb92f220efc138e01f9822df670d5c0feb9 (image=quay.io/ope>
-Jun 03 06:40:13 ocp-sno.lab4.ocp.lan podman[4795]: 2026-06-03 06:40:13.948474338 +0000 UTC m=+20.238261521 container start 3735b371309fb27bab6114e3621a6eb92f220efc138e01f9822df670d5c0feb9 (image=quay.io/op>
-Jun 03 06:40:13 ocp-sno.lab4.ocp.lan systemd[1]: Started Assisted Service container.
-Jun 03 06:40:13 ocp-sno.lab4.ocp.lan podman[4795]: 3735b371309fb27bab6114e3621a6eb92f220efc138e01f9822df670d5c0feb9
-Jun 03 06:40:14 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:14Z" level=info msg="Setting log format: text" func=main.InitLogs file="/src/cmd/main.go:192"
-Jun 03 06:40:14 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:14Z" level=info msg="Setting Log Level: debug" func=main.InitLogs file="/src/cmd/main.go:198"
-Jun 03 06:40:14 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:14Z" level=info msg="Starting assisted-service version: 407730681710122a4465c4eee586bb44a2908472" func=main.main file="/src/cmd/ma>
-Jun 03 06:40:14 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:14Z" level=info msg="Starting bm service" func=main.main file="/src/cmd/main.go:271"
-Jun 03 06:40:14 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:14Z" level=info msg="Started service with OS Images [{\"openshift_version\":\"4.20.21\",\"cpu_architecture\":\"x86_64\",\"url\":\">
-Jun 03 06:40:14 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:14Z" level=info msg="Connecting to DB" func=main.setupDB file="/src/cmd/main.go:766"
-Jun 03 06:40:14 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:14Z" level=info msg="Failed to connect to DB, retrying" func=main.setupDB.func1 file="/src/cmd/main.go:773" error="failed to conne>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Connected to DB" func=main.setupDB file="/src/cmd/main.go:790"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Initializing event stream dummy writer" func=github.com/openshift/assisted-service/internal/stream.NewWriter >
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Created agent-installer-local authenticator" func=github.com/openshift/assisted-service/pkg/auth.NewAuthentic>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Options.EnableXattrFallback:true" func=main.setUpXattrClient file="/src/cmd/main.go:223"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="OSxattrClient is supported and is enabled" func="github.com/openshift/assisted-service/pkg/s3wrapper.(*OSxatt>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Configuring CNV Operator plugin" func=github.com/openshift/assisted-service/internal/operators/cnv.NewCNVOper>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="DeployTarget: onprem" func=main.main file="/src/cmd/main.go:420"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Starting manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:846"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Finished manual pre migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:852"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Start automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:854"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Finished automigration" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:860"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Starting manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:862"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Finished manual post migrations" func=main.autoMigrationWithLeader.func1 file="/src/cmd/main.go:868"
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Started Cluster Events Uploader" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Started Cluster State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file=">
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Started Host State Monitor" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file="/sr>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=debug msg="Truncating all release_images table. '0' records" func=github.com/openshift/assisted-service/internal/versio>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=debug msg="Inserting configuration release images to the DB. '1' records" func=github.com/openshift/assisted-service/in>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Started Deregister Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file="/src>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Started Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file="/src/p>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Started Orphan Deletion Worker" func="github.com/openshift/assisted-service/pkg/thread.(*Thread).Start" file=>
-Jun 03 06:40:16 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:16Z" level=info msg="Starting http handler on :8090..."
-Jun 03 06:40:17 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:17Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[>
-Jun 03 06:40:18 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:18Z" level=debug msg="Request: {GET /api/assisted-install/v2/infra-envs HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[>
-Jun 03 06:40:19 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:19Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters?with_hosts=false HTTP/1.1 1 1 map[Accept:[application/json] >
-Jun 03 06:40:20 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:20Z" level=debug msg="Request: {POST /api/assisted-install/v2/clusters HTTP/1.1 1 1 map[Accept:[application/json] Accept-Encoding:>
-Jun 03 06:40:20 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:20Z" level=info msg="Register cluster: lab4 with id ee0c6084-dce1-4442-b7b6-26312500cb3a and params {\"api_vips\":[],\"base_dns_do>
-Jun 03 06:40:20 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:20Z" level=info msg="Verifying cluster platform and user-managed-networking, got platform=none and userManagedNetworking=true" fun>
-Jun 03 06:40:20 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:20Z" level=info msg="selected cluster release image: arch=x86_64, openshiftVersion=4.20, url=bastion-sno.lab.ocp.lan:8443/ocp4/ope>
-Jun 03 06:40:20 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:20Z" level=debug msg="Platform managed networking feature is activated" func=github.com/openshift/assisted-service/internal/featur>
-Jun 03 06:40:20 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:20Z" level=debug msg="User Managed Networking feature is activated" func=github.com/openshift/assisted-service/internal/featuresup>
-Jun 03 06:40:20 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:20Z" level=debug msg="Single Node OpenShift feature is activated" func=github.com/openshift/assisted-service/internal/featuresuppo>
-Jun 03 06:40:20 ocp-sno.lab4.ocp.lan service[5378]: time="2026-06-03T06:40:20Z" level=debug msg="Dual-Stack feature is activated" func=github.com/openshift/assisted-service/internal/featuresupport.getActiv>
-lines 1-56
+[root@bastion-sno cluster-resources]# cat cs-redhat-operator-index-v4-20.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: cs-redhat-operator-index-v4-20
+  namespace: openshift-marketplace
+spec:
+  image: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.20
+  sourceType: grpc
+status: {}
+[root@bastion-sno cluster-resources]# skopeo list-tags docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat
+FATA[0000] Error listing repository tags: fetching tags list: name unknown: repository not found
+[root@bastion-sno cluster-resources]# skopeo list-tags docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.20
+FATA[0000] No tag or digest allowed in reference
+[root@bastion-sno cluster-resources]# skopeo list-tags docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index
+{
+    "Repository": "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index",
+    "Tags": [
+        "v4.20",
+        "v4.14",
+        "v4.18"
+    ]
+}
+[root@bastion-sno cluster-resources]# skopeo list-tags docker://bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.20
+FATA[0000] No tag or digest allowed in reference
+[root@bastion-sno cluster-resources]#
