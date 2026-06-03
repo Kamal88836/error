@@ -1,167 +1,113 @@
-[root@bastion ~]# oc get po
-NAME                             READY   STATUS    RESTARTS   AGE
-bscf9901-bip0-54d5d9bcd8-8ntzd   0/1     Pending   0          60m
-bscf9901-bip1-7bb7b44cf-ks56c    0/1     Pending   0          60m
-bscf9901-bpp0-6dbd9bf986-t7czk   0/1     Pending   0          60m
-bscf9901-bpp1-9c95b65f5-8qrj6    0/1     Pending   0          60m
-bscf9901-bpp2-5fd7564bfb-l9lwr   0/1     Pending   0          60m
-bscf9901-bpp3-66dcc89857-2bwpn   0/1     Pending   0          60m
-bscf9901-cmp0-6d5778478b-9wmk8   0/1     Pending   0          60m
-bscf9901-cmp1-76685bbc8d-m6vcc   0/1     Pending   0          60m
-bscf9901-dmp0-68c4c86c-l29lz     0/1     Pending   0          60m
-bscf9901-pmp0-7666f66885-grzjt   0/1     Pending   0          60m
-[root@bastion ~]# oc decribe po bscf9901-bip1-7bb7b44cf-ks56c
-error: unknown command "decribe" for "oc"
-
-Did you mean this?
-        describe
-[root@bastion ~]# oc describe  po bscf9901-bip1-7bb7b44cf-ks56c
-Name:             bscf9901-bip1-7bb7b44cf-ks56c
-Namespace:        cnf-bscf
-Priority:         0
-Service Account:  bscf-sa
-Node:             <none>
-Labels:           app=bscf9901-bip1
-                  component=bscf9901-bip
-                  nename=bscf9901
-                  pod-template-hash=7bb7b44cf
-                  release=bscf9901
-                  restart-on-reboot=true
-                  tech=gsm
-Annotations:      k8s.v1.cni.cncf.io/networks:
-                    [
-                    { "name": "bscf-bh0c-nad", "interface": "bh0_0" } , { "name": "bscf-bh0c-nad", "interface": "bh1" },
-                    { "name": "bscf-bh0c-1-nad", "interface": "bh0_1" } , { "name": "bscf-bh0c-1-nad", "interface": "bh2" } , { "name": "bscf-bond-nad", "inte...
-                  openshift.io/scc: privileged
-                  security.openshift.io/validated-scc-subject-type: serviceaccount
-Status:           Pending
-IP:
-IPs:              <none>
-Controlled By:    ReplicaSet/bscf9901-bip1-7bb7b44cf
-Init Containers:
-  sleepy:
-    Image:      nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD62_R00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      sh
-      -c
-      echo Sleepy has come && sleep 15
-    Limits:
-      cpu:     500m
-      memory:  256Mi
-    Requests:
-      cpu:        500m
-      memory:     256Mi
-    Environment:  <none>
-    Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-6xxqd (ro)
-  install:
-    Image:      nwharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDD62_R00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      sh
-      -c
-    Args:
-      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
-    Limits:
-      cpu:                                500m
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Requests:
-      cpu:                                500m
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Environment:                          <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf9901-bip-log (rw)
-      /mnt/storage/shared from bscf9901-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-6xxqd (ro)
-Containers:
-  bip:
-    Image:      nwharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR26ABSCUTDD62_R00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    Limits:
-      cpu:                                22
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Requests:
-      cpu:                                22
-      memory:                             16Gi
-      openshift.io/pci_sriov_net_bh0c:    2
-      openshift.io/pci_sriov_net_bh0c_1:  2
-    Liveness:                             http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:              Asia/Seoul
-      THIS_NODE_NAME:   (v1:spec.nodeName)
-    Mounts:
-      /etc/config from env (rw)
-      /etc/podnetinfo from podnetinfo (ro)
-      /mnt/storage/log from bscf9901-bip-log (rw)
-      /mnt/storage/shared from bscf9901-bip-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-6xxqd (ro)
-Conditions:
-  Type           Status
-  PodScheduled   False
-Volumes:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf9901-bip1
-    Optional:  false
-  bscf9901-bip-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf9901-log-pvc
-    ReadOnly:   false
-  bscf9901-bip-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf9901-shared-pvc
-    ReadOnly:   false
-  kube-api-access-6xxqd:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-  podnetinfo:
-    Type:  DownwardAPI (a volume populated by information about the pod)
-    Items:
-      metadata.labels -> labels
-      metadata.annotations -> annotations
-QoS Class:       Guaranteed
-Node-Selectors:  <none>
-Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+[root@bastion ~]# oc describe pvc bscf9901-db-pvc
+Name:          bscf9901-db-pvc
+Namespace:     cnf-bscf
+StorageClass:  ocs-storagecluster-cephfs
+Status:        Pending
+Volume:
+Labels:        app=bscf9901-db-pvc
+               app.kubernetes.io/managed-by=Helm
+               chart=bscf-261.0.18
+               heritage=Helm
+               nename=bscf9901
+               release=bscf9901
+Annotations:   meta.helm.sh/release-name: bscf9901
+               meta.helm.sh/release-namespace: cnf-bscf
+               volume.beta.kubernetes.io/storage-provisioner: openshift-storage.cephfs.csi.ceph.com
+               volume.kubernetes.io/storage-provisioner: openshift-storage.cephfs.csi.ceph.com
+Finalizers:    [kubernetes.io/pvc-protection]
+Capacity:
+Access Modes:
+VolumeMode:    Filesystem
+Used By:       bscf9901-dmp0-68c4c86c-l29lz
 Events:
-  Type     Reason            Age                  From               Message
-  ----     ------            ----                 ----               -------
-  Warning  FailedScheduling  16m                  default-scheduler  0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
-  Warning  FailedScheduling  5m41s (x2 over 11m)  default-scheduler  0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
-[root@bastion ~]# oc get pvc
-NAME                  STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS                VOLUMEATTRIBUTESCLASS   AGE
-bscf9901-db-pvc       Pending                                      ocs-storagecluster-cephfs   <unset>                 35m
-bscf9901-log-pvc      Pending                                      ocs-storagecluster-cephfs   <unset>                 35m
-bscf9901-shared-pvc   Pending                                      ocs-storagecluster-cephfs   <unset>                 35m
-[root@bastion ~]# oc get pv
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                           STORAGECLASS                  VOLUMEATTRIBUTESCLASS   REASON   AGE
-local-pv-2eed2354                          894Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-0-data-0zcr8m   local-volume                  <unset>                          83d
-local-pv-3a97ed5c                          894Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-1-data-0km22q   local-volume                  <unset>                          83d
-local-pv-b41527b8                          894Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-2-data-0dzlv5   local-volume                  <unset>                          83d
-pvc-3101a03c-2fca-46c0-9179-368a47a3ce9e   50Gi       RWO            Delete           Bound    openshift-storage/db-noobaa-db-pg-0             ocs-storagecluster-ceph-rbd   <unset>                          83d
-pvc-7ee920cd-8682-4638-80b9-269f9cb22617   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-2        ocs-storagecluster-ceph-rbd   <unset>                          7d10h
-pvc-a8e34b88-1885-4dfc-b2a9-0b742ef98251   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-1        ocs-storagecluster-ceph-rbd   <unset>                          7d11h
+  Type     Reason                Age                        From                                                                                                                                        Message
+  ----     ------                ----                       ----                                                                                                                                        -------
+  Warning  ProvisioningFailed    39m                        openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  failed to provision volume with StorageClass "ocs-storagecluster-cephfs": rpc error: code = DeadlineExceeded desc = context deadline exceeded
+  Normal   Provisioning          8m21s (x18 over 42m)       openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  External provisioner is provisioning volume for claim "cnf-bscf/bscf9901-db-pvc"
+  Warning  ProvisioningFailed    8m21s (x17 over 39m)       openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  failed to provision volume with StorageClass "ocs-storagecluster-cephfs": rpc error: code = Aborted desc = an operation with the given Volume ID pvc-663f056c-c636-4dd6-a9ce-5dfa86a55369 already exists
+  Normal   ExternalProvisioning  <invalid> (x167 over 20m)  persistentvolume-controller                                                                                                                 Waiting for a volume to be created either by the external provisioner 'openshift-storage.cephfs.csi.ceph.com' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.
+[root@bastion ~]# oc describe pvc bscf9901-log-pvc
+Name:          bscf9901-log-pvc
+Namespace:     cnf-bscf
+StorageClass:  ocs-storagecluster-cephfs
+Status:        Pending
+Volume:
+Labels:        app=bscf9901-log-pvc
+               app.kubernetes.io/managed-by=Helm
+               chart=bscf-261.0.18
+               heritage=Helm
+               nename=bscf9901
+               release=bscf9901
+Annotations:   meta.helm.sh/release-name: bscf9901
+               meta.helm.sh/release-namespace: cnf-bscf
+               volume.beta.kubernetes.io/storage-provisioner: openshift-storage.cephfs.csi.ceph.com
+               volume.kubernetes.io/storage-provisioner: openshift-storage.cephfs.csi.ceph.com
+Finalizers:    [kubernetes.io/pvc-protection]
+Capacity:
+Access Modes:
+VolumeMode:    Filesystem
+Used By:       bscf9901-bip0-54d5d9bcd8-8ntzd
+               bscf9901-bip1-7bb7b44cf-ks56c
+               bscf9901-bpp0-6dbd9bf986-t7czk
+               bscf9901-bpp1-9c95b65f5-8qrj6
+               bscf9901-bpp2-5fd7564bfb-l9lwr
+               bscf9901-bpp3-66dcc89857-2bwpn
+               bscf9901-cmp0-6d5778478b-9wmk8
+               bscf9901-cmp1-76685bbc8d-m6vcc
+               bscf9901-dmp0-68c4c86c-l29lz
+               bscf9901-pmp0-7666f66885-grzjt
+Events:
+  Type     Reason                Age                        From                                                                                                                                        Message
+  ----     ------                ----                       ----                                                                                                                                        -------
+  Warning  ProvisioningFailed    39m                        openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  failed to provision volume with StorageClass "ocs-storagecluster-cephfs": rpc error: code = DeadlineExceeded desc = context deadline exceeded
+  Normal   Provisioning          8m31s (x18 over 42m)       openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  External provisioner is provisioning volume for claim "cnf-bscf/bscf9901-log-pvc"
+  Warning  ProvisioningFailed    8m31s (x17 over 39m)       openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  failed to provision volume with StorageClass "ocs-storagecluster-cephfs": rpc error: code = Aborted desc = an operation with the given Volume ID pvc-202f2c16-d61f-41d0-8fd7-8e12efd946e1 already exists
+  Normal   ExternalProvisioning  <invalid> (x167 over 20m)  persistentvolume-controller                                                                                                                 Waiting for a volume to be created either by the external provisioner 'openshift-storage.cephfs.csi.ceph.com' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.
+[root@bastion ~]# oc describe pvc bscf9901-shared-pvc
+Name:          bscf9901-shared-pvc
+Namespace:     cnf-bscf
+StorageClass:  ocs-storagecluster-cephfs
+Status:        Pending
+Volume:
+Labels:        app=bscf9901-shared-pvc
+               app.kubernetes.io/managed-by=Helm
+               chart=bscf-261.0.18
+               heritage=Helm
+               nename=bscf9901
+               release=bscf9901
+Annotations:   meta.helm.sh/release-name: bscf9901
+               meta.helm.sh/release-namespace: cnf-bscf
+               volume.beta.kubernetes.io/storage-provisioner: openshift-storage.cephfs.csi.ceph.com
+               volume.kubernetes.io/storage-provisioner: openshift-storage.cephfs.csi.ceph.com
+Finalizers:    [kubernetes.io/pvc-protection]
+Capacity:
+Access Modes:
+VolumeMode:    Filesystem
+Used By:       bscf9901-bip0-54d5d9bcd8-8ntzd
+               bscf9901-bip1-7bb7b44cf-ks56c
+               bscf9901-bpp0-6dbd9bf986-t7czk
+               bscf9901-bpp1-9c95b65f5-8qrj6
+               bscf9901-bpp2-5fd7564bfb-l9lwr
+               bscf9901-bpp3-66dcc89857-2bwpn
+               bscf9901-cmp0-6d5778478b-9wmk8
+               bscf9901-cmp1-76685bbc8d-m6vcc
+               bscf9901-dmp0-68c4c86c-l29lz
+               bscf9901-pmp0-7666f66885-grzjt
+Events:
+  Type     Reason                Age                        From                                                                                                                                        Message
+  ----     ------                ----                       ----                                                                                                                                        -------
+  Warning  ProvisioningFailed    40m                        openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  failed to provision volume with StorageClass "ocs-storagecluster-cephfs": rpc error: code = DeadlineExceeded desc = context deadline exceeded
+  Normal   Provisioning          8m43s (x18 over 42m)       openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  External provisioner is provisioning volume for claim "cnf-bscf/bscf9901-shared-pvc"
+  Warning  ProvisioningFailed    8m43s (x17 over 40m)       openshift-storage.cephfs.csi.ceph.com_openshift-storage.cephfs.csi.ceph.com-ctrlplugin-9cc9bffb-599fq_58a8a883-a6d5-4538-8072-9edcb9c0b434  failed to provision volume with StorageClass "ocs-storagecluster-cephfs": rpc error: code = Aborted desc = an operation with the given Volume ID pvc-9106db7b-4923-4522-af57-f7c2a35038bf already exists
+  Normal   ExternalProvisioning  <invalid> (x167 over 20m)  persistentvolume-controller                                                                                                                 Waiting for a volume to be created either by the external provisioner 'openshift-storage.cephfs.csi.ceph.com' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.
+[root@bastion ~]# oc get sc
+NAME                          PROVISIONER                             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-volume                  kubernetes.io/no-provisioner            Delete          WaitForFirstConsumer   false                  83d
+ocs-storagecluster-ceph-rbd   openshift-storage.rbd.csi.ceph.com      Delete          Immediate              true                   83d
+ocs-storagecluster-ceph-rgw   openshift-storage.ceph.rook.io/bucket   Delete          Immediate              false                  83d
+ocs-storagecluster-cephfs     openshift-storage.cephfs.csi.ceph.com   Delete          Immediate              true                   83d
+openshift-storage.noobaa.io   openshift-storage.noobaa.io/obc         Delete          Immediate              false                  83d
+[root@bastion ~]# oc get storagecluster -n openshift-storage
+NAME                 AGE   PHASE   EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   83d   Ready              2026-03-11T14:09:14Z   4.20.10
 [root@bastion ~]#
