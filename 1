@@ -1,20 +1,117 @@
-Events:
-  Type     Reason          Age                        From               Message
-  ----     ------          ----                       ----               -------
-  Normal   Scheduled       6m23s                      default-scheduler  Successfully assigned openshift-storage/rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-58d8f9f5k7sld to master3.airtelvvt.samsungbsc.local
-  Normal   AddedInterface  6m21s                      multus             Add eth0 [10.30.0.35/24 fd01:0:0:2::17/64] from ovn-kubernetes
-  Normal   Pulled          6m21s                      kubelet            Container image "registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:7e807c3c446a963c57859707359e41ccb74aba49896924eedd3594032d9a9acd" already present on machine
-  Normal   Created         6m21s                      kubelet            Created container: chown-container-data-dir
-  Normal   Started         6m21s                      kubelet            Started container chown-container-data-dir
-  Normal   Created         6m20s                      kubelet            Created container: log-collector
-  Normal   Pulled          6m20s                      kubelet            Container image "registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:7e807c3c446a963c57859707359e41ccb74aba49896924eedd3594032d9a9acd" already present on machine
-  Normal   Started         6m20s                      kubelet            Started container log-collector
-  Normal   Started         <invalid> (x5 over 6m20s)  kubelet            Started container mds
-  Normal   Created         <invalid> (x6 over 6m20s)  kubelet            Created container: mds
-  Warning  Unhealthy       <invalid> (x2 over 83s)    kubelet            Liveness probe failed: Error: MDS ID not present in MDS map
-dumped fsmap epoch 51380
-  Normal   Killing    <invalid> (x7 over 2m58s)       kubelet  Container mds failed liveness probe, will be restarted
-  Warning  Unhealthy  <invalid> (x34 over 4m58s)      kubelet  Liveness probe failed: command timed out
-  Warning  BackOff    <invalid> (x12 over <invalid>)  kubelet  Back-off restarting failed container mds in pod rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-58d8f9f5k7sld_openshift-storage(15d8b23b-71a4-4e52-b14d-e0e3ae354268)
-  Normal   Pulled     <invalid> (x9 over 6m20s)       kubelet  Container image "registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:7e807c3c446a963c57859707359e41ccb74aba49896924eedd3594032d9a9acd" already present on machine
-[root@bastion ~]#
+sno4@haproxy:~$ oc get catsrc -n openshift-marketplace
+NAME                             DISPLAY   TYPE   PUBLISHER   AGE
+cs-redhat-operator-index-v4-20             grpc               22h
+sno4@haproxy:~$ oc describe  catsrc  cs-redhat-operator-index-v4-20 -n openshift-marketplace
+Name:         cs-redhat-operator-index-v4-20
+Namespace:    openshift-marketplace
+Labels:       <none>
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         CatalogSource
+Metadata:
+  Creation Timestamp:  2026-06-03T07:56:46Z
+  Generation:          1
+  Resource Version:    175005
+  UID:                 aa19f5c5-cf9c-4a6a-be46-da68f1f83b07
+Spec:
+  Image:        bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.20
+  Source Type:  grpc
+Status:
+  Connection State:
+    Address:              cs-redhat-operator-index-v4-20.openshift-marketplace.svc:50051
+    Last Connect:         2026-06-04T06:15:50Z
+    Last Observed State:  READY
+  Registry Service:
+    Created At:         2026-06-04T06:15:24Z
+    Port:               50051
+    Protocol:           grpc
+    Service Name:       cs-redhat-operator-index-v4-20
+    Service Namespace:  openshift-marketplace
+Events:                 <none>
+sno4@haproxy:~$ oc gat  catsrc  cs-redhat-operator-index-v4-20 -n openshift-marketplace -o yaml
+error: unknown command "gat" for "oc"
+
+Did you mean this?
+        get
+        set
+        tag
+        wait
+sno4@haproxy:~$ oc get  catsrc  cs-redhat-operator-index-v4-20 -n openshift-marketplace -o yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"operators.coreos.com/v1alpha1","kind":"CatalogSource","metadata":{"annotations":{},"name":"cs-redhat-operator-index-v4-20","namespace":"openshift-marketplace"},"spec":{"image":"bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.20","sourceType":"grpc"},"status":{}}
+  creationTimestamp: "2026-06-03T07:56:46Z"
+  generation: 1
+  name: cs-redhat-operator-index-v4-20
+  namespace: openshift-marketplace
+  resourceVersion: "176310"
+  uid: aa19f5c5-cf9c-4a6a-be46-da68f1f83b07
+spec:
+  image: bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/redhat/redhat-operator-index:v4.20
+  sourceType: grpc
+status:
+  connectionState:
+    address: cs-redhat-operator-index-v4-20.openshift-marketplace.svc:50051
+    lastConnect: "2026-06-04T06:27:42Z"
+    lastObservedState: READY
+  registryService:
+    createdAt: "2026-06-04T06:15:24Z"
+    port: "50051"
+    protocol: grpc
+    serviceName: cs-redhat-operator-index-v4-20
+    serviceNamespace: openshift-marketplace
+sno4@haproxy:~$ oc get sub -A
+NAMESPACE       NAME                        PACKAGE        SOURCE                           CHANNEL
+openshift-ptp   ptp-operator-subscription   ptp-operator   cs-redhat-operator-index-v4-20   stable
+sno4@haproxy:~$ oc describe sub ptp-operator-subscription -n openshift-ptp
+Name:         ptp-operator-subscription
+Namespace:    openshift-ptp
+Labels:       operators.coreos.com/ptp-operator.openshift-ptp=
+Annotations:  <none>
+API Version:  operators.coreos.com/v1alpha1
+Kind:         Subscription
+Metadata:
+  Creation Timestamp:  2026-06-03T10:30:33Z
+  Generation:          1
+  Resource Version:    58553
+  UID:                 9ed0eba0-332f-47ee-acea-a4fef3c0eb0e
+Spec:
+  Channel:                stable
+  Install Plan Approval:  Automatic
+  Name:                   ptp-operator
+  Source:                 cs-redhat-operator-index-v4-20
+  Source Namespace:       openshift-marketplace
+Status:
+  Catalog Health:
+    Catalog Source Ref:
+      API Version:       operators.coreos.com/v1alpha1
+      Kind:              CatalogSource
+      Name:              cs-redhat-operator-index-v4-20
+      Namespace:         openshift-marketplace
+      Resource Version:  41795
+      UID:               aa19f5c5-cf9c-4a6a-be46-da68f1f83b07
+    Healthy:             true
+    Last Updated:        2026-06-03T10:30:34Z
+  Conditions:
+    Reason:                UnpackingInProgress
+    Status:                True
+    Type:                  BundleUnpacking
+    Last Transition Time:  2026-06-03T10:30:35Z
+    Message:               all available catalogsources are healthy
+    Reason:                AllCatalogSourcesHealthy
+    Status:                False
+    Type:                  CatalogSourcesUnhealthy
+    Message:               bundle unpacking failed. Reason: DeadlineExceeded, and Message: Job was active longer than specified deadline
+    Reason:                BundleUnpackFailed
+    Status:                True
+    Type:                  BundleUnpackFailed
+    Message:               error using catalogsource openshift-marketplace/cs-redhat-operator-index-v4-20: failed to list bundles: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing: dial tcp 172.30.132.60:50051: connect: connection refused"
+    Reason:                ErrorPreventedResolution
+    Status:                True
+    Type:                  ResolutionFailed
+  Last Updated:            2026-06-03T12:39:54Z
+Events:                    <none>
+sno4@haproxy:~$
