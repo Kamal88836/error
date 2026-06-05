@@ -1,0 +1,671 @@
+[root@slb01 ~]# cd /var/named
+[root@slb01 named]# ls -lart
+total 24
+drwxrwx---.  2 named named    6 Feb 15  2021 slaves
+-rw-r-----.  1 root  named  168 Feb 15  2021 named.loopback
+-rw-r-----.  1 root  named  152 Feb 15  2021 named.localhost
+-rw-r-----.  1 root  named  152 Feb 15  2021 named.empty
+-rw-r-----.  1 root  named 2253 Feb 15  2021 named.ca
+drwxr-xr-x. 21 root  root  4096 May 19  2023 ..
+-rw-r--r--.  1 root  named 1105 Aug 16  2023 gsc.ss.samsung.local.zone
+drwxrwx---.  2 named named  127 Jun  3 11:43 data
+drwxrwx--T.  5 root  named  160 Jun  3 14:47 .
+drwxrwx---.  2 named named  158 Jun  4 15:07 dynamic
+[root@slb01 named]# cat gsc.ss.samsung.local.zone
+$TTL 1D
+@ IN SOA slb.gsc.ss.samsung.local. dns.gsc.ss.samsung.local. (
+                0 ; serial
+                1D ; refresh
+                1H ; retry
+                1W ; expire
+                3H ; minimum
+)
+
+@ IN NS slb.gsc.ss.samsung.local.
+@ IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+; Ancillary services
+slb01 IN A 10.0.100.112
+slb02 IN A 10.0.100.118
+slb IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+dns01 IN A 10.0.100.112
+dns02 IN A 10.0.100.118
+dns IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+; Bastion or Jumphost
+bastion IN A 10.0.100.108
+
+; harbor
+harbor IN A 10.0.10.14
+
+; OCP Cluster
+bootstrap IN A 10.0.100.110
+master01 IN A 10.0.100.100
+master02 IN A 10.0.100.102
+master03 IN A 10.0.100.104
+worker01 IN A 10.0.100.200
+worker02 IN A 10.0.100.202
+worker03 IN A 10.0.100.204
+worker04 IN A 10.0.100.206
+worker05 IN A 10.0.100.208
+worker06 IN A 10.0.100.210
+worker07 IN A 10.0.100.212
+worker08 IN A 10.0.100.214
+worker09 IN A 10.0.100.216
+worker10 IN A 10.0.100.218
+worker11 IN A 10.0.100.220
+worker12 IN A 10.0.100.222
+worker13 IN A 10.0.100.224
+
+api IN A 10.0.100.114 ; SLB lbr-k8s VIP
+api-int IN A 10.0.100.114 ; SLB lbr-k8s VIP
+*.apps IN A 10.0.100.114 ; SLB lbr-k8s VIP
+[root@slb01 named]#
+(failed reverse-i-search)`shs': shutdown -h 0
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]# nslookup 10.0.100.100
+** server can't find 100.100.0.10.in-addr.arpa: NXDOMAIN
+
+[root@slb01 named]# ping master01
+PING master01.gsc.ss.samsung.local (10.0.100.100) 56(84) bytes of data.
+64 bytes from 10.0.100.100 (10.0.100.100): icmp_seq=1 ttl=64 time=0.103 ms
+64 bytes from 10.0.100.100 (10.0.100.100): icmp_seq=2 ttl=64 time=0.208 ms
+64 bytes from 10.0.100.100 (10.0.100.100): icmp_seq=3 ttl=64 time=0.222 ms
+64 bytes from 10.0.100.100 (10.0.100.100): icmp_seq=4 ttl=64 time=0.297 ms
+
+--- master01.gsc.ss.samsung.local ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 2999ms
+rtt min/avg/max/mdev = 0.103/0.207/0.297/0.070 ms
+[root@slb01 named]# nslookup masster01
+Server:         10.0.100.114
+Address:        10.0.100.114#53
+
+** server can't find masster01: NXDOMAIN
+
+[root@slb01 named]# nslookup master01
+Server:         10.0.100.114
+Address:        10.0.100.114#53
+
+Name:   master01.gsc.ss.samsung.local
+Address: 10.0.100.100
+
+[root@slb01 named]# nslookup 10.0.100.100
+** server can't find 100.100.0.10.in-addr.arpa: NXDOMAIN
+
+[root@slb01 named]# ls -lart
+total 24
+drwxrwx---.  2 named named    6 Feb 15  2021 slaves
+-rw-r-----.  1 root  named  168 Feb 15  2021 named.loopback
+-rw-r-----.  1 root  named  152 Feb 15  2021 named.localhost
+-rw-r-----.  1 root  named  152 Feb 15  2021 named.empty
+-rw-r-----.  1 root  named 2253 Feb 15  2021 named.ca
+drwxr-xr-x. 21 root  root  4096 May 19  2023 ..
+-rw-r--r--.  1 root  named 1105 Aug 16  2023 gsc.ss.samsung.local.zone
+drwxrwx---.  2 named named  127 Jun  3 11:43 data
+drwxrwx--T.  5 root  named  160 Jun  3 14:47 .
+drwxrwx---.  2 named named  158 Jun  4 15:07 dynamic
+[root@slb01 named]# sudo syetmctl
+[root@slb01 named]# systemctl restart named
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]# nslookup 10.0.100.100
+** server can't find 100.100.0.10.in-addr.arpa: NXDOMAIN
+
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]# ip address
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:ae:6e:2c brd ff:ff:ff:ff:ff:ff
+    inet 10.0.100.112/24 brd 10.0.100.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet 10.0.100.114/32 scope global enp1s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:feae:6e2c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: enp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:46:3a:32 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.105/24 brd 10.0.0.255 scope global noprefixroute enp2s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe46:3a32/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:f7:5c:38 brd ff:ff:ff:ff:ff:ff
+    inet 107.111.213.26/24 brd 107.111.213.255 scope global noprefixroute enp3s0
+       valid_lft forever preferred_lft forever
+    inet 107.111.213.27/32 scope global enp3s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fef7:5c38/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]# hostname
+slb01.gsc.ss.samsung.local
+[root@slb01 named]# cat /etc/named.conf
+//
+// named.conf
+//
+// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
+// server as a caching only nameserver (as a localhost DNS resolver only).
+//
+// See /usr/share/doc/bind*/sample/ for example named configuration files.
+//
+
+options {
+        listen-on port 53 { any; };
+        listen-on-v6 port 53 { none; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        secroots-file   "/var/named/data/named.secroots";
+        recursing-file  "/var/named/data/named.recursing";
+        allow-query     { any; };
+        forwarders {107.110.101.40;};
+
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
+
+        dnssec-enable yes;
+        dnssec-validation no;
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+
+        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
+        include "/etc/crypto-policies/back-ends/bind.config";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+zone gsc.ss.samsung.local IN {
+ type master;
+ file "gsc.ss.samsung.local.zone";
+ allow-update { none; };
+};
+[root@slb01 named]# cd /var/named
+[root@slb01 named]# ls -lart
+total 24
+drwxrwx---.  2 named named    6 Feb 15  2021 slaves
+-rw-r-----.  1 root  named  168 Feb 15  2021 named.loopback
+-rw-r-----.  1 root  named  152 Feb 15  2021 named.localhost
+-rw-r-----.  1 root  named  152 Feb 15  2021 named.empty
+-rw-r-----.  1 root  named 2253 Feb 15  2021 named.ca
+drwxr-xr-x. 21 root  root  4096 May 19  2023 ..
+-rw-r--r--.  1 root  named 1105 Aug 16  2023 gsc.ss.samsung.local.zone
+drwxrwx---.  2 named named  127 Jun  3 11:43 data
+drwxrwx--T.  5 root  named  160 Jun  4 15:40 .
+drwxrwx---.  2 named named  158 Jun  4 15:41 dynamic
+[root@slb01 named]# cat gsc.ss.samsung.local.zone
+$TTL 1D
+@ IN SOA slb.gsc.ss.samsung.local. dns.gsc.ss.samsung.local. (
+                0 ; serial
+                1D ; refresh
+                1H ; retry
+                1W ; expire
+                3H ; minimum
+)
+
+@ IN NS slb.gsc.ss.samsung.local.
+@ IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+; Ancillary services
+slb01 IN A 10.0.100.112
+slb02 IN A 10.0.100.118
+slb IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+dns01 IN A 10.0.100.112
+dns02 IN A 10.0.100.118
+dns IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+; Bastion or Jumphost
+bastion IN A 10.0.100.108
+
+; harbor
+harbor IN A 10.0.10.14
+
+; OCP Cluster
+bootstrap IN A 10.0.100.110
+master01 IN A 10.0.100.100
+master02 IN A 10.0.100.102
+master03 IN A 10.0.100.104
+worker01 IN A 10.0.100.200
+worker02 IN A 10.0.100.202
+worker03 IN A 10.0.100.204
+worker04 IN A 10.0.100.206
+worker05 IN A 10.0.100.208
+worker06 IN A 10.0.100.210
+worker07 IN A 10.0.100.212
+worker08 IN A 10.0.100.214
+worker09 IN A 10.0.100.216
+worker10 IN A 10.0.100.218
+worker11 IN A 10.0.100.220
+worker12 IN A 10.0.100.222
+worker13 IN A 10.0.100.224
+
+api IN A 10.0.100.114 ; SLB lbr-k8s VIP
+api-int IN A 10.0.100.114 ; SLB lbr-k8s VIP
+*.apps IN A 10.0.100.114 ; SLB lbr-k8s VIP
+[root@slb01 named]# cat gsc.ss.samsung.local.zone
+[root@slb01 named]# pwd
+/var/named
+[root@slb01 named]# cat /etc/named.conf | grep /var/named/
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        secroots-file   "/var/named/data/named.secroots";
+        recursing-file  "/var/named/data/named.recursing";
+        managed-keys-directory "/var/named/dynamic";
+[root@slb01 named]#
+[root@slb01 named]# api.gsc.ss.samsung.local
+[root@slb01 named]# ip address
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:ae:6e:2c brd ff:ff:ff:ff:ff:ff
+    inet 10.0.100.112/24 brd 10.0.100.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet 10.0.100.114/32 scope global enp1s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:feae:6e2c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: enp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:46:3a:32 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.105/24 brd 10.0.0.255 scope global noprefixroute enp2s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe46:3a32/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:f7:5c:38 brd ff:ff:ff:ff:ff:ff
+    inet 107.111.213.26/24 brd 107.111.213.255 scope global noprefixroute enp3s0
+       valid_lft forever preferred_lft forever
+    inet 107.111.213.27/32 scope global enp3s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fef7:5c38/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]# cat /etc/named.conf
+//
+// named.conf
+//
+// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
+// server as a caching only nameserver (as a localhost DNS resolver only).
+//
+// See /usr/share/doc/bind*/sample/ for example named configuration files.
+//
+
+options {
+        listen-on port 53 { any; };
+        listen-on-v6 port 53 { none; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        secroots-file   "/var/named/data/named.secroots";
+        recursing-file  "/var/named/data/named.recursing";
+        allow-query     { any; };
+        forwarders {107.110.101.40;};
+
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
+
+        dnssec-enable yes;
+        dnssec-validation no;
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+
+        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
+        include "/etc/crypto-policies/back-ends/bind.config";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+zone gsc.ss.samsung.local IN {
+ type master;
+ file "gsc.ss.samsung.local.zone";
+ allow-update { none; };
+};
+[root@slb01 named]# ip address
+[root@slb01 named]# ls -lart
+total 24
+drwxrwx---.  2 named named    6 Feb 15  2021 slaves
+-rw-r-----.  1 root  named  168 Feb 15  2021 named.loopback
+-rw-r-----.  1 root  named  152 Feb 15  2021 named.localhost
+-rw-r-----.  1 root  named  152 Feb 15  2021 named.empty
+-rw-r-----.  1 root  named 2253 Feb 15  2021 named.ca
+drwxr-xr-x. 21 root  root  4096 May 19  2023 ..
+-rw-r--r--.  1 root  named 1105 Aug 16  2023 gsc.ss.samsung.local.zone
+drwxrwx---.  2 named named  127 Jun  3 11:43 data
+drwxrwx--T.  5 root  named  160 Jun  4 15:40 .
+drwxrwx---.  2 named named  158 Jun  4 16:07 dynamic
+[root@slb01 named]# pwd
+/var/named
+[root@slb01 named]# cat gsc.ss.samsung.local.zone
+$TTL 1D
+@ IN SOA slb.gsc.ss.samsung.local. dns.gsc.ss.samsung.local. (
+                0 ; serial
+                1D ; refresh
+                1H ; retry
+                1W ; expire
+                3H ; minimum
+)
+
+@ IN NS slb.gsc.ss.samsung.local.
+@ IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+; Ancillary services
+slb01 IN A 10.0.100.112
+slb02 IN A 10.0.100.118
+slb IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+dns01 IN A 10.0.100.112
+dns02 IN A 10.0.100.118
+dns IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+; Bastion or Jumphost
+bastion IN A 10.0.100.108
+
+; harbor
+harbor IN A 10.0.10.14
+
+; OCP Cluster
+bootstrap IN A 10.0.100.110
+master01 IN A 10.0.100.100
+master02 IN A 10.0.100.102
+master03 IN A 10.0.100.104
+worker01 IN A 10.0.100.200
+worker02 IN A 10.0.100.202
+worker03 IN A 10.0.100.204
+worker04 IN A 10.0.100.206
+worker05 IN A 10.0.100.208
+worker06 IN A 10.0.100.210
+worker07 IN A 10.0.100.212
+worker08 IN A 10.0.100.214
+worker09 IN A 10.0.100.216
+worker10 IN A 10.0.100.218
+worker11 IN A 10.0.100.220
+worker12 IN A 10.0.100.222
+worker13 IN A 10.0.100.224
+
+api IN A 10.0.100.114 ; SLB lbr-k8s VIP
+api-int IN A 10.0.100.114 ; SLB lbr-k8s VIP
+*.apps IN A 10.0.100.114 ; SLB lbr-k8s VIP
+[root@slb01 named]# vi gsc.ss.samsung.local.zone
+data/                      gsc.ss.samsung.local.zone  named.empty                named.loopback
+dynamic/                   named.ca                   named.localhost            slaves/
+[root@slb01 named]# vi gsc.ss.samsung.local.zone
+[root@slb01 named]# ip -4
+Usage: ip [ OPTIONS ] OBJECT { COMMAND | help }
+       ip [ -force ] -batch filename
+where  OBJECT := { link | address | addrlabel | route | rule | neigh | ntable |
+                   tunnel | tuntap | maddress | mroute | mrule | monitor | xfrm |
+                   netns | l2tp | fou | macsec | tcp_metrics | token | netconf | ila |
+                   vrf | sr | nexthop | mptcp }
+       OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] | -r[esolve] |
+                    -h[uman-readable] | -iec | -j[son] | -p[retty] |
+                    -f[amily] { inet | inet6 | mpls | bridge | link } |
+                    -4 | -6 | -I | -D | -M | -B | -0 |
+                    -l[oops] { maximum-addr-flush-attempts } | -br[ief] |
+                    -o[neline] | -t[imestamp] | -ts[hort] | -b[atch] [filename] |
+                    -rc[vbuf] [size] | -n[etns] name | -N[umeric] | -a[ll] |
+                    -c[olor]}
+[root@slb01 named]#  address
+-bash: address: command not found
+[root@slb01 named]# ip -4  address
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    inet 10.0.100.112/24 brd 10.0.100.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet 10.0.100.114/32 scope global enp1s0
+       valid_lft forever preferred_lft forever
+3: enp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    inet 10.0.0.105/24 brd 10.0.0.255 scope global noprefixroute enp2s0
+       valid_lft forever preferred_lft forever
+4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    inet 107.111.213.26/24 brd 107.111.213.255 scope global noprefixroute enp3s0
+       valid_lft forever preferred_lft forever
+    inet 107.111.213.27/32 scope global enp3s0
+       valid_lft forever preferred_lft forever
+[root@slb01 named]# sudo systemctl status haproxy
+? haproxy.service - HAProxy Load Balancer
+   Loaded: loaded (/usr/lib/systemd/system/haproxy.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2026-06-04 13:01:43 IST; 3h 10min ago
+  Process: 1719 ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q $OPTIONS (code=exited, status=0/SUCCESS)
+ Main PID: 1722 (haproxy)
+    Tasks: 2 (limit: 149031)
+   Memory: 3.8M
+   CGroup: /system.slice/haproxy.service
+           +-1722 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+           +-1724 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local systemd[1]: Starting HAProxy Load Balancer...
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'openshift-api-serv>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'openshift-api-serve>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'machine-config-ser>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'machine-config-serv>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'ingress-http' as i>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'ingress-http' as it>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'ingress-https' as >
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'ingress-https' as i>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local systemd[1]: Started HAProxy Load Balancer.
+
+[root@slb01 named]# vi gsc.ss.samsung.local.zone
+[root@slb01 named]# cat gsc.ss.samsung.local.zone
+$TTL 1D
+@ IN SOA slb.gsc.ss.samsung.local. dns.gsc.ss.samsung.local. (
+                0 ; serial
+                1D ; refresh
+                1H ; retry
+                1W ; expire
+                3H ; minimum
+)
+
+@ IN NS slb.gsc.ss.samsung.local.
+@ IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+; Ancillary services
+slb01 IN A 10.0.100.112
+slb02 IN A 10.0.100.118
+slb IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+dns01 IN A 10.0.100.112
+dns02 IN A 10.0.100.118
+dns IN A 10.0.100.114 ; SLB lbr-k8s VIP
+
+; Bastion or Jumphost
+bastion IN A 10.0.100.108
+
+; harbor
+harbor IN A 10.0.10.14
+
+; OCP Cluster
+bootstrap IN A 10.0.100.110
+master01 IN A 10.0.100.100
+master02 IN A 10.0.100.102
+master03 IN A 10.0.100.104
+worker01 IN A 10.0.100.200
+worker02 IN A 10.0.100.202
+worker03 IN A 10.0.100.204
+worker04 IN A 10.0.100.206
+worker05 IN A 10.0.100.208
+worker06 IN A 10.0.100.210
+worker07 IN A 10.0.100.212
+worker08 IN A 10.0.100.214
+worker09 IN A 10.0.100.216
+worker10 IN A 10.0.100.218
+worker11 IN A 10.0.100.220
+worker12 IN A 10.0.100.222
+worker13 IN A 10.0.100.224
+
+api IN A 10.0.100.112; SLB lbr-k8s VIP
+api-int IN A 10.0.100.112 ; SLB lbr-k8s VIP
+*.apps IN A 10.0.100.112 ; SLB lbr-k8s VIP
+[root@slb01 named]# sudo systemctl restart named
+[root@slb01 named]# cat /etc/named.
+named.conf           named.rfc1912.zones  named.root.key
+[root@slb01 named]# cat /etc/named.
+named.conf           named.rfc1912.zones  named.root.key
+[root@slb01 named]# cat /etc/named.conf
+//
+// named.conf
+//
+// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
+// server as a caching only nameserver (as a localhost DNS resolver only).
+//
+// See /usr/share/doc/bind*/sample/ for example named configuration files.
+//
+
+options {
+        listen-on port 53 { any; };
+        listen-on-v6 port 53 { none; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        secroots-file   "/var/named/data/named.secroots";
+        recursing-file  "/var/named/data/named.recursing";
+        allow-query     { any; };
+        forwarders {107.110.101.40;};
+
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
+
+        dnssec-enable yes;
+        dnssec-validation no;
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+
+        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
+        include "/etc/crypto-policies/back-ends/bind.config";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+zone gsc.ss.samsung.local IN {
+ type master;
+ file "gsc.ss.samsung.local.zone";
+ allow-update { none; };
+};
+[root@slb01 named]#
+[root@slb01 named]#
+[root@slb01 named]#
