@@ -1,26 +1,165 @@
-sno4@haproxy:~$ oc get itms -o yaml
-apiVersion: v1
-items:
-- apiVersion: config.openshift.io/v1
-  kind: ImageTagMirrorSet
-  metadata:
-    annotations:
-      createdAt: Wednesday, 13-May-26 09:08:30 UTC
-      createdBy: oc-mirror v2
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"config.openshift.io/v1","kind":"ImageTagMirrorSet","metadata":{"annotations":{"createdAt":"Wednesday, 13-May-26 09:08:30 UTC","createdBy":"oc-mirror v2","oc-mirror_version":"4.21.0-202604222219.p2.g994deeb.assembly.stream.el9-994deeb"},"name":"itms-release-0"},"spec":{"imageTagMirrors":[{"mirrors":["bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images"],"source":"quay.io/openshift-release-dev/ocp-release"}]}}
-      oc-mirror_version: 4.21.0-202604222219.p2.g994deeb.assembly.stream.el9-994deeb
-    creationTimestamp: "2026-06-03T09:15:17Z"
-    generation: 1
-    name: itms-release-0
-    resourceVersion: "30380"
-    uid: b340b7f9-d9f6-477a-85b1-2baba6987c49
-  spec:
-    imageTagMirrors:
-    - mirrors:
-      - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images
-      source: quay.io/openshift-release-dev/ocp-release
-kind: List
-metadata:
-  resourceVersion: ""
-sno4@haproxy:~$
+[root@bastion ~]# oc  describe clusterversion
+Name:         version
+Namespace:
+Labels:       <none>
+Annotations:  <none>
+API Version:  config.openshift.io/v1
+Kind:         ClusterVersion
+Metadata:
+  Creation Timestamp:  2024-11-23T13:04:55Z
+  Generation:          13
+  Resource Version:    386719281
+  UID:                 370ef672-315e-41f0-96e2-ceceb0638761
+Spec:
+  Channel:     stable-4.18
+  Cluster ID:  188beeba-3872-4fb4-8c77-00768eebc31c
+  Desired Update:
+    Architecture:
+    Force:         true
+    Image:         nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687
+    Version:
+Status:
+  Available Updates:  <nil>
+  Capabilities:
+    Enabled Capabilities:
+      Build
+      CSISnapshot
+      CloudControllerManager
+      CloudCredential
+      Console
+      DeploymentConfig
+      ImageRegistry
+      Ingress
+      Insights
+      MachineAPI
+      NodeTuning
+      OperatorLifecycleManager
+      OperatorLifecycleManagerV1
+      Storage
+      baremetal
+      marketplace
+      openshift-samples
+    Known Capabilities:
+      Build
+      CSISnapshot
+      CloudControllerManager
+      CloudCredential
+      Console
+      DeploymentConfig
+      ImageRegistry
+      Ingress
+      Insights
+      MachineAPI
+      NodeTuning
+      OperatorLifecycleManager
+      OperatorLifecycleManagerV1
+      Storage
+      baremetal
+      marketplace
+      openshift-samples
+  Conditions:
+    Last Transition Time:  2025-09-05T06:26:08Z
+    Message:               Capabilities match configured spec
+    Reason:                AsExpected
+    Status:                False
+    Type:                  ImplicitlyEnabledCapabilities
+    Last Transition Time:  2025-02-05T01:54:24Z
+    Message:               Payload loaded version="4.18.17" image="nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687" architecture="amd64"
+    Reason:                PayloadLoaded
+    Status:                True
+    Type:                  ReleaseAccepted
+    Last Transition Time:  2024-11-23T13:58:47Z
+    Message:               Done applying 4.18.17
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  2026-06-03T01:50:56Z
+    Message:               Cluster operator monitoring is not available
+    Reason:                ClusterOperatorNotAvailable
+    Status:                True
+    Type:                  Failing
+    Last Transition Time:  2026-06-03T01:50:11Z
+    Message:               Unable to apply 4.18.17: the cluster operator monitoring is not available
+    Reason:                ClusterOperatorNotAvailable
+    Status:                True
+    Type:                  Progressing
+    Last Transition Time:  2024-11-23T13:04:57Z
+    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.18&id=188beeba-3872-4fb4-8c77-00768eebc31c&version=4.18.17": dial tcp: lookup api.openshift.com on 20.1.30.104:53: server misbehaving
+    Reason:                RemoteFailed
+    Status:                False
+    Type:                  RetrievedUpdates
+    Last Transition Time:  2025-04-19T09:50:36Z
+    Message:               Cluster should not be upgraded between minor versions for multiple reasons: AdminAckRequired,ClusterOperatorsNotUpgradeable
+* Kubernetes 1.32 and therefore OpenShift 4.19 remove several APIs which require admin consideration. Please see the knowledge article https://access.redhat.com/articles/7112216 for details and instructions.
+* Multiple cluster operators should not be upgraded between minor versions:
+* Cluster operator kube-controller-manager should not be upgraded between minor versions: UnsupportedConfigOverrides_UnsupportedConfigOverridesSet: UnsupportedConfigOverridesUpgradeable: setting: [extendedArguments.terminated-pod-gc-threshold.0]
+* Cluster operator machine-config should not be upgraded between minor versions: PoolUpdating: One or more machine config pools are updating, please see `oc get mcp` for further details
+    Reason:                MultipleReasons
+    Status:                False
+    Type:                  Upgradeable
+    Last Transition Time:  2025-11-18T20:20:26Z
+    Message:               Kubernetes 1.32 and therefore OpenShift 4.19 remove several APIs which require admin consideration. Please see the knowledge article https://access.redhat.com/articles/7112216 for details and instructions.
+    Reason:                AdminAckRequired
+    Status:                False
+    Type:                  UpgradeableAdminAckRequired
+    Last Transition Time:  2025-11-18T20:20:26Z
+    Message:               Multiple cluster operators should not be upgraded between minor versions:
+* Cluster operator kube-controller-manager should not be upgraded between minor versions: UnsupportedConfigOverrides_UnsupportedConfigOverridesSet: UnsupportedConfigOverridesUpgradeable: setting: [extendedArguments.terminated-pod-gc-threshold.0]
+* Cluster operator machine-config should not be upgraded between minor versions: PoolUpdating: One or more machine config pools are updating, please see `oc get mcp` for further details
+    Reason:  ClusterOperatorsNotUpgradeable
+    Status:  False
+    Type:    UpgradeableClusterOperators
+  Desired:
+    Image:    nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687
+    URL:      https://access.redhat.com/errata/RHSA-2025:8560
+    Version:  4.18.17
+  History:
+    Accepted Risks:  Forced through blocking failures: Multiple precondition checks failed:
+* Precondition "ClusterVersionUpgradeable" failed because of "ClusterOperatorsNotUpgradeable": Multiple cluster operators should not be upgraded between minor versions:
+* Cluster operator kube-controller-manager should not be upgraded between minor versions: UnsupportedConfigOverrides_UnsupportedConfigOverridesSet: UnsupportedConfigOverridesUpgradeable: setting: [extendedArguments.terminated-pod-gc-threshold.0]
+* Cluster operator operator-lifecycle-manager should not be upgraded between minor versions: IncompatibleOperatorsInstalled: ClusterServiceVersions blocking cluster upgrade: openshift-storage/odf-operator.v4.14.22-rhodf is incompatible with OpenShift minor versions greater than 4.15
+* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.17.32 to 4.18.17 is unknown.
+    Completion Time:  2025-11-18T20:16:11Z
+    Image:            nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687
+    Started Time:     2025-11-18T17:24:15Z
+    State:            Completed
+    Verified:         true
+    Version:          4.18.17
+    Completion Time:  2025-09-05T18:26:37Z
+    Image:            nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:0c2421a241e95f56895906885e7f7e53cb1520ee6a82db5cdeea98f5f65457d7
+    Started Time:     2025-09-05T11:30:09Z
+    State:            Completed
+    Verified:         true
+    Version:          4.17.32
+    Completion Time:  2025-09-05T10:06:56Z
+    Image:            nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:2fa965ede9ab6530be8a2e780b484d487c2b3ea4354e84cec680c22823c255ab
+    Started Time:     2025-09-05T06:25:57Z
+    State:            Completed
+    Verified:         true
+    Version:          4.16.42
+    Accepted Risks:   Forced through blocking failures: Multiple precondition checks failed:
+* Precondition "ClusterVersionUpgradeable" failed because of "UnsupportedConfigOverrides_UnsupportedConfigOverridesSet": Cluster operator kube-controller-manager should not be upgraded between minor versions: UnsupportedConfigOverridesUpgradeable: setting: [extendedArguments.terminated-pod-gc-threshold.0]
+* Precondition "EtcdRecentBackup" failed because of "ControllerStarted": RecentBackup: The etcd backup controller is starting, and will decide if recent backups are available or if a backup is required
+* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.14.43 to 4.15.46 is unknown.
+    Completion Time:    2025-09-05T01:57:19Z
+    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:ea0429e14dc9ff007f56d5db2b75209c2510d81e6869194e33a53352d2b6a4fa
+    Started Time:       2025-09-04T05:24:17Z
+    State:              Completed
+    Verified:           true
+    Version:            4.15.46
+    Accepted Risks:     Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.14.35 to 4.14.43 is unknown.
+    Completion Time:    2025-02-06T05:07:49Z
+    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:c770c1a6f546e4b730490ad9cc366fb2e0596c470aa295589f1ca9d80784f0c9
+    Started Time:       2025-02-06T02:21:44Z
+    State:              Completed
+    Verified:           true
+    Version:            4.14.43
+    Completion Time:    2024-11-23T13:58:47Z
+    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:883088e3e6efa7443b0ac28cd7682c2fdbda889b576edad626769bf956ac0858
+    Started Time:       2024-11-23T13:04:57Z
+    State:              Completed
+    Verified:           false
+    Version:            4.14.35
+  Observed Generation:  13
+  Version Hash:         20U-s6dPHsU=
+Events:                 <none>
+[root@bastion ~]#
