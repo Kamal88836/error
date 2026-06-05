@@ -1,0 +1,787 @@
+Last login: Thu Jun  4 09:25:04 2026 from 107.111.213.34
+[root@ocp-host1 ~]# virsh list --all
+ Id   Name        State
+----------------------------
+ 1    bastion     running
+ 2    SLB_DNS1    running
+ -    bootstrap   shut off
+
+[root@ocp-host1 ~]#
+[root@ocp-host1 ~]#
+[root@ocp-host1 ~]# ssh root@107.111.213.28
+root@107.111.213.28's password:
+Activate the web console with: systemctl enable --now cockpit.socket
+
+This system is not registered to Red Hat Insights. See https://cloud.redhat.com/
+To register this system, run: insights-client --register
+
+Last login: Thu Jun  4 09:22:34 2026 from 107.111.213.23
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]# virsh list --all
+ Id   Name       State
+--------------------------
+ 1    SLB_DNS2   running
+ 2    sim        running
+
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]# exit;
+logout
+Connection to 107.111.213.28 closed.
+[root@ocp-host1 ~]# exit
+logout
+Connection to 107.111.213.23 closed.
+                                                                                                                                                             ?
+
+ ? 04/06/2026 ? ? 10:08.34 ? ? /home/mobaxterm ?
+                                                                                                                                                             ?
+
+ ? 04/06/2026 ? ? 10:08.35 ? ? /home/mobaxterm ? ssh root@107.111.213.24
+root@107.111.213.24's password:
+X11 forwarding request failed on channel 0
+Last login: Thu Jun  4 08:50:02 2026 from 107.109.34.100
+error: EOF
+
+Unable to connect to the server: EOF
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# oc version
+Client Version: 4.10.37
+Unable to connect to the server: EOF
+[root@bastion ~]# echo $KUBECONFIG
+/root/inst07/auth/kubeconfig
+[root@bastion ~]# export KUBECONFIG=/root/inst07/auth/kubeconfig
+[root@bastion ~]#
+[root@bastion ~]# oc login https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+error: EOF
+[root@bastion ~]#
+[root@bastion ~]# exit
+logout
+Connection to 107.111.213.24 closed.
+                                                                                                                                                             ?
+
+ ? 04/06/2026 ? ? 11:04.58 ? ? /home/mobaxterm ? ssh root@107.111.213.24
+root@107.111.213.24's password:
+X11 forwarding request failed on channel 0
+Last login: Thu Jun  4 10:03:22 2026 from 107.111.213.34
+error: EOF
+[root@bastion ~]#
+[root@bastion ~]# oc whoami
+Unable to connect to the server: EOF
+[root@bastion ~]#
+[root@bastion ~]# oc cluster-info
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+Unable to connect to the server: EOF
+[root@bastion ~]#
+[root@bastion ~]# oc get nodes
+Unable to connect to the server: EOF
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# oc version
+Client Version: 4.10.37
+Unable to connect to the server: EOF
+[root@bastion ~]# nslookup api.gsc.ss.samsung.local
+Server:         10.0.100.114
+Address:        10.0.100.114#53
+
+Name:   api.gsc.ss.samsung.local
+Address: 10.0.100.114
+
+[root@bastion ~]# nc -zv 10.0.100.114 6443
+Ncat: Version 7.70 ( https://nmap.org/ncat )
+Ncat: Connected to 10.0.100.114:6443.
+Ncat: 0 bytes sent, 0 bytes received in 0.01 seconds.
+[root@bastion ~]# curl -kv https://10.0.100.114:6443/version
+*   Trying 10.0.100.114...
+* TCP_NODELAY set
+* Connected to 10.0.100.114 (10.0.100.114) port 6443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/pki/tls/certs/ca-bundle.crt
+  CApath: none
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to 10.0.100.114:6443
+curl: (35) OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to 10.0.100.114:6443
+[root@bastion ~]# systemctl status haproxy
+Unit haproxy.service could not be found.
+[root@bastion ~]# podman ps | grep haproxy
+[root@bastion ~]# oc version
+Client Version: 4.10.37
+Unable to connect to the server: EOF
+[root@bastion ~]# ip route get 10.0.100.114
+10.0.100.114 dev enp1s0 src 10.0.100.108 uid 0
+    cache
+[root@bastion ~]# openssl s_client -connect 10.0.100.114:6443
+CONNECTED(00000003)
+write:errno=0
+---
+no peer certificate available
+---
+No client certificate CA names sent
+---
+SSL handshake has read 0 bytes and written 289 bytes
+Verification: OK
+---
+New, (NONE), Cipher is (NONE)
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 0 (ok)
+---
+[root@bastion ~]# cat /root/inst07/metadata.json
+{"clusterName":"gsc","clusterID":"46dd46e9-1696-4dea-a964-fe4c41c1f269","infraID":"gsc-hhrss"}[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# cat /root/inst07/install-config.yaml
+cat: /root/inst07/install-config.yaml: No such file or directory
+[root@bastion ~]# nslookup api-int.gsc.ss.samsung.local
+Server:         10.0.100.114
+Address:        10.0.100.114#53
+
+Name:   api-int.gsc.ss.samsung.local
+Address: 10.0.100.114
+
+[root@bastion ~]# nslookup master0.gsc.ss.samsung.local
+Server:         10.0.100.114
+Address:        10.0.100.114#53
+
+** server can't find master0.gsc.ss.samsung.local: NXDOMAIN
+
+[root@bastion ~]# nslookup master1.gsc.ss.samsung.local
+Server:         10.0.100.114
+Address:        10.0.100.114#53
+
+** server can't find master1.gsc.ss.samsung.local: NXDOMAIN
+
+[root@bastion ~]# nslookup master2.gsc.ss.samsung.local
+Server:         10.0.100.114
+Address:        10.0.100.114#53
+
+** server can't find master2.gsc.ss.samsung.local: NXDOMAIN
+
+[root@bastion ~]# openssl s_client -connect 10.0.100.114:6443 -tls1_2
+CONNECTED(00000003)
+write:errno=0
+---
+no peer certificate available
+---
+No client certificate CA names sent
+---
+SSL handshake has read 0 bytes and written 192 bytes
+Verification: OK
+---
+New, (NONE), Cipher is (NONE)
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+SSL-Session:
+    Protocol  : TLSv1.2
+    Cipher    : 0000
+    Session-ID:
+    Session-ID-ctx:
+    Master-Key:
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    Start Time: 1780553501
+    Timeout   : 7200 (sec)
+    Verify return code: 0 (ok)
+    Extended master secret: no
+---
+[root@bastion ~]# openssl s_client -connect 10.0.100.114:6443 -tls1_3
+CONNECTED(00000003)
+write:errno=0
+---
+no peer certificate available
+---
+No client certificate CA names sent
+---
+SSL handshake has read 0 bytes and written 217 bytes
+Verification: OK
+---
+New, (NONE), Cipher is (NONE)
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 0 (ok)
+---
+[root@bastion ~]# curl -vk https://10.0.100.114:6443
+* Rebuilt URL to: https://10.0.100.114:6443/
+*   Trying 10.0.100.114...
+* TCP_NODELAY set
+* Connected to 10.0.100.114 (10.0.100.114) port 6443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/pki/tls/certs/ca-bundle.crt
+  CApath: none
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to 10.0.100.114:6443
+curl: (35) OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to 10.0.100.114:6443
+[root@bastion ~]# ss -antp | grep 6443
+[root@bastion ~]# arp -an | grep 10.0.100.114
+? (10.0.100.114) at 52:54:00:ae:6e:2c [ether] on enp1s0
+[root@bastion ~]# sudo crictl ps | egrep "kube-apiserver|etcd"
+sudo: crictl: command not found
+[root@bastion ~]# sudo journalctl -u kubelet -n 100 --no-pager
+-- Logs begin at Thu 2026-06-04 09:50:17 IST, end at Thu 2026-06-04 11:44:55 IST. --
+-- No entries --
+[root@bastion ~]# ssh core@10.0.100.114
+core@10.0.100.114's password:
+
+[root@bastion ~]# ps -ef | egrep "haproxy|keepalived"
+root        2753    2337  0 11:49 pts/0    00:00:00 grep -E --color=auto haproxy|keepalived
+[root@bastion ~]# ssh root@10.0.100.114
+root@10.0.100.114's password:
+Permission denied, please try again.
+root@10.0.100.114's password:
+
+[root@bastion ~]# systemctl status haproxy
+Unit haproxy.service could not be found.
+[root@bastion ~]# exit
+logout
+Connection to 107.111.213.24 closed.
+                                                                                                                                                             ?
+
+ ? 04/06/2026 ? ? 12:04.59 ? ? /home/mobaxterm ?
+                                                                                                                                                             ?
+
+
+ ? 04/06/2026 ? ? 12:05.26 ? ? /home/mobaxterm ?
+                                                                                                                                                             ?
+
+ ? 04/06/2026 ? ? 12:05.27 ? ? /home/mobaxterm ? ssh root@107.111.213.23
+root@107.111.213.23's password:
+Activate the web console with: systemctl enable --now cockpit.socket
+
+This system is not registered to Red Hat Insights. See https://cloud.redhat.com/
+To register this system, run: insights-client --register
+
+Last login: Thu Jun  4 10:00:56 2026 from 107.111.213.34
+[root@ocp-host1 ~]#
+[root@ocp-host1 ~]#
+[root@ocp-host1 ~]#
+[root@ocp-host1 ~]# virsh list -all
+error: unexpected data '-all'
+[root@ocp-host1 ~]# virsh list --all
+ Id   Name        State
+----------------------------
+ 1    bastion     running
+ 2    SLB_DNS1    running
+ -    bootstrap   shut off
+
+[root@ocp-host1 ~]#
+[root@ocp-host1 ~]#
+[root@ocp-host1 ~]# ssh root@107.111.213.28
+root@107.111.213.28's password:
+Activate the web console with: systemctl enable --now cockpit.socket
+
+This system is not registered to Red Hat Insights. See https://cloud.redhat.com/
+To register this system, run: insights-client --register
+
+Last login: Thu Jun  4 09:58:18 2026 from 107.111.213.23
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]# virsh list --all
+ Id   Name       State
+--------------------------
+ 1    SLB_DNS2   running
+ 2    sim        running
+
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]#
+[root@ocp-host2 ~]# exit
+logout
+Connection to 107.111.213.28 closed.
+[root@ocp-host1 ~]# exit;
+logout
+Connection to 107.111.213.23 closed.
+                                                                                                                                                             ?
+
+ ? 04/06/2026 ? ? 12:07.40 ? ? /home/mobaxterm ? ssh root@107.111.213.24
+root@107.111.213.24's password:
+X11 forwarding request failed on channel 0
+Last login: Thu Jun  4 10:58:11 2026 from 107.111.213.34
+error: EOF
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# oc version
+Client Version: 4.10.37
+Unable to connect to the server: EOF
+[root@bastion ~]#
+[root@bastion ~]# oc get nodes
+Unable to connect to the server: EOF
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# ls -lrt
+total 1181432
+-rw-r--r--. 1 root root       950 Oct  6  2022 README.md
+-rwxr-xr-x. 2 root root 125654920 Oct  6  2022 oc
+-rwxr-xr-x. 2 root root 125654920 Oct  6  2022 kubectl
+-rwxr-xr-x. 1 root root 619634688 Oct  6  2022 openshift-install
+-rw-------. 1 root root      1706 May 18  2023 anaconda-ks.cfg
+-rw-r--r--. 1 root root      1570 May 18  2023 DigitalCity.crt
+-rw-r--r--. 1 root root      2049 May 23  2023 trial_harbor.crt
+-rw-r--r--. 1 root root      5676 May 24  2023 install-config-with-proxy.yaml
+-rw-r--r--. 1 root root       233 May 24  2023 htpasswd_cr.yaml
+-rw-r--r--. 1 root root      1937 May 24  2023 monitoring.yaml
+-rw-r--r--. 1 root root       239 May 24  2023 ss-pid-limit.yaml
+-rw-r--r--. 1 root root       325 May 25  2023 ifcfg-lbr-lb-sig
+-rw-r--r--. 1 root root       391 May 25  2023 mcp.yaml
+-rw-r--r--. 1 root root       535 May 25  2023 load-sctp-module.yaml
+drwxr-xr-x. 3 root root        95 May 25  2023 nfs-provisioner
+-rw-r--r--. 1 root root       153 May 31  2023 addon-namespace.yaml
+-rw-r--r--. 1 root root       595 May 31  2023 performance.yaml
+drwxr-xr-x. 2 root root        74 Jun  1  2023 ISTIO
+drwxr-xr-x. 2 root root      4096 Jun  1  2023 Grafana
+drwxr-xr-x. 2 root root       175 Jun  1  2023 RoleBinding
+drwxr-xr-x. 2 root root       142 Jun  2  2023 chronyd
+drwxr-xr-x. 2 root root        88 Jun  2  2023 timezone
+-rw-r--r--. 1 root root       685 Aug 11  2023 proxy-backup.yaml
+-rw-r--r--. 1 root root      3859 Aug 14  2023 install-config-without-proxy.yaml
+drwxr-xr-x. 3 root root       185 Aug 14  2023 inst07
+drwxr-xr-x. 2 root root       163 Aug 16  2023 KEDA
+-rw-r--r--. 1 root root       230 Aug 16  2023 ocs4registry-pvc.yaml
+drwx------. 2 root root        57 Aug 17  2023 ssh_backup
+-rw-r--r--. 1 root root 206080000 Aug 17  2023 grafana.tar
+-rw-r--r--. 1 root root       524 Aug 17  2023 grafana-image-pull-command
+drwxr-xr-x. 6 root root        86 Aug 18  2023 openshift-infra
+drwxr-xr-x. 3 root root       263 Aug 22  2023 nmstate
+drwxr-xr-x. 3 root root       196 Aug 24  2023 sriov
+drwxr-xr-x. 5 root root       163 Aug 30  2023 ocp-backup
+-rw-r--r--. 1 root root     26115 Sep  8  2023 servicemeshcontrolplanes.maistra.io-0908.yaml
+drwxr-xr-x. 2 root root       108 Sep 13  2023 gomool
+drwxr-xr-x. 9 root root       173 Sep 13  2023 COMMON-DIRECTORY
+-rw-r--r--. 1 root root     26115 Dec 21  2023 servicemeshcontrolplanes.maistra.io-istio-1221.yaml
+-rw-r--r--. 1 root root      2134 May 17  2024 core_ca.crt
+-rw-r--r--. 1 root root      3243 May 17  2024 ca.key
+-rw-r--r--. 1 root root      2114 May 20  2024 core_ca_g.crt
+drwxr-xr-x. 3 root root        19 Jun 28  2024 user
+-rw-r--r--. 1 root root   1436648 Jun 28  2024 tmp.json
+-rwxrwxrwx. 1 root root        10 Jul  5  2024 123.sh
+-rw-r--r--. 1 root root      7620 Aug 16  2024 root
+-rw-------. 1 root root      1704 Oct 15  2024 req.key
+-rw-r--r--. 1 root root      1359 Oct 15  2024 req.crt
+-rwxrwxrwx. 1 root root  47679279 Nov 18  2024 lbinfo-24B
+drwxr-xr-x. 7 root root       111 Nov 21  2024 CHARTS
+-rw-r--r--. 1 root root      2779 Dec  4  2024 pull-secret.json
+-rw-r--r--. 1 root root      2794 Dec  4  2024 pull-secret.json_org
+-rw-r--r--. 1 root root      2779 Dec  5  2024 pull-secret_1205.json
+drwxr-xr-x. 4 root root        93 Jan 23  2025 test-app
+-rw-r--r--. 1 root root         0 Jan 24  2025 test1.txt
+-rw-r--r--. 1 root root  31167450 Mar 25  2025 reloaderlog
+-rw-r--r--. 1 root root   3886110 Apr  2  2025 reloaderlogs
+-rw-r--r--. 1 root root     27000 Apr  2  2025 reloader10min
+-rw-r--r--. 1 root root      7982 Apr  2  2025 pfcpmgrlog
+-rw-r--r--. 1 root root      5034 Apr  3  2025 crmlog
+-rw-r--r--. 1 root root     26059 Apr 10  2025 1
+-rw-r--r--. 1 root root  39553684 Apr 11  2025 lbinfo
+drwxr-xr-x. 4 root root        96 Aug 25  2025 SCO
+-rw-r--r--. 1 root root       143 Jan 21 19:47 users.htpasswd
+-rw-r--r--. 1 root root      3608 Jan 31 15:13 scctp.pcap
+-rw-r--r--. 1 root root     45753 Jan 31 15:21 sctp.pcap
+-rw-r--r--. 1 root root     11366 Jan 31 15:26 sctpn.pcap
+-rw-r--r--. 1 root root    509514 Feb 11 16:16 iperf-2.2.1.tar.gz
+-rw-r--r--. 1 root root    509514 Feb 11 16:17 root@sim
+-rw-r--r--. 1 root root    816272 Feb 11 16:37 nginx-1.22.1-1.el7.ngx.x86_64.rpm
+drwxr-xr-x. 3 root root       197 Mar  9 08:08 csi-driver
+-rw-r--r--. 1 root root      3993 Mar 13 19:46 backuproutersecret.yaml
+-rw-r--r--. 1 root root      5823 Mar 13 19:47 routercert.yaml
+-rw-r--r--. 1 root root      7356 Mar 13 20:07 ingress-ca.crt
+drwxr-xr-x. 2 root root        54 Mar 25 13:59 test
+-rw-r--r--. 1 root root     44290 Mar 25 14:55 servicemeshcontrolplanes.maistra.io-istio-0325.yaml
+-rw-r--r--. 1 root root     44302 Mar 25 14:57 servicemeshcontrolplanes.maistra.io-istio_03252026.yaml
+-rw-r--r--. 1 root root   6600101 Apr  7 01:33 test.pcap
+-rw-r--r--. 1 root root      1528 Apr 15 13:12 pfcp.pcap
+-rw-r--r--. 1 root root      3369 Apr 21 23:08 ns.json
+-rw-r--r--. 1 root root      2653 Apr 21 23:12 svc1.json
+-rw-r--r--. 1 root root       642 Apr 22 19:33 cdb-auth.yaml
+-rw-r--r--. 1 root root     19976 Apr 22 19:41 cdb-ssl.yaml
+-rw-r--r--. 1 root root       516 Apr 23 11:49 priorityclass.yaml
+-rw-r--r--. 1 root root      1139 Apr 23 12:06 redis-values.yaml
+-rw-r--r--. 1 root root       649 Apr 24 18:02 samsung-redis-database.yaml
+-rw-r--r--. 1 root root       763 Apr 28 15:42 redis.yaml
+drwxr-xr-x. 3 root root       256 Apr 28 16:11 redis
+-rw-r--r--. 1 root root       661 Apr 28 16:29 redisupf.yaml
+-rw-r--r--. 1 root root      9430 Apr 29 01:03 upf.yaml
+drwxr-xr-x. 2 root root        61 May 11 23:50 smf
+-rw-r--r--. 1 root root     35547 May 12 10:13 servicemeshcontrolplanes.maistra.io-istio_05122026.yaml
+-rw-r--r--. 1 root root     35595 May 12 10:15 servicemeshcontrolplanes.maistra.io-istio.yaml
+[root@bastion ~]#
+[root@bastion ~]# cd /etc/ssh/
+[root@bastion ssh]# ls
+moduli      ssh_config.d  ssh_host_ecdsa_key      ssh_host_ed25519_key      ssh_host_rsa_key
+ssh_config  sshd_config   ssh_host_ecdsa_key.pub  ssh_host_ed25519_key.pub  ssh_host_rsa_key.pub
+[root@bastion ssh]# ls -lrt
+total 600
+-rw-r--r--. 1 root root       1770 Mar 27  2020 ssh_config
+-rw-r--r--. 1 root root     577388 Mar 27  2020 moduli
+drwxr-xr-x. 2 root root         28 May 18  2023 ssh_config.d
+-rw-r--r--. 1 root root        162 May 18  2023 ssh_host_ecdsa_key.pub
+-rw-r-----. 1 root ssh_keys    492 May 18  2023 ssh_host_ecdsa_key
+-rw-r--r--. 1 root root         82 May 18  2023 ssh_host_ed25519_key.pub
+-rw-r-----. 1 root ssh_keys    387 May 18  2023 ssh_host_ed25519_key
+-rw-r--r--. 1 root root        554 May 18  2023 ssh_host_rsa_key.pub
+-rw-r-----. 1 root ssh_keys   2578 May 18  2023 ssh_host_rsa_key
+-rw-------. 1 root root       4411 Aug 26  2025 sshd_config
+[root@bastion ssh]#
+[root@bastion ssh]# cat sshd_config
+#       $OpenBSD: sshd_config,v 1.103 2018/04/09 20:41:22 tj Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
+#
+#Port 22
+#AddressFamily any
+#ListenAddress 0.0.0.0
+#ListenAddress ::
+
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Ciphers and keying
+#RekeyLimit default none
+
+# This system is following system-wide crypto policy. The changes to
+# crypto properties (Ciphers, MACs, ...) will not have any effect here.
+# They will be overridden by command-line options passed to the server
+# on command line.
+# Please, check manual pages for update-crypto-policies(8) and sshd_config(5).
+
+# Logging
+#SyslogFacility AUTH
+SyslogFacility AUTHPRIV
+#LogLevel INFO
+
+# Authentication:
+
+#LoginGraceTime 2m
+PermitRootLogin yes
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+#PubkeyAuthentication yes
+
+# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+# but this is overridden so installations will only check .ssh/authorized_keys
+AuthorizedKeysFile      .ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+
+#AuthorizedKeysCommand none
+#AuthorizedKeysCommandUser nobody
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#HostbasedAuthentication no
+# Change to yes if you don't trust ~/.ssh/known_hosts for
+# HostbasedAuthentication
+#IgnoreUserKnownHosts no
+# Don't read the user's ~/.rhosts and ~/.shosts files
+#IgnoreRhosts yes
+
+# To disable tunneled clear text passwords, change to no here!
+#PasswordAuthentication yes
+#PermitEmptyPasswords no
+PasswordAuthentication yes
+
+# Change to no to disable s/key passwords
+#ChallengeResponseAuthentication yes
+ChallengeResponseAuthentication no
+
+# Kerberos options
+#KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+#KerberosUseKuserok yes
+
+# GSSAPI options
+GSSAPIAuthentication yes
+GSSAPICleanupCredentials no
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+#GSSAPIEnablek5users no
+
+# Set this to 'yes' to enable PAM authentication, account processing,
+# and session processing. If this is enabled, PAM authentication will
+# be allowed through the ChallengeResponseAuthentication and
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication via ChallengeResponseAuthentication may bypass
+# the setting of "PermitRootLogin without-password".
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to 'no'.
+# WARNING: 'UsePAM no' is not supported in Fedora and may cause several
+# problems.
+UsePAM yes
+
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
+#GatewayPorts no
+X11Forwarding yes
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+#PermitTTY yes
+
+# It is recommended to use pam_motd in /etc/pam.d/sshd instead of PrintMotd,
+# as it is more configurable and versatile than the built-in version.
+PrintMotd no
+
+#PrintLastLog yes
+#TCPKeepAlive yes
+#PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#UseDNS no
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# no default banner path
+#Banner none
+
+# Accept locale-related environment variables
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
+
+# override default of no subsystems
+Subsystem       sftp    /usr/libexec/openssh/sftp-server
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#       X11Forwarding no
+#       AllowTcpForwarding no
+#       PermitTTY no
+#       ForceCommand cvs server
+
+KexAlgorithms +diffie-hellman-group1-sha1,diffie-hellman-group14-sha1
+Ciphers +aes128-cbc,aes192-cbc,aes256-cbc
+MACs +hmac-sha1,hmac-sha1-96
+[root@bastion ssh]#
+[root@bastion ssh]#
+[root@bastion ssh]#
+[root@bastion ssh]# ls
+moduli      ssh_config.d  ssh_host_ecdsa_key      ssh_host_ed25519_key      ssh_host_rsa_key
+ssh_config  sshd_config   ssh_host_ecdsa_key.pub  ssh_host_ed25519_key.pub  ssh_host_rsa_key.pub
+[root@bastion ssh]#
+[root@bastion ssh]# ls -lrt
+total 600
+-rw-r--r--. 1 root root       1770 Mar 27  2020 ssh_config
+-rw-r--r--. 1 root root     577388 Mar 27  2020 moduli
+drwxr-xr-x. 2 root root         28 May 18  2023 ssh_config.d
+-rw-r--r--. 1 root root        162 May 18  2023 ssh_host_ecdsa_key.pub
+-rw-r-----. 1 root ssh_keys    492 May 18  2023 ssh_host_ecdsa_key
+-rw-r--r--. 1 root root         82 May 18  2023 ssh_host_ed25519_key.pub
+-rw-r-----. 1 root ssh_keys    387 May 18  2023 ssh_host_ed25519_key
+-rw-r--r--. 1 root root        554 May 18  2023 ssh_host_rsa_key.pub
+-rw-r-----. 1 root ssh_keys   2578 May 18  2023 ssh_host_rsa_key
+-rw-------. 1 root root       4411 Aug 26  2025 sshd_config
+[root@bastion ssh]#
+[root@bastion ssh]# cp sshd_config sshd_config_new
+[root@bastion ssh]# ls -lrt
+total 608
+-rw-r--r--. 1 root root       1770 Mar 27  2020 ssh_config
+-rw-r--r--. 1 root root     577388 Mar 27  2020 moduli
+drwxr-xr-x. 2 root root         28 May 18  2023 ssh_config.d
+-rw-r--r--. 1 root root        162 May 18  2023 ssh_host_ecdsa_key.pub
+-rw-r-----. 1 root ssh_keys    492 May 18  2023 ssh_host_ecdsa_key
+-rw-r--r--. 1 root root         82 May 18  2023 ssh_host_ed25519_key.pub
+-rw-r-----. 1 root ssh_keys    387 May 18  2023 ssh_host_ed25519_key
+-rw-r--r--. 1 root root        554 May 18  2023 ssh_host_rsa_key.pub
+-rw-r-----. 1 root ssh_keys   2578 May 18  2023 ssh_host_rsa_key
+-rw-------. 1 root root       4411 Aug 26  2025 sshd_config
+-rw-------. 1 root root       4411 Jun  4 12:07 sshd_config_new
+[root@bastion ssh]#
+[root@bastion ssh]# vi sshd_config
+[root@bastion ssh]#
+[root@bastion ssh]#
+[root@bastion ssh]# cat sshd_config
+#       $OpenBSD: sshd_config,v 1.103 2018/04/09 20:41:22 tj Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
+#
+#Port 22
+#AddressFamily any
+#ListenAddress 0.0.0.0
+#ListenAddress ::
+
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Ciphers and keying
+#RekeyLimit default none
+
+# This system is following system-wide crypto policy. The changes to
+# crypto properties (Ciphers, MACs, ...) will not have any effect here.
+# They will be overridden by command-line options passed to the server
+# on command line.
+# Please, check manual pages for update-crypto-policies(8) and sshd_config(5).
+
+# Logging
+#SyslogFacility AUTH
+SyslogFacility AUTHPRIV
+#LogLevel INFO
+
+# Authentication:
+
+#LoginGraceTime 2m
+PermitRootLogin yes
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+#PubkeyAuthentication yes
+
+# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+# but this is overridden so installations will only check .ssh/authorized_keys
+AuthorizedKeysFile      .ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+
+#AuthorizedKeysCommand none
+#AuthorizedKeysCommandUser nobody
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#HostbasedAuthentication no
+# Change to yes if you don't trust ~/.ssh/known_hosts for
+# HostbasedAuthentication
+#IgnoreUserKnownHosts no
+# Don't read the user's ~/.rhosts and ~/.shosts files
+#IgnoreRhosts yes
+
+# To disable tunneled clear text passwords, change to no here!
+#PasswordAuthentication yes
+#PermitEmptyPasswords no
+PasswordAuthentication yes
+
+# Change to no to disable s/key passwords
+#ChallengeResponseAuthentication yes
+ChallengeResponseAuthentication no
+
+# Kerberos options
+#KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+#KerberosUseKuserok yes
+
+# GSSAPI options
+GSSAPIAuthentication yes
+GSSAPICleanupCredentials no
+#GSSAPIStrictAcceptorCheck yes
+#GSSAPIKeyExchange no
+#GSSAPIEnablek5users no
+
+# Set this to 'yes' to enable PAM authentication, account processing,
+# and session processing. If this is enabled, PAM authentication will
+# be allowed through the ChallengeResponseAuthentication and
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication via ChallengeResponseAuthentication may bypass
+# the setting of "PermitRootLogin without-password".
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to 'no'.
+# WARNING: 'UsePAM no' is not supported in Fedora and may cause several
+# problems.
+UsePAM yes
+
+AllowAgentForwarding yes
+AllowTcpForwarding yes
+#GatewayPorts no
+X11Forwarding yes
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+#PermitTTY yes
+
+# It is recommended to use pam_motd in /etc/pam.d/sshd instead of PrintMotd,
+# as it is more configurable and versatile than the built-in version.
+PrintMotd no
+
+#PrintLastLog yes
+#TCPKeepAlive yes
+#PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#UseDNS no
+#PidFile /var/run/sshd.pid
+#MaxStartups 10:30:100
+#PermitTunnel no
+#ChrootDirectory none
+#VersionAddendum none
+
+# no default banner path
+#Banner none
+
+# Accept locale-related environment variables
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
+
+# override default of no subsystems
+Subsystem       sftp    /usr/libexec/openssh/sftp-server
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#       X11Forwarding no
+#       AllowTcpForwarding no
+#       PermitTTY no
+#       ForceCommand cvs server
+
+KexAlgorithms +diffie-hellman-group1-sha1,diffie-hellman-group14-sha1
+Ciphers +aes128-cbc,aes192-cbc,aes256-cbc
+MACs +hmac-sha1,hmac-sha1-96
+[root@bastion ssh]#
+[root@bastion ssh]# exit
+logout
+Connection to 107.111.213.24 closed.
