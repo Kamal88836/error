@@ -1,0 +1,1007 @@
+ ? 04/06/2026 ? ? 12:17.52 ? ? /home/mobaxterm ? ssh root@107.111.213.24
+root@107.111.213.24's password:
+X11 forwarding request failed on channel 0
+Last login: Thu Jun  4 12:01:19 2026 from 107.111.213.34
+error: EOF
+[root@bastion ~]# systemctl restart sshd
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# systemctl status sshd
+? sshd.service - OpenSSH server daemon
+   Loaded: loaded (/usr/lib/systemd/system/sshd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Thu 2026-06-04 12:12:06 IST; 31s ago
+     Docs: man:sshd(8)
+           man:sshd_config(5)
+ Main PID: 3233 (sshd)
+    Tasks: 1 (limit: 224617)
+   Memory: 1.1M
+   CGroup: /system.slice/sshd.service
+           +-3233 /usr/sbin/sshd -D -oCiphers=aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,ae>
+
+Jun 04 12:12:06 bastion.gsc.ss.samsung.local systemd[1]: Starting OpenSSH server daemon...
+Jun 04 12:12:06 bastion.gsc.ss.samsung.local sshd[3233]: Server listening on 0.0.0.0 port 22.
+Jun 04 12:12:06 bastion.gsc.ss.samsung.local sshd[3233]: Server listening on :: port 22.
+Jun 04 12:12:06 bastion.gsc.ss.samsung.local systemd[1]: Started OpenSSH server daemon.
+
+[root@bastion ~]# exit
+logout
+Connection to 107.111.213.24 closed.
+                                                                                                                                                             ?
+
+ ? 04/06/2026 ? ? 12:19.48 ? ? /home/mobaxterm ?
+                                                                                                                                                             ?
+
+
+ ? 04/06/2026 ? ? 12:19.49 ? ? /home/mobaxterm ?
+                                                                                                                                                             ?
+
+ ? 04/06/2026 ? ? 12:19.49 ? ? /home/mobaxterm ? ssh root@107.111.213.24
+root@107.111.213.24's password:
+X11 forwarding request failed on channel 0
+Last login: Thu Jun  4 12:11:07 2026 from 107.111.213.34
+error: EOF
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# echo $KUBECONFIG
+/root/inst07/auth/kubeconfig
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# export KUBECONFIG=/root/inst07/auth/kubeconfig
+[root@bastion ~]#
+[root@bastion ~]# oc login https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+error: EOF
+[root@bastion ~]# cd /root/inst07/auth/
+[root@bastion auth]#
+[root@bastion auth]# ls
+kubeadmin-password  kubeconfig  tejveer_repo_test
+[root@bastion auth]#
+[root@bastion auth]# cat kubeadmin-password
+BteFH-vnSfz-SdCYi-yMCi4[root@bastion auth]#
+[root@bastion auth]#
+[root@bastion auth]# cd
+[root@bastion ~]#
+[root@bastion ~]# curl -kgv https://api.gsc.ss.samsung.local:6443
+* Rebuilt URL to: https://api.gsc.ss.samsung.local:6443/
+*   Trying 10.0.100.114...
+* TCP_NODELAY set
+* Connected to api.gsc.ss.samsung.local (10.0.100.114) port 6443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/pki/tls/certs/ca-bundle.crt
+  CApath: none
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to api.gsc.ss.samsung.local:6443
+curl: (35) OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to api.gsc.ss.samsung.local:6443
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# ping https://api.gsc.ss.samsung.local:6443
+ping: https://api.gsc.ss.samsung.local:6443: Name or service not known
+[root@bastion ~]#
+[root@bastion ~]# ssh root@10.0.100.114
+root@10.0.100.114's password:
+Last failed login: Thu Jun  4 11:50:43 IST 2026 from 10.0.100.108 on ssh:notty
+There were 2 failed login attempts since the last successful login.
+Last login: Wed Jun  3 14:47:42 2026 from 10.0.100.106
+[root@slb01 ~]#
+[root@slb01 ~]# systemctl status haproxy
+? haproxy.service - HAProxy Load Balancer
+   Loaded: loaded (/usr/lib/systemd/system/haproxy.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2026-06-04 09:50:16 IST; 2h 35min ago
+  Process: 1024 ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q $OPTIONS (code=exited, status=0/SUCCESS)
+ Main PID: 1049 (haproxy)
+    Tasks: 2 (limit: 149031)
+   Memory: 5.9M
+   CGroup: /system.slice/haproxy.service
+           +-1049 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+           +-1064 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local systemd[1]: Starting HAProxy Load Balancer...
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for frontend 'openshift-api-serv>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for backend 'openshift-api-serve>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for frontend 'machine-config-ser>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for backend 'machine-config-serv>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for frontend 'ingress-http' as i>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for backend 'ingress-http' as it>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for frontend 'ingress-https' as >
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for backend 'ingress-https' as i>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local systemd[1]: Started HAProxy Load Balancer.
+
+[root@slb01 ~]#
+[root@slb01 ~]# ls -lrt
+total 9891844
+-rw-------. 1 root root        1707 May 18  2023 anaconda-ks.cfg
+-rw-r--r--. 1 root root 10129244160 May 18  2023 rhel-8.4-x86_64-dvd.iso
+drwxr-xr-x. 6 root root          72 Sep  6  2023 sasktel-core
+[root@slb01 ~]#
+[root@slb01 ~]# cd /etc
+[root@slb01 etc]# cd haproxy
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ls
+haproxy.cfg  haproxy.cfg.bak
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# cat haproxy.cfg
+#---------------------------------------------------------------------
+# Example configuration for a possible web application.  See the
+# full configuration options online.
+#
+#   https://www.haproxy.org/download/1.8/doc/configuration.txt
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+    #
+    log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+    # utilize system-wide crypto-policies
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+#---------------------------------------------------------------------
+# OpenShift
+#---------------------------------------------------------------------
+
+frontend openshift-api-server
+ bind :::6443 v4v6
+ default_backend openshift-api-server
+ mode tcp
+ option tcplog
+
+backend openshift-api-server
+ balance source
+ mode tcp
+ option httpchk GET /readyz HTTP/1.0
+ timeout server 10s
+ timeout tunnel 1h
+ server bootstrap 10.0.100.110:6443 check check-ssl inter 2s backup verify none
+ server master01 10.0.100.100:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+
+frontend machine-config-server
+ bind :::22623 v4v6
+ default_backend machine-config-server
+ mode tcp
+ option tcplog
+
+backend machine-config-server
+ balance source
+ mode tcp
+ server bootstrap 10.0.100.110:22623 check inter 2s backup verify none
+ server master01 10.0.100.100:22623 check inter 2s
+ server master02 10.0.100.102:22623 check inter 2s
+ server master03 10.0.100.104:22623 check inter 2s
+
+frontend ingress-http
+ bind :::80 v4v6
+ default_backend ingress-http
+ mode tcp
+ option tcplog
+
+backend ingress-http
+ balance source
+ mode tcp
+ timeout server 5s
+ option httpchk GET /healthz/ready HTTP/1.0
+ server master01 10.0.100.100:80 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:80 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:80 check port 1936 inter 2s fall 2 rise 3 verify none
+
+frontend ingress-https
+ bind :::443 v4v6
+ default_backend ingress-https
+ mode tcp
+ option tcplog
+
+backend ingress-https
+ balance source
+ mode tcp
+ timeout server 5s
+ option httpchk GET /healthz/ready HTTP/1.0
+ server master01 10.0.100.100:443 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:443 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:443 check port 1936 inter 2s fall 2 rise 3 verify none
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# nc -vz 10.0.100.100 6443
+Ncat: Version 7.70 ( https://nmap.org/ncat )
+Ncat: No route to host.
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ping 10.0.100.100
+PING 10.0.100.100 (10.0.100.100) 56(84) bytes of data.
+From 10.0.100.112 icmp_seq=1 Destination Host Unreachable
+
+
+From 10.0.100.112 icmp_seq=2 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=3 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=4 Destination Host Unreachable
+
+--- 10.0.100.100 ping statistics ---
+6 packets transmitted, 0 received, +4 errors, 100% packet loss, time 5076ms
+pipe 3
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:ae:6e:2c brd ff:ff:ff:ff:ff:ff
+    inet 10.0.100.112/24 brd 10.0.100.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet 10.0.100.114/32 scope global enp1s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:feae:6e2c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: enp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:46:3a:32 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.105/24 brd 10.0.0.255 scope global noprefixroute enp2s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe46:3a32/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:f7:5c:38 brd ff:ff:ff:ff:ff:ff
+    inet 107.111.213.26/24 brd 107.111.213.255 scope global noprefixroute enp3s0
+       valid_lft forever preferred_lft forever
+    inet 107.111.213.27/32 scope global enp3s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fef7:5c38/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ip addr show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:ae:6e:2c brd ff:ff:ff:ff:ff:ff
+    inet 10.0.100.112/24 brd 10.0.100.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet 10.0.100.114/32 scope global enp1s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:feae:6e2c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: enp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:46:3a:32 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.105/24 brd 10.0.0.255 scope global noprefixroute enp2s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe46:3a32/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:f7:5c:38 brd ff:ff:ff:ff:ff:ff
+    inet 107.111.213.26/24 brd 107.111.213.255 scope global noprefixroute enp3s0
+       valid_lft forever preferred_lft forever
+    inet 107.111.213.27/32 scope global enp3s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fef7:5c38/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ping 10.0.100.102
+PING 10.0.100.102 (10.0.100.102) 56(84) bytes of data.
+From 10.0.100.112 icmp_seq=1 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=2 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=3 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=4 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=5 Destination Host Unreachable
+
+--- 10.0.100.102 ping statistics ---
+6 packets transmitted, 0 received, +5 errors, 100% packet loss, time 5050ms
+pipe 3
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ip route
+default via 107.111.213.1 dev enp3s0 proto static metric 102
+10.0.0.0/24 dev enp2s0 proto kernel scope link src 10.0.0.105 metric 101
+10.0.100.0/24 dev enp1s0 proto kernel scope link src 10.0.100.112 metric 100
+10.0.100.0/24 via 10.0.100.1 dev enp1s0 proto static metric 100
+107.111.213.0/24 dev enp3s0 proto kernel scope link src 107.111.213.26 metric 102
+165.213.0.0/16 via 107.111.213.1 dev enp3s0 proto static metric 102
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ping 107.111.213.1
+PING 107.111.213.1 (107.111.213.1) 56(84) bytes of data.
+64 bytes from 107.111.213.1: icmp_seq=1 ttl=255 time=6.65 ms
+64 bytes from 107.111.213.1: icmp_seq=2 ttl=255 time=7.96 ms
+
+--- 107.111.213.1 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 6.648/7.305/7.962/0.657 ms
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:ae:6e:2c brd ff:ff:ff:ff:ff:ff
+    inet 10.0.100.112/24 brd 10.0.100.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet 10.0.100.114/32 scope global enp1s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:feae:6e2c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: enp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:46:3a:32 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.105/24 brd 10.0.0.255 scope global noprefixroute enp2s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe46:3a32/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:f7:5c:38 brd ff:ff:ff:ff:ff:ff
+    inet 107.111.213.26/24 brd 107.111.213.255 scope global noprefixroute enp3s0
+       valid_lft forever preferred_lft forever
+    inet 107.111.213.27/32 scope global enp3s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fef7:5c38/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ping 10.0.100.100
+PING 10.0.100.100 (10.0.100.100) 56(84) bytes of data.
+From 10.0.100.112 icmp_seq=1 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=2 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=3 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=4 Destination Host Unreachable
+
+--- 10.0.100.100 ping statistics ---
+5 packets transmitted, 0 received, +4 errors, 100% packet loss, time 4077ms
+pipe 3
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# ping 10.0.100.102
+PING 10.0.100.102 (10.0.100.102) 56(84) bytes of data.
+From 10.0.100.112 icmp_seq=1 Destination Host Unreachable
+From 10.0.100.112 icmp_seq=2 Destination Host Unreachable
+
+--- 10.0.100.102 ping statistics ---
+3 packets transmitted, 0 received, +2 errors, 100% packet loss, time 2004ms
+pipe 2
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# arp -an | grep 10.0.100.100
+-bash: arp: command not found
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# cat haproxy.cfg
+#---------------------------------------------------------------------
+# Example configuration for a possible web application.  See the
+# full configuration options online.
+#
+#   https://www.haproxy.org/download/1.8/doc/configuration.txt
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+    #
+    log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+    # utilize system-wide crypto-policies
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+#---------------------------------------------------------------------
+# OpenShift
+#---------------------------------------------------------------------
+
+frontend openshift-api-server
+ bind :::6443 v4v6
+ default_backend openshift-api-server
+ mode tcp
+ option tcplog
+
+backend openshift-api-server
+ balance source
+ mode tcp
+ option httpchk GET /readyz HTTP/1.0
+ timeout server 10s
+ timeout tunnel 1h
+ server bootstrap 10.0.100.110:6443 check check-ssl inter 2s backup verify none
+ server master01 10.0.100.100:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+
+frontend machine-config-server
+ bind :::22623 v4v6
+ default_backend machine-config-server
+ mode tcp
+ option tcplog
+
+backend machine-config-server
+ balance source
+ mode tcp
+ server bootstrap 10.0.100.110:22623 check inter 2s backup verify none
+ server master01 10.0.100.100:22623 check inter 2s
+ server master02 10.0.100.102:22623 check inter 2s
+ server master03 10.0.100.104:22623 check inter 2s
+
+frontend ingress-http
+ bind :::80 v4v6
+ default_backend ingress-http
+ mode tcp
+ option tcplog
+
+backend ingress-http
+ balance source
+ mode tcp
+ timeout server 5s
+ option httpchk GET /healthz/ready HTTP/1.0
+ server master01 10.0.100.100:80 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:80 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:80 check port 1936 inter 2s fall 2 rise 3 verify none
+
+frontend ingress-https
+ bind :::443 v4v6
+ default_backend ingress-https
+ mode tcp
+ option tcplog
+
+backend ingress-https
+ balance source
+ mode tcp
+ timeout server 5s
+ option httpchk GET /healthz/ready HTTP/1.0
+ server master01 10.0.100.100:443 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:443 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:443 check port 1936 inter 2s fall 2 rise 3 verify none
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# arping -I enp1s0 10.0.100.100
+ARPING 10.0.100.100 from 10.0.100.112 enp1s0
+Sent 18 probes (18 broadcast(s))
+Received 0 response(s)
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# arping -I enp1s0 10.0.100.102
+ARPING 10.0.100.102 from 10.0.100.112 enp1s0
+Sent 89 probes (89 broadcast(s))
+Received 0 response(s)
+[root@slb01 haproxy]# arping -I enp1s0 10.0.100.104
+ARPING 10.0.100.104 from 10.0.100.112 enp1s0
+Sent 10 probes (10 broadcast(s))
+Received 0 response(s)
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# traceroute 10.0.100.100
+traceroute to 10.0.100.100 (10.0.100.100), 30 hops max, 60 byte packets
+ 1  slb01.gsc.ss.samsung.local (10.0.100.112)  2264.540 ms !H  2264.532 ms !H  2264.527 ms !H
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# traceroute 10.0.100.102
+traceroute to 10.0.100.102 (10.0.100.102), 30 hops max, 60 byte packets
+ 1  slb01.gsc.ss.samsung.local (10.0.100.112)  2823.049 ms !H  2823.042 ms !H  2823.038 ms !H
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# traceroute 10.0.100.104
+traceroute to 10.0.100.104 (10.0.100.104), 30 hops max, 60 byte packets
+ 1  slb01.gsc.ss.samsung.local (10.0.100.112)  2155.141 ms !H  2155.134 ms !H  2155.129 ms !H
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# systemctl status haproxy
+? haproxy.service - HAProxy Load Balancer
+   Loaded: loaded (/usr/lib/systemd/system/haproxy.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2026-06-04 09:50:16 IST; 3h 9min ago
+  Process: 1024 ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q $OPTIONS (code=exited, status=0/SUCCESS)
+ Main PID: 1049 (haproxy)
+    Tasks: 2 (limit: 149031)
+   Memory: 6.1M
+   CGroup: /system.slice/haproxy.service
+           +-1049 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+           +-1064 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local systemd[1]: Starting HAProxy Load Balancer...
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for frontend 'openshift-api-serv>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for backend 'openshift-api-serve>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for frontend 'machine-config-ser>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for backend 'machine-config-serv>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for frontend 'ingress-http' as i>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for backend 'ingress-http' as it>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for frontend 'ingress-https' as >
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local haproxy[1049]: [WARNING] 154/095016 (1049) : config : 'option forwardfor' ignored for backend 'ingress-https' as i>
+Jun 04 09:50:16 slb01.gsc.ss.samsung.local systemd[1]: Started HAProxy Load Balancer.
+
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# systemctl restart haproxy
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# systemctl status haproxy
+? haproxy.service - HAProxy Load Balancer
+   Loaded: loaded (/usr/lib/systemd/system/haproxy.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2026-06-04 13:01:43 IST; 7s ago
+  Process: 1719 ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q $OPTIONS (code=exited, status=0/SUCCESS)
+ Main PID: 1722 (haproxy)
+    Tasks: 2 (limit: 149031)
+   Memory: 3.5M
+   CGroup: /system.slice/haproxy.service
+           +-1722 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+           +-1724 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local systemd[1]: Starting HAProxy Load Balancer...
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'openshift-api-serv>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'openshift-api-serve>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'machine-config-ser>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'machine-config-serv>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'ingress-http' as i>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'ingress-http' as it>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'ingress-https' as >
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'ingress-https' as i>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local systemd[1]: Started HAProxy Load Balancer.
+
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# arping -I enp1s0 10.0.100.100
+ARPING 10.0.100.100 from 10.0.100.112 enp1s0
+Sent 6 probes (6 broadcast(s))
+Received 0 response(s)
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# cat haproxy.cfg
+#---------------------------------------------------------------------
+# Example configuration for a possible web application.  See the
+# full configuration options online.
+#
+#   https://www.haproxy.org/download/1.8/doc/configuration.txt
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+    #
+    log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+    # utilize system-wide crypto-policies
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+#---------------------------------------------------------------------
+# OpenShift
+#---------------------------------------------------------------------
+
+frontend openshift-api-server
+ bind :::6443 v4v6
+ default_backend openshift-api-server
+ mode tcp
+ option tcplog
+
+backend openshift-api-server
+ balance source
+ mode tcp
+ option httpchk GET /readyz HTTP/1.0
+ timeout server 10s
+ timeout tunnel 1h
+ server bootstrap 10.0.100.110:6443 check check-ssl inter 2s backup verify none
+ server master01 10.0.100.100:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+
+frontend machine-config-server
+ bind :::22623 v4v6
+ default_backend machine-config-server
+ mode tcp
+ option tcplog
+
+backend machine-config-server
+ balance source
+ mode tcp
+ server bootstrap 10.0.100.110:22623 check inter 2s backup verify none
+ server master01 10.0.100.100:22623 check inter 2s
+ server master02 10.0.100.102:22623 check inter 2s
+ server master03 10.0.100.104:22623 check inter 2s
+
+frontend ingress-http
+ bind :::80 v4v6
+ default_backend ingress-http
+ mode tcp
+ option tcplog
+
+backend ingress-http
+ balance source
+ mode tcp
+ timeout server 5s
+ option httpchk GET /healthz/ready HTTP/1.0
+ server master01 10.0.100.100:80 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:80 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:80 check port 1936 inter 2s fall 2 rise 3 verify none
+
+frontend ingress-https
+ bind :::443 v4v6
+ default_backend ingress-https
+ mode tcp
+ option tcplog
+
+backend ingress-https
+ balance source
+ mode tcp
+ timeout server 5s
+ option httpchk GET /healthz/ready HTTP/1.0
+ server master01 10.0.100.100:443 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:443 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:443 check port 1936 inter 2s fall 2 rise 3 verify none
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# arping -I enp1s0 10.0.100.100
+ARPING 10.0.100.100 from 10.0.100.112 enp1s0
+Sent 2 probes (2 broadcast(s))
+Received 0 response(s)
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# dig -x 10.0.100.100
+
+; <<>> DiG 9.11.26-RedHat-9.11.26-3.el8 <<>> -x 10.0.100.100
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 20623
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: 7e58f192112ad93f655d9d256a214d8766ba84e2debd6e07 (good)
+;; QUESTION SECTION:
+;100.100.0.10.in-addr.arpa.     IN      PTR
+
+;; AUTHORITY SECTION:
+10.IN-ADDR.ARPA.        86400   IN      SOA     10.IN-ADDR.ARPA. . 0 28800 7200 604800 86400
+
+;; Query time: 0 msec
+;; SERVER: 10.0.100.114#53(10.0.100.114)
+;; WHEN: Thu Jun 04 15:33:51 IST 2026
+;; MSG SIZE  rcvd: 132
+
+[root@slb01 haproxy]# nslookup 10.0.100.100
+** server can't find 100.100.0.10.in-addr.arpa: NXDOMAIN
+
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# r01 IN A 1
+[root@slb01 haproxy]# oc get nodes
+-bash: oc: command not found
+[root@slb01 haproxy]# ssh core@master01 -- date
+The authenticity of host 'master01 (10.0.100.100)' can't be established.
+ECDSA key fingerprint is SHA256:YuSZuYA2mzGHbiZbWPQVrLrsBspa/hsdWdc0SvpEdJc.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'master01,10.0.100.100' (ECDSA) to the list of known hosts.
+core@master01: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).
+[root@slb01 haproxy]# ssh core@master01 date
+core@master01: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).
+[root@slb01 haproxy]# ifconfig
+-bash: ifconfig: command not found
+[root@slb01 haproxy]# ip address
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:ae:6e:2c brd ff:ff:ff:ff:ff:ff
+    inet 10.0.100.112/24 brd 10.0.100.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet 10.0.100.114/32 scope global enp1s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:feae:6e2c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: enp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:46:3a:32 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.105/24 brd 10.0.0.255 scope global noprefixroute enp2s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe46:3a32/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:f7:5c:38 brd ff:ff:ff:ff:ff:ff
+    inet 107.111.213.26/24 brd 107.111.213.255 scope global noprefixroute enp3s0
+       valid_lft forever preferred_lft forever
+    inet 107.111.213.27/32 scope global enp3s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fef7:5c38/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
+[root@slb01 haproxy]# cat /etc/haproxy/haproxy.cfg
+#---------------------------------------------------------------------
+# Example configuration for a possible web application.  See the
+# full configuration options online.
+#
+#   https://www.haproxy.org/download/1.8/doc/configuration.txt
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    # to have these messages end up in /var/log/haproxy.log you will
+    # need to:
+    #
+    # 1) configure syslog to accept network log events.  This is done
+    #    by adding the '-r' option to the SYSLOGD_OPTIONS in
+    #    /etc/sysconfig/syslog
+    #
+    # 2) configure local2 events to go to the /var/log/haproxy.log
+    #   file. A line like the following can be added to
+    #   /etc/sysconfig/syslog
+    #
+    #    local2.*                       /var/log/haproxy.log
+    #
+    log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+    # utilize system-wide crypto-policies
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+#---------------------------------------------------------------------
+# OpenShift
+#---------------------------------------------------------------------
+
+frontend openshift-api-server
+ bind :::6443 v4v6
+ default_backend openshift-api-server
+ mode tcp
+ option tcplog
+
+backend openshift-api-server
+ balance source
+ mode tcp
+ option httpchk GET /readyz HTTP/1.0
+ timeout server 10s
+ timeout tunnel 1h
+ server bootstrap 10.0.100.110:6443 check check-ssl inter 2s backup verify none
+ server master01 10.0.100.100:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:6443 check check-ssl inter 2s fall 2 rise 3 verify none
+
+frontend machine-config-server
+ bind :::22623 v4v6
+ default_backend machine-config-server
+ mode tcp
+ option tcplog
+
+backend machine-config-server
+ balance source
+ mode tcp
+ server bootstrap 10.0.100.110:22623 check inter 2s backup verify none
+ server master01 10.0.100.100:22623 check inter 2s
+ server master02 10.0.100.102:22623 check inter 2s
+ server master03 10.0.100.104:22623 check inter 2s
+
+frontend ingress-http
+ bind :::80 v4v6
+ default_backend ingress-http
+ mode tcp
+ option tcplog
+
+backend ingress-http
+ balance source
+ mode tcp
+ timeout server 5s
+ option httpchk GET /healthz/ready HTTP/1.0
+ server master01 10.0.100.100:80 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:80 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:80 check port 1936 inter 2s fall 2 rise 3 verify none
+
+frontend ingress-https
+ bind :::443 v4v6
+ default_backend ingress-https
+ mode tcp
+ option tcplog
+
+backend ingress-https
+ balance source
+ mode tcp
+ timeout server 5s
+ option httpchk GET /healthz/ready HTTP/1.0
+ server master01 10.0.100.100:443 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master02 10.0.100.102:443 check port 1936 inter 2s fall 2 rise 3 verify none
+ server master03 10.0.100.104:443 check port 1936 inter 2s fall 2 rise 3 verify none
+[root@slb01 haproxy]# ifconfig
+-bash: ifconfig: command not found
+[root@slb01 haproxy]# ip address
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:ae:6e:2c brd ff:ff:ff:ff:ff:ff
+    inet 10.0.100.112/24 brd 10.0.100.255 scope global noprefixroute enp1s0
+       valid_lft forever preferred_lft forever
+    inet 10.0.100.114/32 scope global enp1s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:feae:6e2c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: enp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:46:3a:32 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.105/24 brd 10.0.0.255 scope global noprefixroute enp2s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fe46:3a32/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+4: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:f7:5c:38 brd ff:ff:ff:ff:ff:ff
+    inet 107.111.213.26/24 brd 107.111.213.255 scope global noprefixroute enp3s0
+       valid_lft forever preferred_lft forever
+    inet 107.111.213.27/32 scope global enp3s0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fef7:5c38/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@slb01 haproxy]#
+[root@slb01 haproxy]#
