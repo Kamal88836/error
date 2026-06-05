@@ -1,0 +1,637 @@
+[root@bastion ~]# oc login https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+error: EOF
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# systemctl status haproxy
+Unit haproxy.service could not be found.
+[root@bastion ~]#
+[root@bastion ~]# ssh root@10.0.100.114
+root@10.0.100.114's password:
+Last login: Thu Jun  4 12:25:13 2026 from 10.0.100.108
+[root@slb01 ~]#
+[root@slb01 ~]# systemctl status haproxy
+? haproxy.service - HAProxy Load Balancer
+   Loaded: loaded (/usr/lib/systemd/system/haproxy.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2026-06-04 13:01:43 IST; 1h 47min ago
+  Process: 1719 ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q $OPTIONS (code=exited, status=0/SUCCESS)
+ Main PID: 1722 (haproxy)
+    Tasks: 2 (limit: 149031)
+   Memory: 3.6M
+   CGroup: /system.slice/haproxy.service
+           +-1722 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+           +-1724 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid
+
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local systemd[1]: Starting HAProxy Load Balancer...
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'openshift-api-serv>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'openshift-api-serve>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'machine-config-ser>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'machine-config-serv>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'ingress-http' as i>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'ingress-http' as it>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for frontend 'ingress-https' as >
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local haproxy[1722]: [WARNING] 154/130143 (1722) : config : 'option forwardfor' ignored for backend 'ingress-https' as i>
+Jun 04 13:01:43 slb01.gsc.ss.samsung.local systemd[1]: Started HAProxy Load Balancer.
+
+[root@slb01 ~]#
+[root@slb01 ~]#
+[root@slb01 ~]#
+[root@slb01 ~]# systemctl ufw
+Unknown operation ufw.
+[root@slb01 ~]# systemctl status ufw
+Unit ufw.service could not be found.
+[root@slb01 ~]#
+[root@slb01 ~]#
+[root@slb01 ~]#
+[root@slb01 ~]# cat /etc/os-release
+NAME="Red Hat Enterprise Linux"
+VERSION="8.4 (Ootpa)"
+ID="rhel"
+ID_LIKE="fedora"
+VERSION_ID="8.4"
+PLATFORM_ID="platform:el8"
+PRETTY_NAME="Red Hat Enterprise Linux 8.4 (Ootpa)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:redhat:enterprise_linux:8.4:GA"
+HOME_URL="https://www.redhat.com/"
+DOCUMENTATION_URL="https://access.redhat.com/documentation/red_hat_enterprise_linux/8/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+
+REDHAT_BUGZILLA_PRODUCT="Red Hat Enterprise Linux 8"
+REDHAT_BUGZILLA_PRODUCT_VERSION=8.4
+REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux"
+REDHAT_SUPPORT_PRODUCT_VERSION="8.4"
+[root@slb01 ~]# systemctl status firewalld
+? firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
+   Active: inactive (dead)
+     Docs: man:firewalld(1)
+[root@slb01 ~]#
+[root@slb01 ~]#
+[root@slb01 ~]# ss -tulpn | grep 80
+tcp   LISTEN 0      128                 *:80               *:*    users:(("haproxy",pid=1724,fd=10))                                                          
+[root@slb01 ~]#
+[root@slb01 ~]# logout
+Connection to 10.0.100.114 closed.
+[root@bastion ~]#
+[root@bastion ~]# oc get no
+
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# ping 107.111.213.23
+PING 107.111.213.23 (107.111.213.23) 56(84) bytes of data.
+64 bytes from 107.111.213.23: icmp_seq=1 ttl=64 time=0.083 ms
+64 bytes from 107.111.213.23: icmp_seq=2 ttl=64 time=0.056 ms
+64 bytes from 107.111.213.23: icmp_seq=3 ttl=64 time=0.124 ms
+64 bytes from 107.111.213.23: icmp_seq=4 ttl=64 time=0.126 ms
+
+--- 107.111.213.23 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3096ms
+rtt min/avg/max/mdev = 0.056/0.097/0.126/0.030 ms
+[root@bastion ~]#
+[root@bastion ~]# ping 107.111.213.28
+PING 107.111.213.28 (107.111.213.28) 56(84) bytes of data.
+64 bytes from 107.111.213.28: icmp_seq=1 ttl=64 time=0.473 ms
+64 bytes from 107.111.213.28: icmp_seq=2 ttl=64 time=0.472 ms
+64 bytes from 107.111.213.28: icmp_seq=3 ttl=64 time=0.437 ms
+64 bytes from 107.111.213.28: icmp_seq=4 ttl=64 time=0.317 ms
+
+--- 107.111.213.28 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3053ms
+rtt min/avg/max/mdev = 0.317/0.424/0.473/0.068 ms
+[root@bastion ~]#
+[root@bastion ~]# ping 10.0.100.100
+PING 10.0.100.100 (10.0.100.100) 56(84) bytes of data.
+From 10.0.100.108 icmp_seq=1 Destination Host Unreachable
+From 10.0.100.108 icmp_seq=2 Destination Host Unreachable
+From 10.0.100.108 icmp_seq=3 Destination Host Unreachable
+
+--- 10.0.100.100 ping statistics ---
+4 packets transmitted, 0 received, +3 errors, 100% packet loss, time 3087ms
+pipe 4
+[root@bastion ~]# ping 10.0.100.102
+PING 10.0.100.102 (10.0.100.102) 56(84) bytes of data.
+From 10.0.100.108 icmp_seq=1 Destination Host Unreachable
+From 10.0.100.108 icmp_seq=2 Destination Host Unreachable
+From 10.0.100.108 icmp_seq=3 Destination Host Unreachable
+
+--- 10.0.100.102 ping statistics ---
+4 packets transmitted, 0 received, +3 errors, 100% packet loss, time 3079ms
+pipe 4
+[root@bastion ~]#
+[root@bastion ~]# ping 10.0.100.104
+PING 10.0.100.104 (10.0.100.104) 56(84) bytes of data.
+From 10.0.100.108 icmp_seq=1 Destination Host Unreachable
+From 10.0.100.108 icmp_seq=2 Destination Host Unreachable
+From 10.0.100.108 icmp_seq=3 Destination Host Unreachable
+
+--- 10.0.100.104 ping statistics ---
+4 packets transmitted, 0 received, +3 errors, 100% packet loss, time 3091ms
+pipe 4
+[root@bastion ~]# oc get nodes | grep master
+
+[root@bastion ~]#
+[root@bastion ~]# ping 10.0.100.100
+PING 10.0.100.100 (10.0.100.100) 56(84) bytes of data.
+64 bytes from 10.0.100.100: icmp_seq=1 ttl=64 time=0.211 ms
+64 bytes from 10.0.100.100: icmp_seq=2 ttl=64 time=0.311 ms
+64 bytes from 10.0.100.100: icmp_seq=3 ttl=64 time=0.266 ms
+64 bytes from 10.0.100.100: icmp_seq=4 ttl=64 time=0.273 ms
+64 bytes from 10.0.100.100: icmp_seq=5 ttl=64 time=0.226 ms
+64 bytes from 10.0.100.100: icmp_seq=6 ttl=64 time=0.268 ms
+
+--- 10.0.100.100 ping statistics ---
+6 packets transmitted, 6 received, 0% packet loss, time 5121ms
+rtt min/avg/max/mdev = 0.211/0.259/0.311/0.034 ms
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# ssh core@master01
+Red Hat Enterprise Linux CoreOS 414.92.202406111017-0
+  Part of OpenShift 4.14, RHCOS is a Kubernetes native operating system
+  managed by the Machine Config Operator (`clusteroperator/machine-config`).
+
+WARNING: Direct SSH access to machines is not recommended; instead,
+make configuration changes via `machineconfig` objects:
+  https://docs.openshift.com/container-platform/4.14/architecture/architecture-rhcos.html
+
+---
+Last login: Tue May 12 07:12:27 2026 from 10.0.100.108
+[systemd]
+Failed Units: 1
+  NetworkManager-wait-online.service
+[core@master01 ~]$
+[core@master01 ~]$ nmcli con show
+NAME                UUID                                  TYPE           DEVICE
+Wired connection 1  0ed09780-e2eb-3d06-81c1-04c4168adfaf  ethernet       eno8303
+ovs-if-br-ex        01c77bba-cad8-4c57-989b-fb5dd13948af  ovs-interface  br-ex
+lo                  6b02ac0d-ae0a-4238-b248-62c5d65d7cd6  loopback       lo
+bond0               4450037a-cd43-40d4-897d-ebc5655be1c4  bond           bond0
+br-ex               707a0f88-d7e0-4dfa-884d-5166815f0525  ovs-bridge     br-ex
+ens1f0              98b57e23-207b-49e4-a328-7b8f01a0e8e8  ethernet       ens1f0
+ens3f1              7a9e2652-f8df-4e1e-8ffd-7e6c7ce5fb59  ethernet       ens3f1
+ovs-if-phys0        ffdde44c-16c9-4c79-8cb4-175df7d66d2e  vlan           bond0.100
+ovs-port-br-ex      e244d146-f84e-42e6-b39f-a43a223b1fb2  ovs-port       br-ex
+ovs-port-phys0      e3473381-fbc6-4d69-a7b9-eac1c8c8de30  ovs-port       bond0.100
+Wired connection 2  4a44b05d-c1bf-3bc2-bd17-3b9a0a7952bb  ethernet       --
+Wired connection 3  b3ea30fa-3ab7-3386-a70f-beb721ee0074  ethernet       --
+Wired connection 4  3a64e223-71e6-3f75-9441-1cfd582332f2  ethernet       --
+Wired connection 7  028d5ea9-aba7-3700-8747-ed80d0d57211  ethernet       --
+bond0.100           b222ae1f-9e46-47d5-96a4-0bb9b6f65790  vlan           --
+[core@master01 ~]$
+[core@master01 ~]$
+[core@master01 ~]$ exit
+logout
+Connection to master01 closed.
+[root@bastion ~]# ssh core@master02
+Red Hat Enterprise Linux CoreOS 414.92.202406111017-0
+  Part of OpenShift 4.14, RHCOS is a Kubernetes native operating system
+  managed by the Machine Config Operator (`clusteroperator/machine-config`).
+
+WARNING: Direct SSH access to machines is not recommended; instead,
+make configuration changes via `machineconfig` objects:
+  https://docs.openshift.com/container-platform/4.14/architecture/architecture-rhcos.html
+
+---
+Last login: Tue May 12 07:07:30 2026 from 10.0.100.108
+[core@master02 ~]$
+[core@master02 ~]$ nmcli con show
+NAME                UUID                                  TYPE      DEVICE
+Wired connection 1  781c18f2-89dd-3d85-bdde-4c45624b4986  ethernet  eno8303
+bond0.100           f582a99f-925f-4cff-8ee4-c832008e9570  vlan      bond0.100
+lo                  feed431b-72a6-4fc4-9957-26824efe9949  loopback  lo
+bond0               14d70910-0b7b-4932-8a37-a4087d7a8ab1  bond      bond0
+ens1f0              00d2a1de-1d81-4d88-948b-3428ce59f8df  ethernet  ens1f0
+ens3f1              69092646-8f83-48a1-9cf9-bf479a31103d  ethernet  ens3f1
+Wired connection 2  ab6b568b-bfdd-3828-8a0b-99c42a5bcffb  ethernet  --
+Wired connection 3  24b53cb4-aa2d-3beb-9efa-0ebf445666bd  ethernet  --
+Wired connection 4  d6fe0736-2bc4-35f8-a085-3497ec12a8a9  ethernet  --
+Wired connection 5  8378bfee-9b69-3d82-ac4c-f9ddbdac1666  ethernet  --
+[core@master02 ~]$
+[core@master02 ~]$
+[core@master02 ~]$ exi
+-bash: exi: command not found
+[core@master02 ~]$ exit
+logout
+Connection to master02 closed.
+[root@bastion ~]#
+[root@bastion ~]# ssh core@master03
+Red Hat Enterprise Linux CoreOS 414.92.202406111017-0
+  Part of OpenShift 4.14, RHCOS is a Kubernetes native operating system
+  managed by the Machine Config Operator (`clusteroperator/machine-config`).
+
+WARNING: Direct SSH access to machines is not recommended; instead,
+make configuration changes via `machineconfig` objects:
+  https://docs.openshift.com/container-platform/4.14/architecture/architecture-rhcos.html
+
+---
+Last login: Tue May 12 07:05:47 2026 from 10.0.100.108
+[core@master03 ~]$
+[core@master03 ~]$ nmcli con show
+NAME                UUID                                  TYPE      DEVICE
+Wired connection 1  e1c2d3ba-f3c9-3f20-82f5-476b10b34763  ethernet  eno8303
+bond0.100           43e99047-dfb8-4045-b4a9-6481705de20b  vlan      bond0.100
+lo                  4b23a31a-20b2-4b3b-9413-67f5c1f26e99  loopback  lo
+bond0               ea66a0b7-1b79-4a56-83d0-cfa65ed40c29  bond      bond0
+ens1f0              dc079f46-86e1-4e19-8d1c-40507a350206  ethernet  ens1f0
+ens3f1              3d56ef0a-6c3f-4a57-8398-c6afc59ae81b  ethernet  ens3f1
+Wired connection 2  8f26d616-5c2f-3cde-8a49-46a34be59063  ethernet  --
+Wired connection 3  9dba3da4-a351-3ce7-96ee-02a981dce801  ethernet  --
+Wired connection 4  56ea0c2d-6f20-3bad-808b-1db26420f487  ethernet  --
+Wired connection 7  35b5c86c-0f38-3f1b-aa03-b5c8e9b02b9c  ethernet  --
+ens1f0              fe1a9713-2fe4-4a6e-af1b-4810decf27a7  ethernet  --
+ens3fl              a8e9342c-9e9e-4f93-a900-4c3767318675  ethernet  --
+[core@master03 ~]$
+[core@master03 ~]$ exit
+logout
+Connection to master03 closed.
+[root@bastion ~]#
+[root@bastion ~]# oc get nodes
+
+[root@bastion ~]# oc version
+Client Version: 4.10.37
+error: You must be logged in to the server (Unauthorized)
+[root@bastion ~]#
+[root@bastion ~]# export KUBECONFIG=/root/inst07/auth/kubeconfig
+[root@bastion ~]#
+[root@bastion ~]# oc login https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+Unable to connect to the server: EOF
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# echo $KUBECONFIG
+/root/inst07/auth/kubeconfig
+[root@bastion ~]#
+[root@bastion ~]# ssh core@master01
+Red Hat Enterprise Linux CoreOS 414.92.202406111017-0
+  Part of OpenShift 4.14, RHCOS is a Kubernetes native operating system
+  managed by the Machine Config Operator (`clusteroperator/machine-config`).
+
+WARNING: Direct SSH access to machines is not recommended; instead,
+make configuration changes via `machineconfig` objects:
+  https://docs.openshift.com/container-platform/4.14/architecture/architecture-rhcos.html
+
+---
+Last login: Thu Jun  4 09:30:08 2026 from 10.0.100.108
+[systemd]
+Failed Units: 1
+  NetworkManager-wait-online.service
+[core@master01 ~]$
+[core@master01 ~]$ sudo systemctl status kubectl
+
+[core@master01 ~]$ sudo systemctl status crio
+? crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; disabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             +-01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: active (running) since Thu 2026-06-04 09:29:26 UTC; 18min ago
+       Docs: https://github.com/cri-o/cri-o
+   Main PID: 4603 (crio)
+      Tasks: 117
+     Memory: 398.2M
+        CPU: 21.198s
+     CGroup: /system.slice/crio.service
+             +-4603 /usr/bin/crio
+
+Jun 04 09:43:16 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:43:16.160541297Z" level=info msg="Image status: &ImageStatusResponse{Image:&Ima>
+Jun 04 09:43:16 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:43:16.160909089Z" level=info msg="Checking image status: quay.io/openshift-rele>
+Jun 04 09:43:16 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:43:16.161007089Z" level=info msg="Image status: &ImageStatusResponse{Image:&Ima>
+Jun 04 09:43:16 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:43:16.161565915Z" level=info msg="Creating container: openshift-kube-controller>
+Jun 04 09:43:16 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:43:16.161687694Z" level=warning msg="Allowed annotations are specified for work>
+Jun 04 09:43:16 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:43:16.262019972Z" level=info msg="Created container fce7a08d5edc73f3d7e0b969167>
+Jun 04 09:43:16 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:43:16.262479820Z" level=info msg="Starting container: fce7a08d5edc73f3d7e0b9691>
+Jun 04 09:43:16 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:43:16.268370656Z" level=info msg="Started container" PID=9401 containerID=fce7a>
+Jun 04 09:44:28 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:44:28.259455696Z" level=info msg="Checking image status: quay.io/openshift-rele>
+Jun 04 09:44:28 master01.gsc.ss.samsung.local crio[4603]: time="2026-06-04 09:44:28.259632361Z" level=info msg="Image status: &ImageStatusResponse{Image:&Ima>
+
+[core@master01 ~]$ sudo systemctl kubelet
+Unknown command verb kubelet.
+[core@master01 ~]$
+[core@master01 ~]$ sudo systemctl status kubelet
+? kubelet.service - Kubernetes Kubelet
+     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/kubelet.service.d
+             +-01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
+     Active: active (running) since Thu 2026-06-04 09:29:27 UTC; 19min ago
+    Process: 4652 ExecStartPre=/bin/mkdir --parents /etc/kubernetes/manifests (code=exited, status=0/SUCCESS)
+    Process: 4654 ExecStartPre=/usr/sbin/restorecon /usr/local/bin/kubenswrapper /usr/bin/kubensenter (code=exited, status=0/SUCCESS)
+    Process: 4656 ExecStartPre=/bin/rm -f /var/lib/kubelet/cpu_manager_state (code=exited, status=0/SUCCESS)
+    Process: 4658 ExecStartPre=/bin/rm -f /var/lib/kubelet/memory_manager_state (code=exited, status=0/SUCCESS)
+   Main PID: 4660 (kubelet)
+      Tasks: 85 (limit: 3298095)
+     Memory: 212.3M
+        CPU: 29.065s
+     CGroup: /system.slice/kubelet.service
+             +-4660 /usr/bin/kubelet --config=/etc/kubernetes/kubelet.conf --bootstrap-kubeconfig=/etc/kubernetes/kubeconfig --kubeconfig=/var/lib/kubelet/ku>
+
+Jun 04 09:48:57 master01.gsc.ss.samsung.local kubenswrapper[4660]: E0604 09:48:57.644870    4660 transport.go:123] "No valid client certificate is found but >
+Jun 04 09:48:57 master01.gsc.ss.samsung.local kubenswrapper[4660]: E0604 09:48:57.653609    4660 controller.go:146] "Failed to ensure lease exists, will retr>
+Jun 04 09:48:58 master01.gsc.ss.samsung.local kubenswrapper[4660]: I0604 09:48:58.076193    4660 csi_plugin.go:913] Failed to contact API server when waiting>
+Jun 04 09:48:58 master01.gsc.ss.samsung.local kubenswrapper[4660]: E0604 09:48:58.122515    4660 eviction_manager.go:258] "Eviction manager: failed to get su>
+Jun 04 09:48:58 master01.gsc.ss.samsung.local kubenswrapper[4660]: E0604 09:48:58.644710    4660 transport.go:123] "No valid client certificate is found but >
+Jun 04 09:48:59 master01.gsc.ss.samsung.local kubenswrapper[4660]: I0604 09:48:59.076486    4660 csi_plugin.go:913] Failed to contact API server when waiting>
+Jun 04 09:48:59 master01.gsc.ss.samsung.local kubenswrapper[4660]: E0604 09:48:59.644053    4660 transport.go:123] "No valid client certificate is found but >
+Jun 04 09:48:59 master01.gsc.ss.samsung.local kubenswrapper[4660]: W0604 09:48:59.963215    4660 reflector.go:533] k8s.io/client-go@v0.27.1/tools/cache/refle>
+Jun 04 09:48:59 master01.gsc.ss.samsung.local kubenswrapper[4660]: E0604 09:48:59.963243    4660 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refle>
+Jun 04 09:49:00 master01.gsc.ss.samsung.local kubenswrapper[4660]: I0604 09:49:00.075951    4660 csi_plugin.go:913] Failed to contact API server when waiting>
+
+[core@master01 ~]$
+[core@master01 ~]$ date
+Thu Jun  4 09:49:28 UTC 2026
+[core@master01 ~]$
+[core@master01 ~]$ sudo systemctl restart kubelet crio
+[core@master01 ~]$
+[core@master01 ~]$ sudo systemctl status kubelet
+? kubelet.service - Kubernetes Kubelet
+     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/kubelet.service.d
+             +-01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
+     Active: active (running) since Thu 2026-06-04 09:50:16 UTC; 18s ago
+    Process: 10067 ExecStartPre=/bin/mkdir --parents /etc/kubernetes/manifests (code=exited, status=0/SUCCESS)
+    Process: 10069 ExecStartPre=/usr/sbin/restorecon /usr/local/bin/kubenswrapper /usr/bin/kubensenter (code=exited, status=0/SUCCESS)
+    Process: 10071 ExecStartPre=/bin/rm -f /var/lib/kubelet/cpu_manager_state (code=exited, status=0/SUCCESS)
+    Process: 10073 ExecStartPre=/bin/rm -f /var/lib/kubelet/memory_manager_state (code=exited, status=0/SUCCESS)
+   Main PID: 10075 (kubelet)
+      Tasks: 69 (limit: 3298095)
+     Memory: 78.6M
+        CPU: 1.330s
+     CGroup: /system.slice/kubelet.service
+             +-10075 /usr/bin/kubelet --config=/etc/kubernetes/kubelet.conf --bootstrap-kubeconfig=/etc/kubernetes/kubeconfig --kubeconfig=/var/lib/kubelet/k>
+
+Jun 04 09:50:30 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:50:30.625039   10075 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:50:30 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:50:30.676480   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:50:31 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:50:31.676010   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:50:32 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:50:32.675696   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:50:33 master01.gsc.ss.samsung.local kubenswrapper[10075]: W0604 09:50:33.077445   10075 reflector.go:533] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:50:33 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:50:33.077465   10075 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:50:33 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:50:33.676286   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:50:33 master01.gsc.ss.samsung.local kubenswrapper[10075]: W0604 09:50:33.696819   10075 reflector.go:533] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:50:33 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:50:33.696835   10075 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:50:34 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:50:34.675754   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+
+[core@master01 ~]$
+[core@master01 ~]$
+[core@master01 ~]$ sudo systemctl status crio
+? crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; disabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             +-01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: active (running) since Thu 2026-06-04 09:50:16 UTC; 32s ago
+       Docs: https://github.com/cri-o/cri-o
+   Main PID: 9668 (crio)
+      Tasks: 93
+     Memory: 239.7M
+        CPU: 4.056s
+     CGroup: /system.slice/crio.service
+             +-9668 /usr/bin/crio
+
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.184873040Z" level=info msg="Updated default CNI network name to "
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.185172910Z" level=info msg="Attempting to restore irqbalance config from >
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.185258001Z" level=info msg="Restore irqbalance config: nothing to do"
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.407705821Z" level=info msg="Starting seccomp notifier watcher"
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.407776375Z" level=info msg="Serving metrics on :9537 via HTTP"
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.407899213Z" level=info msg="Create NRI interface"
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.407973391Z" level=info msg="NRI interface is disabled in the configuratio>
+Jun 04 09:50:16 master01.gsc.ss.samsung.local systemd[1]: Started Container Runtime Interface for OCI (CRI-O).
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.669905401Z" level=info msg="Checking image status: quay.io/openshift-rele>
+Jun 04 09:50:16 master01.gsc.ss.samsung.local crio[9668]: time="2026-06-04 09:50:16.671374572Z" level=info msg="Image status: &ImageStatusResponse{Image:&Ima>
+
+[core@master01 ~]$
+[core@master01 ~]$
+[core@master01 ~]$
+[core@master01 ~]$ sudo journalctl -u kubelet -n 100
+Jun 04 09:51:46 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:51:46.492766   10075 kubelet_node_status.go:94] "Unable to register node with AP>
+Jun 04 09:51:46 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:46.676908   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:46 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:51:46.782602   10075 eviction_manager.go:258] "Eviction manager: failed to get s>
+Jun 04 09:51:47 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:47.676107   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:48 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:48.676505   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:49 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:49.676608   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:50 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:50.676644   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:51 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:51.676630   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:51 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:51.681823   10075 kubelet_node_status.go:376] "Setting node annotation to ena>
+Jun 04 09:51:51 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:51.682648   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:51 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:51.682674   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:51 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:51.682698   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:52 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:52.676841   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:53 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:51:53.374587   10075 controller.go:146] "Failed to ensure lease exists, will ret>
+Jun 04 09:51:53 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:53.493245   10075 kubelet_node_status.go:376] "Setting node annotation to ena>
+Jun 04 09:51:53 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:53.494056   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:53 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:53.494076   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:53 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:53.494084   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:53 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:53.494104   10075 kubelet_node_status.go:72] "Attempting to register node" no>
+Jun 04 09:51:53 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:51:53.499526   10075 kubelet_node_status.go:94] "Unable to register node with AP>
+Jun 04 09:51:53 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:53.676772   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:54 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:54.675964   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:54 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:54.681211   10075 kubelet_node_status.go:376] "Setting node annotation to ena>
+Jun 04 09:51:54 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:54.681947   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:54 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:54.681964   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:54 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:54.681972   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:51:55 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:55.676486   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:56 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:56.676174   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:56 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:51:56.783116   10075 eviction_manager.go:258] "Eviction manager: failed to get s>
+Jun 04 09:51:57 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:57.676623   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:58 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:58.675887   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:51:59 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:51:59.676259   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:00.380658   10075 controller.go:146] "Failed to ensure lease exists, will ret>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:00.499595   10075 kubelet_node_status.go:376] "Setting node annotation to ena>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:00.500411   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:00.500430   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:00.500439   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:00.500457   10075 kubelet_node_status.go:72] "Attempting to register node" no>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:00.505808   10075 kubelet_node_status.go:94] "Unable to register node with AP>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:00.676146   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: W0604 09:52:00.974565   10075 reflector.go:533] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:52:00 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:00.974588   10075 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:52:01 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:01.676599   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:02 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:02.675605   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:03 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:03.677092   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:04 master01.gsc.ss.samsung.local kubenswrapper[10075]: W0604 09:52:04.057756   10075 reflector.go:533] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:52:04 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:04.057777   10075 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:52:04 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:04.675642   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:05 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:05.676592   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:06 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:06.678434   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:06 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:06.783404   10075 eviction_manager.go:258] "Eviction manager: failed to get s>
+Jun 04 09:52:07 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:07.386784   10075 controller.go:146] "Failed to ensure lease exists, will ret>
+Jun 04 09:52:07 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:07.506149   10075 kubelet_node_status.go:376] "Setting node annotation to ena>
+Jun 04 09:52:07 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:07.506999   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:07 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:07.507018   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:07 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:07.507028   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:07 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:07.507048   10075 kubelet_node_status.go:72] "Attempting to register node" no>
+Jun 04 09:52:07 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:07.512323   10075 kubelet_node_status.go:94] "Unable to register node with AP>
+Jun 04 09:52:07 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:07.676921   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:08 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:08.676248   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:08 master01.gsc.ss.samsung.local kubenswrapper[10075]: W0604 09:52:08.676325   10075 reflector.go:533] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:52:08 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:08.676349   10075 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:52:09 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:09.671857   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:10 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:10.675814   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:11 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:11.675859   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:12 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:12.676107   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:13 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:13.676486   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:14 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:14.392651   10075 controller.go:146] "Failed to ensure lease exists, will ret>
+Jun 04 09:52:14 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:14.512894   10075 kubelet_node_status.go:376] "Setting node annotation to ena>
+Jun 04 09:52:14 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:14.513682   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:14 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:14.513701   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:14 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:14.513712   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:14 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:14.513734   10075 kubelet_node_status.go:72] "Attempting to register node" no>
+Jun 04 09:52:14 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:14.519210   10075 kubelet_node_status.go:94] "Unable to register node with AP>
+Jun 04 09:52:14 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:14.675926   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:15 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:15.675950   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:16 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:16.670222   10075 kubelet_getters.go:187] "Pod status updated" pod="openshift>
+Jun 04 09:52:16 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:16.670259   10075 kubelet_getters.go:187] "Pod status updated" pod="openshift>
+Jun 04 09:52:16 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:16.670291   10075 kubelet_getters.go:187] "Pod status updated" pod="openshift>
+Jun 04 09:52:16 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:16.670314   10075 kubelet_getters.go:187] "Pod status updated" pod="openshift>
+Jun 04 09:52:16 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:16.670335   10075 kubelet_getters.go:187] "Pod status updated" pod="openshift>
+Jun 04 09:52:16 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:16.676708   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:16 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:16.783465   10075 eviction_manager.go:258] "Eviction manager: failed to get s>
+Jun 04 09:52:17 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:17.676456   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:18 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:18.675924   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:19 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:19.676658   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:20 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:20.675948   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:21 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:21.398343   10075 controller.go:146] "Failed to ensure lease exists, will ret>
+Jun 04 09:52:21 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:21.519940   10075 kubelet_node_status.go:376] "Setting node annotation to ena>
+Jun 04 09:52:21 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:21.520763   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:21 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:21.520782   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:21 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:21.520792   10075 kubelet_node_status.go:696] "Recording event message for no>
+Jun 04 09:52:21 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:21.520811   10075 kubelet_node_status.go:72] "Attempting to register node" no>
+Jun 04 09:52:21 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:21.526212   10075 kubelet_node_status.go:94] "Unable to register node with AP>
+Jun 04 09:52:21 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:21.676581   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:22 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:22.675532   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:23 master01.gsc.ss.samsung.local kubenswrapper[10075]: W0604 09:52:23.349664   10075 reflector.go:533] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:52:23 master01.gsc.ss.samsung.local kubenswrapper[10075]: E0604 09:52:23.349693   10075 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refl>
+Jun 04 09:52:23 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:23.676818   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+Jun 04 09:52:24 master01.gsc.ss.samsung.local kubenswrapper[10075]: I0604 09:52:24.676493   10075 csi_plugin.go:913] Failed to contact API server when waitin>
+
+[core@master01 ~]$
+[core@master01 ~]$
+[core@master01 ~]$ /etc/named/zones/db.ocp.lan
+-bash: /etc/named/zones/db.ocp.lan: No such file or directory
+[core@master01 ~]$
+[core@master01 ~]$ exit
+logout
+Connection to master01 closed.
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# /etc/named/zones/db.ocp.lan
+-bash: /etc/named/zones/db.ocp.lan: No such file or directory
+[root@bastion ~]#
+[root@bastion ~]# cat /etc/named/zones/db.ocp.lan
+cat: /etc/named/zones/db.ocp.lan: No such file or directory
+[root@bastion ~]#
+[root@bastion ~]# cat /etc/named/zones/db.reverse
+cat: /etc/named/zones/db.reverse: No such file or directory
+[root@bastion ~]#
+[root@bastion ~]# systemctl status named
+Unit named.service could not be found.
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# ssh root@10.0.100.114
+root@10.0.100.114's password:
+Last login: Thu Jun  4 14:48:55 2026 from 10.0.100.108
+[root@slb01 ~]#
+[root@slb01 ~]#
+[root@slb01 ~]# /etc/named/zones/db.ocp.lan
+-bash: /etc/named/zones/db.ocp.lan: No such file or directory
+[root@slb01 ~]# systemctl status named
+? named.service - Berkeley Internet Name Domain (DNS)
+   Loaded: loaded (/usr/lib/systemd/system/named.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2026-06-04 09:50:16 IST; 5h 39min ago
+  Process: 994 ExecStart=/usr/sbin/named -u named -c ${NAMEDCONF} $OPTIONS (code=exited, status=0/SUCCESS)
+  Process: 975 ExecStartPre=/bin/bash -c if [ ! "$DISABLE_ZONE_CHECKING" == "yes" ]; then /usr/sbin/named-checkconf -z "$NAMEDCONF"; else echo "Checking of z>
+ Main PID: 995 (named)
+    Tasks: 11 (limit: 149031)
+   Memory: 77.1M
+   CGroup: /system.slice/named.service
+           +-995 /usr/sbin/named -u named -c /etc/named.conf
+
+Jun 04 10:50:16 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 11:06:58 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 11:50:16 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 12:06:58 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 12:50:16 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 13:06:58 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 13:50:16 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 14:06:58 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 14:50:16 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+Jun 04 15:06:58 slb01.gsc.ss.samsung.local named[995]: managed-keys-zone: No DNSKEY RRSIGs found for '.': success
+
+[root@slb01 ~]#
+[root@slb01 ~]# ls /etc/named/zones/
+ls: cannot access '/etc/named/zones/': No such file or directory
+[root@slb01 ~]#
+[root@slb01 ~]#
+[root@slb01 ~]# ls -lart /etc/
+Display all 213 possibilities? (y or n)
+[root@slb01 ~]# ls /etc/named/zones
+[root@slb01 ~]# cd /etc/
+Display all 213 possibilities? (y or n)
+[root@slb01 ~]# cd /etc/a
+[root@slb01 ~]# cat /etc/named.
+named.conf           named.rfc1912.zones  named.root.key
+[root@slb01 ~]# cat /etc/named.
+named.conf           named.rfc1912.zones  named.root.key
+[root@slb01 ~]# cat /etc/named.conf
+//
+// named.conf
+//
+// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
+// server as a caching only nameserver (as a localhost DNS resolver only).
+//
+// See /usr/share/doc/bind*/sample/ for example named configuration files.
+//
+
+options {
+        listen-on port 53 { any; };
+        listen-on-v6 port 53 { none; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        secroots-file   "/var/named/data/named.secroots";
+        recursing-file  "/var/named/data/named.recursing";
+        allow-query     { any; };
+        forwarders {107.110.101.40;};
+
+        /*
+         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
+         - If you are building a RECURSIVE (caching) DNS server, you need to enable
+           recursion.
+         - If your recursive DNS server has a public IP address, you MUST enable access
+           control to limit queries to your legitimate users. Failing to do so will
+           cause your server to become part of large scale DNS amplification
+           attacks. Implementing BCP38 within your network would greatly
+           reduce such attack surface
+        */
+        recursion yes;
+
+        dnssec-enable yes;
+        dnssec-validation no;
+
+        managed-keys-directory "/var/named/dynamic";
+
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+
+        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
+        include "/etc/crypto-policies/back-ends/bind.config";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+zone "." IN {
+        type hint;
+        file "named.ca";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";
+
+zone gsc.ss.samsung.local IN {
+ type master;
+ file "gsc.ss.samsung.local.zone";
+ allow-update { none; };
+};
