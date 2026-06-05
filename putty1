@@ -747,3 +747,247 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 35  bytes 2388 (2.3 KiB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+[root@bastion ~]# oc login https://10.0.100.112:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+[root@bastion ~]# ifconfig
+enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.0.100.108  netmask 255.255.255.0  broadcast 10.0.100.255
+        inet6 fe80::5054:ff:fe2e:11c0  prefixlen 64  scopeid 0x20<link>
+        ether 52:54:00:2e:11:c0  txqueuelen 1000  (Ethernet)
+        RX packets 395791  bytes 25828628 (24.6 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 20678  bytes 2519529 (2.4 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enp2s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.0.0.104  netmask 255.255.255.0  broadcast 10.0.0.255
+        inet6 fe80::5054:ff:fe96:9d9  prefixlen 64  scopeid 0x20<link>
+        ether 52:54:00:96:09:d9  txqueuelen 1000  (Ethernet)
+        RX packets 389154  bytes 50088548 (47.7 MiB)
+        RX errors 0  dropped 24898  overruns 0  frame 0
+        TX packets 81  bytes 4058 (3.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enp8s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 107.111.213.24  netmask 255.255.255.0  broadcast 107.111.213.255
+        inet6 fe80::5054:ff:fef8:56d  prefixlen 64  scopeid 0x20<link>
+        ether 52:54:00:f8:05:6d  txqueuelen 1000  (Ethernet)
+        RX packets 399087  bytes 50888508 (48.5 MiB)
+        RX errors 0  dropped 24898  overruns 0  frame 0
+        TX packets 215218  bytes 16169496 (15.4 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 35  bytes 2388 (2.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 35  bytes 2388 (2.3 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+[root@bastion ~]# history | grep "login"
+  857  oc login https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+  862  oc login https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+  893  oc login
+  894  oc login -s=https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+  907  oc login -s=https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+  931  oc login -s=https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+  946  oc login https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+ 1021  history | grep"oc login"
+ 1024  history | grep "login"
+ 1025  oc login https://10.0.100.112:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+ 1027  history | grep "login"
+[root@bastion ~]# nslookup api.gsc.ss.samsung.local
+Server:         10.0.100.114
+Address:        10.0.100.114#53
+
+Name:   api.gsc.ss.samsung.local
+Address: 10.0.100.112
+
+[root@bastion ~]#
+[root@bastion ~]#  oc login -s=https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+Unable to connect to the server: EOF
+[root@bastion ~]# oc get nodes
+
+[root@bastion ~]# ssh core@100.0.100.100
+
+[root@bastion ~]# history | grep "
+>
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# history | grep date
+  998  ssh core@10.0.100.100 date
+  999  ssh core@10.0.100.102 date
+ 1000  ssh core@10.0.100.103 date
+ 1001  ssh core@10.0.100.104 date
+ 1002  ssh core@10.0.100.102 date
+ 1003  ssh core@10.0.100.100 date
+ 1033  history | grep date
+[root@bastion ~]#
+[root@bastion ~]#  ssh core@10.0.100.100 date
+Thu Jun  4 10:53:31 UTC 2026
+[root@bastion ~]# ssh core@10.0.100.102 date
+Thu Jun  4 10:53:41 UTC 2026
+[root@bastion ~]# ssh core@10.0.100.104 date
+Thu Jun  4 10:53:50 UTC 2026
+[root@bastion ~]#
+[root@bastion ~]#
+(reverse-i-search)`oc log':  oc login -s=https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4
+[root@bastion ~]# oc login -s=https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4 --log-level 100
+error: unknown flag: --log-level
+See 'oc login --help' for usage.
+[root@bastion ~]# oc version
+
+[root@bastion ~]# history | grep curl
+  492  curl -v quay.io/
+  954  curl -kv https://10.0.100.114:6443/version
+  968  curl -vk https://10.0.100.114:6443
+ 1004  curl -k https://api.gsc.ss.samsung.local:6443/healthz
+ 1006  curl -k https://api.gsc.ss.samsung.local:6443/ready
+ 1007  curl -k https://api.gsc.ss.samsung.local:6443/readyz
+ 1039  history | grep curl
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#  curl -k https://api.gsc.ss.samsung.local:6443/health
+{
+  "kind": "Status",
+  "apiVersion": "v1",
+  "metadata": {},
+  "status": "Failure",
+  "message": "forbidden: User \"system:anonymous\" cannot get path \"/health\"",
+  "reason": "Forbidden",
+  "details": {},
+  "code": 403
+}[root@bastion ~]#  curl -k https://api.gsc.ss.samsung.local:6443/healthz
+ok[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#  curl -k https://api.gsc.ss.samsung.local:6443/readyz
+ok[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# oc get nodes
+
+[root@bastion ~]# oc get nodes
+
+[root@bastion ~]# oc login -s=https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4 --log-level=10
+error: unknown flag: --log-level
+See 'oc login --help' for usage.
+[root@bastion ~]#
+[root@bastion ~]# oc login
+Unable to connect to the server: EOF
+[root@bastion ~]# oc login --log-level=10
+error: unknown flag: --log-level
+See 'oc login --help' for usage.
+[root@bastion ~]#
+[root@bastion ~]# oc login --help
+Log in to your server and save login for subsequent use.
+
+ First-time users of the client should run this command to connect to a server, establish an authenticated session, and
+save connection to the configuration file. The default configuration will be saved to your home directory under
+".kube/config".
+
+ The information required to login -- like username and password, a session token, or the server details -- can be
+provided through flags. If not provided, the command will prompt for user input as needed.
+
+Usage:
+  oc login [URL] [flags]
+
+Examples:
+  # Log in interactively
+  oc login --username=myuser
+
+  # Log in to the given server with the given certificate authority file
+  oc login localhost:8443 --certificate-authority=/path/to/cert.crt
+
+  # Log in to the given server with the given credentials (will not prompt interactively)
+  oc login localhost:8443 --username=myuser --password=mypass
+
+Options:
+  -p, --password='': Password for server
+  -u, --username='': Username for server
+      --certificate-authority='': Path to a cert file for the certificate authority
+      --insecure-skip-tls-verify=false: If true, the server's certificate will not be checked for validity. This will
+make your HTTPS connections insecure
+      --token='': Bearer token for authentication to the API server
+
+Use "oc options" for a list of global command-line options (applies to all commands).
+(reverse-i-search)`ssh': ssh core@10.0.100.104 date
+[root@bastion ~]# oc login --help
+[root@bastion ~]# ssh core@10.0.100.104
+Red Hat Enterprise Linux CoreOS 414.92.202406111017-0
+  Part of OpenShift 4.14, RHCOS is a Kubernetes native operating system
+  managed by the Machine Config Operator (`clusteroperator/machine-config`).
+
+WARNING: Direct SSH access to machines is not recommended; instead,
+make configuration changes via `machineconfig` objects:
+  https://docs.openshift.com/container-platform/4.14/architecture/architecture-rhcos.html
+
+---
+Last login: Thu Jun  4 10:38:24 2026 from 10.0.100.108
+[systemd]
+Failed Units: 1
+  NetworkManager-wait-online.service
+[core@master03 ~]$ sudo systemctl status kubelet
+? kubelet.service - Kubernetes Kubelet
+     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/kubelet.service.d
+             +-01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
+     Active: active (running) since Thu 2026-06-04 09:40:45 UTC; 1h 22min ago
+    Process: 4933 ExecStartPre=/bin/mkdir --parents /etc/kubernetes/manifests (code=exited, status=0/SUCCESS)
+    Process: 4940 ExecStartPre=/usr/sbin/restorecon /usr/local/bin/kubenswrapper /usr/bin/kubensenter (code=exited, status=0/SUCCESS)
+    Process: 4953 ExecStartPre=/bin/rm -f /var/lib/kubelet/cpu_manager_state (code=exited, status=0/SUCCESS)
+    Process: 4955 ExecStartPre=/bin/rm -f /var/lib/kubelet/memory_manager_state (code=exited, status=0/SUCCESS)
+   Main PID: 4958 (kubelet)
+      Tasks: 81 (limit: 3298095)
+     Memory: 218.7M
+        CPU: 1min 51.672s
+     CGroup: /system.slice/kubelet.service
+             +-4958 /usr/bin/kubelet --config=/etc/kubernetes/kubelet.conf --bootstrap-kubeconfig=/etc/kubernetes/kubeconfig --kubeconfig=/var/lib/kubelet/ku>
+
+Jun 04 11:03:07 master03.gsc.ss.samsung.local kubenswrapper[4958]: E0604 11:03:07.304521    4958 transport.go:123] "No valid client certificate is found but >
+Jun 04 11:03:07 master03.gsc.ss.samsung.local kubenswrapper[4958]: E0604 11:03:07.338995    4958 eviction_manager.go:258] "Eviction manager: failed to get su>
+Jun 04 11:03:07 master03.gsc.ss.samsung.local kubenswrapper[4958]: I0604 11:03:07.932304    4958 csi_plugin.go:913] Failed to contact API server when waiting>
+Jun 04 11:03:08 master03.gsc.ss.samsung.local kubenswrapper[4958]: E0604 11:03:08.304474    4958 transport.go:123] "No valid client certificate is found but >
+Jun 04 11:03:08 master03.gsc.ss.samsung.local kubenswrapper[4958]: I0604 11:03:08.933389    4958 csi_plugin.go:913] Failed to contact API server when waiting>
+Jun 04 11:03:09 master03.gsc.ss.samsung.local kubenswrapper[4958]: E0604 11:03:09.304073    4958 transport.go:123] "No valid client certificate is found but >
+Jun 04 11:03:09 master03.gsc.ss.samsung.local kubenswrapper[4958]: I0604 11:03:09.932134    4958 csi_plugin.go:913] Failed to contact API server when waiting>
+Jun 04 11:03:10 master03.gsc.ss.samsung.local kubenswrapper[4958]: E0604 11:03:10.304567    4958 transport.go:123] "No valid client certificate is found but >
+Jun 04 11:03:10 master03.gsc.ss.samsung.local kubenswrapper[4958]: I0604 11:03:10.932400    4958 csi_plugin.go:913] Failed to contact API server when waiting>
+Jun 04 11:03:11 master03.gsc.ss.samsung.local kubenswrapper[4958]: E0604 11:03:11.304135    4958 transport.go:123] "No valid client certificate is found but >
+
+[core@master03 ~]$ sudo systemctl restart crio  kubelet
+[core@master03 ~]$ sudo systemctl status kubelet
+? kubelet.service - Kubernetes Kubelet
+     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/kubelet.service.d
+             +-01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
+     Active: active (running) since Thu 2026-06-04 11:03:35 UTC; 3s ago
+    Process: 8301 ExecStartPre=/bin/mkdir --parents /etc/kubernetes/manifests (code=exited, status=0/SUCCESS)
+    Process: 8303 ExecStartPre=/usr/sbin/restorecon /usr/local/bin/kubenswrapper /usr/bin/kubensenter (code=exited, status=0/SUCCESS)
+    Process: 8305 ExecStartPre=/bin/rm -f /var/lib/kubelet/cpu_manager_state (code=exited, status=0/SUCCESS)
+    Process: 8307 ExecStartPre=/bin/rm -f /var/lib/kubelet/memory_manager_state (code=exited, status=0/SUCCESS)
+   Main PID: 8309 (kubelet)
+      Tasks: 53 (limit: 3298095)
+     Memory: 66.8M
+        CPU: 861ms
+     CGroup: /system.slice/kubelet.service
+             +-8309 /usr/bin/kubelet --config=/etc/kubernetes/kubelet.conf --bootstrap-kubeconfig=/etc/kubernetes/kubeconfig --kubeconfig=/var/lib/kubelet/ku>
+
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: I0604 11:03:38.222660    8309 kubelet_node_status.go:696] "Recording event message for nod>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: I0604 11:03:38.222668    8309 kubelet_node_status.go:696] "Recording event message for nod>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: I0604 11:03:38.321281    8309 kubelet_node_status.go:376] "Setting node annotation to enab>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: I0604 11:03:38.321854    8309 kubelet_node_status.go:696] "Recording event message for nod>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: I0604 11:03:38.321870    8309 kubelet_node_status.go:696] "Recording event message for nod>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: I0604 11:03:38.321878    8309 kubelet_node_status.go:696] "Recording event message for nod>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: I0604 11:03:38.321891    8309 kubelet_node_status.go:72] "Attempting to register node" nod>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: E0604 11:03:38.327242    8309 kubelet_node_status.go:94] "Unable to register node with API>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: W0604 11:03:38.453292    8309 reflector.go:533] k8s.io/client-go@v0.27.1/tools/cache/refle>
+Jun 04 11:03:38 master03.gsc.ss.samsung.local kubenswrapper[8309]: E0604 11:03:38.453311    8309 reflector.go:148] k8s.io/client-go@v0.27.1/tools/cache/refle>
+
+[core@master03 ~]$ hostname
+master03.gsc.ss.samsung.local
+[core@master03 ~]$
+[core@master03 ~]$
+
