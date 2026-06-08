@@ -1,203 +1,27 @@
-[root@bastion ~]# oc login https://api.gsc.ss.samsung.local:6443 -u kubeadmin -p BteFH-vnSfz-SdCYi-yMCi4 --loglevel 7
-I0608 09:48:08.084215    3590 loader.go:372] Config loaded from file:  /root/inst07/auth/kubeconfig
-I0608 09:48:08.084416    3590 round_trippers.go:463] HEAD https://api.gsc.ss.samsung.local:6443/
-I0608 09:48:08.084426    3590 round_trippers.go:469] Request Headers:
-I0608 09:48:08.098789    3590 round_trippers.go:574] Response Status: 403 Forbidden in 14 milliseconds
-I0608 09:48:08.098822    3590 request_token.go:89] GSSAPI Enabled
-I0608 09:48:08.098844    3590 round_trippers.go:463] GET https://api.gsc.ss.samsung.local:6443/.well-known/oauth-authorization-server
-I0608 09:48:08.098848    3590 round_trippers.go:469] Request Headers:
-I0608 09:48:08.098852    3590 round_trippers.go:473]     X-Csrf-Token: 1
-I0608 09:48:08.102785    3590 round_trippers.go:574] Response Status: 200 OK in 3 milliseconds
-I0608 09:48:08.103963    3590 round_trippers.go:463] GET https://api.gsc.ss.samsung.local:6443/api/v1/namespaces/openshift/configmaps/motd
-I0608 09:48:08.103977    3590 round_trippers.go:469] Request Headers:
-I0608 09:48:08.103981    3590 round_trippers.go:473]     Accept: application/json, */*
-I0608 09:48:08.108010    3590 round_trippers.go:574] Response Status: 403 Forbidden in 4 milliseconds
-I0608 09:48:08.108188    3590 helpers.go:237] Connection error: Head https://oauth-openshift.apps.gsc.ss.samsung.local: EOF
-F0608 09:48:08.108202    3590 helpers.go:118] Unable to connect to the server: EOF
-goroutine 1 [running]:
-k8s.io/klog/v2.stacks(0x1)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/klog/v2/klog.go:1140 +0x8a
-k8s.io/klog/v2.(*loggingT).output(0x5cd9fa0, 0x3, 0x0, 0xc000b83d50, 0x2, {0x49ad1f3, 0x10}, 0xc0003fb000, 0x0)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/klog/v2/klog.go:1088 +0x66f
-k8s.io/klog/v2.(*loggingT).printDepth(0xc000493530, 0x24, 0x0, {0x0, 0x0}, 0x3699100, {0xc000ac88a0, 0x1, 0x1})
-        /go/src/github.com/openshift/oc/vendor/k8s.io/klog/v2/klog.go:735 +0x1ae
-k8s.io/klog/v2.FatalDepth(...)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/klog/v2/klog.go:1628
-k8s.io/kubectl/pkg/cmd/util.fatal({0xc000493530, 0x24}, 0xc000a94930)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/kubectl/pkg/cmd/util/helpers.go:96 +0xc5
-k8s.io/kubectl/pkg/cmd/util.checkErr({0x41793e0, 0xc000a94930}, 0x3e6e8a0)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/kubectl/pkg/cmd/util/helpers.go:191 +0x7d7
-k8s.io/kubectl/pkg/cmd/util.CheckErr(...)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/kubectl/pkg/cmd/util/helpers.go:118
-github.com/openshift/oc/pkg/cli/login.NewCmdLogin.func1(0xc000e26780, {0xc000409880, 0x1, 0x7})
-        /go/src/github.com/openshift/oc/pkg/cli/login/login.go:77 +0x39f
-github.com/spf13/cobra.(*Command).execute(0xc000e26780, {0xc000409810, 0x7, 0x7})
-        /go/src/github.com/openshift/oc/vendor/github.com/spf13/cobra/command.go:860 +0x5f8
-github.com/spf13/cobra.(*Command).ExecuteC(0xc000e26500)
-        /go/src/github.com/openshift/oc/vendor/github.com/spf13/cobra/command.go:974 +0x3bc
-github.com/spf13/cobra.(*Command).Execute(...)
-        /go/src/github.com/openshift/oc/vendor/github.com/spf13/cobra/command.go:902
-k8s.io/component-base/cli.run(0xc000e26500)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/component-base/cli/run.go:146 +0x325
-k8s.io/component-base/cli.RunNoErrOutput(...)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/component-base/cli/run.go:84
-main.main()
-        /go/src/github.com/openshift/oc/cmd/oc/oc.go:77 +0x365
+own desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(3453b71ec4032bcf35b47ab5fa40cb9691ceef069be927d66a608952a76d42ec): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
 
-goroutine 6 [chan receive]:
-k8s.io/klog/v2.(*loggingT).flushDaemon(0x0)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/klog/v2/klog.go:1283 +0x6a
-created by k8s.io/klog/v2.init.0
-        /go/src/github.com/openshift/oc/vendor/k8s.io/klog/v2/klog.go:420 +0xfb
+  Warning  FailedCreatePodSandBox  3m33s                    kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(7da3e345f1ded5cebe090a75b451ff20eb912b68f464827948a4cb260bbe9258): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
 
-goroutine 32 [IO wait]:
-internal/poll.runtime_pollWait(0x7f8e580d9ef8, 0x72)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/runtime/netpoll.go:303 +0x85
-internal/poll.(*pollDesc).wait(0xc0005c8380, 0xc00012b500, 0x0)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_poll_runtime.go:84 +0x32
-internal/poll.(*pollDesc).waitRead(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_poll_runtime.go:89
-internal/poll.(*FD).Read(0xc0005c8380, {0xc00012b500, 0x1423, 0x1423})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_unix.go:167 +0x25a
-net.(*netFD).Read(0xc0005c8380, {0xc00012b500, 0xc00012b626, 0x149})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/fd_posix.go:56 +0x29
-net.(*conn).Read(0xc0004a0008, {0xc00012b500, 0x128bae6, 0xc0000997f8})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/net.go:183 +0x45
-crypto/tls.(*atLeastReader).Read(0xc000bb0258, {0xc00012b500, 0x0, 0x127e22d})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:778 +0x3d
-bytes.(*Buffer).ReadFrom(0xc000dc8278, {0x41736a0, 0xc000bb0258})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/bytes/buffer.go:204 +0x98
-crypto/tls.(*Conn).readFromUntil(0xc000dc8000, {0x4178f80, 0xc0004a0008}, 0x1302)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:800 +0xe5
-crypto/tls.(*Conn).readRecordOrCCS(0xc000dc8000, 0x0)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:607 +0x112
-crypto/tls.(*Conn).readRecord(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:575
-crypto/tls.(*Conn).Read(0xc000dc8000, {0xc000bd8000, 0x1000, 0xc000ef8680})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:1278 +0x16f
-bufio.(*Reader).Read(0xc000894720, {0xc000bd21f8, 0x9, 0xc0008a95c0})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/bufio/bufio.go:227 +0x1b4
-io.ReadAtLeast({0x4173420, 0xc000894720}, {0xc000bd21f8, 0x9, 0x9}, 0x9)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/io/io.go:328 +0x9a
-io.ReadFull(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/io/io.go:347
-net/http.http2readFrameHeader({0xc000bd21f8, 0x9, 0xc000ba69f0}, {0x4173420, 0xc000894720})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:1555 +0x6e
-net/http.(*http2Framer).ReadFrame(0xc000bd21c0)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:1813 +0x95
-net/http.(*http2clientConnReadLoop).run(0xc000099f98)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:8608 +0x130
-net/http.(*http2ClientConn).readLoop(0xc0004a8300)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:8531 +0x6f
-created by net/http.(*http2Transport).newClientConn
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:7325 +0xb85
+  Warning  FailedCreatePodSandBox  3m23s                    kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(b7def8a073a78c6007cfa4e249cb7eac9076c4b5b43b1bf4f41ed19d53af6561): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
 
-goroutine 16 [select]:
-io.(*pipe).Read(0xc0001af080, {0xc0006f2000, 0x1000, 0xc00018ee01})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/io/pipe.go:57 +0xb7
-io.(*PipeReader).Read(0x4, {0xc0006f2000, 0x12799c9, 0x36a2a00})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/io/pipe.go:134 +0x25
-bufio.(*Scanner).Scan(0xc000511400)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/bufio/scan.go:215 +0x865
-github.com/openshift/oc/pkg/cli/admin/mustgather.newPrefixWriter.func1()
-        /go/src/github.com/openshift/oc/pkg/cli/admin/mustgather/mustgather.go:527 +0x105
-created by github.com/openshift/oc/pkg/cli/admin/mustgather.newPrefixWriter
-        /go/src/github.com/openshift/oc/pkg/cli/admin/mustgather/mustgather.go:526 +0x21a
+  Warning  FailedCreatePodSandBox  3m10s                    kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(2fb38114a5803ed55f2e45333467d0a365d8ce63866cce0203e823629d094044): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
 
-goroutine 66 [select]:
-k8s.io/apimachinery/pkg/util/wait.BackoffUntil(0x0, {0x4177be0, 0xc0006f4000}, 0x1, 0xc0000c4360)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:167 +0x13b
-k8s.io/apimachinery/pkg/util/wait.JitterUntil(0x0, 0x12a05f200, 0x0, 0x0, 0x0)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:133 +0x89
-k8s.io/apimachinery/pkg/util/wait.Until(...)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:90
-k8s.io/apimachinery/pkg/util/wait.Forever(0x0, 0x0)
-        /go/src/github.com/openshift/oc/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:81 +0x28
-created by k8s.io/component-base/logs.InitLogs
-        /go/src/github.com/openshift/oc/vendor/k8s.io/component-base/logs/logs.go:179 +0x85
+  Warning  FailedCreatePodSandBox  2m57s                    kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(1c804856d42a9624315e0f3374ac94c568cc0b585a0c2e5d45079e5a9bf23055): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
 
-goroutine 76 [IO wait]:
-internal/poll.runtime_pollWait(0x7f8e580d9fe8, 0x72)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/runtime/netpoll.go:303 +0x85
-internal/poll.(*pollDesc).wait(0xc0005c8100, 0xc000116a00, 0x0)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_poll_runtime.go:84 +0x32
-internal/poll.(*pollDesc).waitRead(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_poll_runtime.go:89
-internal/poll.(*FD).Read(0xc0005c8100, {0xc000116a00, 0x1423, 0x1423})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_unix.go:167 +0x25a
-net.(*netFD).Read(0xc0005c8100, {0xc000116a00, 0xc000116a05, 0x272})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/fd_posix.go:56 +0x29
-net.(*conn).Read(0xc0000101a8, {0xc000116a00, 0xc000a92120, 0xc0000987f8})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/net.go:183 +0x45
-crypto/tls.(*atLeastReader).Read(0xc000a90198, {0xc000116a00, 0x0, 0x127e22d})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:778 +0x3d
-bytes.(*Buffer).ReadFrom(0xc000efc5f8, {0x41736a0, 0xc000a90198})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/bytes/buffer.go:204 +0x98
-crypto/tls.(*Conn).readFromUntil(0xc000efc380, {0x4178f80, 0xc0000101a8}, 0x1423)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:800 +0xe5
-crypto/tls.(*Conn).readRecordOrCCS(0xc000efc380, 0x0)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:607 +0x112
-crypto/tls.(*Conn).readRecord(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:575
-crypto/tls.(*Conn).Read(0xc000efc380, {0xc000f1c000, 0x1000, 0xc000ef8680})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:1278 +0x16f
-bufio.(*Reader).Read(0xc000451b60, {0xc000e30f18, 0x9, 0xc00031fce0})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/bufio/bufio.go:227 +0x1b4
-io.ReadAtLeast({0x4173420, 0xc000451b60}, {0xc000e30f18, 0x9, 0x9}, 0x9)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/io/io.go:328 +0x9a
-io.ReadFull(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/io/io.go:347
-net/http.http2readFrameHeader({0xc000e30f18, 0x9, 0xc000a94510}, {0x4173420, 0xc000451b60})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:1555 +0x6e
-net/http.(*http2Framer).ReadFrame(0xc000e30ee0)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:1813 +0x95
-net/http.(*http2clientConnReadLoop).run(0xc000098f98)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:8608 +0x130
-net/http.(*http2ClientConn).readLoop(0xc000e0aa80)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:8531 +0x6f
-created by net/http.(*http2Transport).newClientConn
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:7325 +0xb85
+  Warning  FailedCreatePodSandBox  2m42s                    kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(da3a84e00d439b8e4916ce3a0e14d6c3e493d7d20be3ecf1695071934399faf8): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
 
-goroutine 72 [IO wait]:
-internal/poll.runtime_pollWait(0x7f8e580da0d8, 0x72)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/runtime/netpoll.go:303 +0x85
-internal/poll.(*pollDesc).wait(0xc000eee880, 0xc000114000, 0x0)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_poll_runtime.go:84 +0x32
-internal/poll.(*pollDesc).waitRead(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_poll_runtime.go:89
-internal/poll.(*FD).Read(0xc000eee880, {0xc000114000, 0x1423, 0x1423})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/internal/poll/fd_unix.go:167 +0x25a
-net.(*netFD).Read(0xc000eee880, {0xc000114000, 0x70000002a, 0x760000002b})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/fd_posix.go:56 +0x29
-net.(*conn).Read(0xc0004a0030, {0xc000114000, 0x128bae6, 0xc000f137f8})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/net.go:183 +0x45
-crypto/tls.(*atLeastReader).Read(0xc000a90060, {0xc000114000, 0x0, 0x127e22d})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:778 +0x3d
-bytes.(*Buffer).ReadFrom(0xc0006f8278, {0x41736a0, 0xc000a90060})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/bytes/buffer.go:204 +0x98
-crypto/tls.(*Conn).readFromUntil(0xc0006f8000, {0x4178f80, 0xc0004a0030}, 0xc000f138b8)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:800 +0xe5
-crypto/tls.(*Conn).readRecordOrCCS(0xc0006f8000, 0x0)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:607 +0x112
-crypto/tls.(*Conn).readRecord(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:575
-crypto/tls.(*Conn).Read(0xc0006f8000, {0xc000177000, 0x1000, 0x41a4060})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/crypto/tls/conn.go:1278 +0x16f
-bufio.(*Reader).Read(0xc0003c7200, {0xc000e30c78, 0x9, 0x9})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/bufio/bufio.go:227 +0x1b4
-io.ReadAtLeast({0x4173420, 0xc0003c7200}, {0xc000e30c78, 0x9, 0x9}, 0x9)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/io/io.go:328 +0x9a
-io.ReadFull(...)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/io/io.go:347
-net/http.http2readFrameHeader({0xc000e30c78, 0x9, 0xc0005af980}, {0x4173420, 0xc0003c7200})
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:1555 +0x6e
-net/http.(*http2Framer).ReadFrame(0xc000e30c40)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:1813 +0x95
-net/http.(*http2clientConnReadLoop).run(0xc000f13f98)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:8608 +0x130
-net/http.(*http2ClientConn).readLoop(0xc000e0a300)
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:8531 +0x6f
-created by net/http.(*http2Transport).newClientConn
-        /opt/rh/go-toolset-1.17/root/usr/lib/go-toolset-1.17-golang/src/net/http/h2_bundle.go:7325 +0xb85
-[root@bastion ~]#
-[root@bastion ~]#
+  Warning  FailedCreatePodSandBox  2m26s                    kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(ba5f362804983f13f2702c3d4708f1975971e4154fc2f0c48476893757e33411): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  2m15s                    kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(d58c4feb66e3c5850f7d223b5adf4bc0c02e8ee669bb1ed4c0543b12c4399fcd): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  2m3s                     kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(4e2f637bb084c38023a35dbaeafb869ec31dbef049288dcca4c9900f66273bfa): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  111s                     kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nf-userinterface-5d5f764887-mflrj_ss-smf_dc3b40ee-d2da-4950-b9e8-a574cac038b4_0(5c8acb18ccc0ad256862123ca100e9f650ca703317f7a7612fb57c2a056b20da): error adding pod ss-smf_nf-userinterface-5d5f764887-mflrj to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+[root@bastion ~]# oc get po -n ss-smf -o wide | grep user
+
+nf-userinterface-5d5f764887-mflrj      3/3     Terminating   0          2d21h   10.131.2.13   worker05.gsc.ss.samsung.local   <none>           <none>
+
+nf-userinterface-5d5f764887-ts6xc      3/3     Running       0          2d21h   10.128.4.10   worker04.gsc.ss.samsung.local   <none>           <none>
+
+[root@bastion ~]# oc describe  po nf-userinterface-5d5f764887-mflrj  -n ss-smf
