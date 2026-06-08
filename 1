@@ -317,3 +317,436 @@ whereabouts-reconciler-vz2cn                  1/1     Running   2              4
 whereabouts-reconciler-w66km                  1/1     Running   1              41d    10.0.100.218   worker10.gsc.ss.samsung.local   <none>           <none>
 
 whereabouts-reconciler-zvcxs                  1/1     Running   2              41d    10.0.100.212   worker07.gsc.ss.samsung.local   <none>           <none>
+
+
+[root@bastion ~]# oc describe po cni-sysctl-allowlist-ds-cft88 -n openshift-multus
+
+Name:                 cni-sysctl-allowlist-ds-cft88
+
+Namespace:            openshift-multus
+
+Priority:             1000000000
+
+Priority Class Name:  openshift-user-critical
+
+Node:                 worker05.gsc.ss.samsung.local/
+
+Labels:               app=cni-sysctl-allowlist-ds
+
+                      controller-revision-hash=59577cb57c
+
+                      pod-template-generation=1
+
+Annotations:          <none>
+
+Status:               Pending
+
+IP:
+
+IPs:                  <none>
+
+Controlled By:        DaemonSet/cni-sysctl-allowlist-ds
+
+Containers:
+
+  kube-multus-additional-cni-plugins:
+
+    Image:      quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a05578ed0c9829d845f01ec675dcaaffc7bf80f9556fbe63e3a46b654c050c4f
+
+    Port:       <none>
+
+    Host Port:  <none>
+
+    Command:
+
+      /bin/bash
+
+      -c
+
+      cp /entrypoint/allowlist.conf /host/etc/cni/tuning/ && touch /ready/ready && sleep INF
+
+    Readiness:    exec [/bin/bash -c test -f /ready/ready] delay=1s timeout=1s period=10s #success=1 #failure=3
+
+    Environment:  <none>
+
+    Mounts:
+
+      /entrypoint from cni-sysctl-allowlist (rw)
+
+      /host/etc/cni/tuning/ from tuning-conf-dir (rw)
+
+      /ready from ready (rw)
+
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rvtgh (ro)
+
+Conditions:
+
+  Type           Status
+
+  PodScheduled   True
+
+Volumes:
+
+  cni-sysctl-allowlist:
+
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+
+    Name:      cni-sysctl-allowlist
+
+    Optional:  false
+
+  tuning-conf-dir:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /etc/cni/tuning/
+
+    HostPathType:  DirectoryOrCreate
+
+  ready:
+
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+
+    Medium:
+
+    SizeLimit:  <unset>
+
+  kube-api-access-rvtgh:
+
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+
+    TokenExpirationSeconds:  3607
+
+    ConfigMapName:           kube-root-ca.crt
+
+    ConfigMapOptional:       <nil>
+
+    DownwardAPI:             true
+
+    ConfigMapName:           openshift-service-ca.crt
+
+    ConfigMapOptional:       <nil>
+
+QoS Class:                   BestEffort
+
+Node-Selectors:              <none>
+
+Tolerations:                 node.kubernetes.io/disk-pressure:NoSchedule op=Exists
+
+                             node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+
+                             node.kubernetes.io/not-ready:NoExecute op=Exists
+
+                             node.kubernetes.io/pid-pressure:NoSchedule op=Exists
+
+                             node.kubernetes.io/unreachable:NoExecute op=Exists
+
+                             node.kubernetes.io/unschedulable:NoSchedule op=Exists
+
+Events:
+
+  Type     Reason                  Age                   From     Message
+
+  ----     ------                  ----                  ----     -------
+
+  Warning  FailedCreatePodSandBox  12m (x1047 over 4h)   kubelet  (combined from similar events): Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(ddec41a4c8a2d8ae7c258c793ceb1b9c8449f7be647cfa259a81463f372bca58): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  11m                   kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(2e35c98a952f3a1ca1ea3f62d42bbae5da1e381497d9e3364f61cf4a79aa1b74): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  11m                   kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(7f104bdec22e41a0705bc96f8c3ba855a2148ea589b78ce20b84b18d31329c60): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  11m                   kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(3af98177a06150f3420a9b7b98ac8da70bfe9adb718e603a23807cf9b5280adb): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  10m                   kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(9ca1749bc568622a82e0dec10b4e041fa40e905616fde48b1bfb2bb74555ecc7): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  10m                   kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(596061ddc061af39c44c4b555bd926f7549c8826c911736c580b73e39a368b0b): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  10m                   kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(84ae0322839dbb5021b7982be5823daa3c7a8a2d44af8689c28cacc97607ab5a): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  10m                   kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(2efe46dbd5d19182d590e961195a17dfe5e5e4a3e46296299ea639e8ac93d85b): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  10m                   kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(98268c6964132f1570f387a648af637eee5ffc13aec590d5d3f32dad39991b6b): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  9m58s                 kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(5c57f720d5f44d1d2e3f149d85aeead435d3f0b0d8c98f2d5007f58705df9430): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  9m46s                 kubelet  Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(c8fac3f8bf7cdfa4896ae489dac20d8c74445367a98c5ebeb159f9be2829d12a): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+  Warning  FailedCreatePodSandBox  88s (x38 over 9m31s)  kubelet  (combined from similar events): Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_cni-sysctl-allowlist-ds-cft88_openshift-multus_68966efc-e634-49f6-b0e0-ffd6c9a802ec_0(c710034db31b89a9f135baae137b25d79051d967daf95de268cb378efe16b8cf): error adding pod openshift-multus_cni-sysctl-allowlist-ds-cft88 to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
+
+[root@bastion ~]#
+
+[root@bastion ~]#
+
+[root@bastion ~]# oc logs cni-sysctl-allowlist-ds-cft88 -n openshift-multus
+
+Error from server (BadRequest): container "kube-multus-additional-cni-plugins" in pod "cni-sysctl-allowlist-ds-cft88" is waiting to start: ContainerCreating
+
+[root@bastion ~]# oc get ds -n openshift-multus
+
+NAME                            DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+
+multus                          16        16        15      16           15          kubernetes.io/os=linux   2y299d
+
+multus-additional-cni-plugins   16        16        15      16           15          kubernetes.io/os=linux   2y299d
+
+network-metrics-daemon          16        16        15      16           15          kubernetes.io/os=linux   2y299d
+
+whereabouts-reconciler          16        16        15      16           15          kubernetes.io/os=linux   696d
+
+[root@bastion ~]# oc describe  ds multus -n openshift-multus
+
+Name:           multus
+
+Selector:       app=multus
+
+Node-Selector:  kubernetes.io/os=linux
+
+Labels:         networkoperator.openshift.io/generates-operator-status=stand-alone
+
+Annotations:    deprecated.daemonset.template.generation: 5
+
+                kubernetes.io/description: This daemon set launches the Multus networking component on each node.
+
+                networkoperator.openshift.io/rollout-hung:
+
+                release.openshift.io/version: 4.14.30
+
+Desired Number of Nodes Scheduled: 16
+
+Current Number of Nodes Scheduled: 16
+
+Number of Nodes Scheduled with Up-to-date Pods: 16
+
+Number of Nodes Scheduled with Available Pods: 15
+
+Number of Nodes Misscheduled: 0
+
+Pods Status:  16 Running / 0 Waiting / 0 Succeeded / 0 Failed
+
+Pod Template:
+
+  Labels:           app=multus
+
+                    component=network
+
+                    openshift.io/component=network
+
+                    type=infra
+
+  Annotations:      target.workload.openshift.io/management: {"effect": "PreferredDuringScheduling"}
+
+  Service Account:  multus
+
+  Containers:
+
+   kube-multus:
+
+    Image:      quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a05578ed0c9829d845f01ec675dcaaffc7bf80f9556fbe63e3a46b654c050c4f
+
+    Port:       <none>
+
+    Host Port:  <none>
+
+    Command:
+
+      /bin/bash
+
+      -ec
+
+      --
+
+    Args:
+
+      /entrypoint/cnibincopy.sh; exec /usr/src/multus-cni/bin/multus-daemon
+
+
+
+    Requests:
+
+      cpu:     10m
+
+      memory:  65Mi
+
+    Environment:
+
+      RHEL8_SOURCE_DIRECTORY:    /usr/src/multus-cni/rhel8/bin/
+
+      RHEL9_SOURCE_DIRECTORY:    /usr/src/multus-cni/rhel9/bin/
+
+      DEFAULT_SOURCE_DIRECTORY:  /usr/src/multus-cni/bin/
+
+      KUBERNETES_SERVICE_PORT:   6443
+
+      KUBERNETES_SERVICE_HOST:   api-int.gsc.ss.samsung.local
+
+      MULTUS_NODE_NAME:           (v1:spec.nodeName)
+
+      K8S_NODE:                   (v1:spec.nodeName)
+
+    Mounts:
+
+      /entrypoint from cni-binary-copy (rw)
+
+      /etc/cni/multus/certs from host-run-multus-certs (rw)
+
+      /etc/cni/multus/net.d from multus-conf-dir (rw)
+
+      /etc/cni/net.d/multus.d from multus-daemon-config (ro)
+
+      /etc/kubernetes from etc-kubernetes (rw)
+
+      /host/etc/cni/net.d from system-cni-dir (rw)
+
+      /host/etc/os-release from os-release (rw)
+
+      /host/opt/cni/bin from cnibin (rw)
+
+      /host/run/multus from multus-socket-dir-parent (rw)
+
+      /host/run/multus/cni/net.d from multus-cni-dir (rw)
+
+      /hostroot from hostroot (rw)
+
+      /run/k8s.cni.cncf.io from host-run-k8s-cni-cncf-io (rw)
+
+      /run/netns from host-run-netns (rw)
+
+      /var/lib/cni/bin from host-var-lib-cni-bin (rw)
+
+      /var/lib/cni/multus from host-var-lib-cni-multus (rw)
+
+      /var/lib/kubelet from host-var-lib-kubelet (rw)
+
+  Volumes:
+
+   system-cni-dir:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /etc/kubernetes/cni/net.d
+
+    HostPathType:  Directory
+
+   multus-cni-dir:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /var/run/multus/cni/net.d
+
+    HostPathType:  Directory
+
+   cnibin:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /var/lib/cni/bin
+
+    HostPathType:  Directory
+
+   os-release:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /etc/os-release
+
+    HostPathType:  File
+
+   cni-binary-copy:
+
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+
+    Name:      cni-copy-resources
+
+    Optional:  false
+
+   multus-socket-dir-parent:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /run/multus
+
+    HostPathType:  DirectoryOrCreate
+
+   host-run-k8s-cni-cncf-io:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /run/k8s.cni.cncf.io
+
+    HostPathType:
+
+   host-run-netns:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /run/netns/
+
+    HostPathType:
+
+   host-var-lib-cni-bin:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /var/lib/cni/bin
+
+    HostPathType:
+
+   host-var-lib-cni-multus:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /var/lib/cni/multus
+
+    HostPathType:
+
+   host-var-lib-kubelet:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /var/lib/kubelet
+
+    HostPathType:
+
+   hostroot:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /
+
+    HostPathType:
+
+   multus-conf-dir:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /etc/cni/multus/net.d
+
+    HostPathType:
+
+   multus-daemon-config:
+
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+
+    Name:      multus-daemon-config
+
+    Optional:  false
+
+   host-run-multus-certs:
+
+    Type:          HostPath (bare host directory volume)
+
+    Path:          /etc/cni/multus/certs
+
+    HostPathType:
+
+   etc-kubernetes:
+
+    Type:               HostPath (bare host directory volume)
+
+    Path:               /etc/kubernetes
+
+    HostPathType:
+
+  Priority Class Name:  system-node-critical
+
+Events:                 <none>
