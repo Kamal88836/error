@@ -1,2 +1,464 @@
- Warning  FailedCreatePodSandBox  13s (x17 over 3m44s)  kubelet            (combined from similar events): Failed to create pod sandbox: rpc error: code = Unknown desc = failed to create pod network sandbox k8s_nmstate-cert-manager-596d848cf9-7xjqp_openshift-nmstate_3418322d-6a38-46e1-9b78-cfa3b29f0d9a_0(ba5f2b989be4c482459dc708d5c2401d0b95049be983d1d8705fa18c6817393d): error adding pod openshift-nmstate_nmstate-cert-manager-596d848cf9-7xjqp to CNI network "multus-cni-network": plugin type="multus-shim" name="multus-cni-network" failed (add): CmdAdd (shim): failed to send CNI request: Post "http://dummy/cni": dial unix /run/multus/socket/multus.sock: connect: no such file or directory
-[root@bastion ~]#
+sysadmin@controller-0:~$ oc get po
+NAME                            READY   STATUS                  RESTARTS   AGE
+bscf236-bip0-67695b5c85-ghxmt   1/1     Running                 0          68s
+bscf236-bpp0-746cbc48bf-2c9tm   0/1     TopologyAffinityError   0          64s
+bscf236-bpp0-746cbc48bf-4drkb   0/1     TopologyAffinityError   0          59s
+bscf236-bpp0-746cbc48bf-4m6lr   0/1     TopologyAffinityError   0          60s
+bscf236-bpp0-746cbc48bf-6h72d   0/1     TopologyAffinityError   0          58s
+bscf236-bpp0-746cbc48bf-74dz6   0/1     TopologyAffinityError   0          66s
+bscf236-bpp0-746cbc48bf-8fvlt   0/1     TopologyAffinityError   0          63s
+bscf236-bpp0-746cbc48bf-8mjlg   0/1     TopologyAffinityError   0          57s
+bscf236-bpp0-746cbc48bf-99gjx   0/1     TopologyAffinityError   0          55s
+bscf236-bpp0-746cbc48bf-c7gdj   0/1     TopologyAffinityError   0          57s
+bscf236-bpp0-746cbc48bf-cggw4   0/1     TopologyAffinityError   0          57s
+bscf236-bpp0-746cbc48bf-cp4l6   0/1     TopologyAffinityError   0          58s
+bscf236-bpp0-746cbc48bf-dplhg   1/1     Running                 0          53s
+bscf236-bpp0-746cbc48bf-f7kns   0/1     TopologyAffinityError   0          62s
+bscf236-bpp0-746cbc48bf-fpwln   0/1     TopologyAffinityError   0          63s
+bscf236-bpp0-746cbc48bf-gss7d   0/1     TopologyAffinityError   0          59s
+bscf236-bpp0-746cbc48bf-gwd98   0/1     TopologyAffinityError   0          56s
+bscf236-bpp0-746cbc48bf-h52j2   0/1     TopologyAffinityError   0          55s
+bscf236-bpp0-746cbc48bf-hchgg   0/1     TopologyAffinityError   0          63s
+bscf236-bpp0-746cbc48bf-hr6sf   0/1     TopologyAffinityError   0          58s
+bscf236-bpp0-746cbc48bf-k4wnn   0/1     TopologyAffinityError   0          58s
+bscf236-bpp0-746cbc48bf-khmxc   0/1     TopologyAffinityError   0          57s
+bscf236-bpp0-746cbc48bf-kjf7v   0/1     TopologyAffinityError   0          54s
+bscf236-bpp0-746cbc48bf-l25lb   0/1     TopologyAffinityError   0          56s
+bscf236-bpp0-746cbc48bf-mbw9x   0/1     TopologyAffinityError   0          59s
+bscf236-bpp0-746cbc48bf-mnmvs   0/1     TopologyAffinityError   0          57s
+bscf236-bpp0-746cbc48bf-ngktd   0/1     TopologyAffinityError   0          54s
+bscf236-bpp0-746cbc48bf-nsvl8   0/1     TopologyAffinityError   0          54s
+bscf236-bpp0-746cbc48bf-pbnrl   0/1     TopologyAffinityError   0          58s
+bscf236-bpp0-746cbc48bf-pf5cx   0/1     TopologyAffinityError   0          63s
+bscf236-bpp0-746cbc48bf-pfvr9   0/1     TopologyAffinityError   0          55s
+bscf236-bpp0-746cbc48bf-pszs2   0/1     TopologyAffinityError   0          59s
+bscf236-bpp0-746cbc48bf-q4b8l   0/1     TopologyAffinityError   0          61s
+bscf236-bpp0-746cbc48bf-qcnfx   0/1     TopologyAffinityError   0          61s
+bscf236-bpp0-746cbc48bf-rjkcd   0/1     TopologyAffinityError   0          56s
+bscf236-bpp0-746cbc48bf-tmjls   0/1     TopologyAffinityError   0          58s
+bscf236-bpp0-746cbc48bf-tpd4p   0/1     TopologyAffinityError   0          54s
+bscf236-bpp0-746cbc48bf-vc97s   0/1     TopologyAffinityError   0          58s
+bscf236-bpp0-746cbc48bf-vnlgg   0/1     TopologyAffinityError   0          61s
+bscf236-bpp0-746cbc48bf-w8mzw   0/1     TopologyAffinityError   0          57s
+bscf236-bpp0-746cbc48bf-w94vx   0/1     TopologyAffinityError   0          59s
+bscf236-bpp0-746cbc48bf-wdtrf   0/1     TopologyAffinityError   0          57s
+bscf236-bpp0-746cbc48bf-whlfj   0/1     TopologyAffinityError   0          62s
+bscf236-bpp0-746cbc48bf-wwnfn   0/1     TopologyAffinityError   0          57s
+bscf236-bpp0-746cbc48bf-wzvjt   0/1     TopologyAffinityError   0          56s
+bscf236-bpp0-746cbc48bf-xqqk6   0/1     TopologyAffinityError   0          61s
+bscf236-bpp0-746cbc48bf-xw2jx   0/1     TopologyAffinityError   0          59s
+bscf236-bpp0-746cbc48bf-zsn2t   0/1     TopologyAffinityError   0          56s
+bscf236-bpp1-6b85849f7f-gm5kv   0/1     Pending                 0          65s
+bscf236-cmp0-78d8f485c5-jvqmf   1/1     Running                 0          65s
+bscf236-dmp0-58f9b6c6c6-pdr2h   1/1     Running                 0          65s
+bscf236-pmp0-66fcb5cc46-74zgc   1/1     Running                 0          65s
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$ oc get deploy
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+bscf236-bip0   1/1     1            1           4d4h
+bscf236-bpp0   1/1     1            1           4d4h
+bscf236-bpp1   0/1     1            0           4d4h
+bscf236-cmp0   1/1     1            1           4d4h
+bscf236-dmp0   1/1     1            1           4d4h
+bscf236-pmp0   1/1     1            1           4d4h
+sysadmin@controller-0:~$ oc edit deploy bscf236-bpp1
+deployment.apps/bscf236-bpp1 edited
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$ oc describe po bscf236-bpp0-746cbc48bf-vc97s
+Name:             bscf236-bpp0-746cbc48bf-vc97s
+Namespace:        default
+Priority:         0
+Service Account:  bscf-sa
+Node:             controller-0/
+Start Time:       Tue, 09 Jun 2026 15:28:03 +0000
+Labels:           app=bscf236-bpp0
+                  component=bscf236-bpp
+                  nename=bscf236
+                  pod-template-hash=746cbc48bf
+                  release=bscf
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.v1.cni.cncf.io/networks:
+                    [ { "name": "bscf-bh0u-nad", "interface": "bh0" }
+                    ]
+Status:           Failed
+Reason:           TopologyAffinityError
+Message:          Pod was rejected: Resources cannot be allocated with Topology locality
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/bscf236-bpp0-746cbc48bf
+Init Containers:
+  install:
+    Image:      sribharbor.sec.samsung.net/rel-ran/vos-bscf-init:SVR26ABSCVOSD30_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+      chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared; chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log
+    Limits:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        32Gi
+      windriver.com/isolcpus:        24
+    Requests:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        32Gi
+      windriver.com/isolcpus:        24
+    Environment:                     <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf236-bpp-log (rw)
+      /mnt/storage/shared from bscf236-bpp-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vpx6k (ro)
+Containers:
+  bpp:
+    Image:      sribharbor.sec.samsung.net/rel-ran/vos-bscf-bpp:SVR26ABSCVOSD30_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    Limits:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        32Gi
+      windriver.com/isolcpus:        24
+    Requests:
+      hugepages-1Gi:                 8Gi
+      intel.com/pci_sriov_net_bh0u:  1
+      memory:                        32Gi
+      windriver.com/isolcpus:        24
+    Liveness:                        http-get http://:8080/bpp_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                       http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              UTC
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+    Mounts:
+      /dev/shm from cshm (rw)
+      /etc/config from env (rw)
+      /hugepages from hugepage (rw)
+      /mnt/storage/log from bscf236-bpp-log (rw)
+      /mnt/storage/shared from bscf236-bpp-shared (rw)
+      /sys from sys (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vpx6k (ro)
+Volumes:
+  cshm:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     Memory
+    SizeLimit:  <unset>
+  hugepage:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     HugePages
+    SizeLimit:  <unset>
+  sys:
+    Type:          HostPath (bare host directory volume)
+    Path:          /sys
+    HostPathType:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf236-bpp0
+    Optional:  false
+  bscf236-bpp-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf236-log-pvc
+    ReadOnly:   false
+  bscf236-bpp-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf236-shared-pvc
+    ReadOnly:   false
+  kube-api-access-vpx6k:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 30s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 30s
+Events:
+  Type     Reason                 Age   From               Message
+  ----     ------                 ----  ----               -------
+  Normal   Scheduled              96s   default-scheduler  Successfully assigned default/bscf236-bpp0-746cbc48bf-vc97s to controller-0
+  Warning  TopologyAffinityError  96s   kubelet            Resources cannot be allocated with Topology locality
+sysadmin@controller-0:~$ oc describe no
+Name:               controller-0
+Roles:              control-plane
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    ceph-mgr-placement=enabled
+                    ceph-mon-placement=enabled
+                    kube-cpu-mgr-policy=static
+                    kube-topology-mgr-policy=single-numa-node
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=controller-0
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node.kubernetes.io/exclude-from-external-load-balancers=
+                    ptp-notification=true
+                    ptp-registration=true
+                    sriovdp=enabled
+                    sriovdp-vhostnet=enabled
+                    topology.rook.io/chassis=group-0
+Annotations:        csi.volume.kubernetes.io/nodeid: {"rook-ceph.cephfs.csi.ceph.com":"controller-0","rook-ceph.rbd.csi.ceph.com":"controller-0"}
+                    node.alpha.kubernetes.io/ttl: 0
+                    projectcalico.org/IPv4Address: 192.168.206.1/24
+                    projectcalico.org/Interfaces:
+                      [{"name":"eno12399"},{"name":"eno12409"},{"name":"eno8303"},{"name":"eno8403"},{"name":"enp202s0f0"},{"name":"enp202s0f1"},{"name":"enp202...
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Fri, 29 May 2026 17:44:19 +0000
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  controller-0
+  AcquireTime:     <unset>
+  RenewTime:       Tue, 09 Jun 2026 15:29:55 +0000
+Conditions:
+  Type                 Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----                 ------  -----------------                 ------------------                ------                       -------
+  NetworkUnavailable   False   Thu, 04 Jun 2026 15:33:01 +0000   Thu, 04 Jun 2026 15:33:01 +0000   CalicoIsUp                   Calico is running on this node
+  MemoryPressure       False   Tue, 09 Jun 2026 15:30:01 +0000   Fri, 29 May 2026 17:44:16 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure         False   Tue, 09 Jun 2026 15:30:01 +0000   Fri, 29 May 2026 17:44:16 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure          False   Tue, 09 Jun 2026 15:30:01 +0000   Fri, 29 May 2026 17:44:16 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready                True    Tue, 09 Jun 2026 15:30:01 +0000   Fri, 29 May 2026 17:44:29 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  192.168.206.1
+  Hostname:    controller-0
+Capacity:
+  cpu:                               128
+  ephemeral-storage:                 10218772Ki
+  hugepages-1Gi:                     17Gi
+  hugepages-2Mi:                     0
+  intel.com/dummy:                   0
+  intel.com/pci_sriov_net_bh0c:      2
+  intel.com/pci_sriov_net_bh0c_1:    2
+  intel.com/pci_sriov_net_bh0u:      6
+  intel.com/pci_sriov_net_bh0u_1:    6
+  intel.com/pci_sriov_net_bh0u_2:    0
+  intel.com/pci_sriov_net_bh0u_2_1:  0
+  intel.com/pci_sriov_net_bh0u_3:    0
+  intel.com/pci_sriov_net_bh0u_3_1:  0
+  memory:                            525421048Ki
+  pods:                              110
+  windriver.com/isolcpus:            72
+Allocatable:
+  cpu:                               52
+  ephemeral-storage:                 9417620260
+  hugepages-1Gi:                     17Gi
+  hugepages-2Mi:                     0
+  intel.com/dummy:                   0
+  intel.com/pci_sriov_net_bh0c:      2
+  intel.com/pci_sriov_net_bh0c_1:    2
+  intel.com/pci_sriov_net_bh0u:      6
+  intel.com/pci_sriov_net_bh0u_1:    6
+  intel.com/pci_sriov_net_bh0u_2:    0
+  intel.com/pci_sriov_net_bh0u_2_1:  0
+  intel.com/pci_sriov_net_bh0u_3:    0
+  intel.com/pci_sriov_net_bh0u_3_1:  0
+  memory:                            466532856Ki
+  pods:                              110
+  windriver.com/isolcpus:            72
+System Info:
+  Machine ID:                  1f212865397e4153bf78a03d89ac4dd3
+  System UUID:                 4c4c4544-0034-3610-8034-b3c04f395833
+  Boot ID:                     8eca5b23-f349-4ebd-897b-5733b08d290d
+  Kernel Version:              6.12.0-1-rt-amd64
+  OS Image:                    Debian GNU/Linux 11 (bullseye)
+  Operating System:            linux
+  Architecture:                amd64
+  Container Runtime Version:   containerd://2.0.7
+  Kubelet Version:             v1.34.1
+  Kube-Proxy Version:
+Non-terminated Pods:           (44 in total)
+  Namespace                    Name                                                      CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                    ----                                                      ------------  ----------  ---------------  -------------  ---
+  cert-manager                 cm-cert-manager-74bd79f5c5-578cz                          0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+  cert-manager                 cm-cert-manager-cainjector-5fb9558c9-ssx8h                0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+  cert-manager                 cm-cert-manager-webhook-5544fc7fdf-7d25t                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+  default                      bscf236-bip0-67695b5c85-ghxmt                             22 (42%)      22 (42%)    16Gi (3%)        16Gi (3%)      2m9s
+  default                      bscf236-bpp0-746cbc48bf-dplhg                             0 (0%)        0 (0%)      32Gi (7%)        32Gi (7%)      114s
+  default                      bscf236-cmp0-78d8f485c5-jvqmf                             2 (3%)        2 (3%)      4Gi (0%)         4Gi (0%)       2m6s
+  default                      bscf236-dmp0-58f9b6c6c6-pdr2h                             1 (1%)        8 (15%)     44Gi (9%)        44Gi (9%)      2m6s
+  default                      bscf236-pmp0-66fcb5cc46-74zgc                             5 (9%)        9 (17%)     32Gi (7%)        32Gi (7%)      2m6s
+  flux-helm                    helm-controller-8598df9bdb-j9w7r                          0 (0%)        1 (1%)      0 (0%)           1Gi (0%)       8d
+  flux-helm                    source-controller-67cc49fb8f-j7rgv                        0 (0%)        1 (1%)      0 (0%)           1Gi (0%)       8d
+  kube-system                  calico-kube-controllers-545d5c5774-wcjhv                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+  kube-system                  calico-node-fd7hv                                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         10d
+  kube-system                  coredns-6d8944647-lblxw                                   0 (0%)        0 (0%)      0 (0%)           170Mi (0%)     8d
+  kube-system                  ic-nginx-ingress-ingress-nginx-controller-vw8xg           0 (0%)        0 (0%)      0 (0%)           0 (0%)         10d
+  kube-system                  kube-apiserver-controller-0                               0 (0%)        4 (7%)      0 (0%)           0 (0%)         10d
+  kube-system                  kube-controller-manager-controller-0                      0 (0%)        0 (0%)      0 (0%)           0 (0%)         10d
+  kube-system                  kube-multus-ds-amd64-c4rvh                                0 (0%)        0 (0%)      0 (0%)           0 (0%)         10d
+  kube-system                  kube-proxy-z9p59                                          0 (0%)        0 (0%)      0 (0%)           0 (0%)         10d
+  kube-system                  kube-scheduler-controller-0                               0 (0%)        0 (0%)      0 (0%)           0 (0%)         10d
+  kube-system                  kube-sriov-cni-ds-sst78                                   0 (0%)        0 (0%)      0 (0%)           0 (0%)         10d
+  kube-system                  kube-sriov-device-plugin-amd64-nwn9l                      0 (0%)        0 (0%)      0 (0%)           0 (0%)         4d3h
+  kube-system                  oidc-dex-77bcf5fb7-s8gsz                                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+  kube-system                  secret-observer-cron-job-29683650-sncfv                   0 (0%)        0 (0%)      0 (0%)           0 (0%)         2s
+  kube-system                  stx-oidc-client-5d4b9dd658-lrjq5                          0 (0%)        0 (0%)      0 (0%)           0 (0%)         15m
+  kube-system                  volume-snapshot-controller-0                              0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+  metrics-server               ms-metrics-server-8ff798766-6dtzf                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+  notification                 ptp-ptp-notification-cmstq                                0 (0%)        0 (0%)      0 (0%)           0 (0%)         7d22h
+  notification                 registration-785f8d579b-9njb2                             0 (0%)        0 (0%)      0 (0%)           0 (0%)         7d22h
+  platform-deployment-manager  dm-monitor-56df698776-4dl4n                               0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+  platform-deployment-manager  platform-deployment-manager-6b5d859c57-nrmkq              0 (0%)        500m (0%)   0 (0%)           150Mi (0%)     8d
+  rook-ceph                    csi-cephfsplugin-cpk67                                    0 (0%)        0 (0%)      0 (0%)           1280Mi (0%)    10d
+  rook-ceph                    csi-cephfsplugin-provisioner-654dff86f8-7zg87             0 (0%)        0 (0%)      0 (0%)           2Gi (0%)       8d
+  rook-ceph                    csi-rbdplugin-provisioner-5854965dfc-r5bmn                0 (0%)        0 (0%)      0 (0%)           2Gi (0%)       8d
+  rook-ceph                    csi-rbdplugin-srd67                                       0 (0%)        0 (0%)      0 (0%)           1280Mi (0%)    10d
+  rook-ceph                    rook-ceph-crashcollector-controller-0-6b759c5c6c-g9z6f    0 (0%)        0 (0%)      0 (0%)           60Mi (0%)      8d
+  rook-ceph                    rook-ceph-exporter-controller-0-686ff77d9b-qcfvj          0 (0%)        0 (0%)      0 (0%)           128Mi (0%)     8d
+  rook-ceph                    rook-ceph-mds-kube-cephfs-a-6f85489f4d-n2gl4              0 (0%)        0 (0%)      0 (0%)           5Gi (1%)       8d
+  rook-ceph                    rook-ceph-mds-kube-cephfs-b-56496b5544-qrp4q              0 (0%)        0 (0%)      0 (0%)           5Gi (1%)       10d
+  rook-ceph                    rook-ceph-mgr-a-6b5d86b58c-7vnq6                          0 (0%)        0 (0%)      0 (0%)           3Gi (0%)       8d
+  rook-ceph                    rook-ceph-mon-a-559d878986-6czjv                          0 (0%)        0 (0%)      0 (0%)           3Gi (0%)       8d
+  rook-ceph                    rook-ceph-operator-65cbdc994d-27tj9                       0 (0%)        0 (0%)      0 (0%)           512Mi (0%)     8d
+  rook-ceph                    rook-ceph-osd-0-7fdc5dc8f6-8lpt8                          0 (0%)        0 (0%)      0 (0%)           5Gi (1%)       8d
+  rook-ceph                    rook-ceph-tools-849475d9fc-pqxb2                          0 (0%)        0 (0%)      0 (0%)           1Gi (0%)       8d
+  rook-ceph                    stx-ceph-manager-6755b88d88-cpq88                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         8d
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                          Requests     Limits
+  --------                          --------     ------
+  cpu                               30 (57%)     47500m (91%)
+  memory                            128Gi (28%)  163324Mi (35%)
+  ephemeral-storage                 0 (0%)       0 (0%)
+  hugepages-1Gi                     8Gi (47%)    8Gi (47%)
+  hugepages-2Mi                     0 (0%)       0 (0%)
+  intel.com/dummy                   0            0
+  intel.com/pci_sriov_net_bh0c      2            2
+  intel.com/pci_sriov_net_bh0c_1    2            2
+  intel.com/pci_sriov_net_bh0u      1            1
+  intel.com/pci_sriov_net_bh0u_1    0            0
+  intel.com/pci_sriov_net_bh0u_2    0            0
+  intel.com/pci_sriov_net_bh0u_2_1  0            0
+  intel.com/pci_sriov_net_bh0u_3    0            0
+  intel.com/pci_sriov_net_bh0u_3_1  0            0
+  windriver.com/isolcpus            24           24
+Events:                             <none>
+sysadmin@controller-0:~$ oc get no
+NAME           STATUS   ROLES           AGE   VERSION
+controller-0   Ready    control-plane   10d   v1.34.1
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$ ssh controller-0
+The authenticity of host 'controller-0 (192.168.204.1)' can't be established.
+ECDSA key fingerprint is SHA256:xNWX3aQ/GJFrEuNyq38I4/LUHnzoPfEbFw8tiwswJwk.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'controller-0,192.168.204.1' (ECDSA) to the list of known hosts.
+Release 26.03
+------------------------------------------------------------------------
+W A R N I N G *** W A R N I N G *** W A R N I N G *** W A R N I N G ***
+------------------------------------------------------------------------
+THIS IS A PRIVATE COMPUTER SYSTEM.
+This computer system including all related equipment, network devices
+(specifically including Internet access), are provided only for authorized use.
+All computer systems may be monitored for all lawful purposes, including to
+ensure that their use is authorized, for management of the system, to
+facilitate protection against unauthorized access, and to verify security
+procedures, survivability and operational security. Monitoring includes active
+attacks by authorized personnel and their entities to test or verify the
+security of the system. During monitoring, information may be examined,
+recorded, copied and used for authorized purposes. All information including
+personal information, placed on or sent over this system may be monitored. Uses
+of this system, authorized or unauthorized, constitutes consent to monitoring
+of this system. Unauthorized use may subject you to criminal prosecution.
+Evidence of any such unauthorized use collected during monitoring may be used
+for administrative, criminal or other adverse action. Use of this system
+constitutes consent to monitoring for these purposes.
+
+sysadmin@controller-0's password:
+
+WARNING: Unauthorized access to this system is forbidden and will be
+prosecuted by law. By accessing this system, you agree that your
+actions may be monitored if unauthorized usage is suspected.
+
+
+====================================================================
+         SYSTEM: aio-sx-26.03
+====================================================================
+
+Linux controller-0 6.12.0-1-rt-amd64 #1 SMP PREEMPT_RT StarlingX Debian 6.12.57-1.stx.143 (2026-03-25 x86_64
+Last login: Tue Jun  9 13:39:22 2026 from 65.1.1.111
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$ lscpu
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Byte Order:                              Little Endian
+Address sizes:                           46 bits physical, 57 bits virtual
+CPU(s):                                  128
+On-line CPU(s) list:                     0-127
+Thread(s) per core:                      2
+Core(s) per socket:                      32
+Socket(s):                               2
+NUMA node(s):                            2
+Vendor ID:                               GenuineIntel
+CPU family:                              6
+Model:                                   106
+Model name:                              Intel(R) Xeon(R) Gold 6338N CPU @ 2.20GHz
+Stepping:                                6
+CPU MHz:                                 2500.284
+CPU max MHz:                             3500.0000
+CPU min MHz:                             800.0000
+BogoMIPS:                                3000.00
+Virtualization:                          VT-x
+L1d cache:                               3 MiB
+L1i cache:                               2 MiB
+L2 cache:                                80 MiB
+L3 cache:                                96 MiB
+NUMA node0 CPU(s):                       0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,1
+                                         10,112,114,116,118,120,122,124,126
+NUMA node1 CPU(s):                       1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97,99,101,103,105,107,109,1
+                                         11,113,115,117,119,121,123,125,127
+Vulnerability Gather data sampling:      Vulnerable: No microcode
+Vulnerability Indirect target selection: Vulnerable
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Mitigation; Clear CPU buffers; SMT vulnerable
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Vulnerable: __user pointer sanitization and usercopy barriers only; no swapgs barriers
+Vulnerability Spectre v2:                Vulnerable; IBPB: disabled; STIBP: disabled; PBRSB-eIBRS: Vulnerable; BHI: Vulnerable
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Not affected
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Not affected
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art
+                                         arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca
+                                         sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 intel_ppin ssbd mba ibrs ibpb stibp ib
+                                         rs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflush
+                                         opt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect wbnoinvd dtherm
+                                          ida arat pln pts vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq la57 rdpid fsrm md_clear pconfig flush_l
+                                         1d arch_capabilities
+sysadmin@controller-0:~$
+logout
+Connection to controller-0 closed.
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$
+sysadmin@controller-0:~$ oc get no
+NAME           STATUS   ROLES           AGE   VERSION
+controller-0   Ready    control-plane   10d   v1.34.1
+sysadmin@controller-0:~$ ssh controller-0kubectl get nodes --show-labels^C
+sysadmin@controller-0:~$ kubectl get nodes --show-labels
+NAME           STATUS   ROLES           AGE   VERSION   LABELS
+controller-0   Ready    control-plane   10d   v1.34.1   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,ceph-mgr-placement=enabled,ceph-mon-placement=enabled,kube-cpu-mgr-policy=static,kube-topology-mgr-policy=single-numa-node,kubernetes.io/arch=amd64,kubernetes.io/hostname=controller-0,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=,node.kubernetes.io/exclude-from-external-load-balancers=,ptp-notification=true,ptp-registration=true,sriovdp-vhostnet=enabled,sriovdp=enabled,topology.rook.io/chassis=group-0
+sysadmin@controller-0:~$
