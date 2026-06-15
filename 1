@@ -1,49 +1,23 @@
-
-[root@bastion 7.ptp]# oc get ptpoperatorconfig -A -o yaml
-apiVersion: v1
-items:
-- apiVersion: ptp.openshift.io/v1
-  kind: PtpOperatorConfig
-  metadata:
-    annotations:
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"ptp.openshift.io/v1","kind":"PtpOperatorConfig","metadata":{"annotations":{},"name":"default","namespace":"openshift-ptp"},"spec":{"daemonNodeSelector":{"node-role.kubernetes.io/master":""},"ptpEventConfig":{"enableEventPublisher":true}}}
-    creationTimestamp: "2026-06-09T12:05:33Z"
-    generation: 2
-    name: default
-    namespace: openshift-ptp
-    resourceVersion: "389895511"
-    uid: 27c1800a-c187-41cd-96c5-a297744f7567
-  spec:
-    daemonNodeSelector:
-      node-role.kubernetes.io/master: ""
-    ptpEventConfig:
-      enableEventPublisher: true
-kind: List
+[root@bastion 7.ptp]# oc get  ptpoperatorconfig default -n openshift-ptp -o yaml
+apiVersion: ptp.openshift.io/v1
+kind: PtpOperatorConfig
 metadata:
-  resourceVersion: ""
-[root@bastion 7.ptp]# oc get node
-NAME                                STATUS   ROLES                         AGE    VERSION
-master1.viairtel.samsungbsc.local   Ready    control-plane,master,worker   568d   v1.32.10
-master2.viairtel.samsungbsc.local   Ready    control-plane,master,worker   187d   v1.32.10
-master3.viairtel.samsungbsc.local   Ready    control-plane,master,worker   568d   v1.32.10
-worker1.viairtel.samsungbsc.local   Ready    large,worker                  496d   v1.32.10
-worker2.viairtel.samsungbsc.local   Ready    large,worker                  496d   v1.32.10
-[root@bastion 7.ptp]# oc get no worker1.viairtel.samsungbsc.local --show-labels
-NAME                                STATUS   ROLES          AGE    VERSION    LABELS
-worker1.viairtel.samsungbsc.local   Ready    large,worker   496d   v1.32.10   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,feature.node.kubernetes.io/largeflavor-sriov.capable=true,flavor=large,kubernetes.io/arch=amd64,kubernetes.io/hostname=worker1.viairtel.samsungbsc.local,kubernetes.io/os=linux,node-role.kubernetes.io/large=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhcos,sriovnetwork.openshift.io/device-plugin=Enabled
-[root@bastion 7.ptp]# oc get no worker2.viairtel.samsungbsc.local --show-labels
-NAME                                STATUS   ROLES          AGE    VERSION    LABELS
-worker2.viairtel.samsungbsc.local   Ready    large,worker   496d   v1.32.10   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,feature.node.kubernetes.io/largeflavor-sriov.capable=true,flavor=large,kubernetes.io/arch=amd64,kubernetes.io/hostname=worker2.viairtel.samsungbsc.local,kubernetes.io/os=linux,node-role.kubernetes.io/large=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhcos,sriovnetwork.openshift.io/device-plugin=Enabled
-[root@bastion 7.ptp]# oc get no master1.viairtel.samsungbsc.local --show-labels
-NAME                                STATUS   ROLES                         AGE    VERSION    LABELS
-master1.viairtel.samsungbsc.local   Ready    control-plane,master,worker   568d   v1.32.10   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,cluster.ocs.openshift.io/openshift-storage=,feature.node.kubernetes.io/network-sriov.capable=true,kubernetes.io/arch=amd64,kubernetes.io/hostname=master1.viairtel.samsungbsc.local,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=,node-role.kubernetes.io/master=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhcos,sriovnetwork.openshift.io/device-plugin=Enabled,topology.rook.io/rack=rack0
-[root@bastion 7.ptp]#
-[root@bastion 7.ptp]# oc get ds linuxptp-daemon -n openshift-ptp -o yaml | grep -A5 nodeSelector
-      nodeSelector:
-        node-role.kubernetes.io/master: ""
-      priorityClassName: system-node-critical
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"ptp.openshift.io/v1","kind":"PtpOperatorConfig","metadata":{"annotations":{},"name":"default","namespace":"openshift-ptp"},"spec":{"daemonNodeSelector":{"node-role.kubernetes.io/master":""},"ptpEventConfig":{"enableEventPublisher":true}}}
+  creationTimestamp: "2026-06-09T12:05:33Z"
+  generation: 3
+  name: default
+  namespace: openshift-ptp
+  resourceVersion: "394306642"
+  uid: 27c1800a-c187-41cd-96c5-a297744f7567
+spec:
+  daemonNodeSelector:
+    node-role.kubernetes.io/master: ""
+    node-role.kubernetes.io/worker: ""
+  ptpEventConfig:
+    enableEventPublisher: true
+[root@bastion 7.ptp]# oc get ds linuxptp-daemon -n openshift-ptp
+NAME              DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                                     AGE
+linuxptp-daemon   3         3         3       3            3           node-role.kubernetes.io/master=,node-role.kubernetes.io/worker=   5d23h
 [root@bastion 7.ptp]#
