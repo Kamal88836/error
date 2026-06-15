@@ -1,77 +1,37 @@
-[root@worker06 system-connections]# ll
-total 52
--rw-------. 1 root root 327 Aug 14  2023 'Wired connection 7.nmconnection'
--rw-------. 1 root root 394 Aug 14  2023  bond0.100.nmconnection
--rw-------. 1 root root 289 Aug 14  2023  bond0.nmconnection
--rw-------. 1 root root 367 May 11 14:49  bond2.130-561b8b81-6eb3-49d7-b396-b0601b1cce8b.nmconnection
--rw-------. 1 root root 367 May 11 14:49  bond2.132-9a097867-d77e-4641-8d0e-05da07d0afab.nmconnection
--rw-------. 1 root root 367 May 11 14:49  bond2.150-526a8b8a-a49d-4ecb-8fe7-157671fb8c58.nmconnection
--rw-------. 1 root root 350 May 11 14:49  bond2.nmconnection
--rw-------. 1 root root 178 Aug 14  2023  ens1f0-99659ff2-3eb3-4acb-927d-40ea83c64fd0.nmconnection
--rw-------. 1 root root 178 Aug 14  2023  ens1f0.nmconnection
--rw-------. 1 root root 225 Aug 16  2023  ens1f1.nmconnection
--rw-------. 1 root root 225 Aug 16  2023  ens3f0.nmconnection
--rw-------. 1 root root 178 Aug 14  2023  ens3f1-c71111c7-6675-46c3-adba-7133791cc382.nmconnection
--rw-------. 1 root root 178 Aug 14  2023  ens3f1.nmconnection
-[root@worker06 system-connections]# cat *
-[connection]
-id=Wired connection 7
-uuid=2286c3b9-fe67-3a7a-8c86-74c9238f5381
-type=ethernet
-autoconnect=false
-autoconnect-priority=-999
-interface-name=idrac
-permissions=
-timestamp=1692012669
+Thanks. Looking at the actual configuration, your management network is:
 
-[ethernet]
-mac-address-blacklist=
+bond0 = ens1f0 + ens3f1
 
-[ipv4]
-dns-search=
-method=auto
+Mode = 802.3ad (LACP)
 
-[ipv6]
-addr-gen-mode=stable-privacy
-dns-search=
-method=auto
+VLAN = bond0.100
 
-[proxy]
-[connection]
-id=bond0.100
-uuid=add22c60-cc30-4946-a30d-dc80383920a9
-type=vlan
-interface-name=bond0.100
-permissions=
+IP = 10.0.100.210/24
 
-[ethernet]
-mac-address-blacklist=
+Gateway = 10.0.100.108
 
-[vlan]
-egress-priority-map=
-flags=1
-id=100
-ingress-priority-map=
-parent=bond0
 
-[ipv4]
-address1=10.0.100.210/24,10.0.100.108
-dns=10.0.100.114;
-dns-search=
-method=manual
+And the workload network is:
 
-[ipv6]
-addr-gen-mode=stable-privacy
-dns-search=
-method=disabled
+bond2 = ens1f1 + ens3f0
 
-[proxy]
+Mode = active-backup
+
+VLANs = 130, 132, 150
+
+
+Since you're creating a new worker ISO using:
+
+coreos-installer iso customize
+
+you only need to embed the management network (bond0, ens1f0, ens3f1, and optionally bond0.100) so the node can reach the API server during installation.
+
+bond0.nmconnection
+
 [connection]
 id=bond0
-uuid=355a1ed2-a2ab-4655-8bef-d9ff6b93289e
 type=bond
 interface-name=bond0
-permissions=
 
 [bond]
 lacp_rate=fast
@@ -80,199 +40,80 @@ mode=802.3ad
 xmit_hash_policy=layer2+3
 
 [ipv4]
-dns-search=
 method=disabled
 
 [ipv6]
-addr-gen-mode=stable-privacy
-dns-search=
 method=ignore
 
-[proxy]
-[connection]
-id=bond2.130
-uuid=561b8b81-6eb3-49d7-b396-b0601b1cce8b
-type=vlan
-interface-name=bond2.130
-lldp=0
+ens1f0.nmconnection
 
-[ethernet]
-
-[vlan]
-flags=1
-id=130
-parent=453c913e-d773-4d2b-b387-013f4a497c1c
-
-[ipv4]
-dhcp-client-id=mac
-method=disabled
-
-[ipv6]
-addr-gen-mode=eui64
-dhcp-duid=ll
-dhcp-iaid=mac
-method=disabled
-
-[proxy]
-
-[user]
-nmstate.interface.description=VLAN using bond2
-[connection]
-id=bond2.132
-uuid=9a097867-d77e-4641-8d0e-05da07d0afab
-type=vlan
-interface-name=bond2.132
-lldp=0
-
-[ethernet]
-
-[vlan]
-flags=1
-id=132
-parent=453c913e-d773-4d2b-b387-013f4a497c1c
-
-[ipv4]
-dhcp-client-id=mac
-method=disabled
-
-[ipv6]
-addr-gen-mode=eui64
-dhcp-duid=ll
-dhcp-iaid=mac
-method=disabled
-
-[proxy]
-
-[user]
-nmstate.interface.description=VLAN using bond2
-[connection]
-id=bond2.150
-uuid=526a8b8a-a49d-4ecb-8fe7-157671fb8c58
-type=vlan
-interface-name=bond2.150
-lldp=0
-
-[ethernet]
-
-[vlan]
-flags=1
-id=150
-parent=453c913e-d773-4d2b-b387-013f4a497c1c
-
-[ipv4]
-dhcp-client-id=mac
-method=disabled
-
-[ipv6]
-addr-gen-mode=eui64
-dhcp-duid=ll
-dhcp-iaid=mac
-method=disabled
-
-[proxy]
-
-[user]
-nmstate.interface.description=VLAN using bond2
-[connection]
-id=bond2
-uuid=453c913e-d773-4d2b-b387-013f4a497c1c
-type=bond
-autoconnect-slaves=1
-interface-name=bond2
-lldp=0
-
-[bond]
-miimon=200
-mode=active-backup
-
-[ipv4]
-dhcp-client-id=mac
-method=disabled
-
-[ipv6]
-addr-gen-mode=eui64
-dhcp-duid=ll
-dhcp-iaid=mac
-method=disabled
-
-[proxy]
-
-[user]
-nmstate.interface.description=Bond with ens1f1 and 3ns3f0
 [connection]
 id=ens1f0
-uuid=99659ff2-3eb3-4acb-927d-40ea83c64fd0
 type=ethernet
 interface-name=ens1f0
 master=bond0
-permissions=
 slave-type=bond
 
-[ethernet]
-mac-address-blacklist=
-[connection]
-id=ens1f0
-uuid=de71031b-e6bc-4376-a660-ef27baa5a35a
-type=ethernet
-interface-name=ens1f0
-master=bond0
-permissions=
-slave-type=bond
+ens3f1.nmconnection
 
-[ethernet]
-mac-address-blacklist=
-[connection]
-id=ens1f1
-uuid=8d466368-35c3-47f0-9e75-ef8633d27ae6
-type=ethernet
-interface-name=ens1f1
-lldp=0
-master=453c913e-d773-4d2b-b387-013f4a497c1c
-permissions=
-slave-type=bond
-
-[ethernet]
-mac-address-blacklist=
-
-[sriov]
-[connection]
-id=ens3f0
-uuid=2bce643d-969d-4915-b073-728783fc38bd
-type=ethernet
-interface-name=ens3f0
-lldp=0
-master=453c913e-d773-4d2b-b387-013f4a497c1c
-permissions=
-slave-type=bond
-
-[ethernet]
-mac-address-blacklist=
-
-[sriov]
 [connection]
 id=ens3f1
-uuid=c71111c7-6675-46c3-adba-7133791cc382
 type=ethernet
 interface-name=ens3f1
 master=bond0
-permissions=
 slave-type=bond
 
-[ethernet]
-mac-address-blacklist=
+bond0.100.nmconnection
+
 [connection]
-id=ens3f1
-uuid=7d9b8107-0666-4c1b-bae8-697ff007bf8e
-type=ethernet
-interface-name=ens3f1
-master=bond0
-permissions=
-slave-type=bond
+id=bond0.100
+type=vlan
+interface-name=bond0.100
 
-[ethernet]
-mac-address-blacklist=
-[root@worker06 system-connections]#
+[vlan]
+id=100
+parent=bond0
+
+[ipv4]
+address1=10.0.100.210/24,10.0.100.108
+dns=10.0.100.114;
+method=manual
+
+[ipv6]
+method=disabled
+
+Then build the worker ISO
+
+Use worker.ign, not master.ign:
+
+coreos-installer iso customize \
+  --dest-device /dev/sda \
+  --dest-ignition ../ocp-install/worker.ign \
+  --network-keyfile bond0.nmconnection \
+  --network-keyfile ens1f0.nmconnection \
+  --network-keyfile ens3f1.nmconnection \
+  --network-keyfile bond0.100.nmconnection \
+  -o worker06.iso \
+  rhcos-live.x86_64.iso
+
+Important
+
+The IP 10.0.100.210 appears to be the old worker06 address. Confirm that no other node is currently using it:
+
+oc get nodes -o wide
+
+and from another host:
+
+ping 10.0.100.210
+arp -an | grep 10.0.100.210
+
+Before generating the ISO, can you confirm:
+
+1. Is 10.0.100.210 the original IP of worker06?
+
+
+2. Are you using the original worker.ign or extracting a fresh one from the running cluster?
 
 
 
-./coreos-installer iso customize --dest-device /dev/sda --dest-ignition ../ocp-install/master.ign --network-keyfile m1-bond0.nmconnection --network-keyfile m-bond0-port1.nmconnection --network-keyfile m-bond0-port2.nmconnection -o m1.iso org-live.x86_64.iso
+A fresh ignition from the current cluster is preferred.
