@@ -1,1 +1,42 @@
-twistlock defender or aquasec in ocp 
+[root@worker06 kubernetes]# systemctl status kubelet -l
+○ kubelet.service - Kubernetes Kubelet
+     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/kubelet.service.d
+             └─01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
+     Active: inactive (dead)
+[root@worker06 kubernetes]#
+[root@worker06 kubernetes]# cat /etc/os-release
+NAME="Red Hat Enterprise Linux CoreOS"
+ID="rhcos"
+ID_LIKE="rhel fedora"
+VERSION="414.92.202406111017-0"
+VERSION_ID="4.14"
+VARIANT="CoreOS"
+VARIANT_ID=coreos
+PLATFORM_ID="platform:el9"
+PRETTY_NAME="Red Hat Enterprise Linux CoreOS 414.92.202406111017-0 (Plow)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:redhat:enterprise_linux:9::coreos"
+HOME_URL="https://www.redhat.com/"
+DOCUMENTATION_URL="https://docs.openshift.com/container-platform/4.14/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+REDHAT_BUGZILLA_PRODUCT="OpenShift Container Platform"
+REDHAT_BUGZILLA_PRODUCT_VERSION="4.14"
+REDHAT_SUPPORT_PRODUCT="OpenShift Container Platform"
+REDHAT_SUPPORT_PRODUCT_VERSION="4.14"
+OPENSHIFT_VERSION="4.14"
+RHEL_VERSION="9.2"
+OSTREE_VERSION="414.92.202406111017-0"
+[root@worker06 kubernetes]# ls -ltr /var/lib/kubelet/
+total 0
+drwxr-xr-x. 3 root root 22 Jun 12 05:30 seccomp
+[root@worker06 kubernetes]# ls -ltr /etc/kubernetes/
+total 0
+[root@worker06 kubernetes]# systemctl status crio
+○ crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: inactive (dead)
+       Docs: https://github.com/cri-o/cri-o
+[root@worker06 kubernetes]#
