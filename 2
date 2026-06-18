@@ -1,59 +1,222 @@
-Your mirror looks good.
-
-The important proof is:
-
-oc adm release info \
-  --image-for=machine-os-images \
-  $OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE
-
-returned:
-
-quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:30a4c9...
-
-That means the release payload contains the machine-os-images reference and the installer knows where to get the RHCOS content.
-
-Now run:
-
-OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE=bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64 \
-openshift-install agent create image --dir clusterconfigs --log-level=debug
-
-If it still stops at:
-
-INFO Extracting base ISO from release payload
-
-then check whether the installer can actually pull the machine-os image through the mirror mapping:
-
-oc image info \
-bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images@sha256:54c81ab130a264829c9a3434df1005074cc9b2edc8e31ead40ac94faf3debf72
-
-Also verify:
-
-podman login bastion-sno.lab.ocp.lan:8443
-
-and that your registry CA is trusted:
-
-curl -vk https://bastion-sno.lab.ocp.lan:8443/v2/
-
-One thing I notice: --image-for=machine-os-images returned the original source reference (quay.io/...@sha256) rather than the mirror location. That's normal output from oc adm release info, but during ISO creation the installer must resolve that digest through your ImageDigestSources.
-
-So the next test I'd run is:
-
-OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE=bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images:4.20.21-x86_64 \
-openshift-install agent create image --dir clusterconfigs --log-level=debug
-
-and capture the lines immediately after:
-
-INFO Extracting base ISO from release payload
-
-Those next 10–20 lines will tell us whether the failure is:
-
-registry authentication,
-
-certificate trust,
-
-digest mirror resolution,
-
-or inability to pull machine-os-images.
-
-
-From what you've shown so far, the release image itself is present and valid in the mirror.
+JJun 17 08:39:01 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5013] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:01 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5013] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6332] device (ens3f1np1): state change: ip-config -> failed (reason 'ip-config-unavailable', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <warn>  [1781685541.6335] device (ens3f1np1): Activation: failed for connection 'Wired connection 2'
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6335] device (ens5f1np1): state change: ip-config -> failed (reason 'ip-config-unavailable', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <warn>  [1781685541.6338] device (ens5f1np1): Activation: failed for connection 'Wired connection 4'
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6338] device (ens6f0np0): state change: ip-config -> failed (reason 'ip-config-unavailable', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <warn>  [1781685541.6340] device (ens6f0np0): Activation: failed for connection 'Wired connection 5'
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6340] device (ens6f1np1): state change: ip-config -> failed (reason 'ip-config-unavailable', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <warn>  [1781685541.6342] device (ens6f1np1): Activation: failed for connection 'Wired connection 6'
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6345] device (ens3f1np1): state change: failed -> disconnected (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6351] dhcp4 (ens3f1np1): canceled DHCP transaction
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6351] dhcp4 (ens3f1np1): activation: beginning transaction (timeout in 45 seconds)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6351] dhcp4 (ens3f1np1): state changed no lease
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6356] device (ens5f1np1): state change: failed -> disconnected (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6361] dhcp4 (ens5f1np1): canceled DHCP transaction
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6361] dhcp4 (ens5f1np1): activation: beginning transaction (timeout in 45 seconds)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6361] dhcp4 (ens5f1np1): state changed no lease
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6364] device (ens6f0np0): state change: failed -> disconnected (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6368] dhcp4 (ens6f0np0): canceled DHCP transaction
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6368] dhcp4 (ens6f0np0): activation: beginning transaction (timeout in 45 seconds)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6368] dhcp4 (ens6f0np0): state changed no lease
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6372] device (ens6f1np1): state change: failed -> disconnected (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6375] dhcp4 (ens6f1np1): canceled DHCP transaction
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6375] dhcp4 (ens6f1np1): activation: beginning transaction (timeout in 45 seconds)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6375] dhcp4 (ens6f1np1): state changed no lease
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6381] policy: auto-activating connection 'Wired connection 2' (0f7ecf34-5bcf-3ab7-9891-f5780c452449)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6383] policy: auto-activating connection 'Wired connection 4' (134af690-5591-3a25-b616-58c29f6d0d60)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6384] policy: auto-activating connection 'Wired connection 5' (b89ccfaa-475f-3350-b057-610efb332caf)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6385] policy: auto-activating connection 'Wired connection 6' (e2e7872a-aea4-37bf-8fb0-a7ce052f3505)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6387] device (ens3f1np1): Activation: starting connection 'Wired connection 2' (0f7ecf34-5bcf-3ab7-9891-f5780c452449)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6388] device (ens5f1np1): Activation: starting connection 'Wired connection 4' (134af690-5591-3a25-b616-58c29f6d0d60)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6390] device (ens6f0np0): Activation: starting connection 'Wired connection 5' (b89ccfaa-475f-3350-b057-610efb332caf)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6391] device (ens6f1np1): Activation: starting connection 'Wired connection 6' (e2e7872a-aea4-37bf-8fb0-a7ce052f3505)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6391] device (ens3f1np1): state change: disconnected -> prepare (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6393] device (ens3f1np1): state change: prepare -> config (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6396] device (ens5f1np1): state change: disconnected -> prepare (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6397] device (ens5f1np1): state change: prepare -> config (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6399] device (ens6f0np0): state change: disconnected -> prepare (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6401] device (ens6f0np0): state change: prepare -> config (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6402] device (ens6f1np1): state change: disconnected -> prepare (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6403] device (ens6f1np1): state change: prepare -> config (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6406] device (ens3f1np1): state change: config -> ip-config (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6407] dhcp4 (ens3f1np1): activation: beginning transaction (timeout in 45 seconds)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6409] device (ens5f1np1): state change: config -> ip-config (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6411] dhcp4 (ens5f1np1): activation: beginning transaction (timeout in 45 seconds)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6412] device (ens6f0np0): state change: config -> ip-config (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6413] dhcp4 (ens6f0np0): activation: beginning transaction (timeout in 45 seconds)
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6415] device (ens6f1np1): state change: config -> ip-config (reason 'none', sys-iface-state: 'managed')
+Jun 17 08:39:01 master3.vt.ss.samsung.local NetworkManager[12475]: <info>  [1781685541.6416] dhcp4 (ens6f1np1): activation: beginning transaction (timeout in 45 seconds)
+Jun 17 08:39:01 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5014] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:01 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5014] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:01 master3.vt.ss.samsung.local installer[11006]: time="2026-06-17T08:39:01Z" level=warning msg="Still waiting for master nodes: Get \"https://api-int.vt.ss.samsung.local:6443/api/v1/nodes?labelSelector=node-role.kubernetes.io%2Fmaster\": dial tcp 10.217.61.21:6443: connect: no route to host"
+Jun 17 08:39:01 master3.vt.ss.samsung.local assisted-installer[11004]: time="2026-06-17T08:39:01Z" level=warning msg="Still waiting for master nodes: Get \"https://api-int.vt.ss.samsung.local:6443/api/v1/nodes?labelSelector=node-role.kubernetes.io%2Fmaster\": dial tcp 10.217.61.21:6443: connect: no route to host"
+Jun 17 08:39:01 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5015] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:01 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5015] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5016] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5016] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5017] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5017] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5018] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5018] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5019] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5019] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:02Z" level=debug msg="HostMonitoring started at: 2026-06-17 08:39:02.764270913 +0000 UTC m=+4794.098434511" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation file="/src/pkg/commonutils/common_utils.go:12" pkg=host-state
+Jun 17 08:39:02 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:02Z" level=debug msg="HostMonitoring took : 436.387µs" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation.func1 file="/src/pkg/commonutils/common_utils.go:15" pkg=host-state
+Jun 17 08:39:02 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5020] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:02 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5020] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5021] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5021] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5022] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5022] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5023] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5023] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5024] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5024] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5025] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:03 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5025] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:04Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.vye04DwvXsInwD3EYbXsnyfcmJGBRKs-diJpiqym5ce6pxD_lwOOm4wzV1Hx_80dtaqYo_-g6uVByuVIXmVIDQ] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 10.217.61.18:8090 map[] map[] <nil> map[] 10.217.61.18:38820 /api/assisted-install/v2/clusters <nil> <nil> <nil> 0xc0016112f0 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
+Jun 17 08:39:04 master3.vt.ss.samsung.local start-cluster-installation.sh[7899]: Cluster status: installing
+Jun 17 08:39:04 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5026] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5026] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:04.265992   17552 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jun 17 08:39:04 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:04.266506   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientMemory"
+Jun 17 08:39:04 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:04.266522   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasNoDiskPressure"
+Jun 17 08:39:04 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:04.266528   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientPID"
+Jun 17 08:39:04 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:04.266580   17552 scope.go:117] "RemoveContainer" containerID="700c085c18ce64f9c0303b8130f7e6cb02d80cdf76c4d939da2a82554f3c7488"
+Jun 17 08:39:04 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:04.266587   17552 scope.go:117] "RemoveContainer" containerID="1a858b0a1c7c4d8b3f4b2ff5cea094da0813a578231c51382b1bc55ca1c76762"
+Jun 17 08:39:04 master3.vt.ss.samsung.local kubelet.sh[17552]: E0617 08:39:04.266704   17552 pod_workers.go:1301] "Error syncing pod, skipping" err="[failed to \"StartContainer\" for \"kube-controller-manager\" with CrashLoopBackOff: \"back-off 5m0s restarting failed container=kube-controller-manager pod=bootstrap-kube-controller-manager-master3.vt.ss.samsung.local_kube-system(1ce851c477c7ccf78b98913a96dbc172)\", failed to \"StartContainer\" for \"cluster-policy-controller\" with CrashLoopBackOff: \"back-off 5m0s restarting failed container=cluster-policy-controller pod=bootstrap-kube-controller-manager-master3.vt.ss.samsung.local_kube-system(1ce851c477c7ccf78b98913a96dbc172)\"]" pod="kube-system/bootstrap-kube-controller-manager-master3.vt.ss.samsung.local" podUID="1ce851c477c7ccf78b98913a96dbc172"
+Jun 17 08:39:04 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5027] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5027] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5028] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5028] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5029] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5029] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5030] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:04 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5030] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5031] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5031] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5032] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5032] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5033] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5033] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5034] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5034] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5035] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:05 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5035] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5036] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5036] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5037] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5037] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5038] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5038] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5039] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5039] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5040] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:06 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5040] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5041] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5041] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5042] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5042] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5043] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5043] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5044] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5044] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5045] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:07 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5045] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5046] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5046] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5047] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5047] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5048] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5048] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5049] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5049] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5050] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:08 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5050] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5051] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5051] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:09Z" level=debug msg="Request: {GET /api/assisted-install/v2/clusters HTTP/1.1 1 1 map[Accept:[application/json] Authorization:[eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3NjaGVtZSI6InVzZXJBdXRoIn0.vye04DwvXsInwD3EYbXsnyfcmJGBRKs-diJpiqym5ce6pxD_lwOOm4wzV1Hx_80dtaqYo_-g6uVByuVIXmVIDQ] User-Agent:[curl/7.76.1]] {} <nil> 0 [] false 10.217.61.18:8090 map[] map[] <nil> map[] 10.217.61.18:47816 /api/assisted-install/v2/clusters <nil> <nil> <nil> 0xc001568600 <nil> [] map[]}" func=github.com/openshift/assisted-service/internal/metrics.WithMatchedRoute.func1.Handler.1 file="/src/internal/metrics/reporter.go:20" pkg=matched-h
+Jun 17 08:39:09 master3.vt.ss.samsung.local start-cluster-installation.sh[7899]: Cluster status: installing
+Jun 17 08:39:09 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5052] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5052] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5053] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5053] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5054] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5054] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local installer[11006]: time="2026-06-17T08:39:09Z" level=warning msg="Still waiting for master nodes: Get \"https://api-int.vt.ss.samsung.local:6443/api/v1/nodes?labelSelector=node-role.kubernetes.io%2Fmaster\": dial tcp 10.217.61.21:6443: connect: no route to host"
+Jun 17 08:39:09 master3.vt.ss.samsung.local assisted-installer[11004]: time="2026-06-17T08:39:09Z" level=warning msg="Still waiting for master nodes: Get \"https://api-int.vt.ss.samsung.local:6443/api/v1/nodes?labelSelector=node-role.kubernetes.io%2Fmaster\": dial tcp 10.217.61.21:6443: connect: no route to host"
+Jun 17 08:39:09 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5055] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:09 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5055] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5056] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5056] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.265702   17552 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.265780   17552 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.266236   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientMemory"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.266252   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasNoDiskPressure"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.266259   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientPID"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.266297   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientMemory"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.266311   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasNoDiskPressure"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.266317   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientPID"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.266371   17552 scope.go:117] "RemoveContainer" containerID="7e12536799e7170b2300b28fb84df50b7a3a2b2ab273cceec48dc047a6bfcaf6"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: E0617 08:39:10.266393   17552 pod_workers.go:1301] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"machine-config-controller\" with CrashLoopBackOff: \"back-off 5m0s restarting failed container=machine-config-controller pod=bootstrap-machine-config-operator-master3.vt.ss.samsung.local_default(b864995c0f9072ab5805c744006b6981)\"" pod="default/bootstrap-machine-config-operator-master3.vt.ss.samsung.local" podUID="b864995c0f9072ab5805c744006b6981"
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.266605536Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4ded3fa2100f6c18990c01b383acfe6909d131a12291eb3094c879da31b82345" id=1ab1f4b6-430b-4df9-aa0a-70fff3c4beed name=/runtime.v1.ImageService/ImageStatus
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.266756348Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:532a4724f2c5791cc3bb002cd3a37d5a179f1f081e101601e2d3444bd19192c9,RepoTags:[],RepoDigests:[quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4ded3fa2100f6c18990c01b383acfe6909d131a12291eb3094c879da31b82345],Size_:478772431,Uid:nil,Username:,Spec:&ImageSpec{Image:,Annotations:map[string]string{},UserSpecifiedImage:,RuntimeHandler:,},Pinned:false,},Info:map[string]string{},}" id=1ab1f4b6-430b-4df9-aa0a-70fff3c4beed name=/runtime.v1.ImageService/ImageStatus
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.266964965Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4ded3fa2100f6c18990c01b383acfe6909d131a12291eb3094c879da31b82345" id=d46c32b5-a297-47c8-9ee4-def048b290a1 name=/runtime.v1.ImageService/ImageStatus
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.267112854Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:532a4724f2c5791cc3bb002cd3a37d5a179f1f081e101601e2d3444bd19192c9,RepoTags:[],RepoDigests:[quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4ded3fa2100f6c18990c01b383acfe6909d131a12291eb3094c879da31b82345],Size_:478772431,Uid:nil,Username:,Spec:&ImageSpec{Image:,Annotations:map[string]string{},UserSpecifiedImage:,RuntimeHandler:,},Pinned:false,},Info:map[string]string{},}" id=d46c32b5-a297-47c8-9ee4-def048b290a1 name=/runtime.v1.ImageService/ImageStatus
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.267431291Z" level=info msg="Creating container: openshift-kni-infra/keepalived-master3.vt.ss.samsung.local/keepalived" id=39b2e3cc-b526-4399-ba24-ef3a4a29a080 name=/runtime.v1.RuntimeService/CreateContainer
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.267533580Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices]"
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.274947017Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices]"
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.278934603Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices]"
+Jun 17 08:39:10 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5057] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5057] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local systemd[1]: Started crio-conmon-0a31bfa356601d579af143d6ef970c8750587773168220a93ad2636e233255c2.scope.
+Jun 17 08:39:10 master3.vt.ss.samsung.local systemd[1]: Started libcrun container.
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.317135385Z" level=info msg="Created container 0a31bfa356601d579af143d6ef970c8750587773168220a93ad2636e233255c2: openshift-kni-infra/keepalived-master3.vt.ss.samsung.local/keepalived" id=39b2e3cc-b526-4399-ba24-ef3a4a29a080 name=/runtime.v1.RuntimeService/CreateContainer
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.317418541Z" level=info msg="Starting container: 0a31bfa356601d579af143d6ef970c8750587773168220a93ad2636e233255c2" id=e2a6ee12-8682-47af-985b-e801921a3829 name=/runtime.v1.RuntimeService/StartContainer
+Jun 17 08:39:10 master3.vt.ss.samsung.local crio[12761]: time="2026-06-17 08:39:10.319568416Z" level=info msg="Started container" PID=60637 containerID=0a31bfa356601d579af143d6ef970c8750587773168220a93ad2636e233255c2 description=openshift-kni-infra/keepalived-master3.vt.ss.samsung.local/keepalived id=e2a6ee12-8682-47af-985b-e801921a3829 name=/runtime.v1.RuntimeService/StartContainer sandboxID=c7150574875bf0dba37cc1dd7ec4cd1a3c2e53adc8134043f83761a2c29da785
+Jun 17 08:39:10 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5058] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5058] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5059] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5059] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.734981   17552 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.735614   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientMemory"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.735631   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasNoDiskPressure"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.735638   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientPID"
+Jun 17 08:39:10 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:10Z" level=debug msg="Running ClusterMonitoring" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).ClusterMonitoring" file="/src/internal/cluster/cluster.go:580" pkg=cluster-state
+Jun 17 08:39:10 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:10Z" level=debug msg="ClusterMonitoring started at: 2026-06-17 08:39:10.763718716 +0000 UTC m=+4802.097882314" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation file="/src/pkg/commonutils/common_utils.go:12" pkg=cluster-state
+Jun 17 08:39:10 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:10Z" level=debug msg="HostMonitoring started at: 2026-06-17 08:39:10.763697917 +0000 UTC m=+4802.097861520" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation file="/src/pkg/commonutils/common_utils.go:12" pkg=host-state
+Jun 17 08:39:10 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:10Z" level=debug msg="Monitored 0 clusters" func="github.com/openshift/assisted-service/internal/cluster.(*Manager).ClusterMonitoring" file="/src/internal/cluster/cluster.go:657" pkg=cluster-state
+Jun 17 08:39:10 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:10Z" level=debug msg="ClusterMonitoring took : 211.72µs" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation.func1 file="/src/pkg/commonutils/common_utils.go:15" pkg=cluster-state
+Jun 17 08:39:10 master3.vt.ss.samsung.local service[5563]: time="2026-06-17T08:39:10Z" level=debug msg="HostMonitoring took : 780.394µs" func=github.com/openshift/assisted-service/pkg/commonutils.MeasureOperation.func1 file="/src/pkg/commonutils/common_utils.go:15" pkg=host-state
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.807912   17552 log.go:25] "Finished parsing log file" path="/var/log/pods/openshift-kni-infra_keepalived-master3.vt.ss.samsung.local_432a1344711cc1ff852c8d16b97c1c8b/keepalived/21.log"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.808090   17552 kubelet.go:2453] "SyncLoop (PLEG): event for pod" pod="openshift-kni-infra/keepalived-master3.vt.ss.samsung.local" event={"ID":"432a1344711cc1ff852c8d16b97c1c8b","Type":"ContainerStarted","Data":"0a31bfa356601d579af143d6ef970c8750587773168220a93ad2636e233255c2"}
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.808184   17552 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.808530   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientMemory"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.808543   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasNoDiskPressure"
+Jun 17 08:39:10 master3.vt.ss.samsung.local kubelet.sh[17552]: I0617 08:39:10.808548   17552 kubelet_node_status.go:724] "Recording event message for node" node="master3.vt.ss.samsung.local" event="NodeHasSufficientPID"
+Jun 17 08:39:10 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5060] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:10 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5060] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5061] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5061] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5062] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5062] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local approve-csr.sh[60644]: E0617 08:39:11.293822   60644 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://localhost:6443/api?timeout=32s\": dial tcp [::1]:6443: connect: connection refused"
+Jun 17 08:39:11 master3.vt.ss.samsung.local approve-csr.sh[60644]: E0617 08:39:11.295430   60644 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://localhost:6443/api?timeout=32s\": dial tcp [::1]:6443: connect: connection refused"
+Jun 17 08:39:11 master3.vt.ss.samsung.local approve-csr.sh[60644]: E0617 08:39:11.296810   60644 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://localhost:6443/api?timeout=32s\": dial tcp [::1]:6443: connect: connection refused"
+Jun 17 08:39:11 master3.vt.ss.samsung.local approve-csr.sh[60644]: E0617 08:39:11.298116   60644 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://localhost:6443/api?timeout=32s\": dial tcp [::1]:6443: connect: connection refused"
+Jun 17 08:39:11 master3.vt.ss.samsung.local approve-csr.sh[60644]: E0617 08:39:11.299439   60644 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: Get \"https://localhost:6443/api?timeout=32s\": dial tcp [::1]:6443: connect: connection refused"
+Jun 17 08:39:11 master3.vt.ss.samsung.local approve-csr.sh[60644]: The connection to the server localhost:6443 was refused - did you specify the right host or port?
+Jun 17 08:39:11 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5063] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5063] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5064] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5064] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5065] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:11 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5065] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:12 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5066] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:12 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5066] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:12 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5067] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:12 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5067] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:12 master3.vt.ss.samsung.local cluster-bootstrap[49831]: [#5068] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
+Jun 17 08:39:12 master3.vt.ss.samsung.local bootkube.sh[49805]: [#5068] failed to fetch discovery: Get "https://localhost:6443/api?timeout=32s": dial tcp [::1]:6443: connect: connection refused
