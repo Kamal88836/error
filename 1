@@ -1,23 +1,36 @@
-THIS IS A PRIVATE COMPUTER SYSTEM.
-This computer system including all related equipment, network devices
-(specifically including Internet access), are provided only for authorized use.
-All computer systems may be monitored for all lawful purposes, including to
-ensure that their use is authorized, for management of the system, to
-facilitate protection against unauthorized access, and to verify security
-procedures, survivability and operational security. Monitoring includes active
-attacks by authorized personnel and their entities to test or verify the
-security of the system. During monitoring, information may be examined,
-recorded, copied and used for authorized purposes. All information including
-personal information, placed on or sent over this system may be monitored. Uses
-of this system, authorized or unauthorized, constitutes consent to monitoring
-of this system. Unauthorized use may subject you to criminal prosecution.
-Evidence of any such unauthorized use collected during monitoring may be used
-for administrative, criminal or other adverse action. Use of this system
-constitutes consent to monitoring for these purposes.
-
-controller-0 login: [FAILED] Failed to start StarlingX Maintenance Host Watchdog.
-See 'systemctl status hostw.service' for details.
-[ OK ] Reached target Multi-User System.
-OK ] Reached target Graphical Interface.
-Starting Update UTMP about System Runlevel Changes ...
-OK ] Finished Update UTMP about System Runlevel Changes.
+sysadmin@controller-0:~$ journalctl -u hostw
+No journal files were found.
+-- No entries --
+sysadmin@controller-0:~$ systemctl status mtcAgent
+Unit mtcAgent.service could not be found.
+sysadmin@controller-0:~$ systemctl status mtcClient
+● mtcClient.service - StarlingX Maintenance Command Handler Client
+     Loaded: loaded (/lib/systemd/system/mtcClient.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2026-06-22 06:51:27 UTC; 8min ago
+   Main PID: 23297 (mtcClient)
+      Tasks: 1 (limit: 275099)
+     Memory: 4.1M
+        CPU: 1.725s
+     CGroup: /system.slice/mtcClient.service
+             └─23297 /usr/local/bin/mtcClient -l
+sysadmin@controller-0:~$ ps -ef | grep mtc
+root       22997       1  0 06:51 ?        00:00:00 /usr/local/bin/mtcalarmd -l
+root       23001       1  0 06:51 ?        00:00:00 /usr/local/bin/mtclogd -l
+root       23297       1  0 06:51 ?        00:00:00 /usr/local/bin/mtcClient -l
+sysadmin   35074   25226  0 07:00 pts/0    00:00:00 grep mtc
+sysadmin@controller-0:~$ systemctl status hostw
+● hostw.service - StarlingX Maintenance Host Watchdog
+     Loaded: loaded (/lib/systemd/system/hostw.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2026-06-22 06:57:10 UTC; 3min 26s ago
+    Process: 31924 ExecStart=/etc/init.d/hostw start (code=exited, status=0/SUCCESS)
+   Main PID: 31934 (hostwd)
+      Tasks: 1 (limit: 275099)
+     Memory: 616.0K
+        CPU: 54ms
+     CGroup: /system.slice/hostw.service
+             └─31934 /usr/local/bin/hostwd
+sysadmin@controller-0:~$ journalctl -uxe hostw
+No journal files were found.
+Failed to add match 'hostw': Invalid argument
+sysadmin@controller-0:~$ journalctl -xeu hostw
+No journal files were found.
