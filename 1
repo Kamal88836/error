@@ -1,36 +1,39 @@
-sysadmin@controller-0:~$ journalctl -u hostw
-No journal files were found.
--- No entries --
-sysadmin@controller-0:~$ systemctl status mtcAgent
-Unit mtcAgent.service could not be found.
-sysadmin@controller-0:~$ systemctl status mtcClient
-● mtcClient.service - StarlingX Maintenance Command Handler Client
-     Loaded: loaded (/lib/systemd/system/mtcClient.service; enabled; vendor preset: enabled)
-     Active: active (running) since Mon 2026-06-22 06:51:27 UTC; 8min ago
-   Main PID: 23297 (mtcClient)
-      Tasks: 1 (limit: 275099)
-     Memory: 4.1M
-        CPU: 1.725s
-     CGroup: /system.slice/mtcClient.service
-             └─23297 /usr/local/bin/mtcClient -l
-sysadmin@controller-0:~$ ps -ef | grep mtc
-root       22997       1  0 06:51 ?        00:00:00 /usr/local/bin/mtcalarmd -l
-root       23001       1  0 06:51 ?        00:00:00 /usr/local/bin/mtclogd -l
-root       23297       1  0 06:51 ?        00:00:00 /usr/local/bin/mtcClient -l
-sysadmin   35074   25226  0 07:00 pts/0    00:00:00 grep mtc
-sysadmin@controller-0:~$ systemctl status hostw
-● hostw.service - StarlingX Maintenance Host Watchdog
-     Loaded: loaded (/lib/systemd/system/hostw.service; enabled; vendor preset: enabled)
-     Active: active (running) since Mon 2026-06-22 06:57:10 UTC; 3min 26s ago
-    Process: 31924 ExecStart=/etc/init.d/hostw start (code=exited, status=0/SUCCESS)
-   Main PID: 31934 (hostwd)
-      Tasks: 1 (limit: 275099)
-     Memory: 616.0K
-        CPU: 54ms
-     CGroup: /system.slice/hostw.service
-             └─31934 /usr/local/bin/hostwd
-sysadmin@controller-0:~$ journalctl -uxe hostw
-No journal files were found.
-Failed to add match 'hostw': Invalid argument
-sysadmin@controller-0:~$ journalctl -xeu hostw
-No journal files were found.
+sysadmin@controller-0:~$ systemctl status sm-api
+● sm-api.service - Service Management API Unit
+     Loaded: loaded (/lib/systemd/system/sm-api.service; enabled; vendor preset: enabled)
+     Active: failed (Result: exit-code) since Mon 2026-06-22 07:03:42 UTC; 4s ago
+    Process: 39662 ExecStart=/etc/init.d/sm-api start (code=exited, status=0/SUCCESS)
+   Main PID: 39669 (code=exited, status=1/FAILURE)
+        CPU: 839ms
+sysadmin@controller-0:~$ cat /var/log/sm-api | tail -100
+cat: /var/log/sm-api: No such file or directory
+sysadmin@controller-0:~$ cat /var/log/s
+slapd.log               slapd.log.20.gz         sm.log.1.gz             sm-trap.log             software-api.log.9.gz   sysinv-api.log.17.gz    sysinv-api.log.9.gz     sysinv.log.1.gz
+slapd.log.10.gz         slapd.log.2.gz          sm.log.2.gz             sm-troubleshoot.log     software.log            sysinv-api.log.18.gz    sysinv.log              sysinv.log.20.gz
+slapd.log.11.gz         slapd.log.3.gz          sm.log.3.gz             software-api.log        sriovdp/                sysinv-api.log.19.gz    sysinv.log.10.gz        sysinv.log.2.gz
+slapd.log.12.gz         slapd.log.4.gz          sm.log.4.gz             software-api.log.1      sssd/                   sysinv-api.log.1.gz     sysinv.log.11.gz        sysinv.log.3.gz
+slapd.log.13.gz         slapd.log.5.gz          sm.log.5.gz             software-api.log.10.gz  sysinv-api.log          sysinv-api.log.20.gz    sysinv.log.12.gz        sysinv.log.4.gz
+slapd.log.14.gz         slapd.log.6.gz          sm.log.6.gz             software-api.log.2.gz   sysinv-api.log.10.gz    sysinv-api.log.2.gz     sysinv.log.13.gz        sysinv.log.5.gz
+slapd.log.15.gz         slapd.log.7.gz          sm.log.7.gz             software-api.log.3.gz   sysinv-api.log.11.gz    sysinv-api.log.3.gz     sysinv.log.14.gz        sysinv.log.6.gz
+slapd.log.16.gz         slapd.log.8.gz          sm.log.8.gz             software-api.log.4.gz   sysinv-api.log.12.gz    sysinv-api.log.4.gz     sysinv.log.15.gz        sysinv.log.7.gz
+slapd.log.17.gz         slapd.log.9.gz          sm.log.9.gz             software-api.log.5.gz   sysinv-api.log.13.gz    sysinv-api.log.5.gz     sysinv.log.16.gz        sysinv.log.8.gz
+slapd.log.18.gz         sm-customer.alarm       sm-scheduler.log        software-api.log.6.gz   sysinv-api.log.14.gz    sysinv-api.log.6.gz     sysinv.log.17.gz        sysinv.log.9.gz
+slapd.log.19.gz         sm-customer.log         sm-service.log          software-api.log.7.gz   sysinv-api.log.15.gz    sysinv-api.log.7.gz     sysinv.log.18.gz        syslog
+slapd.log.1.gz          sm.log                  sm-shutdown.log         software-api.log.8.gz   sysinv-api.log.16.gz    sysinv-api.log.8.gz     sysinv.log.19.gz
+sysadmin@controller-0:~$ cat /var/log/s
+slapd.log               slapd.log.20.gz         sm.log.1.gz             sm-trap.log             software-api.log.9.gz   sysinv-api.log.17.gz    sysinv-api.log.9.gz     sysinv.log.1.gz
+slapd.log.10.gz         slapd.log.2.gz          sm.log.2.gz             sm-troubleshoot.log     software.log            sysinv-api.log.18.gz    sysinv.log              sysinv.log.20.gz
+slapd.log.11.gz         slapd.log.3.gz          sm.log.3.gz             software-api.log        sriovdp/                sysinv-api.log.19.gz    sysinv.log.10.gz        sysinv.log.2.gz
+slapd.log.12.gz         slapd.log.4.gz          sm.log.4.gz             software-api.log.1      sssd/                   sysinv-api.log.1.gz     sysinv.log.11.gz        sysinv.log.3.gz
+slapd.log.13.gz         slapd.log.5.gz          sm.log.5.gz             software-api.log.10.gz  sysinv-api.log          sysinv-api.log.20.gz    sysinv.log.12.gz        sysinv.log.4.gz
+slapd.log.14.gz         slapd.log.6.gz          sm.log.6.gz             software-api.log.2.gz   sysinv-api.log.10.gz    sysinv-api.log.2.gz     sysinv.log.13.gz        sysinv.log.5.gz
+slapd.log.15.gz         slapd.log.7.gz          sm.log.7.gz             software-api.log.3.gz   sysinv-api.log.11.gz    sysinv-api.log.3.gz     sysinv.log.14.gz        sysinv.log.6.gz
+slapd.log.16.gz         slapd.log.8.gz          sm.log.8.gz             software-api.log.4.gz   sysinv-api.log.12.gz    sysinv-api.log.4.gz     sysinv.log.15.gz        sysinv.log.7.gz
+slapd.log.17.gz         slapd.log.9.gz          sm.log.9.gz             software-api.log.5.gz   sysinv-api.log.13.gz    sysinv-api.log.5.gz     sysinv.log.16.gz        sysinv.log.8.gz
+slapd.log.18.gz         sm-customer.alarm       sm-scheduler.log        software-api.log.6.gz   sysinv-api.log.14.gz    sysinv-api.log.6.gz     sysinv.log.17.gz        sysinv.log.9.gz
+slapd.log.19.gz         sm-customer.log         sm-service.log          software-api.log.7.gz   sysinv-api.log.15.gz    sysinv-api.log.7.gz     sysinv.log.18.gz        syslog
+slapd.log.1.gz          sm.log                  sm-shutdown.log         software-api.log.8.gz   sysinv-api.log.16.gz    sysinv-api.log.8.gz     sysinv.log.19.gz
+sysadmin@controller-0:~$ cat /var/log/sm
+sm-customer.alarm    sm.log               sm.log.2.gz          sm.log.4.gz          sm.log.6.gz          sm.log.8.gz          sm-scheduler.log     sm-shutdown.log      sm-troubleshoot.log
+sm-customer.log      sm.log.1.gz          sm.log.3.gz          sm.log.5.gz          sm.log.7.gz          sm.log.9.gz          sm-service.log       sm-trap.log
+sysadmin@controller-0:~$ cat /var/log/sm
