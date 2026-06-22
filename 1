@@ -102,3 +102,80 @@ sysadmin@controller-0:~$ grep -B50 -A50 "09:41:57" /var/log/sm.log
 2026-06-21T09:42:16.232 controller-0 sm: debug time[266436.437] log<413984> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
 2026-06-21T09:42:16.732 controller-0 sm: debug time[266436.937] log<413985> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
 sysadmin@controller-0:~$
+sysadmin@controller-0:~$ grep -iE "lock|swact" /var/log/mtcAgent.log
+2025-03-07T07:17:28.722 [55262.00032] localhost mtcAgent --- daemon_config.cpp ( 138) timeout_config_handler  : Info : HA Swact TO : 120 secs
+2025-03-07T07:18:30.229 | aee89f19-26a8-4c16-86fb-e8aaaae081de |      controller-0 |   192.168.204.2 |   locked disabled-offline   | worker-disabled-offduty
+2025-03-07T07:18:30.230 [55262.00102] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6233) add_handler             : Info : controller-0 192.168.204.2 locked-disabled-offline (aee89f19-26a8-4c16-86fb-e8aaaae081de)
+2025-03-07T07:18:30.230 [55262.00104] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6253) add_handler             : Info : controller-0-worker locked-disabled-offduty
+2025-03-07T07:18:30.565 [55262.00105] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6377) add_handler             : Info : controller-0 recovering from locked-disabled
+2025-03-07T07:18:30.725 [55262.00112] controller-0 mtcAgent alm mtcAlarm.cpp      ( 674) mtcAlarm_warning        : Warn : controller-0 setting warning 'Lock' alarm (200.001 )
+2025-03-07T07:24:13.476 |  adminState: locked
+2025-03-07T07:40:08.050 | action     : unlock
+2025-03-07T07:40:08.051 |  adminState: locked
+2025-03-07T07:40:08.051 [55262.00131] controller-0 mtcAgent --- nodeBase.cpp      ( 690) log_adminAction         : Info : controller-0 Unlock Action
+2025-03-07T07:40:08.051 [55262.00132] controller-0 mtcAgent alm mtcAlarm.cpp      ( 578) mtcAlarm_clear          : Info : controller-0 clearing 'Lock' alarm (200.001)
+2025-03-07T07:40:08.051 fmAPI.cpp(602): Enqueue raise alarm request: UUID (ff071afb-bb3d-48dc-83b4-c97221a3458c) alarm id (200.021) instant id (host=controller-0.command=unlock)
+2025-03-07T07:40:08.051 [55262.00133] controller-0 mtcAgent msg mtcCtrlMsg.cpp    ( 819) send_mtc_cmd            : Info : controller-0 sending 'UnLocked' notification (Mgmnt)
+2025-03-07T07:40:08.052 [55262.00134] controller-0 mtcAgent inv mtcInvApi.cpp     (1021) mtcInvApi_update_states_now: Info : controller-0 unlocked-disabled-offline disabled-offline
+2025-03-07T07:40:08.099 fmAlarmUtils.cpp(623): Sending FM raise alarm request: alarm_id (200.021), entity_id (host=controller-0.command=unlock)
+2025-03-07T07:40:08.160 [55262.00135] controller-0 mtcAgent inv mtcInvApi.cpp     ( 397) mtcInvApi_update_task_now: Info : controller-0 Task: Unlocking, please stand-by while the system gracefully reboots (seq:29)
+2025-03-07T07:40:08.187 fmAlarmUtils.cpp(657): FM Response for raise alarm: (0), alarm_id (200.021), entity_id (host=controller-0.command=unlock)
+2025-03-07T07:40:08.220 [55262.00136] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  ( 555) enable_handler          : Warn : controller-0 unlocking Simplex System with reboot
+2025-03-07T07:40:41.187 [55262.00182] controller-0 mtcAgent --- daemon_config.cpp ( 397) daemon_dump_cfg         : Info : swact_timeout         = 120
+2025-03-07T07:40:41.187 | aee89f19-26a8-4c16-86fb-e8aaaae081de |      controller-0 |   192.168.204.2 | unlocked disabled-offline   | worker-disabled-offline
+2025-03-07T07:40:41.189  14| controller-0       unlocked-disabled-offline    degrade_mask:00000000
+2025-03-07T07:40:41.192  15| controller-0       Sub-Functions: controller-worker unlocked-disabled-offline
+2025-03-07T07:40:41.192  16| controller-0       Action:unlock:unlock Task:Unlocking, please stand-by while the system gracefully reboots Info:none
+2025-03-07T07:40:41.192  20| controller-0       Add:0 Offline:0: Swact:0 Recovery:0 Enable:0 Disable:0 Power:20 Cycle:10 mtcAlive:0
+2025-03-07T07:49:41.960 [33350.00032] localhost mtcAgent --- daemon_config.cpp ( 138) timeout_config_handler  : Info : HA Swact TO : 120 secs
+2025-03-07T07:49:43.089 | aee89f19-26a8-4c16-86fb-e8aaaae081de |      controller-0 |   192.168.204.2 | unlocked disabled-offline   | worker-disabled-offline
+2025-03-07T07:50:01.970 [33350.00118] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6233) add_handler             : Info : controller-0 192.168.204.2 unlocked-disabled-online (aee89f19-26a8-4c16-86fb-e8aaaae081de)
+2025-03-07T07:50:01.970 [33350.00120] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6253) add_handler             : Info : controller-0-worker unlocked-disabled-online
+2025-03-07T07:50:02.331 [33350.00121] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6377) add_handler             : Info : controller-0 recovering from unlocked-disabled
+2025-03-07T07:50:02.341 [33350.00122] controller-0 mtcAgent inv mtcInvApi.cpp     ( 434) mtcInvApi_force_task    : Info : controller-0 task clear (seq:3) (was:Unlocking, please stand-by while the system gracefully reboots)
+2025-03-07T07:50:04.272 [33350.00128] controller-0 mtcAgent msg mtcCtrlMsg.cpp    ( 819) send_mtc_cmd            : Info : controller-0 sending 'UnLocked' notification (Mgmnt)
+2025-03-07T07:50:04.272 [33350.00131] controller-0 mtcAgent hbs nodeClass.cpp     (4166) set_cmd_resp            : Info : controller-0 unlocked msg ACK (Mgmnt)
+2025-03-07T07:50:05.308 [33350.00146] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (1490) enable_handler          : Info : controller-0 acknowledged unlock
+2025-03-07T07:50:05.308 [33350.00147] controller-0 mtcAgent hbs nodeClass.cpp     (6883) allStateChange          : Info : controller-0 unlocked-enabled-available (seq:11)
+2025-03-07T07:50:05.886 [33350.00172] controller-0 mtcAgent hbs nodeClass.cpp     (6925) subfStateChange         : Info : controller-0-worker unlocked-enabled-available (seq:16)
+2025-03-07T08:25:12.701 | action     : lock
+2025-03-07T08:25:12.701 |  adminState: unlocked
+2025-03-07T08:25:12.702 [33350.00188] controller-0 mtcAgent --- nodeBase.cpp      ( 680) log_adminAction         : Info : controller-0 Lock Action
+2025-03-07T08:25:12.702 [33350.00189] controller-0 mtcAgent |-| mtcNodeHdlrs.cpp  (2917) disable_handler         : Info : controller-0 Administrative 'lock' Operation
+2025-03-07T08:25:12.813 [33350.00196] controller-0 mtcAgent hbs nodeClass.cpp     (6883) allStateChange          : Info : controller-0 locked-disabled-online (seq:59)
+2025-03-07T08:25:15.768 [33350.00200] controller-0 mtcAgent alm mtcAlarm.cpp      ( 674) mtcAlarm_warning        : Warn : controller-0 setting warning 'Lock' alarm (200.001 )
+2025-03-07T08:33:12.675 | action     : unlock
+2025-03-07T08:33:12.675 |  adminState: locked
+2025-03-07T08:33:12.676 [33350.00207] controller-0 mtcAgent --- nodeBase.cpp      ( 690) log_adminAction         : Info : controller-0 Unlock Action
+2025-03-07T08:33:12.676 [33350.00208] controller-0 mtcAgent alm mtcAlarm.cpp      ( 578) mtcAlarm_clear          : Info : controller-0 clearing 'Lock' alarm (200.001)
+2025-03-07T08:33:12.676 fmAPI.cpp(602): Enqueue raise alarm request: UUID (6b1ea2a1-8eee-49c1-81f8-a7f387becc3f) alarm id (200.021) instant id (host=controller-0.command=unlock)
+2025-03-07T08:33:12.676 [33350.00209] controller-0 mtcAgent msg mtcCtrlMsg.cpp    ( 819) send_mtc_cmd            : Info : controller-0 sending 'UnLocked' notification (Mgmnt)
+2025-03-07T08:33:12.676 [33350.00210] controller-0 mtcAgent inv mtcInvApi.cpp     (1021) mtcInvApi_update_states_now: Info : controller-0 unlocked-disabled-offline disabled-offline
+2025-03-07T08:33:12.701 fmAlarmUtils.cpp(623): Sending FM raise alarm request: alarm_id (200.021), entity_id (host=controller-0.command=unlock)
+2025-03-07T08:33:12.742 fmAlarmUtils.cpp(657): FM Response for raise alarm: (0), alarm_id (200.021), entity_id (host=controller-0.command=unlock)
+2025-03-07T08:33:12.797 [33350.00211] controller-0 mtcAgent inv mtcInvApi.cpp     ( 397) mtcInvApi_update_task_now: Info : controller-0 Task: Unlocking, please stand-by while the system gracefully reboots (seq:72)
+2025-03-07T08:33:12.863 [33350.00212] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  ( 555) enable_handler          : Warn : controller-0 unlocking Simplex System with reboot
+2025-03-07T08:33:24.402 [33350.00258] controller-0 mtcAgent --- daemon_config.cpp ( 397) daemon_dump_cfg         : Info : swact_timeout         = 120
+2025-03-07T08:33:24.403 | aee89f19-26a8-4c16-86fb-e8aaaae081de |      controller-0 |   192.168.204.2 | unlocked disabled-offline   | worker-disabled-offline
+2025-03-07T08:33:24.404  14| controller-0       unlocked-disabled-offline    degrade_mask:00000000
+2025-03-07T08:33:24.404  15| controller-0       Sub-Functions: controller-worker unlocked-disabled-offline
+2025-03-07T08:33:24.404  16| controller-0       Action:unlock:unlock Task:Unlocking, please stand-by while the system gracefully reboots Info:none
+2025-03-07T08:33:24.404  20| controller-0       Add:0 Offline:0: Swact:0 Recovery:0 Enable:0 Disable:0 Power:20 Cycle:10 mtcAlive:0
+2025-03-07T08:50:16.913 [32629.00032] localhost mtcAgent --- daemon_config.cpp ( 138) timeout_config_handler  : Info : HA Swact TO : 120 secs
+2025-03-07T08:50:18.047 | aee89f19-26a8-4c16-86fb-e8aaaae081de |      controller-0 |   192.168.204.2 | unlocked disabled-offline   | worker-disabled-offline
+2025-03-07T08:50:36.928 [32629.00118] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6233) add_handler             : Info : controller-0 192.168.204.2 unlocked-disabled-online (aee89f19-26a8-4c16-86fb-e8aaaae081de)
+2025-03-07T08:50:36.928 [32629.00120] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6253) add_handler             : Info : controller-0-worker unlocked-disabled-online
+2025-03-07T08:50:37.251 [32629.00121] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6377) add_handler             : Info : controller-0 recovering from unlocked-disabled
+2025-03-07T08:50:37.252 [32629.00122] controller-0 mtcAgent inv mtcInvApi.cpp     ( 434) mtcInvApi_force_task    : Info : controller-0 task clear (seq:3) (was:Unlocking, please stand-by while the system gracefully reboots)
+2025-03-07T08:50:40.745 [32629.00128] controller-0 mtcAgent msg mtcCtrlMsg.cpp    ( 819) send_mtc_cmd            : Info : controller-0 sending 'UnLocked' notification (Mgmnt)
+2025-03-07T08:50:40.745 [32629.00131] controller-0 mtcAgent hbs nodeClass.cpp     (4166) set_cmd_resp            : Info : controller-0 unlocked msg ACK (Mgmnt)
+2025-03-07T08:50:41.792 [32629.00145] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (1490) enable_handler          : Info : controller-0 acknowledged unlock
+2025-03-07T08:50:41.792 [32629.00146] controller-0 mtcAgent hbs nodeClass.cpp     (6883) allStateChange          : Info : controller-0 unlocked-enabled-available (seq:11)
+2025-03-07T08:50:42.407 [32629.00172] controller-0 mtcAgent hbs nodeClass.cpp     (6925) subfStateChange         : Info : controller-0-worker unlocked-enabled-available (seq:16)
+2025-03-17T06:26:55.867 [33059.00032] localhost mtcAgent --- daemon_config.cpp ( 138) timeout_config_handler  : Info : HA Swact TO : 120 secs
+2025-03-17T06:26:57.137 | aee89f19-26a8-4c16-86fb-e8aaaae081de |      controller-0 |   192.168.204.2 | unlocked  enabled-available | worker-enabled-available
+2025-03-17T06:27:16.016 [33059.00122] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6233) add_handler             : Info : controller-0 192.168.204.2 unlocked-enabled-available (aee89f19-26a8-4c16-86fb-e8aaaae081de)
+2025-03-17T06:27:16.016 [33059.00124] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  (6253) add_handler             : Info : controller-0-worker unlocked-enabled-available
+grep: /var/log/mtcAgent.log: binary file matches
+sysadmin@controller-0:~$
+
