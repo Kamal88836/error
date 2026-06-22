@@ -1,83 +1,33 @@
-sysadmin@controller-0:~$ sm-dump
-
--Service_Groups------------------------------------------------------------------------
-oam-services                     initial              initial
-controller-services              initial              initial
-cloud-services                   initial              initial
-patching-services                initial              initial
-directory-services               initial              initial
-web-services                     initial              initial
-storage-services                 initial              initial
-storage-monitoring-services      initial              initial
-vim-services                     initial              initial
----------------------------------------------------------------------------------------
-
--Services------------------------------------------------------------------------------
-management-ipv4                  initial              initial
-drbd-pg                          initial              initial
-drbd-rabbit                      initial              initial
-drbd-platform                    initial              initial
-pg-fs                            initial              initial
-rabbit-fs                        initial              initial
-nfs-mgmt                         initial              initial
-platform-fs                      initial              initial
-postgres                         initial              initial
-rabbit                           initial              initial
-platform-export-fs               initial              initial
-sysinv-inv                       initial              initial
-sysinv-conductor                 initial              initial
-mtc-agent                        initial              initial
-hw-mon                           initial              initial
-dnsmasq                          initial              initial
-fm-mgr                           initial              initial
-keystone                         initial              initial
-open-ldap                        initial              initial
-lighttpd                         initial              initial
-horizon                          initial              initial
-patch-alarm-manager              initial              initial
-mgr-restful-plugin               initial              initial
-ceph-manager                     initial              initial
-vim                              initial              initial
-vim-api                          initial              initial
-vim-webserver                    initial              initial
-haproxy                          initial              initial
-pxeboot-ipv4                     initial              initial
-drbd-extension                   initial              initial
-extension-fs                     initial              initial
-extension-export-fs              initial              initial
-etcd                             initial              initial
-drbd-etcd                        initial              initial
-etcd-fs                          initial              initial
-barbican-api                     initial              initial
-barbican-keystone-listener       initial              initial
-barbican-worker                  initial              initial
-cluster-host-ipv4                initial              initial
-docker-distribution              initial              initial
-dockerdistribution-fs            initial              initial
-drbd-dockerdistribution          initial              initial
-helmrepository-fs                initial              initial
-registry-token-server            initial              initial
-cert-mon                         initial              initial
-device-image-fs                  initial              initial
-cert-alarm                       initial              initial
-------------------------------------------------------------------------------
-sysadmin@controller-0:~$
-sysadmin@controller-0:~$
-sysadmin@controller-0:~$
-sysadmin@controller-0:~$ system host-list
-You must provide a username via either --os-username or via env[OS_USERNAME]
-sysadmin@controller-0:~$ !source
--bash: !source: event not found
-sysadmin@controller-0:~$ source /etc/op
-openhpi/             openstackclient/     openstack-dashboard/ openvswitch/         opt/
-sysadmin@controller-0:~$ source /etc/op
-openhpi/             openstackclient/     openstack-dashboard/ openvswitch/         opt/
-sysadmin@controller-0:~$ source /etc/
-Display all 298 possibilities? (y or n)
-sysadmin@controller-0:~$ source /etc/op
-openhpi/             openstackclient/     openstack-dashboard/ openvswitch/         opt/
-sysadmin@controller-0:~$ source /etc/open
-openhpi/             openstackclient/     openstack-dashboard/ openvswitch/
-sysadmin@controller-0:~$ ss -lntp | grep 6443
-sysadmin@controller-0:~$
+sysadmin@controller-0:~$ systemctl status sm
+● sm.service - Service Management Unit
+     Loaded: loaded (/lib/systemd/system/sm.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2026-06-18 07:44:11 UTC; 3 days ago
+   Main PID: 23154 (sm)
+      Tasks: 8 (limit: 275099)
+     Memory: 13.5M
+        CPU: 7min 32.028s
+     CGroup: /system.slice/sm.service
+             ├─23154 /usr/bin/sm
+             └─23184 /usr/bin/sm
+sysadmin@controller-0:~$ systemctl status sm-api
+● sm-api.service - Service Management API Unit
+     Loaded: loaded (/lib/systemd/system/sm-api.service; enabled; vendor preset: enabled)
+     Active: failed (Result: exit-code) since Mon 2026-06-22 06:39:45 UTC; 1s ago
+    Process: 1914218 ExecStart=/etc/init.d/sm-api start (code=exited, status=0/SUCCESS)
+   Main PID: 1914225 (code=exited, status=1/FAILURE)
+        CPU: 837ms
+sysadmin@controller-0:~$ systemctl start  sm-api
+Failed to start sm-api.service: Interactive authentication required.
+See system logs and 'systemctl status sm-api.service' for details.
+sysadmin@controller-0:~$ ps -ef | grep sm -
+root        1332       2  0 Jun18 ?        00:00:00 [ksmd]
+root        1924       2  0 Jun18 ?        00:00:00 [irq/16-i801_smbus]
+root       23012       1  0 Jun18 ?        00:00:11 /usr/local/bin/fsmond -l
+root       23154       1  0 Jun18 ?        00:07:21 /usr/bin/sm
+root       23184   23154  0 Jun18 ?        00:00:10 /usr/bin/sm
+root       23482       1  0 Jun18 ?        00:07:36 /usr/bin/sm-eru
+sysadmin 1914453 1898139  0 06:40 pts/0    00:00:00 grep sm -
+sysadmin@controller-0:~$ journalctl -u sm
+No journal files were found.
+-- No entries --
 sysadmin@controller-0:~$
