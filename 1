@@ -1,39 +1,202 @@
-sysadmin@controller-0:~$ systemctl status sm-api
-● sm-api.service - Service Management API Unit
-     Loaded: loaded (/lib/systemd/system/sm-api.service; enabled; vendor preset: enabled)
-     Active: failed (Result: exit-code) since Mon 2026-06-22 07:03:42 UTC; 4s ago
-    Process: 39662 ExecStart=/etc/init.d/sm-api start (code=exited, status=0/SUCCESS)
-   Main PID: 39669 (code=exited, status=1/FAILURE)
-        CPU: 839ms
-sysadmin@controller-0:~$ cat /var/log/sm-api | tail -100
-cat: /var/log/sm-api: No such file or directory
-sysadmin@controller-0:~$ cat /var/log/s
-slapd.log               slapd.log.20.gz         sm.log.1.gz             sm-trap.log             software-api.log.9.gz   sysinv-api.log.17.gz    sysinv-api.log.9.gz     sysinv.log.1.gz
-slapd.log.10.gz         slapd.log.2.gz          sm.log.2.gz             sm-troubleshoot.log     software.log            sysinv-api.log.18.gz    sysinv.log              sysinv.log.20.gz
-slapd.log.11.gz         slapd.log.3.gz          sm.log.3.gz             software-api.log        sriovdp/                sysinv-api.log.19.gz    sysinv.log.10.gz        sysinv.log.2.gz
-slapd.log.12.gz         slapd.log.4.gz          sm.log.4.gz             software-api.log.1      sssd/                   sysinv-api.log.1.gz     sysinv.log.11.gz        sysinv.log.3.gz
-slapd.log.13.gz         slapd.log.5.gz          sm.log.5.gz             software-api.log.10.gz  sysinv-api.log          sysinv-api.log.20.gz    sysinv.log.12.gz        sysinv.log.4.gz
-slapd.log.14.gz         slapd.log.6.gz          sm.log.6.gz             software-api.log.2.gz   sysinv-api.log.10.gz    sysinv-api.log.2.gz     sysinv.log.13.gz        sysinv.log.5.gz
-slapd.log.15.gz         slapd.log.7.gz          sm.log.7.gz             software-api.log.3.gz   sysinv-api.log.11.gz    sysinv-api.log.3.gz     sysinv.log.14.gz        sysinv.log.6.gz
-slapd.log.16.gz         slapd.log.8.gz          sm.log.8.gz             software-api.log.4.gz   sysinv-api.log.12.gz    sysinv-api.log.4.gz     sysinv.log.15.gz        sysinv.log.7.gz
-slapd.log.17.gz         slapd.log.9.gz          sm.log.9.gz             software-api.log.5.gz   sysinv-api.log.13.gz    sysinv-api.log.5.gz     sysinv.log.16.gz        sysinv.log.8.gz
-slapd.log.18.gz         sm-customer.alarm       sm-scheduler.log        software-api.log.6.gz   sysinv-api.log.14.gz    sysinv-api.log.6.gz     sysinv.log.17.gz        sysinv.log.9.gz
-slapd.log.19.gz         sm-customer.log         sm-service.log          software-api.log.7.gz   sysinv-api.log.15.gz    sysinv-api.log.7.gz     sysinv.log.18.gz        syslog
-slapd.log.1.gz          sm.log                  sm-shutdown.log         software-api.log.8.gz   sysinv-api.log.16.gz    sysinv-api.log.8.gz     sysinv.log.19.gz
-sysadmin@controller-0:~$ cat /var/log/s
-slapd.log               slapd.log.20.gz         sm.log.1.gz             sm-trap.log             software-api.log.9.gz   sysinv-api.log.17.gz    sysinv-api.log.9.gz     sysinv.log.1.gz
-slapd.log.10.gz         slapd.log.2.gz          sm.log.2.gz             sm-troubleshoot.log     software.log            sysinv-api.log.18.gz    sysinv.log              sysinv.log.20.gz
-slapd.log.11.gz         slapd.log.3.gz          sm.log.3.gz             software-api.log        sriovdp/                sysinv-api.log.19.gz    sysinv.log.10.gz        sysinv.log.2.gz
-slapd.log.12.gz         slapd.log.4.gz          sm.log.4.gz             software-api.log.1      sssd/                   sysinv-api.log.1.gz     sysinv.log.11.gz        sysinv.log.3.gz
-slapd.log.13.gz         slapd.log.5.gz          sm.log.5.gz             software-api.log.10.gz  sysinv-api.log          sysinv-api.log.20.gz    sysinv.log.12.gz        sysinv.log.4.gz
-slapd.log.14.gz         slapd.log.6.gz          sm.log.6.gz             software-api.log.2.gz   sysinv-api.log.10.gz    sysinv-api.log.2.gz     sysinv.log.13.gz        sysinv.log.5.gz
-slapd.log.15.gz         slapd.log.7.gz          sm.log.7.gz             software-api.log.3.gz   sysinv-api.log.11.gz    sysinv-api.log.3.gz     sysinv.log.14.gz        sysinv.log.6.gz
-slapd.log.16.gz         slapd.log.8.gz          sm.log.8.gz             software-api.log.4.gz   sysinv-api.log.12.gz    sysinv-api.log.4.gz     sysinv.log.15.gz        sysinv.log.7.gz
-slapd.log.17.gz         slapd.log.9.gz          sm.log.9.gz             software-api.log.5.gz   sysinv-api.log.13.gz    sysinv-api.log.5.gz     sysinv.log.16.gz        sysinv.log.8.gz
-slapd.log.18.gz         sm-customer.alarm       sm-scheduler.log        software-api.log.6.gz   sysinv-api.log.14.gz    sysinv-api.log.6.gz     sysinv.log.17.gz        sysinv.log.9.gz
-slapd.log.19.gz         sm-customer.log         sm-service.log          software-api.log.7.gz   sysinv-api.log.15.gz    sysinv-api.log.7.gz     sysinv.log.18.gz        syslog
-slapd.log.1.gz          sm.log                  sm-shutdown.log         software-api.log.8.gz   sysinv-api.log.16.gz    sysinv-api.log.8.gz     sysinv.log.19.gz
-sysadmin@controller-0:~$ cat /var/log/sm
-sm-customer.alarm    sm.log               sm.log.2.gz          sm.log.4.gz          sm.log.6.gz          sm.log.8.gz          sm-scheduler.log     sm-shutdown.log      sm-troubleshoot.log
-sm-customer.log      sm.log.1.gz          sm.log.3.gz          sm.log.5.gz          sm.log.7.gz          sm.log.9.gz          sm-service.log       sm-trap.log
-sysadmin@controller-0:~$ cat /var/log/sm
+sysadmin@controller-0:~$ tail -200 /var/log/sm.log
+2026-06-22T06:59:02.639 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:02.639 controller-0 sm: debug time[602.989] log<109> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:07.639 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:07.639 controller-0 sm: debug time[607.989] log<110> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:12.639 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:12.639 controller-0 sm: debug time[612.989] log<111> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:17.640 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:17.640 controller-0 sm: debug time[617.989] log<112> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:22.640 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:22.640 controller-0 sm: debug time[622.990] log<113> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:27.603 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:27.603 controller-0 sm: debug time[627.953] log<114> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T06:59:27.603 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:27.603 controller-0 sm: debug time[627.953] log<115> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T06:59:27.640 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:27.640 controller-0 sm: debug time[627.990] log<116> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:32.640 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:32.640 controller-0 sm: debug time[632.990] log<117> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:37.640 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:37.640 controller-0 sm: debug time[637.990] log<118> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:42.640 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:42.640 controller-0 sm: debug time[642.990] log<119> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:47.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:47.641 controller-0 sm: debug time[647.990] log<120> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:52.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:52.641 controller-0 sm: debug time[652.991] log<121> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T06:59:57.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T06:59:57.641 controller-0 sm: debug time[657.991] log<122> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:02.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:02.641 controller-0 sm: debug time[662.991] log<123> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:07.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:07.641 controller-0 sm: debug time[667.991] log<124> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:12.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:12.641 controller-0 sm: debug time[672.991] log<125> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:17.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:17.641 controller-0 sm: debug time[677.991] log<126> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:22.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:22.641 controller-0 sm: debug time[682.991] log<127> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:27.604 controller-0 sm: debug time[687.953] log<128> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:00:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:27.604 controller-0 sm: debug time[687.954] log<129> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:00:27.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:27.641 controller-0 sm: debug time[687.991] log<130> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:32.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:32.641 controller-0 sm: debug time[692.991] log<131> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:37.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:37.641 controller-0 sm: debug time[697.991] log<132> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:42.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:42.641 controller-0 sm: debug time[702.991] log<133> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:47.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:47.641 controller-0 sm: debug time[707.991] log<134> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:52.641 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:52.641 controller-0 sm: debug time[712.991] log<135> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:00:57.642 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:00:57.642 controller-0 sm: debug time[717.991] log<136> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:02.642 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:02.642 controller-0 sm: debug time[722.992] log<137> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:07.642 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:07.642 controller-0 sm: debug time[727.992] log<138> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:12.642 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:12.642 controller-0 sm: debug time[732.992] log<139> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:17.642 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:17.642 controller-0 sm: debug time[737.992] log<140> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:22.642 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:22.642 controller-0 sm: debug time[742.992] log<141> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:27.604 controller-0 sm: debug time[747.954] log<142> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:01:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:27.604 controller-0 sm: debug time[747.954] log<143> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:01:27.642 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:27.642 controller-0 sm: debug time[747.992] log<144> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:32.643 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:32.643 controller-0 sm: debug time[752.992] log<145> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:37.643 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:37.643 controller-0 sm: debug time[757.993] log<146> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:42.643 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:42.643 controller-0 sm: debug time[762.993] log<147> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:47.643 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:47.643 controller-0 sm: debug time[767.993] log<148> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:52.643 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:52.643 controller-0 sm: debug time[772.993] log<149> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:01:57.643 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:01:57.643 controller-0 sm: debug time[777.993] log<150> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:02.643 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:02.643 controller-0 sm: debug time[782.993] log<151> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:07.644 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:07.644 controller-0 sm: debug time[787.993] log<152> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:12.644 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:12.644 controller-0 sm: debug time[792.994] log<153> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:17.644 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:17.644 controller-0 sm: debug time[797.994] log<154> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:22.644 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:22.644 controller-0 sm: debug time[802.994] log<155> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:27.604 controller-0 sm: debug time[807.954] log<156> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:02:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:27.604 controller-0 sm: debug time[807.954] log<157> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:02:27.644 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:27.644 controller-0 sm: debug time[807.994] log<158> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:32.644 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:32.644 controller-0 sm: debug time[812.994] log<159> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:37.644 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:37.644 controller-0 sm: debug time[817.994] log<160> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:42.645 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:42.645 controller-0 sm: debug time[822.995] log<161> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:47.645 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:47.645 controller-0 sm: debug time[827.995] log<162> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:52.645 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:52.645 controller-0 sm: debug time[832.995] log<163> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:02:57.645 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:02:57.645 controller-0 sm: debug time[837.995] log<164> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:02.645 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:02.645 controller-0 sm: debug time[842.995] log<165> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:07.645 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:07.645 controller-0 sm: debug time[847.995] log<166> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:12.645 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:12.645 controller-0 sm: debug time[852.995] log<167> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:17.646 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:17.646 controller-0 sm: debug time[857.995] log<168> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:22.646 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:22.646 controller-0 sm: debug time[862.996] log<169> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:27.604 controller-0 sm: debug time[867.954] log<170> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:03:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:27.604 controller-0 sm: debug time[867.954] log<171> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:03:27.646 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:27.646 controller-0 sm: debug time[867.996] log<172> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:32.646 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:32.646 controller-0 sm: debug time[872.996] log<173> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:37.646 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:37.646 controller-0 sm: debug time[877.996] log<174> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:42.646 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:42.646 controller-0 sm: debug time[882.996] log<175> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:47.646 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:47.646 controller-0 sm: debug time[887.996] log<176> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:52.647 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:52.647 controller-0 sm: debug time[892.997] log<177> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:03:57.647 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:03:57.647 controller-0 sm: debug time[897.997] log<178> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:02.647 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:02.647 controller-0 sm: debug time[902.997] log<179> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:07.647 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:07.647 controller-0 sm: debug time[907.997] log<180> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:12.647 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:12.647 controller-0 sm: debug time[912.997] log<181> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:17.647 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:17.647 controller-0 sm: debug time[917.997] log<182> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:22.647 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:22.647 controller-0 sm: debug time[922.997] log<183> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:27.605 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:27.605 controller-0 sm: debug time[927.954] log<184> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:04:27.605 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:27.605 controller-0 sm: debug time[927.954] log<185> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:04:27.648 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:27.648 controller-0 sm: debug time[927.998] log<186> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:32.648 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:32.648 controller-0 sm: debug time[932.998] log<187> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:37.648 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:37.648 controller-0 sm: debug time[937.998] log<188> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:42.648 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:42.648 controller-0 sm: debug time[942.998] log<189> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:47.648 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:47.648 controller-0 sm: debug time[947.998] log<190> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:52.648 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:52.648 controller-0 sm: debug time[952.998] log<191> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:04:57.649 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:04:57.649 controller-0 sm: debug time[957.998] log<192> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:02.649 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:02.649 controller-0 sm: debug time[962.999] log<193> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:07.649 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:07.649 controller-0 sm: debug time[967.999] log<194> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:12.649 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:12.649 controller-0 sm: debug time[972.999] log<195> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:17.649 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:17.649 controller-0 sm: debug time[977.999] log<196> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:22.649 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:22.649 controller-0 sm: debug time[982.999] log<197> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:27.604 controller-0 sm: debug time[987.954] log<198> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:05:27.604 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:27.604 controller-0 sm: debug time[987.954] log<199> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1337): Failed to get all alarms, error=3
+2026-06-22T07:05:27.649 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:27.649 controller-0 sm: debug time[987.999] log<200> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:32.650 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:32.650 controller-0 sm: debug time[992.999] log<201> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:37.650 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:37.650 controller-0 sm: debug time[998.000] log<202> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:42.650 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:42.650 controller-0 sm: debug time[1003.000] log<203> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:47.650 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:47.650 controller-0 sm: debug time[1008.000] log<204> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:52.650 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:52.650 controller-0 sm: debug time[1013.000] log<205> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:05:57.650 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:05:57.650 controller-0 sm: debug time[1018.000] log<206> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:06:02.650 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:06:02.650 controller-0 sm: debug time[1023.000] log<207> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+2026-06-22T07:06:07.650 controller-0 sm: warning fmAPI.cpp(152): Failed to connect to FM Manager.
+2026-06-22T07:06:07.650 controller-0 sm: debug time[1028.000] log<208> ERROR: sm_alarm[23467]: sm_alarm_thread.c(1102): Failed to set alarm (node-license) for node (controller-0) domain () entity (), error=3
+sysadmin@controller-0:~$
