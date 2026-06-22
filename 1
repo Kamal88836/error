@@ -1,16 +1,143 @@
-sysadmin@controller-0:~$ grep -i "oom\|out of memory\|killed process" /var/log/syslog
-sysadmin@controller-0:~$ grep -i "oom\|out of memory\|killed process" /var/log/kern.log
-sysadmin@controller-0:~$ grep "2026-06-12" /var/log/syslog | grep -i oom
-sysadmin@controller-0:~$ sar -q -f /var/log/sysstat/sa12
-Cannot open /var/log/sysstat/sa12: No such file or directory
-sysadmin@controller-0:~$ sar -u -f /var/log/sysstat/sa12
-Cannot open /var/log/sysstat/sa12: No such file or directory
-sysadmin@controller-0:~$ sar -r -f /var/log/sysstat/sa12
-Cannot open /var/log/sysstat/sa12: No such file or directory
-sysadmin@controller-0:~$ ls -l /var/log/sysstat/
-ls: cannot access '/var/log/sysstat/': No such file or directory
-sysadmin@controller-0:~$ sar -q
-Cannot open /var/log/sysstat/sa22: No such file or directory
-Please check if data collecting is enabled
-sysadmin@controller-0:~$ grep "2026-06-12T09:4" /var/log/syslog | grep -iE "sshd|pam|systemd-logind"
-sysadmin@controller-0:~$
+Based on everything you've checked so far, there is no evidence yet that the server froze because of OOM, kernel panic, watchdog reset, or a reboot.
+
+Your findings:
+
+No OOM messages in syslog or kern.log.
+
+No hung-task, soft-lockup, hard-lockup messages.
+
+No reboot on June 12 (last reboot shows June 10 → June 18).
+
+SSH was reachable but login was failing/hanging.
+
+No sysstat (sar) data available for historical CPU/memory usage.
+
+No sshd/systemd-logind errors around 09:41.
+
+
+This leaves a few likely possibilities:
+
+1. Authentication backend issue (most likely if SSH accepted connections)
+
+If SSH port was reachable but login never completed:
+
+LDAP/AD server unreachable
+
+DNS resolution issue
+
+SSSD hung
+
+PAM authentication timeout
+
+
+Check whether SSSD is being used:
+
+grep passwd /etc/nsswitch.conf
+grep group /etc/nsswitch.conf
+
+systemctl status sssd
+
+Look for June 12 logs:
+
+zgrep "2026-06-12" /var/log/auth.log*
+zgrep "2026-06-12" /var/log/secure*
+
+Depending on distro one of these files exists.
+
+
+---
+
+2. Disk space exhaustion
+
+When /, /var, or /run become full:
+
+Existing sessions keep working.
+
+New logins fail or hang.
+
+Services become unresponsive.
+
+
+Check current state:
+
+df -h
+df -i
+
+And search for June 12 filesystem errors:
+
+grep "2026-06-12" /var/log/syslog | grep -i "no space"
+grep "2026-06-12" /var/log/syslog | grep -i "read-only"
+
+
+---
+
+3. Process exhaustion
+
+If the host hit PID limits:
+
+fork: retry: Resource temporarily unavailable
+
+new SSH logins fail while the machine still pings and accepts TCP connections.
+
+Search:
+
+grep -i "Resource temporarily unavailable" /var/log/syslog
+grep -i "fork" /var/log/syslog
+
+
+---
+
+4. StarlingX service issue
+
+Since this is a StarlingX controller, check whether maintenance/fault-management services reported problems around that time:
+
+strings /var/log/mtcAgent.log | grep "2026-06-12"
+strings /var/log/mtcClient.log | grep "2026-06-12"
+
+Also:
+
+grep "2026-06-12" /var/log/fmManager.log
+grep "2026-06-12" /var/log/sm.log
+
+
+---
+
+Most useful next check
+
+Since you know the exact timestamp (12-Jun-2026 09:41), run:
+
+grep "2026-06-12T09:4" /var/log/syslog
+
+and also:
+
+grep "2026-06-12T09:4" /var/log/auth.log
+
+or
+
+grep "2026-06-12T09:4" /var/log/secure
+
+Additionally, check whether logs were rotated:
+
+ls -ltr /var/log/syslog*
+ls -ltr /var/log/auth.log*
+ls -ltr /var/log/secure*
+
+My current assessment:
+
+Memory leak: possible, but no evidence.
+
+High CPU: possible, but no historical data exists to prove it.
+
+Authentication/SSSD/LDAP hang: fits the symptom of SSH reachable but login not completing.
+
+Disk/PID exhaustion: also fits the symptom and should be checked next.
+
+
+Share the output of:
+
+df -h
+df -i
+ls -ltr /var/log/auth.log* /var/log/secure* 2>/dev/null
+grep "2026-06-12T09:4" /var/log/syslog
+
+and we can narrow it down further.
