@@ -1,9 +1,88 @@
-sysadmin@controller-0:~$ grep -n "Service (etcd) received event (disable)"  /var/log/sm-service.log
-281:2025-03-07T08:33:20.153 controller-0 sm: debug time[2824.703] log<281> INFO: sm[23624]: sm_service_fsm.c(1015): Service (etcd) received event (disable) was in the enabled-active state and is now in the disabling state.
-4631:2026-01-16T07:31:08.313 controller-0 sm: debug time[1802.586] log<234> INFO: sm[24112]: sm_service_fsm.c(1015): Service (etcd) received event (disable) was in the enabled-active state and is now in the disabling state.
-4969:2026-01-16T07:42:43.806 controller-0 sm: debug time[303.777] log<234> INFO: sm[23203]: sm_service_fsm.c(1015): Service (etcd) received event (disable) was in the enabled-active state and is now in the disabling state.
-5524:2026-01-19T04:40:58.959 controller-0 sm: debug time[246222.459] log<234> INFO: sm[23318]: sm_service_fsm.c(1015): Service (etcd) received event (disable) was in the enabled-active state and is now in the disabling state.
-6795:2026-02-21T00:10:10.538 controller-0 sm: debug time[1452975.480] log<235> INFO: sm[23165]: sm_service_fsm.c(1015): Service (etcd) received event (disable) was in the enabled-active state and is now in the disabling state.
-8619:2026-06-12T09:41:57.873 controller-0 sm: debug time[183750.584] log<234> INFO: sm[23173]: sm_service_fsm.c(1015): Service (etcd) received event (disable) was in the enabled-active state and is now in the disabling state.
-sysadmin@controller-0:~$
+Excellent. The grep shows that June 12 was not the first time this happened. The platform has gone through the same disable sequence multiple times:
 
+2025-03-07
+2026-01-16
+2026-01-16
+2026-01-19
+2026-02-21
+2026-06-12
+
+That strongly suggests this is a normal controller shutdown/lock/swact sequence, not necessarily a crash.
+
+Now we need to inspect the context before line 8619.
+
+Run:
+
+sed -n '8550,8625p' /var/log/sm-service.log
+
+and also:
+
+sed -n '8500,8619p' /var/log/sm-service.log
+
+I'm looking for messages such as:
+
+Service Group (...) disable
+Node lock
+Host lock
+Administrative disable
+Swact
+Recovery action
+
+Also check sysinv around the exact time
+
+Since SysInv usually initiates the action:
+
+grep "2026-06-12T09:41" /var/log/sysinv.log
+
+and:
+
+grep -B20 -A20 "09:41" /var/log/sysinv.log
+
+Check the system log around that timestamp
+
+grep "Jun 12 09:41" /var/log/syslog
+
+or
+
+grep "2026-06-12T09:41" /var/log/syslog
+
+My current suspicion
+
+The key thing is that on June 12:
+
+etcd -> disable
+postgres -> disable
+rabbit -> disable
+sysinv -> disable
+
+all happened together.
+
+That is usually triggered by one of:
+
+1. Host lock
+
+
+2. Controller swact
+
+
+3. Maintenance operation
+
+
+4. Administrative disable
+
+
+5. Reboot sequence
+
+
+
+It is much less likely to be an etcd failure, because etcd was cleanly transitioned:
+
+enabled-active -> disabling -> disabled
+
+instead of crashing.
+
+The output of:
+
+sed -n '8550,8625p' /var/log/sm-service.log
+
+should reveal exactly what event caused SM to start shutting everything down.
