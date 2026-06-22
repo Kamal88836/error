@@ -1,111 +1,16 @@
-That's a reasonable suspicion, especially since:
-
-✅ SSH port was reachable.
-
-✅ The server did not reboot.
-
-✅ No kernel panic, watchdog reset, or lockup messages were found.
-
-❌ Users could not log in.
-
-
-Those symptoms are often caused by resource exhaustion rather than a kernel freeze.
-
-Memory exhaustion (OOM)
-
-If RAM was exhausted, new login sessions may fail because sshd, PAM, or the shell couldn't allocate memory.
-
-Check:
-
-grep -i "oom\|out of memory\|killed process" /var/log/syslog
-grep -i "oom\|out of memory\|killed process" /var/log/kern.log
-
-Also:
-
-grep "2026-06-12" /var/log/syslog | grep -i oom
-
-CPU saturation
-
-If one or more processes consumed all CPU cores:
-
-SSH TCP connection succeeds.
-
-Password prompt may appear.
-
-Authentication or shell startup hangs.
-
-Existing sessions become sluggish.
-
-
-Look for historical performance data:
-
-sar -q -f /var/log/sysstat/sa12
-sar -u -f /var/log/sysstat/sa12
-sar -r -f /var/log/sysstat/sa12
-
-Focus on 09:30–10:00.
-
-Check if sysstat is available
-
-ls -l /var/log/sysstat/
-
-or
-
-sar -q
-
-If sa12 exists, you can inspect the exact load, CPU, and memory at 09:41.
-
-Another strong indicator
-
-Check whether systemd was refusing logins because of resource pressure:
-
-grep "2026-06-12T09:4" /var/log/syslog | grep -iE "sshd|pam|systemd-logind"
-
-For StarlingX specifically
-
-High CPU is often caused by:
-
-fmManager
-
-sm
-
-mtcAgent
-
-kubelet/containerd (if running Kubernetes workloads)
-
-DPDK/VSwitch processes
-
-Fault management storms
-
-
-If you have historical process accounting enabled:
-
-sar -x -f /var/log/sysstat/sa12
-
-What would confirm your theory?
-
-If around 09:41 you find:
-
-load average: 200+
-
-or
-
-CPU idle: 0%
-
-or
-
-Out of memory: Killed process ...
-
-then you've likely found the root cause.
-
-Next command I'd run
-
-ls /var/log/sysstat/
-
-If sa12 exists, share:
-
-sar -q -f /var/log/sysstat/sa12
-sar -u -f /var/log/sysstat/sa12
-sar -r -f /var/log/sysstat/sa12
-
-around 09:41, and we can determine whether the issue was CPU saturation, memory exhaustion, or something else.
+sysadmin@controller-0:~$ grep -i "oom\|out of memory\|killed process" /var/log/syslog
+sysadmin@controller-0:~$ grep -i "oom\|out of memory\|killed process" /var/log/kern.log
+sysadmin@controller-0:~$ grep "2026-06-12" /var/log/syslog | grep -i oom
+sysadmin@controller-0:~$ sar -q -f /var/log/sysstat/sa12
+Cannot open /var/log/sysstat/sa12: No such file or directory
+sysadmin@controller-0:~$ sar -u -f /var/log/sysstat/sa12
+Cannot open /var/log/sysstat/sa12: No such file or directory
+sysadmin@controller-0:~$ sar -r -f /var/log/sysstat/sa12
+Cannot open /var/log/sysstat/sa12: No such file or directory
+sysadmin@controller-0:~$ ls -l /var/log/sysstat/
+ls: cannot access '/var/log/sysstat/': No such file or directory
+sysadmin@controller-0:~$ sar -q
+Cannot open /var/log/sysstat/sa22: No such file or directory
+Please check if data collecting is enabled
+sysadmin@controller-0:~$ grep "2026-06-12T09:4" /var/log/syslog | grep -iE "sshd|pam|systemd-logind"
+sysadmin@controller-0:~$
