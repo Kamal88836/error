@@ -1,123 +1,103 @@
-The logs are actually very revealing.
-
-What we know
-
-At 09:41:57 SM started disabling every platform service:
-
-cert-alarm
-cert-mon
-docker-distribution
-etcd
-postgres
-rabbit
-sysinv
-keystone
-vim
-...
-
-This is a platform shutdown sequence, not an individual service failure.
-
-Then in sysinv.log:
-
-09:42:02 Caught SIGTERM, stopping children
-09:42:02 Stopping WSGI server
-09:42:02 Child exited with status 0
-
-So sysinv was gracefully terminated by SIGTERM, not crashed.
-
-Also immediately before the shutdown:
-
-09:41:12 All Kubernetes endpoints are healthy.
-
-Therefore:
-
-Kubernetes was healthy.
-
-etcd was healthy.
-
-Services did not fail themselves.
-
-Something instructed SM to stop the service group.
-
-
-
----
-
-The missing piece
-
-The actual trigger is usually in one of these logs:
-
-/var/log/sm.log
-/var/log/sm-api.log
-/var/log/mtcAgent.log
-/var/log/mtcClient.log
-/var/log/nfv-vim.log
-
-Search around the timestamp:
-
-grep -B50 -A50 "09:41:57" /var/log/sm.log
-
-and
-
-grep -iE "lock|unlock|swact|disable|active|standby|shutdown|reboot" /var/log/sm.log
-
-
----
-
-Check if controller was locked/swacted
-
-grep -iE "lock|swact" /var/log/mtcAgent.log
-
-grep -iE "lock|swact" /var/log/mtcClient.log
-
-grep -iE "swact|active|standby" /var/log/nfv-vim.log
-
-
----
-
-Most likely scenario
-
-The pattern:
-
-All services disabled
-sysinv receives SIGTERM
-No service failures before disable
-
-is typical of:
-
-1. Controller lock
-
-
-2. Controller reboot
-
-
-3. Swact (active → standby)
-
-
-4. Host services disable command
-
-
-
-rather than:
-
-etcd crash ❌
-
-rabbit crash ❌
-
-postgres crash ❌
-
-Kubernetes failure ❌
-
-
-
----
-
-Run this first
-
-grep -B20 -A50 "09:41:57" /var/log/sm.log
-
-and
-
-grep -iE "swact|lock|disable|shutdown|reboot" /var/log/sm.log | tail -100
-
-The sm-service.log only shows the effect (services being disabled). The actual reason is usually recorded in sm.log, and that should tell us whether it was a host lock, swact, reboot, or an administrative disable.
+sysadmin@controller-0:~$ grep -iE "swact|active|standby" /var/log/nfv-vim.log
+sysadmin@controller-0:~$ grep -iE "swact|lock|disable|shutdown|reboot" /var/log/sm.log | tail -100
+2026-06-22T06:43:34.968 controller-0 sm: debug time[342115.173] log<565205> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:35.468 controller-0 sm: debug time[342115.673] log<565206> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:35.969 controller-0 sm: debug time[342116.174] log<565207> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:36.469 controller-0 sm: debug time[342116.674] log<565208> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:36.970 controller-0 sm: debug time[342117.174] log<565209> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:37.470 controller-0 sm: debug time[342117.675] log<565210> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:37.971 controller-0 sm: debug time[342118.175] log<565211> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:38.470 controller-0 sm: debug time[342118.675] log<565212> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:38.971 controller-0 sm: debug time[342119.176] log<565213> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:39.471 controller-0 sm: debug time[342119.676] log<565214> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:39.972 controller-0 sm: debug time[342120.177] log<565215> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:40.472 controller-0 sm: debug time[342120.677] log<565216> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:40.973 controller-0 sm: debug time[342121.177] log<565217> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:41.473 controller-0 sm: debug time[342121.677] log<565218> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:41.973 controller-0 sm: debug time[342122.178] log<565219> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:42.473 controller-0 sm: debug time[342122.678] log<565220> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:42.974 controller-0 sm: debug time[342123.179] log<565221> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:43.474 controller-0 sm: debug time[342123.679] log<565222> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:43.975 controller-0 sm: debug time[342124.179] log<565223> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:44.475 controller-0 sm: debug time[342124.680] log<565224> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:44.975 controller-0 sm: debug time[342125.180] log<565225> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:45.476 controller-0 sm: debug time[342125.680] log<565226> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:45.976 controller-0 sm: debug time[342126.181] log<565227> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:46.476 controller-0 sm: debug time[342126.681] log<565228> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:46.977 controller-0 sm: debug time[342127.182] log<565229> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:47.477 controller-0 sm: debug time[342127.682] log<565230> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:47.978 controller-0 sm: debug time[342128.183] log<565231> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:48.478 controller-0 sm: debug time[342128.683] log<565232> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:48.979 controller-0 sm: debug time[342129.183] log<565233> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:49.479 controller-0 sm: debug time[342129.684] log<565234> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:49.980 controller-0 sm: debug time[342130.184] log<565235> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:50.480 controller-0 sm: debug time[342130.684] log<565236> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:50.980 controller-0 sm: debug time[342131.185] log<565237> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:51.480 controller-0 sm: debug time[342131.685] log<565238> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:51.981 controller-0 sm: debug time[342132.186] log<565239> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:52.481 controller-0 sm: debug time[342132.686] log<565240> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:52.982 controller-0 sm: debug time[342133.186] log<565241> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:53.482 controller-0 sm: debug time[342133.687] log<565242> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:53.983 controller-0 sm: debug time[342134.187] log<565243> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:54.483 controller-0 sm: debug time[342134.687] log<565244> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:54.983 controller-0 sm: debug time[342135.188] log<565245> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:55.483 controller-0 sm: debug time[342135.688] log<565246> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:55.984 controller-0 sm: debug time[342136.189] log<565247> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:56.484 controller-0 sm: debug time[342136.689] log<565248> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:56.985 controller-0 sm: debug time[342137.189] log<565249> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:57.485 controller-0 sm: debug time[342137.690] log<565250> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:57.985 controller-0 sm: debug time[342138.190] log<565251> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:58.485 controller-0 sm: debug time[342138.690] log<565252> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:58.986 controller-0 sm: debug time[342139.191] log<565253> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:59.486 controller-0 sm: debug time[342139.691] log<565254> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:43:59.987 controller-0 sm: debug time[342140.192] log<565255> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:00.487 controller-0 sm: debug time[342140.692] log<565256> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:00.988 controller-0 sm: debug time[342141.192] log<565257> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:01.488 controller-0 sm: debug time[342141.692] log<565258> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:01.988 controller-0 sm: debug time[342142.193] log<565259> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:02.488 controller-0 sm: debug time[342142.693] log<565260> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:02.989 controller-0 sm: debug time[342143.194] log<565261> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:03.489 controller-0 sm: debug time[342143.694] log<565262> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:03.990 controller-0 sm: debug time[342144.194] log<565263> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:04.490 controller-0 sm: debug time[342144.695] log<565264> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:04.990 controller-0 sm: debug time[342145.195] log<565265> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:05.490 controller-0 sm: debug time[342145.695] log<565266> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:05.991 controller-0 sm: debug time[342146.196] log<565267> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:06.491 controller-0 sm: debug time[342146.696] log<565268> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:06.992 controller-0 sm: debug time[342147.197] log<565269> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:07.492 controller-0 sm: debug time[342147.697] log<565270> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:07.993 controller-0 sm: debug time[342148.197] log<565271> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:08.493 controller-0 sm: debug time[342148.697] log<565272> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:08.993 controller-0 sm: debug time[342149.198] log<565273> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:09.493 controller-0 sm: debug time[342149.698] log<565274> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:09.994 controller-0 sm: debug time[342150.199] log<565275> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:10.494 controller-0 sm: debug time[342150.699] log<565276> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:10.995 controller-0 sm: debug time[342151.199] log<565277> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:11.495 controller-0 sm: debug time[342151.700] log<565278> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:11.995 controller-0 sm: debug time[342152.200] log<565279> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:12.498 controller-0 sm: debug time[342152.703] log<565283> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:12.998 controller-0 sm: debug time[342153.203] log<565284> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:13.499 controller-0 sm: debug time[342153.703] log<565285> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:13.999 controller-0 sm: debug time[342154.204] log<565286> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:14.499 controller-0 sm: debug time[342154.704] log<565287> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:15.000 controller-0 sm: debug time[342155.205] log<565288> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:15.500 controller-0 sm: debug time[342155.705] log<565289> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:16.001 controller-0 sm: debug time[342156.205] log<565290> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:16.501 controller-0 sm: debug time[342156.706] log<565291> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:17.002 controller-0 sm: debug time[342157.206] log<565292> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:17.502 controller-0 sm: debug time[342157.706] log<565293> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:18.002 controller-0 sm: debug time[342158.207] log<565294> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:18.502 controller-0 sm: debug time[342158.707] log<565295> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:19.003 controller-0 sm: debug time[342159.208] log<565296> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:19.503 controller-0 sm: debug time[342159.708] log<565297> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:20.004 controller-0 sm: debug time[342160.209] log<565298> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:20.504 controller-0 sm: debug time[342160.709] log<565299> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:21.005 controller-0 sm: debug time[342161.209] log<565300> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:21.505 controller-0 sm: debug time[342161.709] log<565301> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:22.005 controller-0 sm: debug time[342162.210] log<565302> INFO: sm[23154]: sm_service_engine.c(94): service cert-mon (state: initial, desired state: initial) to check dependency require disable, skipped
+2026-06-22T06:44:22.506 controller-0 sm: debug time[342162.711] log<6> INFO: sm_service_hb[23217]: sm_service_heartbeat_thread.c(212): Shutdown complete.
+2026-06-22T06:44:27.494 controller-0 sm: debug time[342167.699] log<5> INFO: sm_trap[23184]: sm_trap_thread.c(686): Shutdown complete.
+2026-06-22T06:44:27.494 controller-0 sm: debug Shutdown complete.
+2026-06-22T06:51:28.678 controller-0 sm: debug time[149.028] log<41> INFO: sm[23371]: sm_node_fsm.c(422): Node (controller-0) received event (audit) was in the unknown state and is now in the disabled.
+2026-06-22T06:51:28.678 controller-0 sm: debug time[149.028] log<43> INFO: sm[23371]: sm_service_domain_interface_fsm.c(481): Service domain (controller) interface (oam-interface) received event (node-disabled) was in the unknown state and is now in the disabled.
+sysadmin@controller-0:~$
