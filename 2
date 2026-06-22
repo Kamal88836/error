@@ -1,173 +1,123 @@
-sysadmin@controller-0:~$ grep "2026-06-12T09:41" /var/log/sysinv.log
-sysadmin@controller-0:~$ grep -B20 -A20 "09:41" /var/log/sysinv.log
-sysinv 2026-06-12 09:09:35.737 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application rook-ceph (24.09-66) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'apply', 'extra': {}}.
-sysinv 2026-06-12 09:09:35.737 29806 INFO k8sapp_rook_ceph.lifecycle.lifecycle_rook_ceph [-] Pre-apply semantic checks
-sysinv 2026-06-12 09:09:35.783 29806 INFO sysinv.conductor.manager [-] Auto-apply failed prerequisites for rook-ceph: Cannot apply application: missing ceph-rook storage backend.
-sysinv 2026-06-12 09:09:35.787 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:09:35.802 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:09:37.107 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application platform-integ-apps (24.09-143) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:09:37.110 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:09:37.125 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:09:37.147 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:09:37.166 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:09:38.529 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application metrics-server (24.09-59) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:09:38.533 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:09:38.547 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:09:38.568 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:09:38.585 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:09:39.917 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application deployment-manager (24.09-28) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:09:39.920 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:09:39.933 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:09:39.952 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:09:39.967 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:09:41.335 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application nginx-ingress-controller (24.09-65) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:09:41.338 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:09:41.351 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:09:58.741 29806 INFO sysinv.common.kubernetes [-] Checking Kubernetes health...
-sysinv 2026-06-12 09:09:58.757 29806 INFO sysinv.common.kubernetes [-] All Kubernetes endpoints are healthy.
-sysinv 2026-06-12 09:10:25.288 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] iscsi initiator name = iqn.2018-05.io.starlingx:fe908067287e
-sysinv 2026-06-12 09:10:25.296 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] nvme host id = 5e1a7453-7915-49a7-ab7a-41868c93d8e5
-sysinv 2026-06-12 09:10:25.303 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] nvme host nqn = nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1
-sysinv 2026-06-12 09:10:25.305 29806 INFO sysinv.conductor.manager [-] Updating platform data for host: aee89f19-26a8-4c16-86fb-e8aaaae081de with: {'iscsi_initiator_name': 'iqn.2018-05.io.starlingx:fe908067287e', 'nvme_host_id': '5e1a7453-7915-49a7-ab7a-41868c93d8e5', 'nvme_host_nqn': 'nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1', 'first_report': False}
-sysinv 2026-06-12 09:10:25.317 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] Sysinv Agent platform update by host: {'iscsi_initiator_name': 'iqn.2018-05.io.starlingx:fe908067287e', 'nvme_host_id': '5e1a7453-7915-49a7-ab7a-41868c93d8e5', 'nvme_host_nqn': 'nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1', 'first_report': False}
-sysinv 2026-06-12 09:10:28.045 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:10:36.137 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:10:36.154 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:10:36.309 29806 INFO sysinv.common.kubernetes [-] Checking Kubernetes health...
-sysinv 2026-06-12 09:10:36.328 29806 INFO sysinv.common.kubernetes [-] All Kubernetes endpoints are healthy.
-sysinv 2026-06-12 09:10:36.432 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:10:36.447 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:10:37.800 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application cert-manager (24.09-79) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:10:37.803 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:10:37.817 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:10:37.836 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application rook-ceph (24.09-66) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'apply', 'extra': {}}.
-sysinv 2026-06-12 09:10:37.836 29806 INFO k8sapp_rook_ceph.lifecycle.lifecycle_rook_ceph [-] Pre-apply semantic checks
-sysinv 2026-06-12 09:10:37.880 29806 INFO sysinv.conductor.manager [-] Auto-apply failed prerequisites for rook-ceph: Cannot apply application: missing ceph-rook storage backend.
---
-sysinv 2026-06-12 09:40:15.592 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:40:15.614 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:40:15.648 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:40:15.668 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:40:16.993 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application deployment-manager (24.09-28) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:40:16.996 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:40:17.028 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:40:17.051 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:40:17.070 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:40:18.413 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application nginx-ingress-controller (24.09-65) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:40:18.416 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:40:18.430 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:40:44.741 29806 INFO sysinv.common.kubernetes [-] Checking Kubernetes health...
-sysinv 2026-06-12 09:40:44.757 29806 INFO sysinv.common.kubernetes [-] All Kubernetes endpoints are healthy.
-sysinv 2026-06-12 09:40:51.128 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] iscsi initiator name = iqn.2018-05.io.starlingx:fe908067287e
-sysinv 2026-06-12 09:40:51.136 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] nvme host id = 5e1a7453-7915-49a7-ab7a-41868c93d8e5
-sysinv 2026-06-12 09:40:51.145 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] nvme host nqn = nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1
-sysinv 2026-06-12 09:40:51.147 29806 INFO sysinv.conductor.manager [-] Updating platform data for host: aee89f19-26a8-4c16-86fb-e8aaaae081de with: {'iscsi_initiator_name': 'iqn.2018-05.io.starlingx:fe908067287e', 'nvme_host_id': '5e1a7453-7915-49a7-ab7a-41868c93d8e5', 'nvme_host_nqn': 'nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1', 'first_report': False}
-sysinv 2026-06-12 09:40:51.160 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] Sysinv Agent platform update by host: {'iscsi_initiator_name': 'iqn.2018-05.io.starlingx:fe908067287e', 'nvme_host_id': '5e1a7453-7915-49a7-ab7a-41868c93d8e5', 'nvme_host_nqn': 'nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1', 'first_report': False}
-sysinv 2026-06-12 09:40:53.881 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:41:12.156 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:41:12.173 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:41:12.187 29806 INFO sysinv.common.kubernetes [-] Checking Kubernetes health...
-sysinv 2026-06-12 09:41:12.205 29806 INFO sysinv.common.kubernetes [-] All Kubernetes endpoints are healthy.
-sysinv 2026-06-12 09:41:12.301 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:41:12.315 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:41:13.666 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application cert-manager (24.09-79) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:41:13.670 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:41:13.686 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:41:13.700 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application rook-ceph (24.09-66) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'apply', 'extra': {}}.
-sysinv 2026-06-12 09:41:13.700 29806 INFO k8sapp_rook_ceph.lifecycle.lifecycle_rook_ceph [-] Pre-apply semantic checks
-sysinv 2026-06-12 09:41:13.739 29806 INFO sysinv.conductor.manager [-] Auto-apply failed prerequisites for rook-ceph: Cannot apply application: missing ceph-rook storage backend.
-sysinv 2026-06-12 09:41:13.743 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:41:13.758 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:41:15.070 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application platform-integ-apps (24.09-143) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:41:15.073 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:41:15.086 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:41:15.101 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:41:15.123 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:41:16.475 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application metrics-server (24.09-59) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:41:16.479 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:41:16.492 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:41:16.509 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:41:16.526 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:41:17.881 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application deployment-manager (24.09-28) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:41:17.885 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:41:17.898 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:41:17.926 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:41:17.941 29806 INFO sysinv.common.rest_api [-] GET cmd:http://localhost:30001/nfvi-plugins/v1/sw-update hdr:{'Content-type': 'application/json', 'User-Agent': 'sysinv/1.0'} payload:None
-sysinv 2026-06-12 09:41:19.301 29806 INFO sysinv.conductor.kube_app [-] lifecycle hook for application nginx-ingress-controller (24.09-65) started {'mode': 'auto', 'lifecycle_type': 'check', 'relative_timing': 'pre', 'operation': 'update', 'extra': {'from_app': True}}.
-sysinv 2026-06-12 09:41:19.304 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/release hdr:None payload:None
-sysinv 2026-06-12 09:41:19.318 29806 INFO sysinv.api.controllers.v1.kube_app [-] Platform operation is not in progress
-sysinv 2026-06-12 09:41:53.939 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] iscsi initiator name = iqn.2018-05.io.starlingx:fe908067287e
-sysinv 2026-06-12 09:41:53.948 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] nvme host id = 5e1a7453-7915-49a7-ab7a-41868c93d8e5
-sysinv 2026-06-12 09:41:53.955 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] nvme host nqn = nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1
-sysinv 2026-06-12 09:41:53.957 29806 INFO sysinv.conductor.manager [-] Updating platform data for host: aee89f19-26a8-4c16-86fb-e8aaaae081de with: {'iscsi_initiator_name': 'iqn.2018-05.io.starlingx:fe908067287e', 'nvme_host_id': '5e1a7453-7915-49a7-ab7a-41868c93d8e5', 'nvme_host_nqn': 'nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1', 'first_report': False}
-sysinv 2026-06-12 09:41:53.968 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] Sysinv Agent platform update by host: {'iscsi_initiator_name': 'iqn.2018-05.io.starlingx:fe908067287e', 'nvme_host_id': '5e1a7453-7915-49a7-ab7a-41868c93d8e5', 'nvme_host_nqn': 'nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1', 'first_report': False}
-sysinv 2026-06-12 09:41:56.729 29806 INFO sysinv.common.rest_api [-] GET cmd:http://192.168.204.1:5497/v1/deploy/software_upgrade hdr:None payload:None
-sysinv 2026-06-12 09:42:02.577 29850 INFO oslo_service.service [-] Caught SIGTERM, stopping children
-sysinv 2026-06-12 09:42:02.580 29850 INFO oslo.service.wsgi [-] Stopping WSGI server.
-sysinv 2026-06-12 09:42:02.583 29850 INFO oslo_service.service [-] Waiting on 1 children to exit
-sysinv 2026-06-12 09:42:02.585 30634 INFO oslo.service.wsgi [-] Stopping WSGI server.
-sysinv 2026-06-12 09:42:02.646 29850 INFO oslo_service.service [-] Child 30634 exited with status 0
-sysinv 2026-06-12 09:42:02.651 29850 INFO oslo_service.service [-] Caught SIGTERM, stopping children
-sysinv 2026-06-12 09:42:02.651 29850 INFO oslo.service.wsgi [-] Stopping WSGI server.
-sysinv 2026-06-12 09:42:02.652 29850 INFO oslo_service.service [-] Waiting on 1 children to exit
-sysinv 2026-06-12 09:42:02.653 30635 INFO oslo.service.wsgi [-] Stopping WSGI server.
-sysinv 2026-06-12 09:42:02.682 29850 INFO oslo_service.service [-] Child 30635 exited with status 0
-sysinv 2026-06-12 09:43:56.804 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] ilvg_get_nova_ilvg_by_ihost() Timeout.
-sysinv 2026-06-12 09:43:56.817 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] iscsi initiator name = iqn.2018-05.io.starlingx:fe908067287e
-sysinv 2026-06-12 09:43:56.827 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] nvme host id = 5e1a7453-7915-49a7-ab7a-41868c93d8e5
-sysinv 2026-06-12 09:43:56.838 6718 INFO sysinv.agent.manager [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] nvme host nqn = nqn.2014-08.org.nvmexpress:uuid:c3c2a8e2-74fe-4c41-95fa-99dbefed86d1
-sysinv 2026-06-12 09:44:56.901 6718 ERROR oslo_service.periodic_task [req-aca4829e-cd0c-4daf-b9ff-3a4e6ca3429d None None] Error during AgentManager._inventory_audit: sysinv.openstack.common.rpc.common.Timeout: Timeout while waiting on RPC response - topic: "sysinv.conductor_manager", RPC method: "iplatform_update_by_ihost" info: "<unknown>"
-2026-06-12 09:44:56.901 6718 ERROR oslo_service.periodic_task Traceback (most recent call last):
-2026-06-12 09:44:56.901 6718 ERROR oslo_service.periodic_task   File "/usr/lib/python3/dist-packages/zerorpc/channel.py", line 251, in recv
-2026-06-12 09:44:56.901 6718 ERROR oslo_service.periodic_task     event = self._input_queue.get(timeout=timeout)
-2026-06-12 09:44:56.901 6718 ERROR oslo_service.periodic_task   File "/usr/lib/python3/dist-packages/eventlet/queue.py", line 322, in get
-2026-06-12 09:44:56.901 6718 ERROR oslo_service.periodic_task     return waiter.wait()
---
-sysinv 2026-06-19 01:09:30.686 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device eno12409 after querying link speed
-sysinv 2026-06-19 01:09:32.817 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp101s0f2 to query link speed
-sysinv 2026-06-19 01:09:33.059 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp101s0f2 (link operstate: down)
-sysinv 2026-06-19 01:09:33.060 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp101s0f2 after querying link speed
-sysinv 2026-06-19 01:09:34.500 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp177s0f0 to query link speed
-sysinv 2026-06-19 01:09:34.845 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp177s0f0 (link operstate: down)
-sysinv 2026-06-19 01:09:34.845 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp177s0f0 after querying link speed
-sysinv 2026-06-19 01:09:35.662 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp177s0f1 to query link speed
-sysinv 2026-06-19 01:09:35.847 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp177s0f1 (link operstate: down)
-sysinv 2026-06-19 01:09:35.847 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp177s0f1 after querying link speed
-sysinv 2026-06-19 01:09:36.644 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp177s0f2 to query link speed
-sysinv 2026-06-19 01:09:36.838 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp177s0f2 (link operstate: down)
-sysinv 2026-06-19 01:09:36.838 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp177s0f2 after querying link speed
-sysinv 2026-06-19 01:09:37.624 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp177s0f3 to query link speed
-sysinv 2026-06-19 01:09:37.827 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp177s0f3 (link operstate: down)
-sysinv 2026-06-19 01:09:37.827 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp177s0f3 after querying link speed
-sysinv 2026-06-19 01:09:39.910 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp202s0f2 to query link speed
-sysinv 2026-06-19 01:09:40.071 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp202s0f2 (link operstate: down)
-sysinv 2026-06-19 01:09:40.071 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp202s0f2 after querying link speed
-sysinv 2026-06-19 01:09:40.867 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp202s0f3 to query link speed
-sysinv 2026-06-19 01:09:41.086 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp202s0f3 (link operstate: down)
-sysinv 2026-06-19 01:09:41.087 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp202s0f3 after querying link speed
-sysinv 2026-06-19 01:10:41.398 7008 INFO sysinv.agent.manager [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] get_ihost_by_macs rpc Timeout.
-sysinv 2026-06-19 01:20:31.819 7008 INFO sysinv.agent.manager [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] get_ihost failed due RPC timeout.
-sysinv 2026-06-19 01:20:31.819 7008 INFO sysinv.agent.manager [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] _report_to_conductor initial_reports_required={'port', 'pv', 'kernel', 'host_filesystems', 'pci_device', 'cpu', 'numa', 'disk', 'memory', 'lvg'}
-sysinv 2026-06-19 01:20:31.819 7008 INFO sysinv.agent.manager [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Sysinv no matching ihost found... await Audit
-sysinv 2026-06-19 01:21:31.880 7008 INFO sysinv.agent.manager [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] _report_to_conductor initial_reports_required={'port', 'pv', 'kernel', 'host_filesystems', 'pci_device', 'cpu', 'numa', 'disk', 'memory', 'lvg'}
-sysinv 2026-06-19 01:21:31.880 7008 INFO sysinv.agent.manager [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Sysinv Agent audit running inv_get_and_report.
-sysinv 2026-06-19 01:21:32.566 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device eno8303 to query link speed
-sysinv 2026-06-19 01:21:32.704 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: eno8303 (link operstate: down)
-sysinv 2026-06-19 01:21:32.704 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device eno8303 after querying link speed
-sysinv 2026-06-19 01:21:33.540 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device eno8403 to query link speed
-sysinv 2026-06-19 01:21:33.677 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: eno8403 (link operstate: down)
-sysinv 2026-06-19 01:21:33.678 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device eno8403 after querying link speed
-sysinv 2026-06-19 01:21:34.534 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp23s0f0 to query link speed
-sysinv 2026-06-19 01:21:34.827 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp23s0f0 (link operstate: down)
-sysinv 2026-06-19 01:21:34.828 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp23s0f0 after querying link speed
-sysinv 2026-06-19 01:21:35.635 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp23s0f1 to query link speed
-sysinv 2026-06-19 01:21:35.875 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp23s0f1 (link operstate: down)
-sysinv 2026-06-19 01:21:35.876 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Disabling device enp23s0f1 after querying link speed
-sysinv 2026-06-19 01:21:36.652 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Enabling device enp23s0f2 to query link speed
-sysinv 2026-06-19 01:21:36.848 7008 WARNING sysinv.agent.pci [req-c130d80f-8bd2-4dca-abfe-ba9cd98a5881 None None] Port speed detected as -1 for: enp23s0f2 (link operstate: down)
-sysadmin@controller-0:~$ grep "Jun 12 09:41" /var/log/syslog
-sysadmin@controller-0:~$ grep "2026-06-12T09:41" /var/log/syslog
-2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: info Accepting connections; addr='AF_UNIX(/var/www/dev/log)'
-2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: notice Configuration reload request received, reloading configuration;
-2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: notice Configuration reload finished;
-sysadmin@controller-0:~$
+The logs are actually very revealing.
+
+What we know
+
+At 09:41:57 SM started disabling every platform service:
+
+cert-alarm
+cert-mon
+docker-distribution
+etcd
+postgres
+rabbit
+sysinv
+keystone
+vim
+...
+
+This is a platform shutdown sequence, not an individual service failure.
+
+Then in sysinv.log:
+
+09:42:02 Caught SIGTERM, stopping children
+09:42:02 Stopping WSGI server
+09:42:02 Child exited with status 0
+
+So sysinv was gracefully terminated by SIGTERM, not crashed.
+
+Also immediately before the shutdown:
+
+09:41:12 All Kubernetes endpoints are healthy.
+
+Therefore:
+
+Kubernetes was healthy.
+
+etcd was healthy.
+
+Services did not fail themselves.
+
+Something instructed SM to stop the service group.
+
+
+
+---
+
+The missing piece
+
+The actual trigger is usually in one of these logs:
+
+/var/log/sm.log
+/var/log/sm-api.log
+/var/log/mtcAgent.log
+/var/log/mtcClient.log
+/var/log/nfv-vim.log
+
+Search around the timestamp:
+
+grep -B50 -A50 "09:41:57" /var/log/sm.log
+
+and
+
+grep -iE "lock|unlock|swact|disable|active|standby|shutdown|reboot" /var/log/sm.log
+
+
+---
+
+Check if controller was locked/swacted
+
+grep -iE "lock|swact" /var/log/mtcAgent.log
+
+grep -iE "lock|swact" /var/log/mtcClient.log
+
+grep -iE "swact|active|standby" /var/log/nfv-vim.log
+
+
+---
+
+Most likely scenario
+
+The pattern:
+
+All services disabled
+sysinv receives SIGTERM
+No service failures before disable
+
+is typical of:
+
+1. Controller lock
+
+
+2. Controller reboot
+
+
+3. Swact (active → standby)
+
+
+4. Host services disable command
+
+
+
+rather than:
+
+etcd crash ❌
+
+rabbit crash ❌
+
+postgres crash ❌
+
+Kubernetes failure ❌
+
+
+
+---
+
+Run this first
+
+grep -B20 -A50 "09:41:57" /var/log/sm.log
+
+and
+
+grep -iE "swact|lock|disable|shutdown|reboot" /var/log/sm.log | tail -100
+
+The sm-service.log only shows the effect (services being disabled). The actual reason is usually recorded in sm.log, and that should tell us whether it was a host lock, swact, reboot, or an administrative disable.
