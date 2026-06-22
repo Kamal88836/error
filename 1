@@ -1,143 +1,317 @@
-Based on everything you've checked so far, there is no evidence yet that the server froze because of OOM, kernel panic, watchdog reset, or a reboot.
-
-Your findings:
-
-No OOM messages in syslog or kern.log.
-
-No hung-task, soft-lockup, hard-lockup messages.
-
-No reboot on June 12 (last reboot shows June 10 → June 18).
-
-SSH was reachable but login was failing/hanging.
-
-No sysstat (sar) data available for historical CPU/memory usage.
-
-No sshd/systemd-logind errors around 09:41.
-
-
-This leaves a few likely possibilities:
-
-1. Authentication backend issue (most likely if SSH accepted connections)
-
-If SSH port was reachable but login never completed:
-
-LDAP/AD server unreachable
-
-DNS resolution issue
-
-SSSD hung
-
-PAM authentication timeout
-
-
-Check whether SSSD is being used:
-
-grep passwd /etc/nsswitch.conf
-grep group /etc/nsswitch.conf
-
-systemctl status sssd
-
-Look for June 12 logs:
-
-zgrep "2026-06-12" /var/log/auth.log*
-zgrep "2026-06-12" /var/log/secure*
-
-Depending on distro one of these files exists.
-
-
----
-
-2. Disk space exhaustion
-
-When /, /var, or /run become full:
-
-Existing sessions keep working.
-
-New logins fail or hang.
-
-Services become unresponsive.
-
-
-Check current state:
-
-df -h
-df -i
-
-And search for June 12 filesystem errors:
-
-grep "2026-06-12" /var/log/syslog | grep -i "no space"
-grep "2026-06-12" /var/log/syslog | grep -i "read-only"
-
-
----
-
-3. Process exhaustion
-
-If the host hit PID limits:
-
-fork: retry: Resource temporarily unavailable
-
-new SSH logins fail while the machine still pings and accepts TCP connections.
-
-Search:
-
-grep -i "Resource temporarily unavailable" /var/log/syslog
-grep -i "fork" /var/log/syslog
-
-
----
-
-4. StarlingX service issue
-
-Since this is a StarlingX controller, check whether maintenance/fault-management services reported problems around that time:
-
-strings /var/log/mtcAgent.log | grep "2026-06-12"
-strings /var/log/mtcClient.log | grep "2026-06-12"
-
-Also:
-
-grep "2026-06-12" /var/log/fmManager.log
-grep "2026-06-12" /var/log/sm.log
-
-
----
-
-Most useful next check
-
-Since you know the exact timestamp (12-Jun-2026 09:41), run:
-
-grep "2026-06-12T09:4" /var/log/syslog
-
-and also:
-
-grep "2026-06-12T09:4" /var/log/auth.log
-
-or
-
-grep "2026-06-12T09:4" /var/log/secure
-
-Additionally, check whether logs were rotated:
-
-ls -ltr /var/log/syslog*
-ls -ltr /var/log/auth.log*
+sysadmin@controller-0:~$ cat /var/log/syslog | grep -i "no space"
+sysadmin@controller-0:~$ cat /var/log/syslog | grep -i "read-only"
+sysadmin@controller-0:~$ grep -i "Resource temporarily unavailable" /var/log/syslog
+sysadmin@controller-0:~$ grep -i "fork" /var/log/syslog
+sysadmin@controller-0:~$ strings /var/log/mtcAgent.log | grep "2026-06-12"
+2026-06-11T23:02:18.341 [31621.00396] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [54c34f77a0944c5f628b2a613f660568] [Expiry: 2026-06-12 00:02:18]
+2026-06-11T23:22:18.309 [31621.00398] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [0147b99abcd371f02d7b438534a07f32] [Expiry: 2026-06-12 00:22:18]
+2026-06-11T23:42:18.349 [31621.00400] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [dace04a84d47bbed359d8a3ef54eb59f] [Expiry: 2026-06-12 00:42:18]
+2026-06-12T00:02:17.912 [31621.00401] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T00:02:18.312 [31621.00402] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [ede33a1e41d5e65e757cb85c7a81bba4] [Expiry: 2026-06-12 01:02:18]
+2026-06-12T00:22:17.913 [31621.00403] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T00:22:18.310 [31621.00404] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [07628322d727d349032c8b106dca2b1d] [Expiry: 2026-06-12 01:22:18]
+2026-06-12T00:42:17.913 [31621.00405] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T00:42:18.292 [31621.00406] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [fa6fe6ae2ce7dab6e5de88889d80c59d] [Expiry: 2026-06-12 01:42:18]
+2026-06-12T01:02:17.913 [31621.00407] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T01:02:18.302 [31621.00408] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [ca7af2ec7bae27c3082f9980a3d974a2] [Expiry: 2026-06-12 02:02:18]
+2026-06-12T01:08:07.927 [31621.00409] controller-0 mtcAgent hbs nodeClass.cpp     (6256) log_process_failure     : Warn : controller-0 pmon: 'ceph' process failed and is being auto recovered
+2026-06-12T01:22:17.914 [31621.00410] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T01:22:18.353 [31621.00411] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [7e6bcd8693014ad4e82ccc44dd30c635] [Expiry: 2026-06-12 02:22:18]
+2026-06-12T01:42:17.914 [31621.00412] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T01:42:18.315 [31621.00413] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [33ddc32f2485eeb1ad50c8012bd57af7] [Expiry: 2026-06-12 02:42:18]
+2026-06-12T02:02:17.915 [31621.00414] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T02:02:18.305 [31621.00415] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [41566f25147cd3f8528e1ae2476a20ca] [Expiry: 2026-06-12 03:02:18]
+2026-06-12T02:22:17.915 [31621.00416] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T02:22:18.377 [31621.00417] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [9807c7132ef3b8deb04e781fdeb6334c] [Expiry: 2026-06-12 03:22:18]
+2026-06-12T02:42:17.915 [31621.00418] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T02:42:18.286 [31621.00419] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [c1f5a6809c0782b34af54ad2938c52b7] [Expiry: 2026-06-12 03:42:18]
+2026-06-12T03:02:17.916 [31621.00420] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T03:02:18.368 [31621.00421] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [f9dead6446d19b8cb33ed09832b1e7e2] [Expiry: 2026-06-12 04:02:18]
+2026-06-12T03:22:17.916 [31621.00422] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T03:22:18.308 [31621.00423] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [7ffbfaa2a711b7017c61a8512258c46f] [Expiry: 2026-06-12 04:22:18]
+2026-06-12T03:42:17.916 [31621.00424] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T03:42:18.309 [31621.00425] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [0ddd6b5d6b3a5f9826fb23d98a9d01f3] [Expiry: 2026-06-12 04:42:18]
+2026-06-12T04:02:17.917 [31621.00426] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T04:02:18.289 [31621.00427] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [09ec402e0f98f42c1fe89f5f6aa6ac00] [Expiry: 2026-06-12 05:02:18]
+2026-06-12T04:22:17.917 [31621.00428] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T04:22:18.351 [31621.00429] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [b90e3c2a397f9ef446e86dccadb7d7c5] [Expiry: 2026-06-12 05:22:18]
+2026-06-12T04:42:17.918 [31621.00430] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T04:42:18.301 [31621.00431] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [361d6afdcf20002243b993be5fc052f1] [Expiry: 2026-06-12 05:42:18]
+2026-06-12T05:02:17.918 [31621.00432] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T05:02:18.319 [31621.00433] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [b7c3b9adad109dba757837b088c55694] [Expiry: 2026-06-12 06:02:18]
+2026-06-12T05:22:17.919 [31621.00434] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T05:22:18.312 [31621.00435] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [22b4a0346d5acf48b072b45df3f20ea5] [Expiry: 2026-06-12 06:22:18]
+2026-06-12T05:42:17.919 [31621.00436] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T05:42:18.303 [31621.00437] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [d529b4798eecdeeeb01f61e73b042927] [Expiry: 2026-06-12 06:42:18]
+2026-06-12T06:02:17.919 [31621.00438] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T06:02:18.315 [31621.00439] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [a44a4c8af06f99acb5a246af151bb0a8] [Expiry: 2026-06-12 07:02:18]
+2026-06-12T06:22:17.920 [31621.00440] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T06:22:18.314 [31621.00441] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [7b94915d4c9652bdbfab4135757aa65b] [Expiry: 2026-06-12 07:22:18]
+2026-06-12T06:42:17.920 [31621.00442] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T06:42:18.316 [31621.00443] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [5e16ad0e2db9403b8d53df20321872e7] [Expiry: 2026-06-12 07:42:18]
+2026-06-12T07:02:17.921 [31621.00444] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T07:02:18.346 [31621.00445] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [a9276ce5595068b1188c46897c10cee8] [Expiry: 2026-06-12 08:02:18]
+2026-06-12T07:22:17.921 [31621.00446] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T07:22:18.349 [31621.00447] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [e49f78730a66cdc784e9ed010481f933] [Expiry: 2026-06-12 08:22:18]
+2026-06-12T07:42:17.921 [31621.00448] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T07:42:18.310 [31621.00449] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [762d0b7a169dadd7830fdf23fc458961] [Expiry: 2026-06-12 08:42:18]
+2026-06-12T08:02:17.921 [31621.00450] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T08:02:18.303 [31621.00451] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [a7bc4b80980eff05c96bb533410135e7] [Expiry: 2026-06-12 09:02:18]
+2026-06-12T08:22:17.922 [31621.00452] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T08:22:18.311 [31621.00453] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [4bfe8ddeed79301f14578ce5137d69ac] [Expiry: 2026-06-12 09:22:18]
+2026-06-12T08:42:17.922 [31621.00454] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T08:42:18.309 [31621.00455] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [c1a2c5b2d3195e66b4a25b2ef95f7754] [Expiry: 2026-06-12 09:42:18]
+2026-06-12T09:02:17.922 [31621.00456] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T09:02:18.324 [31621.00457] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [ae2a6adf365c88faa8efa0d398ac3568] [Expiry: 2026-06-12 10:02:18]
+2026-06-12T09:22:17.923 [31621.00458] controller-0 mtcAgent tok tokenUtil.cpp     ( 720) tokenUtil_new_token     : Info : controller-0 Requesting Authentication Token
+2026-06-12T09:22:18.304 [31621.00459] controller-0 mtcAgent tok tokenUtil.cpp     ( 357) tokenUtil_log_refresh   : Info : Token Refresh: [d45b9a6cce9436951da1a1b79f9eb794] [Expiry: 2026-06-12 10:22:18]
+2026-06-12T09:42:01.141 [31621.00460] controller-0 mtcAgent sig daemon_signal.cpp ( 158) daemon_signal_hdlr      : Info : Received SIGINT
+2026-06-12T09:42:01.145 [31621.00461] controller-0 mtcAgent --- daemon_config.cpp ( 317) daemon_dump_cfg         : Info : Configuration Settings ...
+2026-06-12T09:42:01.145 [31621.00462] controller-0 mtcAgent --- daemon_config.cpp ( 322) daemon_dump_cfg         : Info : active                = Yes
+2026-06-12T09:42:01.145 [31621.00463] controller-0 mtcAgent --- daemon_config.cpp ( 325) daemon_dump_cfg         : Info : token_refresh_rate    = 1200
+2026-06-12T09:42:01.145 [31621.00464] controller-0 mtcAgent --- daemon_config.cpp ( 330) daemon_dump_cfg         : Info : mgmnt_iface           = lo
+2026-06-12T09:42:01.146 [31621.00465] controller-0 mtcAgent --- daemon_config.cpp ( 331) daemon_dump_cfg         : Info : clstr_iface           = lo
+2026-06-12T09:42:01.146 [31621.00466] controller-0 mtcAgent --- daemon_config.cpp ( 334) daemon_dump_cfg         : Info : ha_port               = 7777
+2026-06-12T09:42:01.146 [31621.00467] controller-0 mtcAgent --- daemon_config.cpp ( 335) daemon_dump_cfg         : Info : vim_cmd_port          = 30001
+2026-06-12T09:42:01.146 [31621.00468] controller-0 mtcAgent --- daemon_config.cpp ( 337) daemon_dump_cfg         : Info : mtc_agent_port        = 2101
+2026-06-12T09:42:01.146 [31621.00469] controller-0 mtcAgent --- daemon_config.cpp ( 339) daemon_dump_cfg         : Info : keystone_port         = 5000
+2026-06-12T09:42:01.146 [31621.00470] controller-0 mtcAgent --- daemon_config.cpp ( 342) daemon_dump_cfg         : Info : sysinv_api_port       = 6385
+2026-06-12T09:42:01.146 [31621.00471] controller-0 mtcAgent --- daemon_config.cpp ( 343) daemon_dump_cfg         : Info : uri_path              =
+2026-06-12T09:42:01.147 [31621.00472] controller-0 mtcAgent --- daemon_config.cpp ( 344) daemon_dump_cfg         : Info : keystone_prefix_path  =
+2026-06-12T09:42:01.147 [31621.00473] controller-0 mtcAgent --- daemon_config.cpp ( 345) daemon_dump_cfg         : Info : keystone_auth_host    = 192.168.204.1
+2026-06-12T09:42:01.147 [31621.00474] controller-0 mtcAgent --- daemon_config.cpp ( 346) daemon_dump_cfg         : Info : keystone_identity_uri =
+2026-06-12T09:42:01.147 [31621.00475] controller-0 mtcAgent --- daemon_config.cpp ( 347) daemon_dump_cfg         : Info : keystone_auth_uri     = http://controller.internal:5000
+2026-06-12T09:42:01.147 [31621.00476] controller-0 mtcAgent --- daemon_config.cpp ( 348) daemon_dump_cfg         : Info : keystone_auth_username = mtce
+2026-06-12T09:42:01.147 [31621.00477] controller-0 mtcAgent --- daemon_config.cpp ( 349) daemon_dump_cfg         : Info : keystone_auth_project = services
+2026-06-12T09:42:01.147 [31621.00478] controller-0 mtcAgent --- daemon_config.cpp ( 350) daemon_dump_cfg         : Info : keystone_user_domain  = Default
+2026-06-12T09:42:01.147 [31621.00479] controller-0 mtcAgent --- daemon_config.cpp ( 351) daemon_dump_cfg         : Info : keystone_project_domain  = Default
+2026-06-12T09:42:01.148 [31621.00480] controller-0 mtcAgent --- daemon_config.cpp ( 352) daemon_dump_cfg         : Info : keystone_region_name  = 3048e6b985bd4ca9ab1f2f2ccb919748
+2026-06-12T09:42:01.148 [31621.00481] controller-0 mtcAgent --- daemon_config.cpp ( 353) daemon_dump_cfg         : Info : barbican_api_port     = 9311
+2026-06-12T09:42:01.148 [31621.00482] controller-0 mtcAgent --- daemon_config.cpp ( 354) daemon_dump_cfg         : Info : barbican_api_host     = controller.internal
+2026-06-12T09:42:01.148 [31621.00483] controller-0 mtcAgent --- daemon_config.cpp ( 357) daemon_dump_cfg         : Info : mtc_rx_clstr_port     = 2115
+2026-06-12T09:42:01.148 [31621.00484] controller-0 mtcAgent --- daemon_config.cpp ( 358) daemon_dump_cfg         : Info : mtc_rx_pxeboot_port   = 2102
+2026-06-12T09:42:01.148 [31621.00485] controller-0 mtcAgent --- daemon_config.cpp ( 361) daemon_dump_cfg         : Info : mtc_tx_pxeboot_port   = 2119
+2026-06-12T09:42:01.148 [31621.00486] controller-0 mtcAgent --- daemon_config.cpp ( 364) daemon_dump_cfg         : Info : mtc_to_hbs_cmd_port   = 2104
+2026-06-12T09:42:01.148 [31621.00487] controller-0 mtcAgent --- daemon_config.cpp ( 365) daemon_dump_cfg         : Info : mtc_to_guest_cmd_port = 2108
+2026-06-12T09:42:01.148 [31621.00488] controller-0 mtcAgent --- daemon_config.cpp ( 366) daemon_dump_cfg         : Info : hwmon_cmd_port        = 2114
+2026-06-12T09:42:01.149 [31621.00489] controller-0 mtcAgent --- daemon_config.cpp ( 367) daemon_dump_cfg         : Info : hbs_to_mtc_event_port = 2107
+2026-06-12T09:42:01.149 [31621.00490] controller-0 mtcAgent --- daemon_config.cpp ( 368) daemon_dump_cfg         : Info : inv_event_port        = 2112
+2026-06-12T09:42:01.149 [31621.00491] controller-0 mtcAgent --- daemon_config.cpp ( 371) daemon_dump_cfg         : Info : audit_period          = 50
+2026-06-12T09:42:01.149 [31621.00492] controller-0 mtcAgent --- daemon_config.cpp ( 378) daemon_dump_cfg         : Info : cmd_port              = 2118
+2026-06-12T09:42:01.149 [31621.00493] controller-0 mtcAgent --- daemon_config.cpp ( 381) daemon_dump_cfg         : Info : api_retries           = 10
+2026-06-12T09:42:01.149 [31621.00494] controller-0 mtcAgent --- daemon_config.cpp ( 384) daemon_dump_cfg         : Info : mask                  = c3db202
+2026-06-12T09:42:01.149 [31621.00495] controller-0 mtcAgent --- daemon_config.cpp ( 385) daemon_dump_cfg         : Info : mode                  = none
+2026-06-12T09:42:01.150 [31621.00496] controller-0 mtcAgent --- daemon_config.cpp ( 388) daemon_dump_cfg         : Info : stall_pmon_thld       = 1250
+2026-06-12T09:42:01.150 [31621.00497] controller-0 mtcAgent --- daemon_config.cpp ( 389) daemon_dump_cfg         : Info : stall_mon_period      = 120
+2026-06-12T09:42:01.150 [31621.00498] controller-0 mtcAgent --- daemon_config.cpp ( 390) daemon_dump_cfg         : Info : stall_poll_period     = 20
+2026-06-12T09:42:01.150 [31621.00499] controller-0 mtcAgent --- daemon_config.cpp ( 391) daemon_dump_cfg         : Info : stall_rec_thld        = 2
+2026-06-12T09:42:01.150 [31621.00500] controller-0 mtcAgent --- daemon_config.cpp ( 394) daemon_dump_cfg         : Info : controller_mtcalive_to= 1200
+2026-06-12T09:42:01.150 [31621.00501] controller-0 mtcAgent --- daemon_config.cpp ( 395) daemon_dump_cfg         : Info : compute_mtcalive_to   = 720
+2026-06-12T09:42:01.150 [31621.00502] controller-0 mtcAgent --- daemon_config.cpp ( 396) daemon_dump_cfg         : Info : goenabled_timeout     = 600
+2026-06-12T09:42:01.150 [31621.00503] controller-0 mtcAgent --- daemon_config.cpp ( 397) daemon_dump_cfg         : Info : swact_timeout         = 120
+2026-06-12T09:42:01.150 [31621.00504] controller-0 mtcAgent --- daemon_config.cpp ( 398) daemon_dump_cfg         : Info : sysinv_timeout        = 20
+2026-06-12T09:42:01.150 [31621.00505] controller-0 mtcAgent --- daemon_config.cpp ( 399) daemon_dump_cfg         : Info : sysinv_noncrit_timeout= 10
+2026-06-12T09:42:01.150 [31621.00506] controller-0 mtcAgent --- daemon_config.cpp ( 400) daemon_dump_cfg         : Info : work_queue_timeout    = 200
+2026-06-12T09:42:01.151 [31621.00507] controller-0 mtcAgent --- daemon_config.cpp ( 401) daemon_dump_cfg         : Info : loc_recovery_timeout  = 5
+2026-06-12T09:42:01.151 [31621.00508] controller-0 mtcAgent --- daemon_config.cpp ( 402) daemon_dump_cfg         : Info : node_reinstall_timeout= 2400
+2026-06-12T09:42:01.151 [31621.00509] controller-0 mtcAgent --- daemon_config.cpp ( 403) daemon_dump_cfg         : Info : uptime_period         = 60
+2026-06-12T09:42:01.151 [31621.00510] controller-0 mtcAgent --- daemon_config.cpp ( 404) daemon_dump_cfg         : Info : online_period         = 7
+2026-06-12T09:42:01.151 [31621.00511] controller-0 mtcAgent --- daemon_config.cpp ( 405) daemon_dump_cfg         : Info : insv_test_period      = 10
+2026-06-12T09:42:01.151 [31621.00512] controller-0 mtcAgent --- daemon_config.cpp ( 406) daemon_dump_cfg         : Info :  oos_test_period      = 300
+2026-06-12T09:42:01.151 [31621.00513] controller-0 mtcAgent --- daemon_config.cpp ( 409) daemon_dump_cfg         : Info : failsafe_shutdown_dela= 120
+2026-06-12T09:42:01.151 [31621.00514] controller-0 mtcAgent --- daemon_config.cpp ( 422) daemon_dump_cfg         : Info : debug_filter          = none
+2026-06-12T09:42:01.151 [31621.00515] controller-0 mtcAgent --- daemon_config.cpp ( 423) daemon_dump_cfg         : Info : debug_event           = none
+2026-06-12T09:42:01.152 -----------------------------------------------------------------------------------------
+2026-06-12T09:42:01.152 Service State and Traceback -------------------------------------------------------------
+2026-06-12T09:42:01.152 -----------------------------------------------------------------------------------------
+2026-06-12T09:42:01.152 +--------------------------------------+-------------------+-----------------+
+2026-06-12T09:42:01.152 | aee89f19-26a8-4c16-86fb-e8aaaae081de |      controller-0 |   192.168.204.2 | unlocked  enabled-available | worker-enabled-available
+2026-06-12T09:42:01.152 +--------------------------------------+-------------------+-----------------+
+2026-06-12T09:42:01.152   1| Working Timers: 4
+2026-06-12T09:42:01.153   1| -------------------------------------------------------------
+2026-06-12T09:42:01.153   2| controller-0 192.168.204.2 192.168.204.1 lo:Up lo:Down
+2026-06-12T09:42:01.153   3| controller-0 EnableHosts -> Cont:1 Comp:1 Stor:0 StorType:0
+2026-06-12T09:42:01.153   4| controller-0 MNFA: State:inactive Hosts:0:0 Threshold:2 Occurances:0
+2026-06-12T09:42:01.153   5| -------------------------------------------------------------
+2026-06-12T09:42:01.153   6| controller-0  DOR - Active: N  Was: N  Time:     0 (00:00:00)
+2026-06-12T09:42:01.153   7| controller-0       aee89f19-26a8-4c16-86fb-e8aaaae081de controller (3)
+2026-06-12T09:42:01.153   8| controller-0       System:3 NodeMask: 3 Function: controller (1)
+2026-06-12T09:42:01.154   9| controller-0       Sub-Function: worker (2) (SubFunc Enabled:Y)
+2026-06-12T09:42:01.154  10| controller-0        mac:00:00:00:00:00:00 mgmt:192.168.204.2 clstr:  pxeboot:: Uptime: 183753
+2026-06-12T09:42:01.154  11| controller-0       mtcAlive: online:Y offline:N Cnt:36669 Gate:open Misses:0 Net:1:0:0
+2026-06-12T09:42:01.155  12| controller-0       mtcAlive: Pxeboot:0 seq:0   Mgmt:36669 seq:36681   Clstr:0 seq:0
+2026-06-12T09:42:01.155  13| controller-0       Pxeboot mtcAlive: Prov:N  Rxed:N  ring:Y  miss:0  seq:0  save:0
+2026-06-12T09:42:01.155  14| controller-0       unlocked-enabled-available    degrade_mask:00000000
+2026-06-12T09:42:01.155  15| controller-0       Sub-Functions: controller-worker unlocked-enabled-available
+2026-06-12T09:42:01.155  16| controller-0       Action:none:none Task: Info:none
+2026-06-12T09:42:01.156  17| controller-0       Stage:Power-Cycle-Done Attempts:0: Holdoff:0 Retry:0 State:0 ctid:(nil) rtid:(nil)
+2026-06-12T09:42:01.156  18| controller-0       Alarm List: . . . . . .
+2026-06-12T09:42:01.156  19| controller-0       Add:0 Offline:0: Swact:0 Recovery:0 Enable:0 Disable:0 Power:20 Cycle:10 mtcAlive:0
+2026-06-12T09:42:01.156  20| controller-0       BMC dynamic none:none prov:N acc:N ping:N learning:N Query:N:N Timer:N:N
+2026-06-12T09:42:01.156  21| controller-0       OOS Stage:Test-Wait Runs:611 - INSV Stage:Test-Wait Runs:18322
+2026-06-12T09:42:01.157  22| controller-0       Thread Stage:0 Runs:0 Progress:0 Ctrl Status:0 Thread Status:0
+2026-06-12T09:42:01.157  23| -------------------------------------------------------------
+sysadmin@controller-0:~$ strings /var/log/mtcClient.log | grep "2026-06-12"
+sysadmin@controller-0:~$ grep "2026-06-12" /var/log/fmManager.log
+grep: /var/log/fmManager.log: No such file or directory
+sysadmin@controller-0:~$ grep "2026-06-12" /var/log/sm.log
+sysadmin@controller-0:~$ grep "2026-06-12T09:4" /var/log/syslog
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: info Accepting connections; addr='AF_UNIX(/var/www/dev/log)'
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: notice Configuration reload request received, reloading configuration;
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: notice Configuration reload finished;
+sysadmin@controller-0:~$ grep "2026-06-12T09:4" /var/log/auth.log
+2026-06-12T09:40:07.545 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:40:07.549 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:40:07.567 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:40:07.614 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:40:37.550 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:40:37.554 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:40:37.571 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:40:37.616 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:41:07.566 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:41:07.569 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:41:07.586 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:41:07.631 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:41:37.565 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:41:37.568 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:41:37.584 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:41:37.629 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:42:06.609 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:42:06.631 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:42:06.684 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:42:06.697 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:42:06.750 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:42:06.763 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:42:06.862 controller-0 runuser: info pam_unix(runuser:session): session opened for user postgres(uid=117) by (uid=0)
+2026-06-12T09:42:06.869 controller-0 runuser: info pam_unix(runuser:session): session closed for user postgres
+2026-06-12T09:45:01.687 controller-0 CRON[3473802]: err PAM unable to dlopen(pam_ldap.so): /lib/security/pam_ldap.so: cannot open shared object file: No such file or directory
+2026-06-12T09:45:01.687 controller-0 CRON[3473802]: err PAM adding faulty module: pam_ldap.so
+2026-06-12T09:45:01.690 controller-0 CRON[3473802]: info pam_unix(cron:session): session opened for user root(uid=0) by (uid=0)
+2026-06-12T09:45:01.697 controller-0 CRON[3473802]: info pam_unix(cron:session): session closed for user root
+sysadmin@controller-0:~$ grep "2026-06-12T09:4" /var/log/secure
+grep: /var/log/secure: No such file or directory
+sysadmin@controller-0:~$ ls -ltr /var/log/syslog*
+-rw-r----- 1 root root 1143880 Jun 22 09:46 /var/log/syslog
+sysadmin@controller-0:~$ ls -ltr /var/log/auth.log*
 ls -ltr /var/log/secure*
-
-My current assessment:
-
-Memory leak: possible, but no evidence.
-
-High CPU: possible, but no historical data exists to prove it.
-
-Authentication/SSSD/LDAP hang: fits the symptom of SSH reachable but login not completing.
-
-Disk/PID exhaustion: also fits the symptom and should be checked next.
-
-
-Share the output of:
-
-df -h
+-rw-r----- 1 root root  481432 Feb 18 09:14 /var/log/auth.log.20.gz
+-rw-r----- 1 root root  702944 Feb 22 00:40 /var/log/auth.log.19.gz
+-rw-r----- 1 root root  481593 Mar  1 00:03 /var/log/auth.log.18.gz
+-rw-r----- 1 root root  626035 Mar  5 18:34 /var/log/auth.log.17.gz
+-rw-r----- 1 root root  472546 Mar 12 19:37 /var/log/auth.log.16.gz
+-rw-r----- 1 root root  475858 Mar 22 17:10 /var/log/auth.log.15.gz
+-rw-r----- 1 root root  699669 Mar 26 05:47 /var/log/auth.log.14.gz
+-rw-r----- 1 root root  763572 Mar 28 22:03 /var/log/auth.log.13.gz
+-rw-r----- 1 root root  689695 Apr  1 17:18 /var/log/auth.log.12.gz
+-rw-r----- 1 root root  767785 Apr  4 10:07 /var/log/auth.log.11.gz
+-rw-r----- 1 root root  661472 Apr  8 16:09 /var/log/auth.log.10.gz
+-rw-r----- 1 root root  742519 Apr 11 17:09 /var/log/auth.log.9.gz
+-rw-r----- 1 root root  562258 Apr 17 11:19 /var/log/auth.log.8.gz
+-rw-r----- 1 root root  655358 Apr 21 19:45 /var/log/auth.log.7.gz
+-rw-r----- 1 root root  538701 Apr 27 21:19 /var/log/auth.log.6.gz
+-rw-r----- 1 root root  571134 May  3 12:44 /var/log/auth.log.5.gz
+-rw-r----- 1 root root  715186 May  7 00:17 /var/log/auth.log.4.gz
+-rw-r----- 1 root root  735106 May 10 03:09 /var/log/auth.log.3.gz
+-rw-r----- 1 root root  614474 May 15 00:09 /var/log/auth.log.2.gz
+-rw-r----- 1 root root  591323 Jun 12 06:14 /var/log/auth.log.1.gz
+-rw-r----- 1 root root 2766885 Jun 22 10:35 /var/log/auth.log
+ls: cannot access '/var/log/secure*': No such file or directory
+sysadmin@controller-0:~$ ls -ltr /var/log/auth.log*
+ls -ltr /var/log/secure*
+-rw-r----- 1 root root  481432 Feb 18 09:14 /var/log/auth.log.20.gz
+-rw-r----- 1 root root  702944 Feb 22 00:40 /var/log/auth.log.19.gz
+-rw-r----- 1 root root  481593 Mar  1 00:03 /var/log/auth.log.18.gz
+-rw-r----- 1 root root  626035 Mar  5 18:34 /var/log/auth.log.17.gz
+-rw-r----- 1 root root  472546 Mar 12 19:37 /var/log/auth.log.16.gz
+-rw-r----- 1 root root  475858 Mar 22 17:10 /var/log/auth.log.15.gz
+-rw-r----- 1 root root  699669 Mar 26 05:47 /var/log/auth.log.14.gz
+-rw-r----- 1 root root  763572 Mar 28 22:03 /var/log/auth.log.13.gz
+-rw-r----- 1 root root  689695 Apr  1 17:18 /var/log/auth.log.12.gz
+-rw-r----- 1 root root  767785 Apr  4 10:07 /var/log/auth.log.11.gz
+-rw-r----- 1 root root  661472 Apr  8 16:09 /var/log/auth.log.10.gz
+-rw-r----- 1 root root  742519 Apr 11 17:09 /var/log/auth.log.9.gz
+-rw-r----- 1 root root  562258 Apr 17 11:19 /var/log/auth.log.8.gz
+-rw-r----- 1 root root  655358 Apr 21 19:45 /var/log/auth.log.7.gz
+-rw-r----- 1 root root  538701 Apr 27 21:19 /var/log/auth.log.6.gz
+-rw-r----- 1 root root  571134 May  3 12:44 /var/log/auth.log.5.gz
+-rw-r----- 1 root root  715186 May  7 00:17 /var/log/auth.log.4.gz
+-rw-r----- 1 root root  735106 May 10 03:09 /var/log/auth.log.3.gz
+-rw-r----- 1 root root  614474 May 15 00:09 /var/log/auth.log.2.gz
+-rw-r----- 1 root root  591323 Jun 12 06:14 /var/log/auth.log.1.gz
+-rw-r----- 1 root root 2766885 Jun 22 10:35 /var/log/auth.log
+ls: cannot access '/var/log/secure*': No such file or directory
+sysadmin@controller-0:~$ df -h
 df -i
 ls -ltr /var/log/auth.log* /var/log/secure* 2>/dev/null
 grep "2026-06-12T09:4" /var/log/syslog
-
-and we can narrow it down further.
+Filesystem                          Size  Used Avail Use% Mounted on
+none                                112G     0  112G   0% /dev
+tmpfs                               125G   14M  125G   1% /run
+/dev/mapper/cgts--vg-root--lv        20G  7.6G   11G  41% /sysroot
+/dev/sda3                           2.0G  258M  1.6G  15% /boot
+tmpfs                               125G  180K  125G   1% /dev/shm
+tmpfs                               5.0M     0  5.0M   0% /run/lock
+tmpfs                               4.0M     0  4.0M   0% /sys/fs/cgroup
+tmpfs                               1.0G  112K  1.0G   1% /tmp
+/dev/sda2                           300M  7.8M  293M   3% /boot/efi
+/dev/mapper/cgts--vg-var--lv         20G  8.6G   10G  47% /var
+/dev/mapper/cgts--vg-log--lv         21G  1.1G   19G   6% /var/log
+/dev/sda1                            29G   24K   28G   1% /var/rootdirs/opt/platform-backup
+/dev/mapper/cgts--vg-docker--lv      58G   37G   22G  64% /var/lib/docker
+/dev/mapper/luks_encrypted_vault    227M   18K  211M   1% /var/luks/stx/luks_fs
+/dev/mapper/cgts--vg-backup--lv      25G   24K   24G   1% /var/rootdirs/opt/backups
+/dev/mapper/cgts--vg-scratch--lv     16G  6.8M   15G   1% /var/rootdirs/scratch
+/dev/mapper/cgts--vg-kubelet--lv    9.8G  1.6M  9.3G   1% /var/lib/kubelet
+/dev/mapper/cgts--vg-ceph--mon--lv   20G   78M   19G   1% /var/lib/ceph/mon
+shm                                  64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/13c1aad81ee83bbf44e0454a71cb2e1473cbe741b986e25fffd3c4b9ea37713f/shm
+shm                                  64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/871db02f8a6f3d9a4bcad81a2c2867e365effce882e1dd0bd7eec337bcaef074/shm
+shm                                  64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/a034a1c3e9858fa0078d38be9181f0f6c49a5744e81958cce8277460c9ccce25/shm
+/dev/sdd1                           3.5T   28G  3.5T   1% /var/lib/ceph/osd/ceph-0
+Filesystem                            Inodes  IUsed     IFree IUse% Mounted on
+none                                29343961   1297  29342664    1% /dev
+tmpfs                               32648678   4294  32644384    1% /run
+/dev/mapper/cgts--vg-root--lv        1310720 266096   1044624   21% /sysroot
+/dev/sda3                             131072    315    130757    1% /boot
+tmpfs                               32648678      6  32648672    1% /dev/shm
+tmpfs                               32648678     14  32648664    1% /run/lock
+tmpfs                                   1024     19      1005    2% /sys/fs/cgroup
+tmpfs                               32648678     37  32648641    1% /tmp
+/dev/sda2                                  0      0         0     - /boot/efi
+/dev/mapper/cgts--vg-var--lv         1310720 187531   1123189   15% /var
+/dev/mapper/cgts--vg-log--lv         1365504   3623   1361881    1% /var/log
+/dev/sda1                            1921360     11   1921349    1% /var/rootdirs/opt/platform-backup
+/dev/mapper/cgts--vg-docker--lv     30408704 604304  29804400    2% /var/lib/docker
+/dev/mapper/luks_encrypted_vault       61440     15     61425    1% /var/luks/stx/luks_fs
+/dev/mapper/cgts--vg-backup--lv      1638400     11   1638389    1% /var/rootdirs/opt/backups
+/dev/mapper/cgts--vg-scratch--lv     1048576    946   1047630    1% /var/rootdirs/scratch
+/dev/mapper/cgts--vg-kubelet--lv      655360   8764    646596    2% /var/lib/kubelet
+/dev/mapper/cgts--vg-ceph--mon--lv   1310720     26   1310694    1% /var/lib/ceph/mon
+shm                                 32648678      1  32648677    1% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/13c1aad81ee83bbf44e0454a71cb2e1473cbe741b986e25fffd3c4b9ea37713f/shm
+shm                                 32648678      1  32648677    1% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/871db02f8a6f3d9a4bcad81a2c2867e365effce882e1dd0bd7eec337bcaef074/shm
+shm                                 32648678      1  32648677    1% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/a034a1c3e9858fa0078d38be9181f0f6c49a5744e81958cce8277460c9ccce25/shm
+/dev/sdd1                          374968832   9732 374959100    1% /var/lib/ceph/osd/ceph-0
+-rw-r----- 1 root root  481432 Feb 18 09:14  /var/log/auth.log.20.gz
+-rw-r----- 1 root root  702944 Feb 22 00:40  /var/log/auth.log.19.gz
+-rw-r----- 1 root root  481593 Mar  1 00:03  /var/log/auth.log.18.gz
+-rw-r----- 1 root root  626035 Mar  5 18:34  /var/log/auth.log.17.gz
+-rw-r----- 1 root root  472546 Mar 12 19:37  /var/log/auth.log.16.gz
+-rw-r----- 1 root root  475858 Mar 22 17:10  /var/log/auth.log.15.gz
+-rw-r----- 1 root root  699669 Mar 26 05:47  /var/log/auth.log.14.gz
+-rw-r----- 1 root root  763572 Mar 28 22:03  /var/log/auth.log.13.gz
+-rw-r----- 1 root root  689695 Apr  1 17:18  /var/log/auth.log.12.gz
+-rw-r----- 1 root root  767785 Apr  4 10:07  /var/log/auth.log.11.gz
+-rw-r----- 1 root root  661472 Apr  8 16:09  /var/log/auth.log.10.gz
+-rw-r----- 1 root root  742519 Apr 11 17:09  /var/log/auth.log.9.gz
+-rw-r----- 1 root root  562258 Apr 17 11:19  /var/log/auth.log.8.gz
+-rw-r----- 1 root root  655358 Apr 21 19:45  /var/log/auth.log.7.gz
+-rw-r----- 1 root root  538701 Apr 27 21:19  /var/log/auth.log.6.gz
+-rw-r----- 1 root root  571134 May  3 12:44  /var/log/auth.log.5.gz
+-rw-r----- 1 root root  715186 May  7 00:17  /var/log/auth.log.4.gz
+-rw-r----- 1 root root  735106 May 10 03:09  /var/log/auth.log.3.gz
+-rw-r----- 1 root root  614474 May 15 00:09  /var/log/auth.log.2.gz
+-rw-r----- 1 root root  591323 Jun 12 06:14  /var/log/auth.log.1.gz
+-rw-r----- 1 root root 2766885 Jun 22 10:35  /var/log/auth.log
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: info Accepting connections; addr='AF_UNIX(/var/www/dev/log)'
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: notice Configuration reload request received, reloading configuration;
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: notice Configuration reload finished;
+sysadmin@controller-0:~$
