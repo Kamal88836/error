@@ -1,100 +1,42 @@
-For 12-Jun-2026 at 09:41, the reboot history you posted does not show a reboot on that date:
-
-Jun 10 06:40 reboot
-Jun 18 07:42 reboot
-Jun 22 06:49 reboot
-
-So if the server froze at 09:41 on 12-Jun-2026, then it likely experienced one of these situations:
-
-1. Soft lockup / CPU hang (system alive but not responding)
-
-
-2. Process deadlock (critical StarlingX/OpenStack services stuck)
-
-
-3. Network hang (host reachable locally but not remotely)
-
-
-4. Storage I/O stall (Ceph, disk, filesystem, multipath issues)
-
-
-5. RT kernel scheduling issue (you're running 6.6.0-1-rt-amd64)
-
-
-6. Watchdog recovered the system later without an immediate reboot
-
-
-
-First determine whether the OS actually crashed
-
-Check the boot history around that date:
-
-last -x | grep "Jun 12"
-
-If there is no reboot on Jun 12, then the kernel never restarted.
-
-Check kernel logs around 09:41
-
-grep "2026-06-12T09:4" /var/log/kern.log
-grep "2026-06-12T09:4" /var/log/syslog
-
-Look for:
-
-soft lockup
-hard LOCKUP
-hung task
-blocked for more than
-rcu stall
-watchdog
-BUG:
-kernel panic
-
-Search for hung tasks
-
-grep -iE "hung task|soft lockup|hard lockup|rcu" /var/log/kern.log
-
-Check StarlingX host watchdog
-
-Since your logs show hostwd is active:
-
-grep "2026-06-12" /var/log/hostwd.log
-
-Look for:
-
-quorum loss
-degrade
-heartbeat failure
-
-Check maintenance logs
-
-grep "2026-06-12" /var/log/mtcAgent.log
-grep "2026-06-12" /var/log/mtcClient.log
-
-Most useful command
-
-If the logs are still available:
-
-journalctl --since "2026-06-12 09:30:00" --until "2026-06-12 10:00:00"
-
-or
-
-journalctl -k --since "2026-06-12 09:30:00" --until "2026-06-12 10:00:00"
-
-Based on the information so far
-
-I cannot determine the reason for the freeze from the reboot logs alone. The logs you shared only prove:
-
-The server was rebooted on Jun 10, Jun 18, and Jun 22.
-
-There is no evidence yet of what happened on Jun 12 at 09:41.
-
-
-To identify the freeze cause, please share the output of:
-
-journalctl -k --since "2026-06-12 09:30:00" --until "2026-06-12 10:00:00"
-
-or at least:
-
-grep "2026-06-12T09:" /var/log/kern.log
-
-That time window should reveal whether it was a CPU lockup, watchdog event, storage issue, or network/service hang.
+sysadmin pts/0        71.1.0.64        Fri Jun 12 00:01 - 00:01  (00:00)
+sysadmin pts/0        71.1.0.64        Fri Jun 12 00:01 - 00:01  (00:00)
+sysadmin pts/0        71.1.0.64        Fri Jun 12 00:01 - 00:01  (00:00)
+sysadmin pts/3        71.1.0.68        Fri Jun 12 00:00 - 00:01  (00:00)
+sysadmin@controller-0:~$ grep "2026-06-12T09:4" /var/log/kern.log
+sysadmin@controller-0:~$ grep "2026-06-12T09:4" /var/log/syslog
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: info Accepting connections; addr='AF_UNIX(/var/www/dev/log)'
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: notice Configuration reload request received, reloading configuration;
+2026-06-12T09:41:31.349 controller-0 syslog-ng[5156]: notice Configuration reload finished;
+sysadmin@controller-0:~$ grep -iE "hung task|soft lockup|hard lockup|rcu" /var/log/kern.log
+2026-06-22T06:49:47.190 controller-0 kernel: info [    0.000000] Command line: BOOT_IMAGE=/1/vmlinuz-6.6.0-1-rt-amd64 rw rootwait ostree_boot=LABEL=otaboot ostree_root=/dev/mapper/cgts--vg-root--lv rd.lvm.lv=cgts/root-lv ostree_var=/dev/mapper/cgts--vg-var--lv ostree=/ostree/1 console=ttyS0,115200 console=tty1 iommu=pt nmi_watchdog=0 softlockup_panic=0 intel_iommu=on selinux=0 enforcing=0 softdog.soft_panic=1 systemd.unified_cgroup_hierarchy=0 user_namespace.enable=1 biosdevname=0 skew_tick=1 nohz_full=3-5,7-9,11-13,15-17,19-21,23-25,27-29,31-33,35-37,40-41,44-45,48-49,53,57,61,67-69,71-73,75-77,79-81,83-85,87-89,91-93,95-97,99-101,104-105,108-109,112-113,117,121,125 isolcpus=nohz,domain,managed_irq,3-5,7-9,11-13,15-17,19-21,23-25,27-29,31-33,35-37,40-41,44-45,48-49,53,57,61,67-69,71-73,75-77,79-81,83-85,87-89,91-93,95-97,99-101,104-105,108-109,112-113,117,121,125 rcu_nocbs=2-63,66-127 kthread_cpus=0-1,64-65 irqaffinity=2,6,10,14,18,22,26,30,34,38-39,42-43,46-47,50-52,54-56,58-60,62-63,66,70,74,78,82,86,90,94,98,102-103,106-107,110-111,114-116,118-120,122-124,126-127 au
+2026-06-22T06:49:47.218 controller-0 kernel: notice [    0.550822] Kernel command line: net.naming-scheme=vSTX7_0 BOOT_IMAGE=/1/vmlinuz-6.6.0-1-rt-amd64 rw rootwait ostree_boot=LABEL=otaboot ostree_root=/dev/mapper/cgts--vg-root--lv rd.lvm.lv=cgts/root-lv ostree_var=/dev/mapper/cgts--vg-var--lv ostree=/ostree/1 console=ttyS0,115200 console=tty1 iommu=pt nmi_watchdog=0 softlockup_panic=0 intel_iommu=on selinux=0 enforcing=0 softdog.soft_panic=1 systemd.unified_cgroup_hierarchy=0 user_namespace.enable=1 biosdevname=0 skew_tick=1 nohz_full=3-5,7-9,11-13,15-17,19-21,23-25,27-29,31-33,35-37,40-41,44-45,48-49,53,57,61,67-69,71-73,75-77,79-81,83-85,87-89,91-93,95-97,99-101,104-105,108-109,112-113,117,121,125 isolcpus=nohz,domain,managed_irq,3-5,7-9,11-13,15-17,19-21,23-25,27-29,31-33,35-37,40-41,44-45,48-49,53,57,61,67-69,71-73,75-77,79-81,83-85,87-89,91-93,95-97,99-101,104-105,108-109,112-113,117,121,125 rcu_nocbs=2-63,66-127 kthread_cpus=0-1,64-65 irqaffinity=2,6,10,14,18,22,26,30,34,38-39,42-43,46-47,50-52,54-56,58-60,62-63,66,70,74,78,82,86,90,94,98,102-103,106-107,110-111,1
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163742] rcu: Preemptible hierarchical RCU implementation.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163743] rcu:   RCU restricting CPUs from NR_CPUS=256 to nr_cpu_ids=128.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163744] rcu:   RCU priority boosting: priority 1 delay 500 ms.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163745] rcu:   RCU_SOFTIRQ processing moved to rcuc kthreads.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163746]        No expedited grace period (rcu_normal_after_boot).
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163746]        Trampoline variant of Tasks RCU enabled.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163747]        Rude variant of Tasks RCU enabled.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163747]        Tracing variant of Tasks RCU enabled.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163748] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.163749] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=128
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.167324] rcu:   Offload RCU callbacks from CPUs: 2-63,66-127.
+2026-06-22T06:49:47.218 controller-0 kernel: info [    1.167356] rcu: srcu_init: Setting srcu_struct sizes to big.
+2026-06-22T06:49:47.219 controller-0 kernel: info [    3.603210] RCU Tasks: Setting shift to 7 and lim to 1 rcu_task_cb_adjust=1.
+2026-06-22T06:49:47.219 controller-0 kernel: info [    3.603953] RCU Tasks Rude: Setting shift to 7 and lim to 1 rcu_task_cb_adjust=1.
+2026-06-22T06:49:47.219 controller-0 kernel: info [    3.604965] RCU Tasks Trace: Setting shift to 7 and lim to 1 rcu_task_cb_adjust=1.
+2026-06-22T06:49:47.222 controller-0 kernel: info [    3.615992] rcu: Hierarchical SRCU implementation.
+2026-06-22T06:49:47.223 controller-0 kernel: info [    3.615993] rcu:   Max phase no-delay instances is 400.
+2026-06-22T06:49:47.262 controller-0 kernel: warning [   37.419058] bnxt_en 0000:31:00.0 (unnamed net_device) (uninitialized): Device requests max timeout of 100 seconds, may trigger hung task watchdog
+2026-06-22T06:49:47.263 controller-0 kernel: warning [   37.681665] bnxt_en 0000:31:00.1 (unnamed net_device) (uninitialized): Device requests max timeout of 100 seconds, may trigger hung task watchdog
+sysadmin@controller-0:~$ grep "2026-06-12" /var/log/hostwd.log
+sysadmin@controller-0:~$ grep "2026-06-12" /var/log/mtcAgent.log
+grep: /var/log/mtcAgent.log: binary file matches
+sysadmin@controller-0:~$ journalctl --since "2026-06-12 09:30:00" --until "2026-06-12 10:00:00"
+No journal files were found.
+-- No entries --
+sysadmin@controller-0:~$ journalctl -k --since "2026-06-12 09:30:00" --until "2026-06-12 10:00:00"
+No journal files were found.
+-- No entries --
+sysadmin@controller-0:~$ grep "2026-06-12T09:" /var/log/kern.log
+sysadmin@controller-0:~$
