@@ -1,107 +1,25 @@
-  Storage
-      baremetal
-      marketplace
-      openshift-samples
-  Conditions:
-    Last Transition Time:  2026-05-25T11:51:49Z
-    Message:               Capabilities match configured spec
-    Reason:                AsExpected
-    Status:                False
-    Type:                  ImplicitlyEnabledCapabilities
-    Last Transition Time:  2025-01-20T08:44:32Z
-    Message:               Payload loaded version="4.18.17" image="nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687" architecture="amd64"
-    Reason:                PayloadLoaded
-    Status:                True
-    Type:                  ReleaseAccepted
-    Last Transition Time:  2025-01-15T07:29:16Z
-    Message:               Done applying 4.18.17
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-06-23T06:40:36Z
-    Message:               Cluster operators authentication, ingress, openshift-apiserver are degraded
-    Reason:                ClusterOperatorsDegraded
-    Status:                True
-    Type:                  Failing
-    Last Transition Time:  2026-06-23T06:00:25Z
-    Message:               Unable to apply 4.18.17: wait has exceeded 40 minutes for these operators: ingress
-    Reason:                ClusterOperatorsDegraded
-    Status:                True
-    Type:                  Progressing
-    Last Transition Time:  2025-01-15T06:40:35Z
-    Message:               Unable to retrieve available updates: Get "https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.18&id=2f24c44e-c460-4b1e-b86f-f5b53897b6fb&version=4.18.17": dial tcp: lookup api.openshift.com on 172.25.204.47:53: server misbehaving
-    Reason:                RemoteFailed
-    Status:                False
-    Type:                  RetrievedUpdates
-    Last Transition Time:  2026-06-19T12:05:47Z
-    Message:               Cluster should not be upgraded between minor versions for multiple reasons: AdminAckRequired,PoolUpdating
-* Kubernetes 1.32 and therefore OpenShift 4.19 remove several APIs which require admin consideration. Please see the knowledge article https://access.redhat.com/articles/7112216 for details and instructions.
-* Cluster operator machine-config should not be upgraded between minor versions: One or more machine config pools are updating, please see `oc get mcp` for further details
-    Reason:                MultipleReasons
-    Status:                False
-    Type:                  Upgradeable
-    Last Transition Time:  2026-06-19T14:10:47Z
-    Message:               Kubernetes 1.32 and therefore OpenShift 4.19 remove several APIs which require admin consideration. Please see the knowledge article https://access.redhat.com/articles/7112216 for details and instructions.
-    Reason:                AdminAckRequired
-    Status:                False
-    Type:                  UpgradeableAdminAckRequired
-    Last Transition Time:  2026-06-19T14:10:47Z
-    Message:               Cluster operator machine-config should not be upgraded between minor versions: One or more machine config pools are updating, please see `oc get mcp` for further details
-    Reason:                PoolUpdating
-    Status:                False
-    Type:                  UpgradeableClusterOperators
-  Desired:
-    Image:    nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687
-    URL:      https://access.redhat.com/errata/RHSA-2025:8560
-    Version:  4.18.17
-  History:
-    Accepted Risks:   Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.17.32 to 4.18.17 is unknown.
-    Completion Time:  2026-06-19T14:10:09Z
-    Image:            nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9d24a8cdd67b8f18c99547d5910e4863e7aab5bd888e26670a00dbda0a9d4687
-    Started Time:     2026-06-19T12:05:20Z
-    State:            Completed
-    Verified:         true
-    Version:          4.18.17
-    Completion Time:  2026-06-18T17:01:45Z
-    Image:            nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:0c2421a241e95f56895906885e7f7e53cb1520ee6a82db5cdeea98f5f65457d7
-    Started Time:     2026-06-18T15:22:17Z
-    State:            Completed
-    Verified:         true
-    Version:          4.17.32
-    Completion Time:  2026-05-26T13:39:42Z
-    Image:            nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:2fa965ede9ab6530be8a2e780b484d487c2b3ea4354e84cec680c22823c255ab
-    Started Time:     2026-05-25T11:53:18Z
-    State:            Completed
-    Verified:         true
-    Version:          4.16.42
-    Accepted Risks:   Forced through blocking failures: Multiple precondition checks failed:
-* Precondition "EtcdRecentBackup" failed because of "ControllerStarted": RecentBackup: The etcd backup controller is starting, and will decide if recent backups are available or if a backup is required
-* Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.14.44 to 4.15.46 is unknown.
-    Completion Time:    2026-05-23T01:38:07Z
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:ea0429e14dc9ff007f56d5db2b75209c2510d81e6869194e33a53352d2b6a4fa
-    Started Time:       2026-05-21T12:21:46Z
-    State:              Completed
-    Verified:           true
-    Version:            4.15.46
-    Accepted Risks:     Precondition "ClusterVersionRecommendedUpdate" failed because of "UnknownUpdate": RetrievedUpdates=False (RemoteFailed), so the recommended status of updating from 4.14.40 to 4.14.44 is unknown.
-    Completion Time:    2025-01-20T12:19:25Z
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:09aa91aa34ff624766cf989c849cd6c0d843f655eb45cb9dbab2f32e30092dca
-    Started Time:       2025-01-20T10:57:00Z
-    State:              Completed
-    Verified:           true
-    Version:            4.14.44
-    Completion Time:    2025-01-20T08:28:02Z
-    Image:              quay.io/openshift-release-dev/ocp-release@sha256:9871f990d9f956d735e85e2040101377d5fd7cc4e62e8f54feb62650190216c9
-    Started Time:       2025-01-20T08:26:59Z
-    State:              Completed
-    Verified:           false
-    Version:            4.14.40
-    Completion Time:    2025-01-15T07:29:16Z
-    Image:              nwharbor.sec.samsung.net/team-ocp/ocp/openshift/release-images@sha256:9871f990d9f956d735e85e2040101377d5fd7cc4e62e8f54feb62650190216c9
-    Started Time:       2025-01-15T06:40:35Z
-    State:              Completed
-    Verified:           false
-    Version:            4.14.40
-  Observed Generation:  25
-  Version Hash:         20U-s6dPHsU=
-Events:                 <none>
+version   4.18.17   True        False         6m48s   Cluster version is 4.18.17
+[root@bastion01 ~]# oc get po
+NAME                                             READY   STATUS              RESTARTS   AGE
+ceph-csi-controller-manager-6f65bbd578-nqb7r     2/2     Running             0          88m
+csi-addons-controller-manager-696c476d88-cq5f8   2/2     Running             0          88m
+noobaa-core-0                                    1/1     Running             0          88m
+noobaa-db-pg-0                                   0/1     ContainerCreating   0          3m13s
+ocs-metrics-exporter-5759d5dbbd-48sm7            3/3     Running             0          88m
+ocs-operator-968899ffb-xvmfl                     1/1     Running             0          88m
+ux-backend-server-7bcb7df8fc-v97h8               2/2     Running             0          88m
+[root@bastion01 ~]#
+[root@bastion01 ~]#
+[root@bastion01 ~]#
+[root@bastion01 ~]#
+[root@bastion01 ~]# oc get crd | grep driver.csi.ceph.io
+[root@bastion01 ~]# oc get drivers.csi.ceph.io -A
+No resources found
+[root@bastion01 ~]# oc get operatorconfig -A
+No resources found
+[root@bastion01 ~]# oc api-resources | grep -i driver
+cephcosidrivers                       cephcosi                                                                               ceph.rook.io/v1                               true         CephCOSIDriver
+drivers                                                                                                                      csi.ceph.io/v1alpha1                          true         Driver
+clustercsidrivers                                                                                                            operator.openshift.io/v1                      false        ClusterCSIDriver
+csidrivers                                                                                                                   storage.k8s.io/v1                             false        CSIDriver
 [root@bastion01 ~]#
