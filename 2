@@ -1,25 +1,44 @@
-version   4.18.17   True        False         6m48s   Cluster version is 4.18.17
+[root@bastion01 ~]# oc get cephcosidriver -A
+No resources found
+[root@bastion01 ~]# oc get deploy rook-ceph-operator
+Error from server (NotFound): deployments.apps "rook-ceph-operator" not found
+[root@bastion01 ~]# oc get deploy
+NAME                                                          READY   UP-TO-DATE   AVAILABLE   AGE
+ceph-csi-controller-manager                                   1/1     1            1           3d21h
+csi-addons-controller-manager                                 1/1     1            1           5d17h
+noobaa-endpoint                                               0/0     0            0           522d
+noobaa-operator                                               0/0     0            0           5d17h
+ocs-client-operator-console                                   0/0     0            0           5d17h
+ocs-client-operator-controller-manager                        0/0     0            0           5d17h
+ocs-metrics-exporter                                          1/1     1            1           523d
+ocs-operator                                                  1/1     1            1           3d1h
+prometheus-operator                                           0/0     0            0           5d17h
+rook-ceph-crashcollector-1de4b86b9b35de1c0d658c9dbc54f861     0/1     0            0           3d17h
+rook-ceph-crashcollector-c01359daa1c8761a73d036d5cade8691     0/1     0            0           3d17h
+rook-ceph-crashcollector-d8372827eced110080a352747f215571     0/1     0            0           3d17h
+rook-ceph-exporter-master01.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d17h
+rook-ceph-exporter-master02.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d17h
+rook-ceph-exporter-master03.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d17h
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a             0/1     0            0           522d
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b             0/1     0            0           522d
+rook-ceph-mgr-a                                               0/1     0            0           522d
+rook-ceph-mgr-b                                               0/1     0            0           28d
+rook-ceph-mon-a                                               0/1     0            0           522d
+rook-ceph-mon-d                                               0/1     0            0           32d
+rook-ceph-mon-e                                               0/1     0            0           32d
+rook-ceph-osd-0                                               0/0     0            0           522d
+rook-ceph-osd-1                                               0/1     0            0           522d
+rook-ceph-osd-2                                               0/0     0            0           522d
+rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a            0/1     0            0           522d
+ux-backend-server                                             1/1     1            1           3d1h
+[root@bastion01 ~]# oc get po | grep rook-ceph-operator
 [root@bastion01 ~]# oc get po
 NAME                                             READY   STATUS              RESTARTS   AGE
-ceph-csi-controller-manager-6f65bbd578-nqb7r     2/2     Running             0          88m
-csi-addons-controller-manager-696c476d88-cq5f8   2/2     Running             0          88m
-noobaa-core-0                                    1/1     Running             0          88m
-noobaa-db-pg-0                                   0/1     ContainerCreating   0          3m13s
-ocs-metrics-exporter-5759d5dbbd-48sm7            3/3     Running             0          88m
-ocs-operator-968899ffb-xvmfl                     1/1     Running             0          88m
-ux-backend-server-7bcb7df8fc-v97h8               2/2     Running             0          88m
-[root@bastion01 ~]#
-[root@bastion01 ~]#
-[root@bastion01 ~]#
-[root@bastion01 ~]#
-[root@bastion01 ~]# oc get crd | grep driver.csi.ceph.io
-[root@bastion01 ~]# oc get drivers.csi.ceph.io -A
-No resources found
-[root@bastion01 ~]# oc get operatorconfig -A
-No resources found
-[root@bastion01 ~]# oc api-resources | grep -i driver
-cephcosidrivers                       cephcosi                                                                               ceph.rook.io/v1                               true         CephCOSIDriver
-drivers                                                                                                                      csi.ceph.io/v1alpha1                          true         Driver
-clustercsidrivers                                                                                                            operator.openshift.io/v1                      false        ClusterCSIDriver
-csidrivers                                                                                                                   storage.k8s.io/v1                             false        CSIDriver
+ceph-csi-controller-manager-6f65bbd578-nqb7r     2/2     Running             0          93m
+csi-addons-controller-manager-696c476d88-cq5f8   2/2     Running             0          94m
+noobaa-core-0                                    1/1     Running             0          93m
+noobaa-db-pg-0                                   0/1     ContainerCreating   0          8m46s
+ocs-metrics-exporter-5759d5dbbd-48sm7            3/3     Running             0          94m
+ocs-operator-968899ffb-xvmfl                     1/1     Running             0          94m
+ux-backend-server-7bcb7df8fc-v97h8               2/2     Running             0          94m
 [root@bastion01 ~]#
