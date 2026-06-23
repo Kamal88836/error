@@ -1,44 +1,51 @@
-[root@bastion01 ~]# oc get cephcosidriver -A
+[root@bastion01 ~]#
+[root@bastion01 ~]# oc get deploy -o name | grep rook
+deployment.apps/rook-ceph-crashcollector-1de4b86b9b35de1c0d658c9dbc54f861
+deployment.apps/rook-ceph-crashcollector-c01359daa1c8761a73d036d5cade8691
+deployment.apps/rook-ceph-crashcollector-d8372827eced110080a352747f215571
+deployment.apps/rook-ceph-exporter-master01.airtel3novvt.samsungcnfcu.local
+deployment.apps/rook-ceph-exporter-master02.airtel3novvt.samsungcnfcu.local
+deployment.apps/rook-ceph-exporter-master03.airtel3novvt.samsungcnfcu.local
+deployment.apps/rook-ceph-mds-ocs-storagecluster-cephfilesystem-a
+deployment.apps/rook-ceph-mds-ocs-storagecluster-cephfilesystem-b
+deployment.apps/rook-ceph-mgr-a
+deployment.apps/rook-ceph-mgr-b
+deployment.apps/rook-ceph-mon-a
+deployment.apps/rook-ceph-mon-d
+deployment.apps/rook-ceph-mon-e
+deployment.apps/rook-ceph-osd-0
+deployment.apps/rook-ceph-osd-1
+deployment.apps/rook-ceph-osd-2
+deployment.apps/rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a
+[root@bastion01 ~]# oc get csv
+NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
+cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.17.21-rhodf          Succeeded
+mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.17.21-rhodf              Succeeded
+ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.17.21-rhodf       Succeeded
+ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.17.21-rhodf              Succeeded
+odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.17.21-rhodf   Succeeded
+odf-dependencies.v4.18.17-rhodf          Data Foundation Dependencies       4.18.17-rhodf   odf-dependencies.v4.18.16-rhodf          Succeeded
+odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.17.21-rhodf   Succeeded
+recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.17.21-rhodf                    Succeeded
+[root@bastion01 ~]# oc get csv ocs-operator.v4.18.17-rhodf -o yaml | grep -i rook
+    external.features.ocs.openshift.io/validation: '{"secrets":["rook-ceph-operator-creds",
+      "rook-csi-rbd-node", "rook-csi-rbd-provisioner"], "configMaps": ["rook-ceph-mon-endpoints",
+      "rook-ceph-mon"], "storageClasses": ["ceph-rbd"], "cephClusters": ["monitoring-endpoint"]}'
+        name: cephclusters.ceph.rook.io
+    ### Rook
+    [Rook][1] deploys and manages Ceph on OpenShift, which provides block and file storage.
+    [1]: https://rook.io
+          - ceph.rook.io
+                - name: ROOK_CEPH_IMAGE
+                  value: registry.redhat.io/odf4/rook-ceph-rhel9-operator@sha256:1de19b0658adb705a76403df0eb7f0e043279213440c98d42aeb0e599aa0f59f
+  - rook
+  - image: registry.redhat.io/odf4/rook-ceph-rhel9-operator@sha256:1de19b0658adb705a76403df0eb7f0e043279213440c98d42aeb0e599aa0f59f
+    name: rook-container
+      message: cluster rule:{"verbs":["create","delete","get","list","update","watch"],"apiGroups":["ceph.rook.io"],"resources":["cephblockpoolradosnamespaces","cephblockpools","cephclients","cephclusters","cephfilesystems","cephfilesystemsubvolumegroups","cephnfses","cephobjectstores","cephobjectstoreusers","cephrbdmirrors"]}
+[root@bastion01 ~]# oc get csv ocs-operator.v4.18.17-rhodf -o yaml | grep -i cephcsi
+[root@bastion01 ~]# oc get csv ocs-operator.v4.18.17-rhodf -o yaml | grep -i cephcsi  -n
+[root@bastion01 ~]# oc delete po -l app=ocs-operator
 No resources found
-[root@bastion01 ~]# oc get deploy rook-ceph-operator
-Error from server (NotFound): deployments.apps "rook-ceph-operator" not found
-[root@bastion01 ~]# oc get deploy
-NAME                                                          READY   UP-TO-DATE   AVAILABLE   AGE
-ceph-csi-controller-manager                                   1/1     1            1           3d21h
-csi-addons-controller-manager                                 1/1     1            1           5d17h
-noobaa-endpoint                                               0/0     0            0           522d
-noobaa-operator                                               0/0     0            0           5d17h
-ocs-client-operator-console                                   0/0     0            0           5d17h
-ocs-client-operator-controller-manager                        0/0     0            0           5d17h
-ocs-metrics-exporter                                          1/1     1            1           523d
-ocs-operator                                                  1/1     1            1           3d1h
-prometheus-operator                                           0/0     0            0           5d17h
-rook-ceph-crashcollector-1de4b86b9b35de1c0d658c9dbc54f861     0/1     0            0           3d17h
-rook-ceph-crashcollector-c01359daa1c8761a73d036d5cade8691     0/1     0            0           3d17h
-rook-ceph-crashcollector-d8372827eced110080a352747f215571     0/1     0            0           3d17h
-rook-ceph-exporter-master01.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d17h
-rook-ceph-exporter-master02.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d17h
-rook-ceph-exporter-master03.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d17h
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a             0/1     0            0           522d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b             0/1     0            0           522d
-rook-ceph-mgr-a                                               0/1     0            0           522d
-rook-ceph-mgr-b                                               0/1     0            0           28d
-rook-ceph-mon-a                                               0/1     0            0           522d
-rook-ceph-mon-d                                               0/1     0            0           32d
-rook-ceph-mon-e                                               0/1     0            0           32d
-rook-ceph-osd-0                                               0/0     0            0           522d
-rook-ceph-osd-1                                               0/1     0            0           522d
-rook-ceph-osd-2                                               0/0     0            0           522d
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a            0/1     0            0           522d
-ux-backend-server                                             1/1     1            1           3d1h
-[root@bastion01 ~]# oc get po | grep rook-ceph-operator
-[root@bastion01 ~]# oc get po
-NAME                                             READY   STATUS              RESTARTS   AGE
-ceph-csi-controller-manager-6f65bbd578-nqb7r     2/2     Running             0          93m
-csi-addons-controller-manager-696c476d88-cq5f8   2/2     Running             0          94m
-noobaa-core-0                                    1/1     Running             0          93m
-noobaa-db-pg-0                                   0/1     ContainerCreating   0          8m46s
-ocs-metrics-exporter-5759d5dbbd-48sm7            3/3     Running             0          94m
-ocs-operator-968899ffb-xvmfl                     1/1     Running             0          94m
-ux-backend-server-7bcb7df8fc-v97h8               2/2     Running             0          94m
+[root@bastion01 ~]# oc delete po -l app=ceph-csi-controller-manager
+No resources found
 [root@bastion01 ~]#
