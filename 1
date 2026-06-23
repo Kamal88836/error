@@ -1,309 +1,113 @@
-[root@bastion01 ~]# oc describe  volumeattachment  csi-b332a644d67435660bc488287ad9a90a9610a4fe01795ca43d504b8a754f6f75
-Name:         csi-b332a644d67435660bc488287ad9a90a9610a4fe01795ca43d504b8a754f6f75
-Namespace:
-Labels:       <none>
-Annotations:  <none>
-API Version:  storage.k8s.io/v1
-Kind:         VolumeAttachment
-Metadata:
-  Creation Timestamp:  2026-06-23T06:00:49Z
-  Resource Version:    1012073339
-  UID:                 7dfcfd7d-0a30-41a9-8f30-ae0c23298886
-Spec:
-  Attacher:   openshift-storage.rbd.csi.ceph.com
-  Node Name:  master02.airtel3novvt.samsungcnfcu.local
-  Source:
-    Persistent Volume Name:  pvc-5b8d6ecd-0b28-47a5-8b38-b5c316c91d7b
-Status:
-  Attached:  false
-Events:      <none>
-[root@bastion01 ~]# oc get deploy -n openshift-storage
-NAME                                                          READY   UP-TO-DATE   AVAILABLE   AGE
-ceph-csi-controller-manager                                   1/1     1            1           3d20h
-csi-addons-controller-manager                                 1/1     1            1           5d15h
-noobaa-endpoint                                               0/0     0            0           522d
-noobaa-operator                                               0/0     0            0           5d15h
-ocs-client-operator-console                                   0/0     0            0           5d15h
-ocs-client-operator-controller-manager                        0/0     0            0           5d15h
-ocs-metrics-exporter                                          1/1     1            1           523d
-ocs-operator                                                  1/1     1            1           3d
-prometheus-operator                                           0/0     0            0           5d15h
-rook-ceph-crashcollector-1de4b86b9b35de1c0d658c9dbc54f861     0/1     0            0           3d16h
-rook-ceph-crashcollector-c01359daa1c8761a73d036d5cade8691     0/1     0            0           3d16h
-rook-ceph-crashcollector-d8372827eced110080a352747f215571     0/1     0            0           3d16h
-rook-ceph-exporter-master01.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d16h
-rook-ceph-exporter-master02.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d16h
-rook-ceph-exporter-master03.airtel3novvt.samsungcnfcu.local   0/1     0            0           3d16h
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a             1/1     1            1           522d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b             0/1     0            0           522d
-rook-ceph-mgr-a                                               0/1     0            0           522d
-rook-ceph-mgr-b                                               0/1     0            0           28d
-rook-ceph-mon-a                                               0/1     0            0           522d
-rook-ceph-mon-d                                               0/1     0            0           32d
-rook-ceph-mon-e                                               0/1     0            0           32d
-rook-ceph-osd-0                                               0/0     0            0           522d
-rook-ceph-osd-1                                               0/1     0            0           522d
-rook-ceph-osd-2                                               0/0     0            0           522d
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a            0/1     0            0           522d
-ux-backend-server                                             1/1     1            1           3d
-[root@bastion01 ~]# oc logs deploy/ceph-csi-controller-manager -n openshift-storage
-2026-06-23T06:00:47Z    INFO    setup   starting manager
-2026-06-23T06:00:47Z    INFO    controller-runtime.metrics      Starting metrics server
-2026-06-23T06:00:47Z    INFO    starting server {"name": "health probe", "addr": "[::]:8081"}
-2026-06-23T06:00:47Z    INFO    controller-runtime.metrics      Serving metrics server  {"bindAddress": "127.0.0.1:8080", "secure": false}
-I0623 06:00:47.026546       1 leaderelection.go:254] attempting to acquire leader lease openshift-storage/0a62cc8a.ceph.io...
-I0623 06:01:03.995982       1 leaderelection.go:268] successfully acquired lease openshift-storage/0a62cc8a.ceph.io
-2026-06-23T06:01:03Z    DEBUG   events  ceph-csi-controller-manager-6f65bbd578-nqb7r_066fe794-9a65-4c74-b1ce-ac31fd8abcad became leader {"type": "Normal", "object": {"kind":"Lease","namespace":"openshift-storage","name":"0a62cc8a.ceph.io","uid":"413a9fc9-c417-48f5-84a4-98c434d671da","apiVersion":"coordination.k8s.io/v1","resourceVersion":"1012073729"}, "reason": "LeaderElection"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "source": "kind source: *v1alpha1.Driver"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "source": "kind source: *v1.Deployment"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "source": "kind source: *v1.DaemonSet"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "source": "kind source: *v1.Service"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "source": "kind source: *v1.ConfigMap"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "source": "kind source: *v1alpha1.OperatorConfig"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "source": "kind source: *v1.CSIDriver"}
-2026-06-23T06:01:03Z    INFO    Starting Controller     {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "clientprofilemapping", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfileMapping", "source": "kind source: *v1alpha1.ClientProfileMapping"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "clientprofile", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfile", "source": "kind source: *v1alpha1.ClientProfile"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "clientprofile", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfile", "source": "kind source: *v1alpha1.CephConnection"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "clientprofile", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfile", "source": "kind source: *v1.ConfigMap"}
-2026-06-23T06:01:03Z    INFO    Starting Controller     {"controller": "clientprofile", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfile"}
-2026-06-23T06:01:03Z    INFO    Starting EventSource    {"controller": "clientprofilemapping", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfileMapping", "source": "kind source: *v1.ConfigMap"}
-2026-06-23T06:01:03Z    INFO    Starting Controller     {"controller": "clientprofilemapping", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfileMapping"}
-2026-06-23T06:01:04Z    INFO    Starting workers        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "worker count": 1}
-2026-06-23T06:01:04Z    INFO    Starting workers        {"controller": "clientprofilemapping", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfileMapping", "worker count": 1}
-2026-06-23T06:01:04Z    INFO    Starting workers        {"controller": "clientprofile", "controllerGroup": "csi.ceph.io", "controllerKind": "ClientProfile", "worker count": 1}
-2026-06-23T06:01:04Z    INFO    Starting reconcile iteration for Ceph CSI driver        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "1a5aba4e-fc3e-4643-b69a-2dd6a5f5244f", "req": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}}
-2026-06-23T06:01:04Z    ERROR   Unable to load driver.csi.ceph.io       {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "1a5aba4e-fc3e-4643-b69a-2dd6a5f5244f", "name": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).LoadAndValidateDesiredState
-        /src/remote_source/app/internal/controller/driver_controller.go:306
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:228
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:217
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    ERROR   CSI Driver reconciliation failed        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "1a5aba4e-fc3e-4643-b69a-2dd6a5f5244f", "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:219
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    ERROR   Reconciler error        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "1a5aba4e-fc3e-4643-b69a-2dd6a5f5244f", "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:316
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    INFO    Starting reconcile iteration for Ceph CSI driver        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "adc1404f-a042-4f24-b77c-880c56771a85", "req": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}}
-2026-06-23T06:01:04Z    ERROR   Unable to load driver.csi.ceph.io       {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "adc1404f-a042-4f24-b77c-880c56771a85", "name": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).LoadAndValidateDesiredState
-        /src/remote_source/app/internal/controller/driver_controller.go:306
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:228
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:217
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    ERROR   CSI Driver reconciliation failed        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "adc1404f-a042-4f24-b77c-880c56771a85", "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:219
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    ERROR   Reconciler error        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "adc1404f-a042-4f24-b77c-880c56771a85", "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:316
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    INFO    Starting reconcile iteration for Ceph CSI driver        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "f1c00a09-f642-439a-a2c5-9d1ddd8a4fe0", "req": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}}
-2026-06-23T06:01:04Z    ERROR   Unable to load driver.csi.ceph.io       {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "f1c00a09-f642-439a-a2c5-9d1ddd8a4fe0", "name": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).LoadAndValidateDesiredState
-        /src/remote_source/app/internal/controller/driver_controller.go:306
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:228
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:217
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    ERROR   CSI Driver reconciliation failed        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "f1c00a09-f642-439a-a2c5-9d1ddd8a4fe0", "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:219
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    ERROR   Reconciler error        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "f1c00a09-f642-439a-a2c5-9d1ddd8a4fe0", "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:316
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    INFO    Starting reconcile iteration for Ceph CSI driver        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "95a48e2f-65f2-4ba5-99d3-03ece27e4898", "req": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}}
-2026-06-23T06:01:04Z    ERROR   Unable to load driver.csi.ceph.io       {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "95a48e2f-65f2-4ba5-99d3-03ece27e4898", "name": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).LoadAndValidateDesiredState
-        /src/remote_source/app/internal/controller/driver_controller.go:306
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:228
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:217
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    ERROR   CSI Driver reconciliation failed        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "95a48e2f-65f2-4ba5-99d3-03ece27e4898", "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:219
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:01:04Z    ERROR   Reconciler error        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "95a48e2f-65f2-4ba5-99d3-03ece27e4898", "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:316
-2026-06-23T06:11:59Z    INFO    Starting reconcile iteration for Ceph CSI driver        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "ad3d487d-f6aa-4490-aeda-513e8347eacb", "req": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}}
-2026-06-23T06:11:59Z    ERROR   Unable to load driver.csi.ceph.io       {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "ad3d487d-f6aa-4490-aeda-513e8347eacb", "name": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).LoadAndValidateDesiredState
-        /src/remote_source/app/internal/controller/driver_controller.go:306
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:228
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:217
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:11:59Z    ERROR   CSI Driver reconciliation failed        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "ad3d487d-f6aa-4490-aeda-513e8347eacb", "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:219
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:11:59Z    ERROR   Reconciler error        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "ad3d487d-f6aa-4490-aeda-513e8347eacb", "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:316
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:22:54Z    INFO    Starting reconcile iteration for Ceph CSI driver        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "919a1603-d587-423c-aa54-e66f4e9f7e13", "req": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}}
-2026-06-23T06:22:54Z    ERROR   Unable to load driver.csi.ceph.io       {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "919a1603-d587-423c-aa54-e66f4e9f7e13", "name": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).LoadAndValidateDesiredState
-        /src/remote_source/app/internal/controller/driver_controller.go:306
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:228
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:217
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:22:54Z    ERROR   CSI Driver reconciliation failed        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "919a1603-d587-423c-aa54-e66f4e9f7e13", "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:219
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:22:54Z    ERROR   Reconciler error        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"cephfs.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "cephfs.csi.ceph.com", "reconcileID": "919a1603-d587-423c-aa54-e66f4e9f7e13", "error": "Driver.csi.ceph.io \"cephfs.csi.ceph.com\" not found"}
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:316
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:22:54Z    INFO    Starting reconcile iteration for Ceph CSI driver        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "ee123148-b3a1-42e6-a002-90111ff522f6", "req": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}}
-2026-06-23T06:22:54Z    ERROR   Unable to load driver.csi.ceph.io       {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "ee123148-b3a1-42e6-a002-90111ff522f6", "name": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).LoadAndValidateDesiredState
-        /src/remote_source/app/internal/controller/driver_controller.go:306
-github.com/ceph/ceph-csi-operator/internal/controller.(*driverReconcile).reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:228
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:217
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:22:54Z    ERROR   CSI Driver reconciliation failed        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "ee123148-b3a1-42e6-a002-90111ff522f6", "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-github.com/ceph/ceph-csi-operator/internal/controller.(*DriverReconciler).Reconcile
-        /src/remote_source/app/internal/controller/driver_controller.go:219
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Reconcile
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:116
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:303
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
-2026-06-23T06:22:54Z    ERROR   Reconciler error        {"controller": "driver", "controllerGroup": "csi.ceph.io", "controllerKind": "Driver", "Driver": {"name":"rbd.csi.ceph.com","namespace":"openshift-storage"}, "namespace": "openshift-storage", "name": "rbd.csi.ceph.com", "reconcileID": "ee123148-b3a1-42e6-a002-90111ff522f6", "error": "Driver.csi.ceph.io \"rbd.csi.ceph.com\" not found"}
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).reconcileHandler
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:316
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).processNextWorkItem
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:263
-sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller[...]).Start.func2.2
-        /src/remote_source/app/vendor/sigs.k8s.io/controller-runtime/pkg/internal/controller/controller.go:224
+[root@bastion01 ~]# oc logs deploy/ocs-operator -n openshift-storage  --tail=200
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Go Version: go1.22.12 (Red Hat 1.22.12-8.el9)"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Go OS/Arch: linux/amd64"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Cluster is running on OpenShift."}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"OCSInitialization resource already exists"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"starting manager"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"controller-runtime.metrics","msg":"Starting metrics server"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"controller-runtime.metrics","msg":"Serving metrics server","bindAddress":":8080","secure":false}
+{"level":"info","ts":"2026-06-23T06:00:51Z","msg":"starting server","name":"health probe","addr":"[::]:8081"}
+I0623 06:00:51.820569       7 leaderelection.go:254] attempting to acquire leader lease openshift-storage/ab76f4c9.openshift.io...
+I0623 06:01:06.829038       7 leaderelection.go:268] successfully acquired lease openshift-storage/ab76f4c9.openshift.io
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","source":"kind source: *v1.StorageClusterPeer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","source":"kind source: *v1.StorageCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephBlockPool"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephFilesystem"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephFilesystemSubVolumeGroup"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephNFS"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephObjectStore"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephObjectStoreUser"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephRBDMirror"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.PersistentVolumeClaim"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.OCSInitialization"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Service"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Secret"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Prometheus"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Alertmanager"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ServiceMonitor"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.StorageCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.StorageClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Deployment"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1alpha1.ClusterServiceVersion"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Service"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.PartialObjectMetadata"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Secret"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Route"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Template"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.NooBaa"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.PartialObjectMetadata"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephRBDMirror"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.StorageClusterPeer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.VolumeSnapshotClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.StorageConsumer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageClusterPeer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.StorageClient"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1alpha1.StorageConsumer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1alpha1.StorageConsumer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephBlockPool"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephBlockPoolRadosNamespace"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1alpha1.NooBaaAccount"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1.CephBlockPool"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1alpha1.StorageRequest"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephBlockPoolRadosNamespace"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephFilesystemSubVolumeGroup"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephClient"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.StorageClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.VolumeSnapshotClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Reconciling StorageClusterPeer.","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","StorageClusterPeer":{"name":"ocs-storagecluster","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"ocs-storagecluster","reconcileID":"75b1e9c1-cd66-488a-9e1c-50f0162bed7d","StorageClient":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"StorageClusterPeer resource not found. Ignoring since object must have been deleted.","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","StorageClusterPeer":{"name":"ocs-storagecluster","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"ocs-storagecluster","reconcileID":"75b1e9c1-cd66-488a-9e1c-50f0162bed7d","StorageClient":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting reconcile","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","ConfigMap":{"name":"storage-client-mapping","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"storage-client-mapping","reconcileID":"b864374b-27b8-480d-8a44-3d681ff8b82f","StorageClientMapping":{"name":"storage-client-mapping","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"ConfigMap %s not found. Ignoring since object must be deleted.","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","ConfigMap":{"name":"storage-client-mapping","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"storage-client-mapping","reconcileID":"b864374b-27b8-480d-8a44-3d681ff8b82f","StorageClientMapping":{"name":"storage-client-mapping","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Reconciling OCSInitialization.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","OCSInitialization":{"name":"ocsinit","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Reconciling StorageCluster.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","StorageCluster":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Spec.AllowRemoteStorageConsumers is disabled","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"rook-ceph"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Resource deletion for provider succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Spec.AllowRemoteStorageConsumers is disabled","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"rook-ceph-csi"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"noobaa"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Successfully created/updated rook-ceph-operator-config configmap","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","OperationResult":"unchanged"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Secret creation succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","Name":"ux-backend-proxy"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Service creation succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","Name":"ux-backend-proxy"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Updating spec for CephCluster.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephCluster":{"name":"ocs-storagecluster-cephcluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[0].volumeClaimTemplates[0].metadata.creationTimestamp\""}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[1].volumeClaimTemplates[0].metadata.creationTimestamp\""}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[2].volumeClaimTemplates[0].metadata.creationTimestamp\""}
+W0623 06:01:07.388419       7 client_config.go:659] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"prometheus rules deployed","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephCluster":{"name":"ocs-storagecluster-cephcluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephFilesystem.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephFileSystem":{"name":"ocs-storagecluster-cephfilesystem","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStore.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStore":{"name":"ocs-storagecluster-cephobjectstore","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStoreUser.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStoreUser":{"name":"ocs-storagecluster-cephobjectstoreuser","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStoreUser.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStoreUser":{"name":"prometheus-user","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original Ceph RGW Route.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephRGWRoute":{"name":"ocs-storagecluster-cephobjectstore","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original Ceph RGW Route.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephRGWRoute":{"name":"ocs-storagecluster-cephobjectstore-secure","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"VolumeGroupSnapshotClass CRD is not available","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Creating or updating odf-info config map","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","ConfigMap":{"name":"odf-info","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"controllers.StorageCluster","msg":"Reconciling metrics exporter service","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","NamespacedName":{"name":"ocs-metrics-exporter","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"controllers.StorageCluster","msg":"Reconciling metrics exporter service monitor","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","NamespacedName":{"name":"ocs-metrics-exporter","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.managedResources.cephNonResilientPools.volumeClaimTemplate.metadata.creationTimestamp\""}
+{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storageDeviceSets[0].dataPVCTemplate.metadata.creationTimestamp\""}
+[root@bastion01 ~]# oc get cephcsi -A
+error: the server doesn't have a resource type "cephcsi"
 [root@bastion01 ~]#
