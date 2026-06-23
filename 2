@@ -1,249 +1,113 @@
-sysadmin@controller-0:~$ last reboot
-reboot   system boot  6.6.0-1-rt-amd64 Mon Jun 22 06:49   still running
-reboot   system boot  6.6.0-1-rt-amd64 Thu Jun 18 07:42 - 06:44 (3+23:02)
-reboot   system boot  6.6.0-1-rt-amd64 Wed Jun 10 06:40 - 06:44 (12+00:04)
-reboot   system boot  6.6.0-1-rt-amd64 Wed Jun 10 04:50 - 06:44 (12+01:53)
-
-wtmp begins Tue Jun  9 10:25:43 2026
-sysadmin@controller-0:~$ sm-query service-group
-usage: sm-query service-group [-h] [--desired-state] service_group_name [service_group_name ...]
-sm-query service-group: error: the following arguments are required: service_group_name
-sysadmin@controller-0:~$ sm-query service
-usage: sm-query service [-h] service_name
-sm-query service: error: the following arguments are required: service_name
-sysadmin@controller-0:~$ system host-list
-You must provide a username via either --os-username or via env[OS_USERNAME]
-sysadmin@controller-0:~$ system host-show controller-0
-You must provide a username via either --os-username or via env[OS_USERNAME]
-sysadmin@controller-0:~$ grep -iE "reboot|shutdown|panic|watchdog" /var/log/* 2>/dev/null
-/var/log/containerd.log:2026-06-22T06:51:29.546 controller-0 containerd[19150]: info time="2026-06-22T06:51:29.545950550Z" level=info msg="loading plugin \"io.containerd.internal.v1.shutdown\"..." runtime=io.containerd.runc.v2 type=io.containerd.internal.v1
-/var/log/containerd.log:2026-06-22T06:51:29.546 controller-0 containerd[19150]: info time="2026-06-22T06:51:29.545958562Z" level=info msg="loading plugin \"io.containerd.internal.v1.shutdown\"..." runtime=io.containerd.runc.v2 type=io.containerd.internal.v1
-/var/log/containerd.log:2026-06-22T06:51:29.552 controller-0 containerd[19150]: info time="2026-06-22T06:51:29.552025662Z" level=info msg="loading plugin \"io.containerd.internal.v1.shutdown\"..." runtime=io.containerd.runc.v2 type=io.containerd.internal.v1
-/var/log/cron.log:2025-03-07T06:19:26.651 localhost cron[4396]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-03-07T06:40:07.550 localhost cron[4524]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-03-07T07:47:03.654 controller-0 cron[5120]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-03-07T08:41:02.989 controller-0 cron[5449]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-03-07T08:48:19.241 controller-0 cron[5401]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-03-17T06:24:49.751 controller-0 cron[5321]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-05-13T03:37:29.328 controller-0 cron[5301]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-07-04T06:59:18.648 controller-0 cron[5304]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-09-29T06:04:59.990 controller-0 cron[5388]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-11-10T10:46:51.767 controller-0 cron[6494]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-11-10T11:08:18.051 controller-0 cron[5367]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-11-21T06:57:27.623 controller-0 cron[6429]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-12-24T05:38:42.637 controller-0 cron[5307]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-12-26T05:21:00.236 controller-0 cron[5392]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2025-12-29T03:58:45.359 controller-0 cron[6424]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-02T05:18:40.018 controller-0 cron[6680]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-02T05:34:02.638 controller-0 cron[6459]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-13T11:54:08.999 controller-0 cron[5310]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-16T05:11:30.777 controller-0 cron[5292]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-16T07:01:55.229 controller-0 cron[5297]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-16T07:38:33.491 controller-0 cron[6581]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-16T07:50:02.084 controller-0 cron[5310]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-16T08:18:05.450 controller-0 cron[5314]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-19T04:48:16.884 controller-0 cron[5301]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-19T06:19:08.404 controller-0 cron[6713]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-01-19T06:30:33.642 controller-0 cron[5294]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-02-04T04:34:42.606 controller-0 cron[5312]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-02-25T05:56:33.401 controller-0 cron[5316]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-03-17T01:23:29.015 controller-0 cron[5312]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-03-18T05:16:40.769 controller-0 cron[6434]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-03-31T05:02:54.125 controller-0 cron[6476]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-06-09T10:23:47.049 controller-0 cron[5301]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-06-10T04:50:58.678 controller-0 cron[6505]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-06-10T06:40:20.162 controller-0 cron[6549]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-06-18T07:42:37.716 controller-0 cron[6600]: info (CRON) INFO (Running @reboot jobs)
-/var/log/cron.log:2026-06-22T06:49:54.783 controller-0 cron[6458]: info (CRON) INFO (Running @reboot jobs)
-/var/log/hostwd.log:2025-03-07T06:34:30.677 [12750.00024] localhost hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2025-03-07T07:40:42.228 [11272.00047] localhost hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2025-03-07T07:49:24.352 [25335.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-03-07T07:49:24.367 [25335.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-03-07T07:49:24.386 [25335.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-03-07T08:33:47.067 [25335.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2025-03-07T08:50:01.113 [25135.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-03-07T08:50:01.134 [25135.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-03-07T08:50:01.153 [25135.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-03-17T06:19:49.676 [25135.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2025-03-17T06:26:37.277 [25406.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-03-17T06:26:37.319 [25406.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-03-17T06:26:37.320 [25406.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-05-13T03:39:18.524 [27887.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-05-13T03:39:18.524 [27887.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-05-13T03:39:18.988 [27887.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-07-04T07:01:07.109 [25145.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-07-04T07:01:07.129 [25145.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-07-04T07:01:07.152 [25145.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-09-29T06:06:56.823 [25119.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-09-29T06:06:56.843 [25119.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-09-29T06:06:56.843 [25119.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-11-10T10:48:34.494 [26612.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-11-10T10:48:34.515 [26612.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-11-10T10:48:34.518 [26612.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-11-10T11:01:39.474 [26612.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2025-11-10T11:10:04.935 [25122.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-11-10T11:10:04.956 [25122.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-11-10T11:10:04.973 [25122.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-11-21T06:59:11.089 [25228.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-11-21T06:59:11.089 [25228.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-11-21T06:59:11.117 [25228.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-12-24T05:40:28.682 [25378.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-12-24T05:40:28.702 [25378.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-12-24T05:40:28.712 [25378.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-12-26T05:15:16.178 [25378.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2025-12-26T05:22:44.750 [25084.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-12-26T05:22:44.770 [25084.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-12-26T05:22:44.777 [25084.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2025-12-29T04:00:27.365 [25088.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2025-12-29T04:00:27.385 [25088.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2025-12-29T04:00:27.401 [25088.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-02T05:20:20.707 [25000.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-02T05:20:20.727 [25000.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-02T05:20:20.740 [25000.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-02T05:25:41.194 [25000.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-01-02T05:35:42.265 [24993.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-02T05:35:42.285 [24993.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-02T05:35:42.296 [24993.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-13T06:25:53.271 [25788.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-13T06:25:53.297 [25788.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-13T06:25:53.314 [25788.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-16T05:13:17.148 [26043.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-16T05:13:17.149 [26043.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-16T05:13:17.177 [26043.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-16T06:54:42.568 [26043.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-01-16T07:03:40.269 [26099.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-16T07:03:40.289 [26099.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-16T07:03:40.303 [26099.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-16T07:31:35.800 [26099.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-01-16T07:40:10.673 [25050.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-16T07:40:10.696 [25050.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-16T07:40:10.711 [25050.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-16T07:43:09.077 [25050.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-01-16T07:51:48.642 [25140.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-16T07:51:48.734 [25140.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-16T07:51:48.735 [25140.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-16T08:19:49.513 [25075.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-16T08:19:49.556 [25075.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-16T08:19:49.556 [25075.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-19T04:41:26.710 [25075.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-01-19T04:50:00.211 [25063.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-19T04:50:00.240 [25063.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-19T04:50:00.254 [25063.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-19T06:11:49.521 [25063.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-01-19T06:20:47.780 [26102.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-19T06:20:47.801 [26102.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-19T06:20:47.801 [26102.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-01-19T06:24:57.154 [26102.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-01-19T06:32:17.962 [24957.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-01-19T06:32:17.990 [24957.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-01-19T06:32:17.994 [24957.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-02-04T04:36:28.484 [25096.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-02-04T04:36:28.504 [25096.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-02-04T04:36:28.525 [25096.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-02-25T05:49:05.329 [25096.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-02-25T05:58:18.794 [25091.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-02-25T05:58:18.795 [25091.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-02-25T05:58:18.818 [25091.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-03-17T01:25:16.524 [25024.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-03-17T01:25:16.570 [25024.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-03-17T01:25:16.571 [25024.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-03-18T05:18:20.080 [24981.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-03-18T05:18:20.100 [24981.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-03-18T05:18:20.112 [24981.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-03-31T05:04:37.537 [27629.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-03-31T05:04:37.538 [27629.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-03-31T05:04:37.566 [27629.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-06-09T10:25:45.178 [25108.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-06-09T10:25:45.198 [25108.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-06-09T10:25:45.201 [25108.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-06-10T04:52:39.646 [25053.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-06-10T04:52:39.667 [25053.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-06-10T04:52:39.686 [25053.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-06-10T06:42:00.900 [26264.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-06-10T06:42:00.921 [26264.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-06-10T06:42:00.941 [26264.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-06-18T07:44:17.051 [24970.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-06-18T07:44:17.095 [24970.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-06-18T07:44:17.096 [24970.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-06-22T06:42:46.417 [24970.00032] controller-0 hostwd --- hostwInit.cpp     (  68) daemon_exit             : Info : Leaving watchdog running while system is 'stopping'
-/var/log/hostwd.log:2026-06-22T06:51:32.697 [24980.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-06-22T06:51:32.698 [24980.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-06-22T06:51:32.939 [24980.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-06-22T06:51:52.986 [25127.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-06-22T06:51:52.987 [25127.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-06-22T06:51:53.000 [25127.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/hostwd.log:2026-06-22T06:57:10.493 [31934.00003] localhost hostwd --- hostwInit.cpp     ( 110) hostw_process_config    : Info : Quorum Loss : Reboot & Log
-/var/log/hostwd.log:2026-06-22T06:57:10.493 [31934.00014] localhost hostwd --- hostwInit.cpp     ( 328) kernel_watchdog_init    : Info : Kernel watchdog enabled with 180 second timeout
-/var/log/hostwd.log:2026-06-22T06:57:10.502 [31934.00017] controller-0 hostwd --- hostwHdlr.cpp     ( 272) hostw_service           : Info : Host Watchdog Service running
-/var/log/kern.log:2026-06-22T06:42:46.417 controller-0 kernel: crit [342070.109790] watchdog: watchdog0: watchdog did not stop!
-/var/log/kern.log:2026-06-22T06:49:47.190 controller-0 kernel: info [    0.000000] Command line: BOOT_IMAGE=/1/vmlinuz-6.6.0-1-rt-amd64 rw rootwait ostree_boot=LABEL=otaboot ostree_root=/dev/mapper/cgts--vg-root--lv rd.lvm.lv=cgts/root-lv ostree_var=/dev/mapper/cgts--vg-var--lv ostree=/ostree/1 console=ttyS0,115200 console=tty1 iommu=pt nmi_watchdog=0 softlockup_panic=0 intel_iommu=on selinux=0 enforcing=0 softdog.soft_panic=1 systemd.unified_cgroup_hierarchy=0 user_namespace.enable=1 biosdevname=0 skew_tick=1 nohz_full=3-5,7-9,11-13,15-17,19-21,23-25,27-29,31-33,35-37,40-41,44-45,48-49,53,57,61,67-69,71-73,75-77,79-81,83-85,87-89,91-93,95-97,99-101,104-105,108-109,112-113,117,121,125 isolcpus=nohz,domain,managed_irq,3-5,7-9,11-13,15-17,19-21,23-25,27-29,31-33,35-37,40-41,44-45,48-49,53,57,61,67-69,71-73,75-77,79-81,83-85,87-89,91-93,95-97,99-101,104-105,108-109,112-113,117,121,125 rcu_nocbs=2-63,66-127 kthread_cpus=0-1,64-65 irqaffinity=2,6,10,14,18,22,26,30,34,38-39,42-43,46-47,50-52,54-56,58-60,62-63,66,70,74,78,82,86,90,94,98,102-103,106-107,110-111,114-116,118-120,122-124,126-127 au
-/var/log/kern.log:2026-06-22T06:49:47.196 controller-0 kernel: info [    0.000000] secureboot: Secure boot disabled
-/var/log/kern.log:2026-06-22T06:49:47.218 controller-0 kernel: notice [    0.550822] Kernel command line: net.naming-scheme=vSTX7_0 BOOT_IMAGE=/1/vmlinuz-6.6.0-1-rt-amd64 rw rootwait ostree_boot=LABEL=otaboot ostree_root=/dev/mapper/cgts--vg-root--lv rd.lvm.lv=cgts/root-lv ostree_var=/dev/mapper/cgts--vg-var--lv ostree=/ostree/1 console=ttyS0,115200 console=tty1 iommu=pt nmi_watchdog=0 softlockup_panic=0 intel_iommu=on selinux=0 enforcing=0 softdog.soft_panic=1 systemd.unified_cgroup_hierarchy=0 user_namespace.enable=1 biosdevname=0 skew_tick=1 nohz_full=3-5,7-9,11-13,15-17,19-21,23-25,27-29,31-33,35-37,40-41,44-45,48-49,53,57,61,67-69,71-73,75-77,79-81,83-85,87-89,91-93,95-97,99-101,104-105,108-109,112-113,117,121,125 isolcpus=nohz,domain,managed_irq,3-5,7-9,11-13,15-17,19-21,23-25,27-29,31-33,35-37,40-41,44-45,48-49,53,57,61,67-69,71-73,75-77,79-81,83-85,87-89,91-93,95-97,99-101,104-105,108-109,112-113,117,121,125 rcu_nocbs=2-63,66-127 kthread_cpus=0-1,64-65 irqaffinity=2,6,10,14,18,22,26,30,34,38-39,42-43,46-47,50-52,54-56,58-60,62-63,66,70,74,78,82,86,90,94,98,102-103,106-107,110-111,1
-/var/log/kern.log:2026-06-22T06:49:47.218 controller-0 kernel: info [    0.551149] audit: disabled (until reboot)
-/var/log/kern.log:2026-06-22T06:49:47.223 controller-0 kernel: info [    3.623922] watchdog: Disabling watchdog on nohz_full cores by default
-/var/log/kern.log:2026-06-22T06:49:47.229 controller-0 kernel: info [    4.261121] reboot: Dell PowerEdge R750 series board detected. Selecting PCI-method for reboots.
-/var/log/kern.log:2026-06-22T06:49:47.259 controller-0 kernel: info [    7.986677] softdog: initialized. soft_noboot=0 soft_margin=60 sec soft_panic=1 (nowayout=0)
-/var/log/kern.log:2026-06-22T06:49:47.259 controller-0 kernel: info [    7.986680] softdog:              soft_reboot_cmd=<not set> soft_active_on_boot=0
-/var/log/kern.log:2026-06-22T06:49:47.262 controller-0 kernel: warning [   37.419058] bnxt_en 0000:31:00.0 (unnamed net_device) (uninitialized): Device requests max timeout of 100 seconds, may trigger hung task watchdog
-/var/log/kern.log:2026-06-22T06:49:47.263 controller-0 kernel: warning [   37.681665] bnxt_en 0000:31:00.1 (unnamed net_device) (uninitialized): Device requests max timeout of 100 seconds, may trigger hung task watchdog
-/var/log/mtcAgent.log:2025-03-07T07:17:28.721 [55262.00009] localhost mtcAgent mtc mtcNodeCtrl.cpp   ( 474) mtc_config_handler      : Info : Shutdown TO : 120 secs
-/var/log/mtcAgent.log:2025-03-07T07:40:08.160 [55262.00135] controller-0 mtcAgent inv mtcInvApi.cpp     ( 397) mtcInvApi_update_task_now: Info : controller-0 Task: Unlocking, please stand-by while the system gracefully reboots (seq:29)
-/var/log/mtcAgent.log:2025-03-07T07:40:08.220 [55262.00136] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  ( 555) enable_handler          : Warn : controller-0 unlocking Simplex System with reboot
-/var/log/mtcAgent.log:2025-03-07T07:40:08.220 [55262.00137] controller-0 mtcAgent msg mtcCtrlMsg.cpp    ( 748) send_mtc_cmd            : Info : controller-0 sending 'lazy reboot' request (Mgmnt)
-/var/log/mtcAgent.log:2025-03-07T07:40:08.224 [55262.00138] controller-0 mtcAgent com nodeUtil.cpp      (1088) fork_sysreq_reboot      : Info : Forked Fail-Safe (Backup) Reboot Action
-/var/log/mtcAgent.log:2025-03-07T07:40:41.187 [55262.00192] controller-0 mtcAgent --- daemon_config.cpp ( 409) daemon_dump_cfg         : Info : failsafe_shutdown_dela= 120
-/var/log/mtcAgent.log:2025-03-07T07:40:41.192  16| controller-0 Action:unlock:unlock Task:Unlocking, please stand-by while the system gracefully reboots Info:none
-/var/log/mtcAgent.log:2025-03-07T07:49:41.957 [33350.00009] localhost mtcAgent mtc mtcNodeCtrl.cpp   ( 474) mtc_config_handler      : Info : Shutdown TO : 120 secs
-/var/log/mtcAgent.log:2025-03-07T07:50:02.341 [33350.00122] controller-0 mtcAgent inv mtcInvApi.cpp     ( 434) mtcInvApi_force_task    : Info : controller-0 task clear (seq:3) (was:Unlocking, please stand-by while the system gracefully reboots)
-/var/log/mtcAgent.log:2025-03-07T08:33:12.797 [33350.00211] controller-0 mtcAgent inv mtcInvApi.cpp     ( 397) mtcInvApi_update_task_now: Info : controller-0 Task: Unlocking, please stand-by while the system gracefully reboots (seq:72)
-/var/log/mtcAgent.log:2025-03-07T08:33:12.863 [33350.00212] controller-0 mtcAgent hdl mtcNodeHdlrs.cpp  ( 555) enable_handler          : Warn : controller-0 unlocking Simplex System with reboot
-/var/log/mtcAgent.log:2025-03-07T08:33:12.864 [33350.00213] controller-0 mtcAgent msg mtcCtrlMsg.cpp    ( 748) send_mtc_cmd            : Info : controller-0 sending 'lazy reboot' request (Mgmnt)
-/var/log/mtcAgent.log:2025-03-07T08:33:12.867 [33350.00214] controller-0 mtcAgent com nodeUtil.cpp      (1088) fork_sysreq_reboot      : Info : Forked Fail-Safe (Backup) Reboot Action
-/var/log/mtcAgent.log:2025-03-07T08:33:24.403 [33350.00268] controller-0 mtcAgent --- daemon_config.cpp ( 409) daemon_dump_cfg         : Info : failsafe_shutdown_dela= 120
-/var/log/mtcAgent.log:2025-03-07T08:33:24.404  16| controller-0 Action:unlock:unlock Task:Unlocking, please stand-by while the system gracefully reboots Info:none
-/var/log/mtcAgent.log:2025-03-07T08:50:16.911 [32629.00009] localhost mtcAgent mtc mtcNodeCtrl.cpp   ( 474) mtc_config_handler      : Info : Shutdown TO : 120 secs
-/var/log/mtcAgent.log:2025-03-07T08:50:37.252 [32629.00122] controller-0 mtcAgent inv mtcInvApi.cpp     ( 434) mtcInvApi_force_task    : Info : controller-0 task clear (seq:3) (was:Unlocking, please stand-by while the system gracefully reboots)
-/var/log/mtcAgent.log:2025-03-17T06:26:55.859 [33059.00009] localhost mtcAgent mtc mtcNodeCtrl.cpp   ( 474) mtc_config_handler      : Info : Shutdown TO : 120 secs
-/var/log/mtcClient.log:2025-03-07T06:19:53.128 [12485.00005] localhost mtcClient --- mtcNodeComp.cpp   ( 290) mtc_config_handler      : Info : Shutdown TO : 120 secs
-/var/log/mtcClient.log:2025-03-07T06:34:31.108 [12485.00043] localhost mtcClient --- daemon_config.cpp ( 409) daemon_dump_cfg         : Info : failsafe_shutdown_dela= 120
-/var/log/mtcClient.log:2025-03-07T06:40:33.109 [11034.00005] localhost mtcClient --- mtcNodeComp.cpp   ( 290) mtc_config_handler      : Info : Shutdown TO : 120 secs
-/var/log/mtcClient.log:2025-03-07T07:17:28.989 [11034.00061] localhost mtcClient --- daemon_config.cpp ( 409) daemon_dump_cfg         : Info : failsafe_shutdown_dela= 120
-/var/log/mtcClient.log:2025-03-07T07:17:29.088 [55323.00005] localhost mtcClient --- mtcNodeComp.cpp   ( 290) mtc_config_handler      : Info : Shutdown TO : 120 secs
-/var/log/mtcClient.log:2025-03-07T07:40:08.220 [55323.00033] controller-0 mtcClient msg mtcCompMsg.cpp    ( 408) mtc_service_command     : Info : lazy reboot command received from Mgmnt network ; delay:30 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:08.220 [55323.00034] controller-0 mtcClient msg mtcCompMsg.cpp    ( 603) mtc_service_command     : Info : lazy reboot reply send (Mgmnt)
-/var/log/mtcClient.log:2025-03-07T07:40:09.120 [55323.00036] controller-0 mtcClient msg mtcCompMsg.cpp    (  71) stop_pmon               : Info : Stopping pmon to prevent process recovery during shutdown
-/var/log/mtcClient.log:2025-03-07T07:40:11.124 [55323.00038] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 30 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:11.361 [55323.00039] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 29 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:12.362 [55323.00040] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 28 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:13.120 [55323.00041] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 27 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:14.120 [55323.00042] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 26 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:15.120 [55323.00043] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 25 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:16.120 [55323.00044] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 24 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:17.120 [55323.00045] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 23 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:18.120 [55323.00046] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 22 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:19.120 [55323.00047] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 21 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:20.120 [55323.00048] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 20 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:21.120 [55323.00049] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 19 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:22.120 [55323.00050] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 18 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:23.120 [55323.00051] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 17 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:24.120 [55323.00052] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 16 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:25.120 [55323.00053] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 15 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:26.120 [55323.00054] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 14 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:27.120 [55323.00055] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 13 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:28.120 [55323.00056] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 12 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:29.120 [55323.00057] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 11 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:30.120 [55323.00058] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 10 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:31.120 [55323.00059] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 9 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:32.120 [55323.00060] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 8 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:33.120 [55323.00061] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 7 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:34.120 [55323.00062] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 6 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:35.120 [55323.00063] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 5 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:36.120 [55323.00064] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 4 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:37.120 [55323.00065] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 3 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:38.120 [55323.00066] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 2 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:39.120 [55323.00067] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 1 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:40.120 [55323.00068] controller-0 mtcClient msg mtcCompMsg.cpp    ( 685) mtc_service_command     : Info : Lazy Reboot (Mgmnt) ; rebooting in 0 seconds
-/var/log/mtcClient.log:2025-03-07T07:40:41.121 [55323.00069] controller-0 mtcClient com nodeUtil.cpp      (1088) fork_sysreq_reboot      : Info : Forked Fail-Safe (Backup) Reboot Action
-/var/log/mtcClient.log:2025-03-07T07:40:42.529 [55323.00092] controller-0 mtcClient --- daemon_config.cpp ( 409) daemon_dump_cfg         : Info : failsafe_shutdown_dela= 120
-/var/log/mtcClient.log:2025-03-07T07:49:18.218 [23645.00005] localhost mtcClient --- mtcNodeComp.cpp   ( 290) mtc_config_handler      : Info : Shutdown TO : 120 secs
-/var/log/mtcClient.log:2025-03-07T08:33:12.864 [23645.00128] controller-0 mtcClient msg mtcCompMsg.cpp    ( 408) mtc_service_command     : Info : lazy reboot command received from Mgmnt network ; delay:30 seconds
+[root@bastion01 ~]# oc logs deploy/ocs-operator -n openshift-storage  --tail=200
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Go Version: go1.22.12 (Red Hat 1.22.12-8.el9)"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Go OS/Arch: linux/amd64"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Cluster is running on OpenShift."}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"OCSInitialization resource already exists"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"starting manager"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"controller-runtime.metrics","msg":"Starting metrics server"}
+{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"controller-runtime.metrics","msg":"Serving metrics server","bindAddress":":8080","secure":false}
+{"level":"info","ts":"2026-06-23T06:00:51Z","msg":"starting server","name":"health probe","addr":"[::]:8081"}
+I0623 06:00:51.820569       7 leaderelection.go:254] attempting to acquire leader lease openshift-storage/ab76f4c9.openshift.io...
+I0623 06:01:06.829038       7 leaderelection.go:268] successfully acquired lease openshift-storage/ab76f4c9.openshift.io
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","source":"kind source: *v1.StorageClusterPeer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","source":"kind source: *v1.StorageCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephBlockPool"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephFilesystem"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephFilesystemSubVolumeGroup"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephNFS"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephObjectStore"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephObjectStoreUser"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephRBDMirror"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.PersistentVolumeClaim"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.OCSInitialization"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Service"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Secret"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Prometheus"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Alertmanager"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ServiceMonitor"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.StorageCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.StorageClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Deployment"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1alpha1.ClusterServiceVersion"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Service"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.PartialObjectMetadata"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Secret"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Route"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Template"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.NooBaa"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.PartialObjectMetadata"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephRBDMirror"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.StorageClusterPeer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.VolumeSnapshotClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.StorageConsumer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageClusterPeer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.StorageClient"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1alpha1.StorageConsumer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1alpha1.StorageConsumer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephBlockPool"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephBlockPoolRadosNamespace"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1alpha1.NooBaaAccount"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1.CephBlockPool"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1alpha1.StorageRequest"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephBlockPoolRadosNamespace"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephFilesystemSubVolumeGroup"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephClient"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.StorageClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.VolumeSnapshotClass"}
+{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Reconciling StorageClusterPeer.","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","StorageClusterPeer":{"name":"ocs-storagecluster","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"ocs-storagecluster","reconcileID":"75b1e9c1-cd66-488a-9e1c-50f0162bed7d","StorageClient":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"StorageClusterPeer resource not found. Ignoring since object must have been deleted.","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","StorageClusterPeer":{"name":"ocs-storagecluster","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"ocs-storagecluster","reconcileID":"75b1e9c1-cd66-488a-9e1c-50f0162bed7d","StorageClient":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting reconcile","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","ConfigMap":{"name":"storage-client-mapping","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"storage-client-mapping","reconcileID":"b864374b-27b8-480d-8a44-3d681ff8b82f","StorageClientMapping":{"name":"storage-client-mapping","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"ConfigMap %s not found. Ignoring since object must be deleted.","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","ConfigMap":{"name":"storage-client-mapping","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"storage-client-mapping","reconcileID":"b864374b-27b8-480d-8a44-3d681ff8b82f","StorageClientMapping":{"name":"storage-client-mapping","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Reconciling OCSInitialization.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","OCSInitialization":{"name":"ocsinit","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","worker count":1}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Reconciling StorageCluster.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","StorageCluster":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Spec.AllowRemoteStorageConsumers is disabled","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"rook-ceph"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Resource deletion for provider succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Spec.AllowRemoteStorageConsumers is disabled","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"rook-ceph-csi"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"noobaa"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Successfully created/updated rook-ceph-operator-config configmap","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","OperationResult":"unchanged"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Secret creation succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","Name":"ux-backend-proxy"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Service creation succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","Name":"ux-backend-proxy"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Updating spec for CephCluster.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephCluster":{"name":"ocs-storagecluster-cephcluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[0].volumeClaimTemplates[0].metadata.creationTimestamp\""}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[1].volumeClaimTemplates[0].metadata.creationTimestamp\""}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[2].volumeClaimTemplates[0].metadata.creationTimestamp\""}
+W0623 06:01:07.388419       7 client_config.go:659] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"prometheus rules deployed","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephCluster":{"name":"ocs-storagecluster-cephcluster","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephFilesystem.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephFileSystem":{"name":"ocs-storagecluster-cephfilesystem","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStore.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStore":{"name":"ocs-storagecluster-cephobjectstore","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStoreUser.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStoreUser":{"name":"ocs-storagecluster-cephobjectstoreuser","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStoreUser.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStoreUser":{"name":"prometheus-user","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original Ceph RGW Route.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephRGWRoute":{"name":"ocs-storagecluster-cephobjectstore","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original Ceph RGW Route.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephRGWRoute":{"name":"ocs-storagecluster-cephobjectstore-secure","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"VolumeGroupSnapshotClass CRD is not available","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
+{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Creating or updating odf-info config map","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","ConfigMap":{"name":"odf-info","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"controllers.StorageCluster","msg":"Reconciling metrics exporter service","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","NamespacedName":{"name":"ocs-metrics-exporter","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"controllers.StorageCluster","msg":"Reconciling metrics exporter service monitor","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","NamespacedName":{"name":"ocs-metrics-exporter","namespace":"openshift-storage"}}
+{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.managedResources.cephNonResilientPools.volumeClaimTemplate.metadata.creationTimestamp\""}
+{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storageDeviceSets[0].dataPVCTemplate.metadata.creationTimestamp\""}
+[root@bastion01 ~]# oc get cephcsi -A
+error: the server doesn't have a resource type "cephcsi"
+[root@bastion01 ~]#
