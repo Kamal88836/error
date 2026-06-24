@@ -1,9 +1,80 @@
+Do not delete the Volume ID directly from Ceph CSI unless you have confirmed it is a stale operation. That error usually means the CSI controller has an in-memory lock, not that the volume itself is bad.
+
+First check VolumeAttachment
+
+oc get volumeattachment
+
+Find the attachment for the PVC:
+
+oc get volumeattachment -o yaml | grep -B10 -A20 20c6298b
+
+or
+
+oc get volumeattachment -o yaml | grep -B10 -A20 347c9448
+
+If a VolumeAttachment is stuck and the pod is not using it, delete it:
+
+oc delete volumeattachment <volumeattachment-name>
 
 
-Events:
-  Type     Reason            Age                  From               Message
-  ----     ------            ----                 ----               -------
-  Warning  FailedScheduling  5m13s                default-scheduler  0/5 nodes are available: 1 Insufficient cpu, 4 node(s) didn't match Pod's node affinity/selector. preemption: 0/5 nodes are available: 1 No preemption victims found for incoming pod, 4 Preemption is not helpful for scheduling.
-  Normal   Scheduled         5m12s                default-scheduler  Successfully assigned bscf-large/bscf600-bip1-6fc85bcfd-4w5h4 to worker2.viairtel.samsungbsc.local
-  Warning  FailedMount       3m25s                kubelet            MountVolume.MountDevice failed for volume "pvc-26611020-0118-4a63-8052-17b0c3a54782" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-20c6298b-a3e8-4e1b-8013-97cae6b394ef already exists
-  Warning  FailedMount       83s (x2 over 3m25s)  kubelet            MountVolume.MountDevice failed for volume "pvc-e4b04aee-e818-4c22-b1ad-fe87a57ca562" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-347c9448-152a-40ee-8a7b-41e7eb591a86 already exists
+---
+
+Most common fix: restart CSI pods
+
+For RBD:
+
+oc delete pod -n openshift-storage -l app=csi-rbdplugin
+oc delete pod -n openshift-storage -l app=csi-rbdplugin-provisioner
+
+For CephFS:
+
+oc delete pod -n openshift-storage -l app=csi-cephfsplugin
+oc delete pod -n openshift-storage -l app=csi-cephfsplugin-provisioner
+
+The DaemonSet/Deployment recreates them automatically and clears the stuck operation.
+
+
+---
+
+Check if operation is stuck in Ceph
+
+Enter toolbox:
+
+oc rsh -n openshift-storage deploy/rook-ceph-tools
+
+Check health:
+
+ceph -s
+
+Look for:
+
+slow ops
+blocked requests
+MDS laggy
+
+If present, the CSI operation may be waiting on Ceph.
+
+
+---
+
+If you really want to find the PVC from the Volume ID
+
+oc get pv | grep 20c6298b
+
+or
+
+oc get pv -o yaml | grep -B20 -A20 20c6298b
+
+Then identify the PV and PVC.
+
+
+---
+
+Before deleting anything, please share:
+
+oc get volumeattachment
+oc get pv | grep 20c6298b
+oc get pods -n openshift-storage | grep csi
+ceph -s
+
+Deleting the wrong RBD image or CephFS volume is a one-way street, and you don't want to throw the baby out with the bathwater. The output will tell us whether this is a CSI lock, a stuck attachment, or a backend Ceph issue.
