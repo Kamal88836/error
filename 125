@@ -1,8 +1,123 @@
-[root@bastion01 OCP_operator]# oc get pv,pvc | grep noobaa
-persistentvolume/pvc-5b8d6ecd-0b28-47a5-8b38-b5c316c91d7b   50Gi       RWO            Delete           Bound    openshift-storage/db-noobaa-db-pg-0                          ocs-storagecluster-ceph-rbd   <unset>                          6d16h
-persistentvolumeclaim/db-noobaa-db-pg-0                          Bound    pvc-5b8d6ecd-0b28-47a5-8b38-b5c316c91d7b   50Gi       RWO            ocs-storagecluster-ceph-rbd   <unset>                 6d16h
-[root@bastion01 OCP_operator]# oc get statefulset noobaa-db-pg -o yaml | grep creationTimestamp
-  creationTimestamp: "2026-06-18T07:42:06Z"
-      creationTimestamp: null
-      creationTimestamp: null
-[root@bastion01 OCP_operator]#
+This confirms the diagnosis.
+
+Evidence
+
+Your NooBaa deployment is 523 days old:
+
+NooBaa CR age: 523d
+noobaa-admin secret age: 523d
+
+But the PostgreSQL database was recreated only recently:
+
+StatefulSet noobaa-db-pg creationTimestamp: 2026-06-18
+PVC db-noobaa-db-pg-0 age: 6d
+
+At the same time, NooBaa continuously reports:
+
+account not found 6788bafb4b40bd002623d3a0
+
+This means:
+
+1. The original NooBaa database was lost/recreated around June 18.
+
+
+2. The old noobaa-admin secret still contains credentials pointing to the old admin account.
+
+
+3. The recreated database does not contain that account ID.
+
+
+4. Authentication fails.
+
+
+5. BackingStore remains Connecting.
+
+
+6. BucketClass remains Verifying.
+
+
+7. NooBaa remains Configuring.
+
+
+8. StorageCluster remains Progressing.
+
+
+
+Good news
+
+You have:
+
+oc get obc -A
+No resources found
+
+oc get objectbucket -A
+No resources found
+
+So there is no object storage metadata that needs protection.
+
+
+---
+
+Recommended Recovery
+
+Before changing anything, save the current objects:
+
+oc get noobaa noobaa -n openshift-storage -o yaml > /tmp/noobaa.yaml
+oc get backingstore -n openshift-storage -o yaml > /tmp/backingstore.yaml
+oc get bucketclass -n openshift-storage -o yaml > /tmp/bucketclass.yaml
+
+Then check whether the operator recreates NooBaa automatically after deletion:
+
+oc delete noobaa noobaa -n openshift-storage
+
+Watch:
+
+oc get noobaa -n openshift-storage -w
+
+If it is not recreated automatically within a few minutes:
+
+oc delete pod -l app=ocs-operator -n openshift-storage
+
+oc annotate storagecluster ocs-storagecluster \
+  -n openshift-storage \
+  reconcile-now="$(date +%s)" --overwrite
+
+
+---
+
+Alternative (less disruptive)
+
+Before deleting the NooBaa CR, you can try restarting NooBaa components once:
+
+oc delete pod noobaa-core-0 -n openshift-storage
+oc delete pod noobaa-db-pg-0 -n openshift-storage
+oc delete pod -l noobaa-operator=deployment -n openshift-storage
+
+However, based on the logs, I do not expect this to fix it because the admin account is genuinely missing from the database.
+
+
+---
+
+What I would do
+
+Given:
+
+CephCluster = HEALTH_OK
+
+All ODF CSVs = Succeeded
+
+No OBCs/ObjectBuckets exist
+
+NooBaa DB recreated 6 days ago
+
+Admin account missing from DB
+
+
+I would proceed with recreating NooBaa metadata rather than spending time trying to repair the database manually.
+
+One thing I'd like to see before you delete the NooBaa CR:
+
+oc get cephobjectstore -n openshift-storage
+oc get cephobjectstoreuser -n openshift-storage
+
+That will confirm the RGW/object-store pieces are healthy and that only NooBaa metadata is broken.
