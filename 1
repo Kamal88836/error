@@ -1,102 +1,122 @@
-[root@bastion01 OCP_operator]# oc delete pod noobaa-db-pg-0 -n openshift-storage
-pod "noobaa-db-pg-0" deleted
-[root@bastion01 OCP_operator]# oc delete pod -l app=noobaa-operator -n openshift-storage
+The important clue is here:
+
+cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0
+
+and
+
+StatefulSet noobaa-db-pg
+creationTimestamp: 2026-06-18T07:42:06Z
+
+while
+
+NooBaa CR creationTimestamp: 2025-01-16
+
+This strongly suggests that the NooBaa PostgreSQL database was recreated/recovered on June 18, but the NooBaa CR and secrets are from January 2025.
+
+As a result:
+
+NooBaa operator secret exists.
+
+noobaa-admin secret exists.
+
+NooBaa core is running.
+
+The account ID stored in the auth token (6788bafb4b40bd002623d3a0) no longer exists in the recreated database.
+
+
+This is why every RPC call fails with:
+
+UNAUTHORIZED Message=account not found 6788bafb4b40bd002623d3a0
+
+
+---
+
+Verify whether DB was recreated
+
+Run:
+
+oc get events -n openshift-storage --sort-by=.lastTimestamp | grep -i noobaa-db
+
+and
+
+oc get pvc db-noobaa-db-pg-0 -o yaml -n openshift-storage | egrep "creationTimestamp|uid"
+
+I expect the DB PVC or StatefulSet was recreated around June 18.
+
+
+---
+
+Next check
+
+Let's see whether the NooBaa database still contains the admin account.
+
+Execute:
+
+oc rsh noobaa-db-pg-0
+
+Inside the pod:
+
+psql -U postgres nbcore
+
+Then:
+
+select _id,email from accounts;
+
+and
+
+select count(*) from accounts;
+
+Paste the output.
+
+
+---
+
+If accounts table is empty
+
+Then the NooBaa metadata DB has been reinitialized.
+
+In that case the fastest recovery is usually:
+
+1. Backup current NooBaa CR.
+
+
+2. Remove NooBaa resources.
+
+
+3. Let ODF recreate NooBaa.
+
+
+4. Verify BackingStore/BucketClass become Ready.
+
+
+
+
+---
+
+Before doing anything destructive
+
+Check whether ODF object storage is actually being used:
+
+oc get obc -A
+oc get objectbucketclaim -A
+oc get objectbucket -A
+oc get cephobjectstoreuser -n openshift-storage
+
+You already showed:
+
+oc get obc -A
 No resources found
-[root@bastion01 OCP_operator]# oc delete pod -l app=noobaa-operator -n openshift-storage
-No resources found
-[root@bastion01 OCP_operator]# oc get pods -n openshift-storage | grep noobaa
-noobaa-core-0                                                     1/1     Running       0          14s
-noobaa-db-pg-0                                                    1/1     Running       0          12s
-noobaa-operator-764d8bf796-8vswl                                  1/1     Running       0          53m
-[root@bastion01 OCP_operator]# oc get noobaa -n openshift-storage
-NAME     S3-ENDPOINTS   STS-ENDPOINTS   SYSLOG-ENDPOINTS   IMAGE                                                                                                            PHASE        AGE
-noobaa                                                     registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f   Connecting   523d
-[root@bastion01 OCP_operator]# oc get secret noobaa-admin -n openshift-storage \
-> -o jsonpath='{.data.email}' | base64 -d; echo
-admin@noobaa.io
-[root@bastion01 OCP_operator]# oc get secret noobaa-admin -n openshift-storage \
-> -o jsonpath='{.data.system}' | base64 -d; echo
-noobaa
-[root@bastion01 OCP_operator]# oc get secret noobaa-operator -n openshift-storage -o yaml
-apiVersion: v1
-data:
-  auth_token: ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmhZMk52ZFc1MFgybGtJam9pTmpjNE9HSmhabUkwWWpRd1ltUXdNREkyTWpOa00yRXdJaXdpYzNsemRHVnRYMmxrSWpvaU5qYzRPR0poWm1JMFlqUXdZbVF3TURJMk1qTmtNemt4SWl3aWNtOXNaU0k2SW05d1pYSmhkRzl5SWl3aVlYVjBhRzl5YVhwbFpGOWllU0k2SW01dmIySmhZU0lzSW1saGRDSTZNVGN6TnpBeE5EQXhNWDAuZ214Qms0dmduR05rNnFKOUVKOWNQOEpPbFF2MXNabDExVmQ1cnVYNVo0bw==
-kind: Secret
-metadata:
-  creationTimestamp: "2025-01-16T07:53:35Z"
-  labels:
-    app: noobaa
-  name: noobaa-operator
-  namespace: openshift-storage
-  ownerReferences:
-  - apiVersion: noobaa.io/v1alpha1
-    blockOwnerDeletion: true
-    controller: true
-    kind: NooBaa
-    name: noobaa
-    uid: 01c881a1-81a6-4b2f-9ad9-eed5307ea039
-  resourceVersion: "523407"
-  uid: 7c327529-bf54-42ed-b4bc-e2b6e5eb030b
-type: Opaque
-[root@bastion01 OCP_operator]# oc get noobaa noobaa -n openshift-storage -o yaml | grep -A5 cleanupPolicy
-  cleanupPolicy: {}
-  coreResources:
-    limits:
-      cpu: 999m
-      memory: 4Gi
-    requests:
-[root@bastion01 OCP_operator]# oc patch noobaa noobaa -n openshift-storage \
-> --type=merge \
-> -p '{"spec":{"cleanupPolicy":{"confirm":"yes-really-delete-noobaa"}}}'
-Warning: unknown field "spec.cleanupPolicy.confirm"
-noobaa.noobaa.io/noobaa patched (no change)
-[root@bastion01 OCP_operator]# oc get noobaa noobaa -n openshift-storage -o yaml | grep -A5 cleanupPolicy
-  cleanupPolicy: {}
-  coreResources:
-    limits:
-      cpu: 999m
-      memory: 4Gi
-    requests:
-[root@bastion01 OCP_operator]# oc get pods -n openshift-storage | grep noobaa
 
-oc get secret noobaa-operator -n openshift-storage -o yaml
+which is a good sign, but let's also verify the Ceph object store users.
 
-oc get secret noobaa-admin -n openshift-storage \
--o jsonpath='{.data.email}' | base64 -d; echo
+Run:
 
-oc get secret noobaa-admin -n openshift-storage \
--o jsonpath='{.data.system}' | base64 -d; echo
-noobaa-core-0                                                     1/1     Running   0          2m40s
-noobaa-db-pg-0                                                    1/1     Running   0          2m38s
-noobaa-operator-764d8bf796-8vswl                                  1/1     Running   0          56m
-[root@bastion01 OCP_operator]#
-[root@bastion01 OCP_operator]# oc get secret noobaa-operator -n openshift-storage -o yaml
-apiVersion: v1
-data:
-  auth_token: ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmhZMk52ZFc1MFgybGtJam9pTmpjNE9HSmhabUkwWWpRd1ltUXdNREkyTWpOa00yRXdJaXdpYzNsemRHVnRYMmxrSWpvaU5qYzRPR0poWm1JMFlqUXdZbVF3TURJMk1qTmtNemt4SWl3aWNtOXNaU0k2SW05d1pYSmhkRzl5SWl3aVlYVjBhRzl5YVhwbFpGOWllU0k2SW01dmIySmhZU0lzSW1saGRDSTZNVGN6TnpBeE5EQXhNWDAuZ214Qms0dmduR05rNnFKOUVKOWNQOEpPbFF2MXNabDExVmQ1cnVYNVo0bw==
-kind: Secret
-metadata:
-  creationTimestamp: "2025-01-16T07:53:35Z"
-  labels:
-    app: noobaa
-  name: noobaa-operator
-  namespace: openshift-storage
-  ownerReferences:
-  - apiVersion: noobaa.io/v1alpha1
-    blockOwnerDeletion: true
-    controller: true
-    kind: NooBaa
-    name: noobaa
-    uid: 01c881a1-81a6-4b2f-9ad9-eed5307ea039
-  resourceVersion: "523407"
-  uid: 7c327529-bf54-42ed-b4bc-e2b6e5eb030b
-type: Opaque
-[root@bastion01 OCP_operator]#
-[root@bastion01 OCP_operator]# oc get secret noobaa-admin -n openshift-storage \
-> -o jsonpath='{.data.email}' | base64 -d; echo
-admin@noobaa.io
-[root@bastion01 OCP_operator]#
-[root@bastion01 OCP_operator]# oc get secret noobaa-admin -n openshift-storage \
-> -o jsonpath='{.data.system}' | base64 -d; echo
-noobaa
-[root@bastion01 OCP_operator]#
+oc get cephobjectstoreuser -n openshift-storage
+
+and
+
+oc get cephobjectstore -n openshift-storage
+
+If only the default NooBaa user exists and there are no OBCs, then rebuilding NooBaa becomes much lower risk.
+
+At this point I do not think this is a Ceph issue. Ceph is secondary here. The failure is inside the NooBaa metadata/auth database, likely after the noobaa-db-pg recreation on June 18.
