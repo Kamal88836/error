@@ -1,400 +1,245 @@
-[root@bastion01 OCP_operator]# oc get cephcluster
-NAME                             DATADIRHOSTPATH   MONCOUNT   AGE    PHASE   MESSAGE                        HEALTH      EXTERNAL   FSID
-ocs-storagecluster-cephcluster   /var/lib/rook     3          523d   Ready   Cluster created successfully   HEALTH_OK              57e3cd4b-cf06-44f3-8a1b-39b3acdf296c
-[root@bastion01 OCP_operator]# oc describe  cephcluster ocs-storagecluster-cephcluster
-Name:         ocs-storagecluster-cephcluster
+[root@bastion01 OCP_operator]# oc get storagesystem
+NAME                               STORAGE-SYSTEM-KIND                  STORAGE-SYSTEM-NAME
+ocs-storagecluster-storagesystem   storagecluster.ocs.openshift.io/v1   ocs-storagecluster
+[root@bastion01 OCP_operator]# oc describe storagesystem ocs-storagecluster-storagesystem
+Name:         ocs-storagecluster-storagesystem
 Namespace:    openshift-storage
-Labels:       app=ocs-storagecluster
+Labels:       <none>
 Annotations:  <none>
-API Version:  ceph.rook.io/v1
-Kind:         CephCluster
+API Version:  odf.openshift.io/v1alpha1
+Kind:         StorageSystem
 Metadata:
   Creation Timestamp:  2025-01-16T07:48:21Z
   Finalizers:
-    cephcluster.ceph.rook.io
-  Generation:  7
-  Owner References:
-    API Version:           ocs.openshift.io/v1
-    Block Owner Deletion:  true
-    Controller:            true
-    Kind:                  StorageCluster
-    Name:                  ocs-storagecluster
-    UID:                   8aea80d8-7077-4ccd-83ca-b0b316150c85
-  Resource Version:        1012551499
-  UID:                     b677bd5f-112c-43d2-bb94-8db826c33c8b
+    storagesystem.odf.openshift.io
+  Generation:        1
+  Resource Version:  1012537802
+  UID:               1ba1ec77-c3a1-471d-8f66-cec8797accf2
 Spec:
-  Ceph Version:
-    Image:  registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
-  Cleanup Policy:
-    Sanitize Disks:
-  Continue Upgrade After Checks Even If Not Healthy:  true
-  Crash Collector:
-  Csi:
-    Cephfs:
-      Kernel Mount Options:  ms_mode=prefer-crc
-    Read Affinity:
-      Enabled:  true
-  Dashboard:
-  Data Dir Host Path:  /var/lib/rook
-  Disruption Management:
-    Machine Disruption Budget Namespace:  openshift-machine-api
-    Manage Pod Budgets:                   true
-  External:
-  Health Check:
-    Daemon Health:
-      Mon:
-      Osd:
-      Status:
-    Liveness Probe:
-      Mgr:
-        Disabled:  true
-    Startup Probe:
-      Mgr:
-        Disabled:  true
-  Labels:
-    Exporter:
-      rook.io/managedBy:  ocs-storagecluster
-    Mgr:
-      Odf - Resource - Profile:
-    Mon:
-      Odf - Resource - Profile:
-    Monitoring:
-      rook.io/managedBy:  ocs-storagecluster
-    Osd:
-      Odf - Resource - Profile:
-  Log Collector:
-    Enabled:       true
-    Max Log Size:  500Mi
-    Periodicity:   daily
-  Mgr:
-    Count:  2
-    Modules:
-      Enabled:  true
-      Name:     pg_autoscaler
-      Settings:
-      Enabled:  true
-      Name:     balancer
-      Settings:
-      Name:  rook
-      Settings:
-  Mon:
-    Count:  3
-  Monitoring:
-    Enabled:   true
-    Interval:  30s
-  Network:
-    Connections:
-      requireMsgr2:  true
-    Ip Family:       IPv4
-    Multi Cluster Service:
-  Placement:
-    All:
-      Node Affinity:
-        Required During Scheduling Ignored During Execution:
-          Node Selector Terms:
-            Match Expressions:
-              Key:       cluster.ocs.openshift.io/openshift-storage
-              Operator:  Exists
-      Tolerations:
-        Effect:    NoSchedule
-        Key:       node.ocs.openshift.io/storage
-        Operator:  Equal
-        Value:     true
-    Arbiter:
-      Tolerations:
-        Effect:    NoSchedule
-        Key:       node-role.kubernetes.io/master
-        Operator:  Exists
-    Mon:
-      Pod Anti Affinity:
-        Required During Scheduling Ignored During Execution:
-          Label Selector:
-            Match Expressions:
-              Key:       app
-              Operator:  In
-              Values:
-                rook-ceph-mon
-          Topology Key:  kubernetes.io/hostname
-  Priority Class Names:
-    Crashcollector:  system-node-critical
-    Exporter:        system-node-critical
-    Mgr:             system-node-critical
-    Mon:             system-node-critical
-    Osd:             system-node-critical
-  Resources:
-    Crashcollector:
-      Limits:
-        Cpu:     100m
-        Memory:  60Mi
-      Requests:
-        Cpu:     100m
-        Memory:  60Mi
-    Exporter:
-      Limits:
-        Cpu:     50m
-        Memory:  128Mi
-      Requests:
-        Cpu:     50m
-        Memory:  50Mi
-    Mgr:
-      Limits:
-        Cpu:     2
-        Memory:  3Gi
-      Requests:
-        Cpu:     1
-        Memory:  1536Mi
-    Mon:
-      Limits:
-        Cpu:     1
-        Memory:  2Gi
-      Requests:
-        Cpu:     1
-        Memory:  2Gi
-  Security:
-    Key Rotation:
-      Enabled:   false
-      Schedule:  @weekly
-    Kms:
-  Storage:
-    Allow Osd Crush Weight Update:    true
-    Flapping Restart Interval Hours:  24
-    Storage Class Device Sets:
-      Count:  1
-      Name:   ocs-deviceset-local-volume-0
-      Placement:
-        Topology Spread Constraints:
-          Label Selector:
-            Match Expressions:
-              Key:       app
-              Operator:  In
-              Values:
-                rook-ceph-osd
-          Max Skew:            1
-          Topology Key:        kubernetes.io/hostname
-          When Unsatisfiable:  ScheduleAnyway
-      Prepare Placement:
-        Topology Spread Constraints:
-          Label Selector:
-            Match Expressions:
-              Key:       app
-              Operator:  In
-              Values:
-                rook-ceph-osd
-                rook-ceph-osd-prepare
-          Max Skew:            1
-          Topology Key:        kubernetes.io/hostname
-          When Unsatisfiable:  ScheduleAnyway
-      Resources:
-        Limits:
-          Cpu:     2
-          Memory:  5Gi
-        Requests:
-          Cpu:                 2
-          Memory:              5Gi
-      Tune Fast Device Class:  true
-      Volume Claim Templates:
-        Metadata:
-          Annotations:
-            Crush Device Class:  ssd
-        Spec:
-          Access Modes:
-            ReadWriteOnce
-          Resources:
-            Requests:
-              Storage:         1
-          Storage Class Name:  local-volume
-          Volume Mode:         Block
-      Count:                   1
-      Name:                    ocs-deviceset-local-volume-1
-      Placement:
-        Topology Spread Constraints:
-          Label Selector:
-            Match Expressions:
-              Key:       app
-              Operator:  In
-              Values:
-                rook-ceph-osd
-          Max Skew:            1
-          Topology Key:        kubernetes.io/hostname
-          When Unsatisfiable:  ScheduleAnyway
-      Prepare Placement:
-        Topology Spread Constraints:
-          Label Selector:
-            Match Expressions:
-              Key:       app
-              Operator:  In
-              Values:
-                rook-ceph-osd
-                rook-ceph-osd-prepare
-          Max Skew:            1
-          Topology Key:        kubernetes.io/hostname
-          When Unsatisfiable:  ScheduleAnyway
-      Resources:
-        Limits:
-          Cpu:     2
-          Memory:  5Gi
-        Requests:
-          Cpu:                 2
-          Memory:              5Gi
-      Tune Fast Device Class:  true
-      Volume Claim Templates:
-        Metadata:
-          Annotations:
-            Crush Device Class:  ssd
-        Spec:
-          Access Modes:
-            ReadWriteOnce
-          Resources:
-            Requests:
-              Storage:         1
-          Storage Class Name:  local-volume
-          Volume Mode:         Block
-      Count:                   1
-      Name:                    ocs-deviceset-local-volume-2
-      Placement:
-        Topology Spread Constraints:
-          Label Selector:
-            Match Expressions:
-              Key:       app
-              Operator:  In
-              Values:
-                rook-ceph-osd
-          Max Skew:            1
-          Topology Key:        kubernetes.io/hostname
-          When Unsatisfiable:  ScheduleAnyway
-      Prepare Placement:
-        Topology Spread Constraints:
-          Label Selector:
-            Match Expressions:
-              Key:       app
-              Operator:  In
-              Values:
-                rook-ceph-osd
-                rook-ceph-osd-prepare
-          Max Skew:            1
-          Topology Key:        kubernetes.io/hostname
-          When Unsatisfiable:  ScheduleAnyway
-      Resources:
-        Limits:
-          Cpu:     2
-          Memory:  5Gi
-        Requests:
-          Cpu:                 2
-          Memory:              5Gi
-      Tune Fast Device Class:  true
-      Volume Claim Templates:
-        Metadata:
-          Annotations:
-            Crush Device Class:  ssd
-        Spec:
-          Access Modes:
-            ReadWriteOnce
-          Resources:
-            Requests:
-              Storage:         1
-          Storage Class Name:  local-volume
-          Volume Mode:         Block
-    Store:
+  Kind:       storagecluster.ocs.openshift.io/v1
+  Name:       ocs-storagecluster
+  Namespace:  openshift-storage
 Status:
-  Ceph:
-    Capacity:
-      Bytes Available:  17997216677888
-      Bytes Total:      17998597324800
-      Bytes Used:       1380646912
-      Last Updated:     2026-06-24T05:20:34Z
-    Fsid:               57e3cd4b-cf06-44f3-8a1b-39b3acdf296c
-    Health:             HEALTH_OK
-    Last Changed:       2026-06-24T05:06:21Z
-    Last Checked:       2026-06-24T05:20:34Z
-    Previous Health:    HEALTH_WARN
-    Versions:
-      Mds:
-        ceph version 18.2.1-381.el9cp (984f410e2a30899deb131725765b62212b1621db) reef (stable):  2
-      Mgr:
-        ceph version 19.2.1-331.el9cp (14073e79cd57ab9917cf97f6365138b8f51007e0) squid (stable):  2
-      Mon:
-        ceph version 18.2.1-381.el9cp (984f410e2a30899deb131725765b62212b1621db) reef (stable):  3
-      Osd:
-        ceph version 19.2.1-331.el9cp (14073e79cd57ab9917cf97f6365138b8f51007e0) squid (stable):  3
-      Overall:
-        ceph version 18.2.1-381.el9cp (984f410e2a30899deb131725765b62212b1621db) reef (stable):   6
-        ceph version 19.2.1-331.el9cp (14073e79cd57ab9917cf97f6365138b8f51007e0) squid (stable):  5
-      Rgw:
-        ceph version 18.2.1-381.el9cp (984f410e2a30899deb131725765b62212b1621db) reef (stable):  1
   Conditions:
-    Last Heartbeat Time:   2026-06-24T05:20:34Z
-    Last Transition Time:  2026-06-24T05:04:20Z
-    Message:               Cluster created successfully
-    Reason:                ClusterCreated
+    Last Heartbeat Time:   2026-06-24T05:00:43Z
+    Last Transition Time:  2026-06-24T05:00:43Z
+    Message:               Reconcile is completed successfully
+    Reason:                ReconcileCompleted
     Status:                True
-    Type:                  Ready
-  Message:                 Cluster created successfully
-  Observed Generation:     7
-  Phase:                   Ready
-  State:                   Created
-  Storage:
-    Device Classes:
-      Name:  ssd
-    Osd:
-      Store Type:
-        Bluestore:  3
-  Version:
-    Image:    registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
-    Version:  19.2.1-331
+    Type:                  Available
+    Last Heartbeat Time:   2026-06-24T05:00:43Z
+    Last Transition Time:  2026-06-24T05:00:43Z
+    Message:               Reconcile is completed successfully
+    Reason:                ReconcileCompleted
+    Status:                False
+    Type:                  Progressing
+    Last Heartbeat Time:   2026-06-24T05:00:43Z
+    Last Transition Time:  2025-01-16T07:48:21Z
+    Message:               StorageSystem CR is valid
+    Reason:                Valid
+    Status:                False
+    Type:                  StorageSystemInvalid
+    Last Heartbeat Time:   2026-06-24T05:00:43Z
+    Last Transition Time:  2026-06-24T05:00:43Z
+    Reason:                Ready
+    Status:                True
+    Type:                  VendorCsvReady
+    Last Heartbeat Time:   2026-06-24T05:00:43Z
+    Last Transition Time:  2025-01-16T07:48:21Z
+    Reason:                Found
+    Status:                True
+    Type:                  VendorSystemPresent
 Events:
-  Type    Reason              Age   From                          Message
-  ----    ------              ----  ----                          -------
-  Normal  ReconcileSucceeded  15m   rook-ceph-cluster-controller  successfully configured CephCluster "openshift-storage/ocs-storagecluster-cephcluster"
-[root@bastion01 OCP_operator]# oc get po
-NAME                                                              READY   STATUS    RESTARTS   AGE
-ceph-csi-controller-manager-6f65bbd578-zpw97                      2/2     Running   0          22m
-csi-addons-controller-manager-696c476d88-wfbjt                    2/2     Running   0          22m
-csi-cephfsplugin-8f9bp                                            3/3     Running   0          22m
-csi-cephfsplugin-provisioner-7586979f4c-pnf29                     7/7     Running   0          22m
-csi-cephfsplugin-provisioner-7586979f4c-wpwt7                     7/7     Running   0          22m
-csi-cephfsplugin-rtnhn                                            3/3     Running   0          22m
-csi-cephfsplugin-tnqgs                                            3/3     Running   0          22m
-csi-rbdplugin-mr2mw                                               4/4     Running   0          22m
-csi-rbdplugin-provisioner-797b99c8b6-dn7zp                        7/7     Running   0          22m
-csi-rbdplugin-provisioner-797b99c8b6-g4xhc                        7/7     Running   0          22m
-csi-rbdplugin-rz5h9                                               4/4     Running   0          22m
-csi-rbdplugin-tctf5                                               4/4     Running   0          22m
-noobaa-core-0                                                     1/1     Running   0          21h
-noobaa-db-pg-0                                                    1/1     Running   0          16m
-noobaa-operator-764d8bf796-8vswl                                  1/1     Running   0          22m
-ocs-metrics-exporter-5759d5dbbd-q4vd7                             3/3     Running   0          21h
-ocs-operator-968899ffb-7nmwf                                      1/1     Running   0          22m
-odf-console-7484ccd4f7-l8whr                                      1/1     Running   0          24m
-odf-operator-controller-manager-6df95b7f67-m25pf                  2/2     Running   0          24m
-rook-ceph-crashcollector-1de4b86b9b35de1c0d658c9dbc54f861-nn5mj   1/1     Running   0          18m
-rook-ceph-crashcollector-c01359daa1c8761a73d036d5cade8691-5wmdm   1/1     Running   0          18m
-rook-ceph-crashcollector-d8372827eced110080a352747f215571-4cr8z   1/1     Running   0          18m
-rook-ceph-exporter-master01.airtel3novvt.samsungcnfcu.locavwplw   1/1     Running   0          18m
-rook-ceph-exporter-master02.airtel3novvt.samsungcnfcu.loca2qvdh   1/1     Running   0          18m
-rook-ceph-exporter-master03.airtel3novvt.samsungcnfcu.loca7tzxq   1/1     Running   0          18m
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-66fdcc8d2dzqt   2/2     Running   0          18m
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-5d94cff8n8clf   2/2     Running   0          18m
-rook-ceph-mgr-a-876694869-wg4k8                                   3/3     Running   0          18m
-rook-ceph-mgr-b-55749dc4fd-p5qft                                  3/3     Running   0          18m
-rook-ceph-mon-a-75cd5f95bb-mvj6n                                  2/2     Running   0          18m
-rook-ceph-mon-d-6b6d7cc8d8-plvnf                                  2/2     Running   0          18m
-rook-ceph-mon-e-77665d9985-ff948                                  2/2     Running   0          18m
-rook-ceph-operator-6668964b7b-qrczk                               1/1     Running   0          23m
-rook-ceph-osd-0-7dccf99cf-cs5wv                                   2/2     Running   0          17m
-rook-ceph-osd-1-959665d87-pwg7t                                   2/2     Running   0          17m
-rook-ceph-osd-2-6f9f75f97-pvprl                                   2/2     Running   0          17m
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-785ddfbvfmsb   2/2     Running   0          18m
-ux-backend-server-7bcb7df8fc-txnpt                                2/2     Running   0          22m
-[root@bastion01 OCP_operator]# oc get pc
-NAME                      VALUE        GLOBAL-DEFAULT   AGE
-high-priority             1000000      false            223d
-openshift-user-critical   1000000000   false            524d
-system-cluster-critical   2000000000   false            524d
-system-node-critical      2000001000   false            524d
-[root@bastion01 OCP_operator]# oc get pvc
-NAME                                       STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  VOLUMEATTRIBUTESCLASS   AGE
-db-noobaa-db-pg-0                          Bound    pvc-5b8d6ecd-0b28-47a5-8b38-b5c316c91d7b   50Gi       RWO            ocs-storagecluster-ceph-rbd   <unset>                 6d15h
-ocs-deviceset-local-volume-0-data-0qlmns   Bound    local-pv-20c84b94                          5587Gi     RWO            local-volume                  <unset>                 523d
-ocs-deviceset-local-volume-1-data-0wnsw6   Bound    local-pv-6469ff00                          5587Gi     RWO            local-volume                  <unset>                 523d
-ocs-deviceset-local-volume-2-data-0d28w2   Bound    local-pv-fdf50b86                          5587Gi     RWO            local-volume                  <unset>                 523d
+  Type     Reason           Age   From                      Message
+  ----     ------           ----  ----                      -------
+  Warning  ReconcileFailed  28m   StorageSystem controller  InstallPlan not found for CSV odf-dependencies.v4.18.17-rhodf; InstallPlan not found for CSV ocs-operator.v4.18.17-rhodf; InstallPlan not found for CSV rook-ceph-operator.v4.18.17-rhodf; InstallPlan not found for CSV mcg-operator.v4.18.17-rhodf; InstallPlan not found for CSV odf-prometheus-operator.v4.18.17-rhodf; InstallPlan not found for CSV recipe.v4.18.17-rhodf; InstallPlan not found for CSV ocs-client-operator.v4.18.17-rhodf; InstallPlan not found for CSV odf-csi-addons-operator.v4.18.17-rhodf; InstallPlan not found for CSV cephcsi-operator.v4.18.17-rhodf
+  Warning  ReconcileFailed  28m   StorageSystem controller  ClusterServiceVersion.operators.coreos.com "odf-dependencies.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "ocs-operator.v4.18.17-rhodf" not found; Operation cannot be fulfilled on clusterserviceversions.operators.coreos.com "rook-ceph-operator.v4.18.17-rhodf": the object has been modified; please apply your changes to the latest version and try again; ClusterServiceVersion.operators.coreos.com "mcg-operator.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "odf-prometheus-operator.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "recipe.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "ocs-client-operator.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "odf-csi-addons-operator.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "cephcsi-operator.v4.18.17-rhodf" not found
+  Warning  ReconcileFailed  28m   StorageSystem controller  ClusterServiceVersion.operators.coreos.com "odf-dependencies.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "ocs-operator.v4.18.17-rhodf" not found; CSV is not successfully installed; ClusterServiceVersion.operators.coreos.com "mcg-operator.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "odf-prometheus-operator.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "recipe.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "ocs-client-operator.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "odf-csi-addons-operator.v4.18.17-rhodf" not found; ClusterServiceVersion.operators.coreos.com "cephcsi-operator.v4.18.17-rhodf" not found
+  Warning  ReconcileFailed  27m   StorageSystem controller  CSV is not successfully installed; CSV is not successfully installed; ClusterServiceVersion.operators.coreos.com "recipe.v4.18.17-rhodf" not found; deployments.apps "ocs-client-operator-console" not found; CSV is not successfully installed; CSV is not successfully installed
+[root@bastion01 OCP_operator]# oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.18.17   True        False         False      21h
+baremetal                                  4.18.17   True        False         False      524d
+cloud-controller-manager                   4.18.17   True        False         False      524d
+cloud-credential                           4.18.17   True        False         False      524d
+cluster-autoscaler                         4.18.17   True        False         False      524d
+config-operator                            4.18.17   True        False         False      524d
+console                                    4.18.17   True        False         False      33d
+control-plane-machine-set                  4.18.17   True        False         False      524d
+csi-snapshot-controller                    4.18.17   True        False         False      378d
+dns                                        4.18.17   True        False         False      21h
+etcd                                       4.18.17   True        False         False      104d
+image-registry                             4.18.17   True        False         False      524d
+ingress                                    4.18.17   True        False         False      23h
+insights                                   4.18.17   True        False         False      524d
+kube-apiserver                             4.18.17   True        False         False      524d
+kube-controller-manager                    4.18.17   True        False         False      524d
+kube-scheduler                             4.18.17   True        False         False      524d
+kube-storage-version-migrator              4.18.17   True        False         False      4d15h
+machine-api                                4.18.17   True        False         False      524d
+machine-approver                           4.18.17   True        False         False      524d
+machine-config                             4.18.17   True        False         False      103d
+marketplace                                4.18.17   True        False         False      524d
+monitoring                                 4.18.17   True        False         False      28d
+network                                    4.18.17   True        False         False      524d
+node-tuning                                4.18.17   True        False         False      4d16h
+olm                                        4.18.17   True        False         False      21h
+openshift-apiserver                        4.18.17   True        False         False      28d
+openshift-controller-manager               4.18.17   True        False         False      378d
+openshift-samples                          4.18.17   True        False         False      29d
+operator-lifecycle-manager                 4.18.17   True        False         False      524d
+operator-lifecycle-manager-catalog         4.18.17   True        False         False      524d
+operator-lifecycle-manager-packageserver   4.18.17   True        False         False      4d16h
+service-ca                                 4.18.17   True        False         False      524d
+storage                                    4.18.17   True        False         False      524d
+[root@bastion01 OCP_operator]# oc get storagecluster -o yaml
+apiVersion: v1
+items:
+- apiVersion: ocs.openshift.io/v1
+  kind: StorageCluster
+  metadata:
+    annotations:
+      force-reconcile: "1781859921"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"ocs.openshift.io/v1","kind":"StorageCluster","metadata":{"annotations":{},"name":"ocs-storagecluster","namespace":"openshift-storage"},"spec":{"flexibleScaling":true,"monDataDirHostPath":"/var/lib/rook","nodeTopologies":{},"storageDeviceSets":[{"count":1,"dataPVCTemplate":{"metadata":{},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1"}},"storageClassName":"local-volume","volumeMode":"Block"},"status":{}},"name":"ocs-deviceset-local-volume","replica":3}]}}
+      odf.openshift.io/reconcile: "true"
+      reconcile: force
+      reconcile-now: "1781862075"
+      uninstall.ocs.openshift.io/cleanup-policy: delete
+      uninstall.ocs.openshift.io/mode: graceful
+    creationTimestamp: "2025-01-16T07:48:21Z"
+    finalizers:
+    - storagecluster.ocs.openshift.io
+    generation: 2
+    name: ocs-storagecluster
+    namespace: openshift-storage
+    ownerReferences:
+    - apiVersion: odf.openshift.io/v1alpha1
+      kind: StorageSystem
+      name: ocs-storagecluster-storagesystem
+      uid: 1ba1ec77-c3a1-471d-8f66-cec8797accf2
+    resourceVersion: "1012553461"
+    uid: 8aea80d8-7077-4ccd-83ca-b0b316150c85
+  spec:
+    arbiter: {}
+    encryption:
+      kms: {}
+    externalStorage: {}
+    flexibleScaling: true
+    managedResources:
+      cephBlockPools: {}
+      cephCluster: {}
+      cephConfig: {}
+      cephDashboard: {}
+      cephFilesystems: {}
+      cephNonResilientPools:
+        count: 1
+      cephObjectStoreUsers: {}
+      cephObjectStores: {}
+      cephRBDMirror:
+        daemonCount: 1
+      cephToolbox: {}
+    mirroring: {}
+    monDataDirHostPath: /var/lib/rook
+    nodeTopologies: {}
+    storageDeviceSets:
+    - config: {}
+      count: 1
+      dataPVCTemplate:
+        metadata: {}
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: "1"
+          storageClassName: local-volume
+          volumeMode: Block
+        status: {}
+      name: ocs-deviceset-local-volume
+      placement: {}
+      preparePlacement: {}
+      replica: 3
+      resources: {}
+  status:
+    conditions:
+    - lastHeartbeatTime: "2026-06-19T11:55:42Z"
+      lastTransitionTime: "2026-06-19T11:55:42Z"
+      message: Version check successful
+      reason: VersionMatched
+      status: "False"
+      type: VersionMismatch
+    - lastHeartbeatTime: "2026-06-24T05:24:38Z"
+      lastTransitionTime: "2026-06-19T11:55:42Z"
+      message: Reconcile completed successfully
+      reason: ReconcileCompleted
+      status: "True"
+      type: ReconcileComplete
+    - lastHeartbeatTime: "2026-06-24T05:03:30Z"
+      lastTransitionTime: "2026-06-19T11:55:42Z"
+      message: 'CephCluster error: Failed to configure ceph cluster'
+      reason: ClusterStateError
+      status: "False"
+      type: Available
+    - lastHeartbeatTime: "2026-06-24T05:24:38Z"
+      lastTransitionTime: "2026-06-19T11:55:42Z"
+      message: Waiting on Nooba instance to finish initialization
+      reason: NoobaaInitializing
+      status: "True"
+      type: Progressing
+    - lastHeartbeatTime: "2026-06-24T05:03:30Z"
+      lastTransitionTime: "2026-06-24T05:00:18Z"
+      message: 'CephCluster error: Failed to configure ceph cluster'
+      reason: ClusterStateError
+      status: "True"
+      type: Degraded
+    - lastHeartbeatTime: "2026-06-24T05:05:13Z"
+      lastTransitionTime: "2026-06-19T12:33:22Z"
+      message: 'CephCluster is creating: Processing OSD 2 on PVC "ocs-deviceset-local-volume-2-data-0d28w2"'
+      reason: ClusterStateCreating
+      status: "False"
+      type: Upgradeable
+    currentMonCount: 3
+    defaultCephDeviceClass: ssd
+    failureDomain: host
+    failureDomainKey: kubernetes.io/hostname
+    failureDomainValues:
+    - master01.airtel3novvt.samsungcnfcu.local
+    - master02.airtel3novvt.samsungcnfcu.local
+    - master03.airtel3novvt.samsungcnfcu.local
+    images:
+      ceph:
+        actualImage: registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
+        desiredImage: registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
+      noobaaCore:
+        actualImage: registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
+        desiredImage: registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
+      noobaaDB:
+        actualImage: registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
+        desiredImage: registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
+    kmsServerConnection: {}
+    nodeTopologies:
+      labels:
+        kubernetes.io/hostname:
+        - master01.airtel3novvt.samsungcnfcu.local
+        - master02.airtel3novvt.samsungcnfcu.local
+        - master03.airtel3novvt.samsungcnfcu.local
+    phase: Progressing
+    relatedObjects:
+    - apiVersion: ceph.rook.io/v1
+      kind: CephCluster
+      name: ocs-storagecluster-cephcluster
+      namespace: openshift-storage
+      resourceVersion: "1012553455"
+      uid: b677bd5f-112c-43d2-bb94-8db826c33c8b
+    - apiVersion: noobaa.io/v1alpha1
+      kind: NooBaa
+      name: noobaa
+      namespace: openshift-storage
+      resourceVersion: "1012553450"
+      uid: 01c881a1-81a6-4b2f-9ad9-eed5307ea039
+    version: 4.18.17
+kind: List
+metadata:
+  resourceVersion: ""
 [root@bastion01 OCP_operator]#
