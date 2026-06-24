@@ -1,155 +1,202 @@
-Running an Ansible playbook using Podman is a common approach in containerized or disconnected environments (like your OpenShift setups). I’ll walk you through the simplest and most practical ways.
-
-
----
-
-✅ 1. Use a Prebuilt Ansible Container Image
-
-You don’t need to install Ansible locally—just run it inside a container.
-
-Example (quick run)
-
-podman run --rm -it \
-  -v $(pwd):/workspace \
-  -w /workspace \
-  docker.io/ansible/ansible-runner \
-  ansible-playbook playbook.yml
-
-🔹 Explanation:
-
---rm → remove container after execution
-
--it → interactive terminal
-
--v $(pwd):/workspace → mount your current directory
-
--w /workspace → set working directory
-
-ansible-playbook playbook.yml → runs your script
-
-
-
----
-
-✅ 2. Pass Inventory File
-
-If you have an inventory file:
-
-podman run --rm -it \
-  -v $(pwd):/workspace \
-  -w /workspace \
-  docker.io/ansible/ansible-runner \
-  ansible-playbook -i inventory.ini playbook.yml
-
-
----
-
-✅ 3. SSH Keys / Credentials (Important ⚠️)
-
-If your playbook connects to remote hosts:
-
-podman run --rm -it \
-  -v $(pwd):/workspace \
-  -v ~/.ssh:/root/.ssh:Z \
-  -w /workspace \
-  docker.io/ansible/ansible-runner \
-  ansible-playbook -i inventory.ini playbook.yml
-
-👉 :Z is important for SELinux systems (like RHEL/OpenShift nodes).
-
-
----
-
-✅ 4. Using Custom Ansible Image (Recommended for OCP)
-
-You can build your own container with required collections:
-
-Dockerfile (Podman works with it)
-
-FROM quay.io/ansible/ansible-runner
-
-RUN ansible-galaxy collection install community.general
-
-Build image
-
-podman build -t my-ansible .
-
-Run it
-
-podman run --rm -it \
-  -v $(pwd):/workspace \
-  -w /workspace \
-  my-ansible \
-  ansible-playbook playbook.yml
-
-
----
-
-✅ 5. Passing Extra Variables
-
-ansible-playbook playbook.yml -e "env=prod"
-
-Inside Podman:
-
-podman run --rm -it \
-  -v $(pwd):/workspace \
-  -w /workspace \
-  docker.io/ansible/ansible-runner \
-  ansible-playbook playbook.yml -e "env=prod"
-
-
----
-
-✅ 6. Environment Variables (Proxy / Registry / OCP cases)
-
-podman run --rm -it \
-  -e HTTP_PROXY=http://proxy:8080 \
-  -e HTTPS_PROXY=http://proxy:8080 \
-  -v $(pwd):/workspace \
-  -w /workspace \
-  docker.io/ansible/ansible-runner \
-  ansible-playbook playbook.yml
-
-
----
-
-✅ 7. Debug Mode
-
-ansible-playbook -vvv playbook.yml
-
-
----
-
-🔥 Pro Tips (Based on Your OCP Work)
-
-Since you're working with disconnected OpenShift:
-
-Use a local registry image instead of Docker Hub
-
-Pre-load collections inside container
-
-Mount kubeconfig if needed:
-
-
--v ~/.kube:/root/.kube:Z
-
-
----
-
-🚀 Summary
-
-You basically need:
-
-podman run \
-  -v <your-code>:/workspace \
-  <ansible-image> \
-  ansible-playbook <playbook>
-
-
----
-
-If you want, I can:
-
-Create a ready-to-use Ansible container for OpenShift automation
-
-Or help you run Ansible for cluster install / mirror registry setup 👍
+[root@bastion01 OCP_operator]# oc logs noobaa-core-0 --tail=200
+Jun-24 5:36:05.347 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2290 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+::ffff:10.10.2.53 - - [24/Jun/2026:05:36:06 +0000] "GET /metrics/bg_workers HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:07.382 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2291 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:07.786 [BGWorkers/33]    [L0] core.server.bg_services.cluster_master:: no local cluster info or server is not part of a cluster. therefore will be cluster master
+Jun-24 5:36:08.641 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2293 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:08.678 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2294 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+::ffff:10.10.2.53 - - [24/Jun/2026:05:36:09 +0000] "GET /metrics/web_server HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:10.417 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2295 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+::ffff:10.10.0.40 - - [24/Jun/2026:05:36:11 +0000] "GET /metrics/web_server HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:11.947 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2297 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:12.058 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2298 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+::ffff:10.10.0.40 - - [24/Jun/2026:05:36:12 +0000] "GET /metrics/hosted_agents HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:13.451 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2299 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:15.041 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2301 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:15.362 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2302 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:16.485 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2303 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:17.787 [BGWorkers/33]    [L0] core.server.bg_services.cluster_master:: no local cluster info or server is not part of a cluster. therefore will be cluster master
+Jun-24 5:36:18.144 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2305 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:18.463 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2306 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:19.520 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2307 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:21.216 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2309 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:21.547 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2310 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:22.553 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2311 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+::ffff:10.10.0.40 - - [24/Jun/2026:05:36:24 +0000] "GET /metrics/bg_workers HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:24.349 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2313 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:24.741 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2314 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:25.586 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2315 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:27.523 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2317 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:27.559 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2318 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:27.759 [BGWorkers/33]    [L0] core.server.bg_services.md_aggregator:: MD aggregator start running
+Jun-24 5:36:27.788 [BGWorkers/33]    [L0] core.server.bg_services.cluster_master:: no local cluster info or server is not part of a cluster. therefore will be cluster master
+::ffff:10.10.2.53 - - [24/Jun/2026:05:36:28 +0000] "GET /metrics/hosted_agents HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:28.945 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2319 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:30.595 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2321 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:30.654 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2322 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:32.248 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2323 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:33.668 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2325 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:33.703 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2326 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:35.286 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2327 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+::ffff:10.10.2.53 - - [24/Jun/2026:05:36:36 +0000] "GET /metrics/bg_workers HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:37.041 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2329 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:37.082 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2330 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:37.788 [BGWorkers/33]    [L0] core.server.bg_services.cluster_master:: no local cluster info or server is not part of a cluster. therefore will be cluster master
+Jun-24 5:36:38.351 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2331 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+::ffff:10.10.2.53 - - [24/Jun/2026:05:36:39 +0000] "GET /metrics/web_server HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:40.450 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2333 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:40.490 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2334 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:41.386 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2335 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+::ffff:10.10.0.40 - - [24/Jun/2026:05:36:41 +0000] "GET /metrics/web_server HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+::ffff:10.10.0.40 - - [24/Jun/2026:05:36:42 +0000] "GET /metrics/hosted_agents HTTP/1.1" 200 - "-" "Prometheus/2.55.1"
+Jun-24 5:36:43.545 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv account_api.read_account reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2337 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Jun-24 5:36:43.848 [WebServer/35] [ERROR] CONSOLE:: RPC._on_request: ERROR srv system_api.read_system reqid wss://noobaa-mgmt.openshift-storage.svc.cluster.local:443/rpc/-2338 connid ws://[::ffff:10.10.0.43]:34736/(5n8l5bo) Error: account not found 6788bafb4b40bd002623d3a0
+    at req.check_auth (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:544:23)
+    at authorize (/root/node_modules/noobaa-core/src/server/common_services/auth_server.js:434:17)
+    at RPC._on_request (/root/node_modules/noobaa-core/src/rpc/rpc.js:324:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[root@bastion01 OCP_operator]#
