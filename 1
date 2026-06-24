@@ -1,40 +1,169 @@
-[root@bastion01 OCP_operator]# oc rsh noobaa-db-pg-0
-sh-5.1$ psql -U postgres nbcore
-psql (15.15)
-Type "help" for help.
+Now we have the root cause.
 
-nbcore=# \d accounts
-                 Table "public.accounts"
- Column |     Type      | Collation | Nullable | Default
---------+---------------+-----------+----------+---------
- _id    | character(24) |           | not null |
- data   | jsonb         |           |          |
-Indexes:
-    "accounts_pkey" PRIMARY KEY, btree (_id)
-    "idx_btree_accounts__id_index" UNIQUE, btree ((data ->> '_id'::text))
-    "idx_btree_accounts_email" UNIQUE, btree ((data ->> 'email'::text)) WHERE (data -> 'deleted'::text) IS NULL OR (data -> 'deleted'::text) = 'null'::jsonb
+What the database contains
 
-nbcore=# select * from accounts;
-           _id            |                                                                                                                  data
+The NooBaa DB contains only one account:
 
---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
------------------
- 6a34056744a42300227fc3c7 | {"_id": "6a34056744a42300227fc3c7", "name": "Support", "email": "support@noobaa.com", "password": "$2b$10$ms3jjmBbq/1WjcnjREhXnO3lJmWqbmqu.fACTl15ljYMdx8EQIvC6", "has_login": true, "is_support": true, "last_update"
-: 1781794151124}
-(1 row)
+{
+  "_id":"6a34056744a42300227fc3c7",
+  "name":"Support",
+  "email":"support@noobaa.com"
+}
 
-nbcore=# select _id,name from accounts;
-ERROR:  column "name" does not exist
-LINE 1: select _id,name from accounts;
-                   ^
-nbcore=# select _id,deleted from accounts;
-ERROR:  column "deleted" does not exist
-LINE 1: select _id,deleted from accounts;
-                   ^
-nbcore=#
-\q
-sh-5.1$
-exit
-[root@bastion01 OCP_operator]# oc get secret noobaa-operator -n openshift-storage \
-> -o jsonpath='{.data.auth_token}' | base64 -d
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiNjc4OGJhZmI0YjQwYmQwMDI2MjNkM2EwIiwic3lzdGVtX2lkIjoiNjc4OGJhZmI0YjQwYmQwMDI2MjNkMzkxIiwicm9sZSI6Im9wZXJhdG9yIiwiYXV0aG9yaXplZF9ieSI6Im5vb2JhYSIsImlhdCI6MTczNzAxNDAxMX0.gmxBk4vgnGNk6qJ9EJ9cP8JOlQv1sZl11Vd5ruX5Z4o[root@bastion01 OCP_operator]#
+But the operator token is trying to use:
+
+{
+  "account_id":"6788bafb4b40bd002623d3a0",
+  "role":"operator"
+}
+
+And the logs continuously show:
+
+account not found 6788bafb4b40bd002623d3a0
+
+Conclusion
+
+This is not a Ceph problem.
+
+This is not a CSV/operator problem.
+
+This is not an ODF upgrade problem.
+
+Your NooBaa metadata database has effectively lost the original admin/operator accounts. The database now contains only the built-in Support account.
+
+That's why:
+
+NooBaa -> Configuring
+BackingStore -> Connecting
+BucketClass -> Verifying
+StorageCluster -> Progressing
+
+Everything is waiting for NooBaa authentication to succeed.
+
+
+---
+
+Verify system table as final confirmation
+
+Run:
+
+oc rsh noobaa-db-pg-0
+psql -U postgres nbcore
+
+Then:
+
+select * from systems;
+
+and
+
+select count(*) from systems;
+
+I expect either:
+
+a newly initialized system record, or
+
+a system record whose IDs don't match the token.
+
+
+
+---
+
+Recovery options
+
+Option 1 (Recommended)
+
+Since:
+
+oc get obc -A
+No resources found
+
+oc get objectbucket -A
+No resources found
+
+and there are no application ObjectBucketClaims,
+
+rebuild NooBaa.
+
+This is usually the cleanest path.
+
+
+---
+
+Before rebuilding
+
+Check whether anyone is using RGW/S3:
+
+oc get route -n openshift-storage | grep -E "s3|sts|noobaa"
+
+and
+
+oc get cephobjectstoreuser -n openshift-storage -o wide
+
+The extra users:
+
+ocs-storagecluster-cephobjectstoreuser
+prometheus-user
+
+suggest RGW is configured.
+
+Need to confirm whether workloads depend on it.
+
+
+---
+
+Important
+
+You tried:
+
+oc delete noobaa noobaa
+
+and got:
+
+Noobaa cleanup policy is not set
+
+This is expected.
+
+Let's first inspect the CRD schema before patching anything:
+
+oc explain noobaa.spec.cleanupPolicy
+
+and
+
+oc explain noobaa.spec.cleanupPolicy --recursive
+
+Paste the output.
+
+ODF 4.18 uses a specific cleanupPolicy structure, and we need the exact field names before forcing deletion.
+
+
+---
+
+Current assessment
+
+Confidence is very high (>95%):
+
+✅ NooBaa database was recreated/corrupted around June 17-18.
+
+✅ Original operator account:
+
+6788bafb4b40bd002623d3a0
+
+no longer exists.
+
+✅ Database contains only:
+
+support@noobaa.com
+
+account.
+
+✅ ODF cannot finish initialization because operator authentication is broken.
+
+The next thing I want to see is:
+
+oc explain noobaa.spec.cleanupPolicy --recursive
+
+and
+
+select * from systems;
+
+After that we can decide whether to repair the DB manually or perform a clean NooBaa rebuild. For a cluster with no OBCs, the rebuild path is usually much faster and safer.
