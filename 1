@@ -1,46 +1,85 @@
-[root@bastion01 OCP_operator]# oc patch noobaa noobaa -n openshift-storage \
-> --type=merge \
-> -p '{
->   "spec":{
->     "cleanupPolicy":{
->       "allowNoobaaDeletion": true,
->       "confirmation": "yes-really-delete-noobaa"
->     }
->   }
-> }'
-noobaa.noobaa.io/noobaa patched
-[root@bastion01 OCP_operator]# oc get noobaa noobaa -o yaml -n openshift-storage | grep -A10 cleanupPolicy
-  cleanupPolicy:
-    allowNoobaaDeletion: true
-    confirmation: yes-really-delete-noobaa
-  coreResources:
-    limits:
-      cpu: 999m
-      memory: 4Gi
-    requests:
-      cpu: 999m
-      memory: 4Gi
-  dbImage: registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
-[root@bastion01 OCP_operator]# oc get crd noobaas.noobaa.io -o yaml | grep -A20 cleanupPolicy
-              cleanupPolicy:
-                description: CleanupPolicy (optional) Indicates user's policy for
-                  deletion
-                properties:
-                  allowNoobaaDeletion:
-                    type: boolean
-                  confirmation:
-                    description: CleanupConfirmationProperty is a string that specifies
-                      cleanup confirmation
-                    type: string
-                type: object
-              coreResources:
-                description: CoreResources (optional) overrides the default resource
-                  requirements for the server container
-                properties:
-                  claims:
-                    description: |-
-                      Claims lists the names of resources, defined in spec.resourceClaims,
-                      that are used by this container.
+Good. The patch has been accepted.
 
-                      This is an alpha field and requires enabling the
-[root@bastion01 OCP_operator]#
+Now try deleting NooBaa again:
+
+oc delete noobaa noobaa -n openshift-storage
+
+If deletion succeeds
+
+Watch the resources disappear:
+
+oc get noobaa -n openshift-storage -w
+
+and
+
+oc get pods -n openshift-storage | grep noobaa
+
+You should see:
+
+noobaa-core-0 disappear
+
+noobaa-db-pg-0 disappear
+
+NooBaa CR removed
+
+
+Then check whether ODF recreates it automatically:
+
+oc get noobaa -n openshift-storage -w
+
+and
+
+oc get storagecluster ocs-storagecluster -o yaml | egrep "Progressing|Available|Degraded|Noobaa"
+
+
+---
+
+If deletion hangs in Terminating
+
+Check:
+
+oc get noobaa noobaa -n openshift-storage -o yaml | grep finalizers -A5
+
+If it gets stuck with:
+
+finalizers:
+- noobaa.io/graceful_finalizer
+
+then we'll remove the finalizer manually.
+
+
+---
+
+Why I'm confident this is the issue
+
+Your investigation already proved:
+
+select count(*) from systems;
+
+returns:
+
+0
+
+and
+
+select * from accounts;
+
+shows only the support account.
+
+Meanwhile the operator is trying to authenticate using:
+
+account_id=6788bafb4b40bd002623d3a0
+
+which does not exist.
+
+In other words, the NooBaa database and the NooBaa operator secrets are speaking two different languages. The DB was recreated on 2026-06-18, while the NooBaa deployment dates back to 2025-01-16. That's the smoking gun.
+
+Run the delete command now and paste:
+
+oc delete noobaa noobaa -n openshift-storage
+
+plus
+
+oc get noobaa -n openshift-storage
+
+afterwards. That will tell us whether ODF is able to rebuild the NooBaa metadata cleanly.
