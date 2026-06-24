@@ -1,144 +1,40 @@
-Good progress. The evidence is now much stronger.
-
-What we have confirmed
-
-1. NooBaa DB PVC was recreated
-
-
-
-creationTimestamp: "2026-06-17T13:32:22Z"
-
-2. Original NooBaa deployment is from Jan 2025
-
-
-
-NooBaa CR creationTimestamp: 2025-01-16
-
-3. Authentication failure
-
-
-
-account not found 6788bafb4b40bd002623d3a0
-
-4. No OBCs/ObjectBuckets exist
-
-
-
-oc get obc -A
-No resources found
-
-oc get objectbucket -A
-No resources found
-
-5. NooBaa DB is not empty
-
-
-
-select count(*) from accounts;
- count
--------
- 1
-
-This is important.
-
-
----
-
-Next step: identify the account present in DB
-
-Reconnect to postgres:
-
-oc rsh noobaa-db-pg-0
-
-psql -U postgres nbcore
-
-List table structure:
-
-\d accounts
-
-Then:
-
-select * from accounts;
-
-or
-
-select _id,name from accounts;
-
-or
-
-select _id,deleted from accounts;
-
-Depending on columns shown by \d accounts.
-
-
----
-
-Why?
-
-Currently NooBaa operator is trying to authenticate using:
-
-account id = 6788bafb4b40bd002623d3a0
-
-But that account does not exist.
-
-Your database contains exactly one account.
-
-I want to verify whether:
-
-the DB was partially restored
-
-the admin account exists with a different _id
-
-the account is marked deleted
-
-the DB contains only a system account
-
-
-
----
-
-Also check the auth token
-
-Decode the operator token:
-
-oc get secret noobaa-operator -n openshift-storage \
--o jsonpath='{.data.auth_token}' | base64 -d
-
-You should get a JWT.
-
-Copy the middle section and decode it:
-
-echo '<middle-part>' | base64 -d
-
-We're looking for something like:
-
-{
-  "account_id":"6788bafb4b40bd002623d3a0"
-}
-
-which will confirm the operator is using a stale account id.
-
-
----
-
-My current assessment
-
-I would say with ~90% confidence:
-
-The NooBaa PostgreSQL PVC/database was recreated on 17-Jun.
-
-The account referenced by the operator secret no longer exists.
-
-Ceph is healthy enough for NooBaa startup.
-
-ODF is stuck only because NooBaa authentication is broken.
-
-Since there are no OBCs and no ObjectBuckets, rebuilding NooBaa is relatively safe if required.
-
-
-Before we go to deletion/recreation, let's inspect the accounts table contents. Please provide:
-
-\d accounts
-select * from accounts;
-
-from inside psql. That will tell us whether the admin account can be repaired or whether a full NooBaa rebuild is the cleaner option.
+[root@bastion01 OCP_operator]# oc rsh noobaa-db-pg-0
+sh-5.1$ psql -U postgres nbcore
+psql (15.15)
+Type "help" for help.
+
+nbcore=# \d accounts
+                 Table "public.accounts"
+ Column |     Type      | Collation | Nullable | Default
+--------+---------------+-----------+----------+---------
+ _id    | character(24) |           | not null |
+ data   | jsonb         |           |          |
+Indexes:
+    "accounts_pkey" PRIMARY KEY, btree (_id)
+    "idx_btree_accounts__id_index" UNIQUE, btree ((data ->> '_id'::text))
+    "idx_btree_accounts_email" UNIQUE, btree ((data ->> 'email'::text)) WHERE (data -> 'deleted'::text) IS NULL OR (data -> 'deleted'::text) = 'null'::jsonb
+
+nbcore=# select * from accounts;
+           _id            |                                                                                                                  data
+
+--------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------
+ 6a34056744a42300227fc3c7 | {"_id": "6a34056744a42300227fc3c7", "name": "Support", "email": "support@noobaa.com", "password": "$2b$10$ms3jjmBbq/1WjcnjREhXnO3lJmWqbmqu.fACTl15ljYMdx8EQIvC6", "has_login": true, "is_support": true, "last_update"
+: 1781794151124}
+(1 row)
+
+nbcore=# select _id,name from accounts;
+ERROR:  column "name" does not exist
+LINE 1: select _id,name from accounts;
+                   ^
+nbcore=# select _id,deleted from accounts;
+ERROR:  column "deleted" does not exist
+LINE 1: select _id,deleted from accounts;
+                   ^
+nbcore=#
+\q
+sh-5.1$
+exit
+[root@bastion01 OCP_operator]# oc get secret noobaa-operator -n openshift-storage \
+> -o jsonpath='{.data.auth_token}' | base64 -d
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiNjc4OGJhZmI0YjQwYmQwMDI2MjNkM2EwIiwic3lzdGVtX2lkIjoiNjc4OGJhZmI0YjQwYmQwMDI2MjNkMzkxIiwicm9sZSI6Im9wZXJhdG9yIiwiYXV0aG9yaXplZF9ieSI6Im5vb2JhYSIsImlhdCI6MTczNzAxNDAxMX0.gmxBk4vgnGNk6qJ9EJ9cP8JOlQv1sZl11Vd5ruX5Z4o[root@bastion01 OCP_operator]#
