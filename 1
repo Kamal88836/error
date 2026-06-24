@@ -1,153 +1,157 @@
-[root@bastion01 OCP_operator]# oc get storagecluster
-NAME                 AGE    PHASE         EXTERNAL   CREATED AT             VERSION
-ocs-storagecluster   523d   Progressing              2025-01-16T07:48:21Z   4.18.17
-[root@bastion01 OCP_operator]# oc get storagecluster
-NAME                 AGE    PHASE         EXTERNAL   CREATED AT             VERSION
-ocs-storagecluster   523d   Progressing              2025-01-16T07:48:21Z   4.18.17
-[root@bastion01 OCP_operator]# oc get storagecluster ocs-storagecluster -o yaml | grep -A5 manageNooBaa
-[root@bastion01 OCP_operator]# oc get storagecluster ocs-storagecluster -o yaml
-apiVersion: ocs.openshift.io/v1
-kind: StorageCluster
-metadata:
-  annotations:
-    force-reconcile: "1781859921"
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"ocs.openshift.io/v1","kind":"StorageCluster","metadata":{"annotations":{},"name":"ocs-storagecluster","namespace":"openshift-storage"},"spec":{"flexibleScaling":true,"monDataDirHostPath":"/var/lib/rook","nodeTopologies":{},"storageDeviceSets":[{"count":1,"dataPVCTemplate":{"metadata":{},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1"}},"storageClassName":"local-volume","volumeMode":"Block"},"status":{}},"name":"ocs-deviceset-local-volume","replica":3}]}}
-    odf.openshift.io/reconcile: "true"
-    reconcile: force
-    reconcile-now: "1781862075"
-    uninstall.ocs.openshift.io/cleanup-policy: delete
-    uninstall.ocs.openshift.io/mode: graceful
-  creationTimestamp: "2025-01-16T07:48:21Z"
-  finalizers:
-  - storagecluster.ocs.openshift.io
-  generation: 2
-  name: ocs-storagecluster
-  namespace: openshift-storage
-  ownerReferences:
-  - apiVersion: odf.openshift.io/v1alpha1
-    kind: StorageSystem
-    name: ocs-storagecluster-storagesystem
-    uid: 1ba1ec77-c3a1-471d-8f66-cec8797accf2
-  resourceVersion: "1012579748"
-  uid: 8aea80d8-7077-4ccd-83ca-b0b316150c85
-spec:
-  arbiter: {}
-  encryption:
-    kms: {}
-  externalStorage: {}
-  flexibleScaling: true
-  managedResources:
-    cephBlockPools: {}
-    cephCluster: {}
-    cephConfig: {}
-    cephDashboard: {}
-    cephFilesystems: {}
-    cephNonResilientPools:
-      count: 1
-    cephObjectStoreUsers: {}
-    cephObjectStores: {}
-    cephRBDMirror:
-      daemonCount: 1
-    cephToolbox: {}
-  mirroring: {}
-  monDataDirHostPath: /var/lib/rook
-  nodeTopologies: {}
-  storageDeviceSets:
-  - config: {}
-    count: 1
-    dataPVCTemplate:
-      metadata: {}
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: "1"
-        storageClassName: local-volume
-        volumeMode: Block
-      status: {}
-    name: ocs-deviceset-local-volume
-    placement: {}
-    preparePlacement: {}
-    replica: 3
-    resources: {}
-status:
-  conditions:
-  - lastHeartbeatTime: "2026-06-19T11:55:42Z"
-    lastTransitionTime: "2026-06-19T11:55:42Z"
-    message: Version check successful
-    reason: VersionMatched
-    status: "False"
-    type: VersionMismatch
-  - lastHeartbeatTime: "2026-06-24T06:15:25Z"
-    lastTransitionTime: "2026-06-19T11:55:42Z"
-    message: Reconcile completed successfully
-    reason: ReconcileCompleted
-    status: "True"
-    type: ReconcileComplete
-  - lastHeartbeatTime: "2026-06-24T05:03:30Z"
-    lastTransitionTime: "2026-06-19T11:55:42Z"
-    message: 'CephCluster error: Failed to configure ceph cluster'
-    reason: ClusterStateError
-    status: "False"
-    type: Available
-  - lastHeartbeatTime: "2026-06-24T06:15:25Z"
-    lastTransitionTime: "2026-06-19T11:55:42Z"
-    message: Waiting on Nooba instance to finish initialization
-    reason: NoobaaInitializing
-    status: "True"
-    type: Progressing
-  - lastHeartbeatTime: "2026-06-24T05:03:30Z"
-    lastTransitionTime: "2026-06-24T05:00:18Z"
-    message: 'CephCluster error: Failed to configure ceph cluster'
-    reason: ClusterStateError
-    status: "True"
-    type: Degraded
-  - lastHeartbeatTime: "2026-06-24T05:05:13Z"
-    lastTransitionTime: "2026-06-19T12:33:22Z"
-    message: 'CephCluster is creating: Processing OSD 2 on PVC "ocs-deviceset-local-volume-2-data-0d28w2"'
-    reason: ClusterStateCreating
-    status: "False"
-    type: Upgradeable
-  currentMonCount: 3
-  defaultCephDeviceClass: ssd
-  failureDomain: host
-  failureDomainKey: kubernetes.io/hostname
-  failureDomainValues:
-  - master01.airtel3novvt.samsungcnfcu.local
-  - master02.airtel3novvt.samsungcnfcu.local
-  - master03.airtel3novvt.samsungcnfcu.local
-  images:
-    ceph:
-      actualImage: registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
-      desiredImage: registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
-    noobaaCore:
-      actualImage: registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
-      desiredImage: registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
-    noobaaDB:
-      actualImage: registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
-      desiredImage: registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
-  kmsServerConnection: {}
-  nodeTopologies:
-    labels:
-      kubernetes.io/hostname:
-      - master01.airtel3novvt.samsungcnfcu.local
-      - master02.airtel3novvt.samsungcnfcu.local
-      - master03.airtel3novvt.samsungcnfcu.local
-  phase: Progressing
-  relatedObjects:
-  - apiVersion: ceph.rook.io/v1
-    kind: CephCluster
-    name: ocs-storagecluster-cephcluster
-    namespace: openshift-storage
-    resourceVersion: "1012579740"
-    uid: b677bd5f-112c-43d2-bb94-8db826c33c8b
-  - apiVersion: noobaa.io/v1alpha1
-    kind: NooBaa
-    name: noobaa
-    namespace: openshift-storage
-    resourceVersion: "1012579719"
-    uid: 01c881a1-81a6-4b2f-9ad9-eed5307ea039
-  version: 4.18.17
-[root@bastion01 OCP_operator]#
+Your latest output makes the situation much clearer.
+
+What we know now
+
+Ceph is healthy
+
+oc get cephcluster
+
+shows:
+
+PHASE: Ready
+HEALTH: HEALTH_OK
+
+So this is not a Ceph problem.
+
+
+---
+
+What is broken
+
+From your PostgreSQL checks:
+
+select * from systems;
+
+returns:
+
+0 rows
+
+and
+
+select * from accounts;
+
+returns only:
+
+support@noobaa.com
+
+No:
+
+admin@noobaa.io
+
+No:
+
+operator account
+
+No:
+
+system record
+
+The NooBaa operator token contains:
+
+account_id = 6788bafb4b40bd002623d3a0
+system_id  = 6788bafb4b40bd002623d391
+
+but those IDs do not exist in the database.
+
+That exactly matches:
+
+account not found 6788bafb4b40bd002623d3a0
+
+in operator logs and core logs.
+
+
+---
+
+Most important observation
+
+Your current DB PVC is:
+
+db-noobaa-db-pg-0
+creationTimestamp: 2026-06-17
+
+Your NooBaa installation is:
+
+creationTimestamp: 2025-01-16
+
+Almost 17 months old.
+
+That means the current database was recreated recently.
+
+The original NooBaa database is gone.
+
+The new DB initialized with only the default support account and never recreated the system metadata.
+
+That is why:
+
+accounts = 1 row
+systems = 0 rows
+
+This is a classic symptom of NooBaa DB loss/corruption.
+
+
+---
+
+Why StorageCluster is stuck
+
+StorageCluster says:
+
+Progressing=True
+Reason: NoobaaInitializing
+Message: Waiting on Nooba instance to finish initialization
+
+ODF is waiting for NooBaa.
+
+NooBaa cannot initialize because:
+
+systems table is empty
+
+So ODF remains Progressing forever.
+
+
+---
+
+Next thing to do
+
+Let's first make sure deletion is allowed.
+
+Check:
+
+oc get noobaa noobaa -n openshift-storage -o yaml | grep -A10 cleanupPolicy
+
+Then patch with the correct fields:
+
+oc patch noobaa noobaa -n openshift-storage \
+--type=merge \
+-p '{
+  "spec":{
+    "cleanupPolicy":{
+      "allowNoobaaDeletion": true,
+      "confirmation": "yes-really-delete-noobaa"
+    }
+  }
+}'
+
+Verify again:
+
+oc get noobaa noobaa -o yaml -n openshift-storage | grep -A10 cleanupPolicy
+
+You should see:
+
+cleanupPolicy:
+  allowNoobaaDeletion: true
+  confirmation: yes-really-delete-noobaa
+
+
+---
+
+If patch still does not take
+
+Then let's inspect the CRD schema because ODF 4.18 sometimes validates the exact confirmation string.
+
+Run:
+
+oc get crd noobaas.noobaa.io -o yaml | grep -A20 cleanupPolicy
+
+and paste the output.
+
+At this point I would not attempt SQL fixes. The database has no system records at all, which means rebuilding NooBaa is much safer than manually reconstructing metadata tables. The goal now is to get NooBaa deleted cleanly so ODF can recreate it from scratch.
