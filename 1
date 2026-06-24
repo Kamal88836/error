@@ -1,9 +1,82 @@
-[root@bastion01 OCP_operator]# oc delete noobaa noobaa -n openshift-storage
-Error from server: admission webhook "admissionwebhook.noobaa.io" denied the request: Noobaa cleanup policy is not set, blocking Noobaa deletion
-[root@bastion01 OCP_operator]# oc get noobaa -n openshift-storage -w
-NAME     S3-ENDPOINTS   STS-ENDPOINTS   SYSLOG-ENDPOINTS   IMAGE                                                                                                            PHASE         AGE
-noobaa                                                     registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f   Configuring   523d
-noobaa                                                     registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f   Configuring   523d
-^C[root@bastion01 OCP_operator]# oc delete noobaa noobaa -n openshift-storage
-Error from server: admission webhook "admissionwebhook.noobaa.io" denied the request: Noobaa cleanup policy is not set, blocking Noobaa deletion
-[root@bastion01 OCP_operator]#
+That's expected. ODF/NooBaa protects against accidental deletion.
+
+The webhook is blocking deletion because:
+
+Noobaa cleanup policy is not set, blocking Noobaa deletion
+
+Before deleting anything
+
+Let's first try a non-destructive recovery because the problem is an authentication mismatch between the NooBaa DB and the noobaa-admin secret.
+
+Run these commands:
+
+oc delete pod noobaa-core-0 -n openshift-storage
+oc delete pod noobaa-db-pg-0 -n openshift-storage
+oc delete pod -l app=noobaa-operator -n openshift-storage
+
+Wait until all NooBaa pods are Running again:
+
+oc get pods -n openshift-storage | grep noobaa
+
+Then check:
+
+oc get noobaa -n openshift-storage
+
+
+---
+
+If still Configuring
+
+Let's inspect the admin secret values being used:
+
+oc get secret noobaa-admin -n openshift-storage \
+-o jsonpath='{.data.email}' | base64 -d; echo
+
+oc get secret noobaa-admin -n openshift-storage \
+-o jsonpath='{.data.system}' | base64 -d; echo
+
+Also check:
+
+oc get secret noobaa-operator -n openshift-storage -o yaml
+
+Sometimes after DB recreation the operator secret and admin secret are out of sync.
+
+
+---
+
+If deletion becomes necessary
+
+You'll need to set a cleanup policy first.
+
+Check current NooBaa spec:
+
+oc get noobaa noobaa -n openshift-storage -o yaml | grep -A5 cleanupPolicy
+
+Then patch it, for example:
+
+oc patch noobaa noobaa -n openshift-storage \
+--type=merge \
+-p '{"spec":{"cleanupPolicy":{"confirm":"yes-really-delete-noobaa"}}}'
+
+The exact cleanup policy format can vary by NooBaa/ODF version, so verify the current CR structure before patching.
+
+
+---
+
+Most important next step
+
+Since your cluster is production-like and 523 days old, I would not force-delete NooBaa yet.
+
+First provide:
+
+oc get pods -n openshift-storage | grep noobaa
+
+oc get secret noobaa-operator -n openshift-storage -o yaml
+
+oc get secret noobaa-admin -n openshift-storage \
+-o jsonpath='{.data.email}' | base64 -d; echo
+
+oc get secret noobaa-admin -n openshift-storage \
+-o jsonpath='{.data.system}' | base64 -d; echo
+
+The logs already prove the admin account is missing from the database. The remaining question is whether we can resynchronize the credentials without rebuilding NooBaa.
