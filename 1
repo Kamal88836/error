@@ -1,113 +1,148 @@
-[root@bastion01 ~]# oc logs deploy/ocs-operator -n openshift-storage  --tail=200
-{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Go Version: go1.22.12 (Red Hat 1.22.12-8.el9)"}
-{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Go OS/Arch: linux/amd64"}
-{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"Cluster is running on OpenShift."}
-{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"OCSInitialization resource already exists"}
-{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"cmd","msg":"starting manager"}
-{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"controller-runtime.metrics","msg":"Starting metrics server"}
-{"level":"info","ts":"2026-06-23T06:00:51Z","logger":"controller-runtime.metrics","msg":"Serving metrics server","bindAddress":":8080","secure":false}
-{"level":"info","ts":"2026-06-23T06:00:51Z","msg":"starting server","name":"health probe","addr":"[::]:8081"}
-I0623 06:00:51.820569       7 leaderelection.go:254] attempting to acquire leader lease openshift-storage/ab76f4c9.openshift.io...
-I0623 06:01:06.829038       7 leaderelection.go:268] successfully acquired lease openshift-storage/ab76f4c9.openshift.io
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageCluster"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","source":"kind source: *v1.StorageClusterPeer"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephCluster"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","source":"kind source: *v1.StorageCluster"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephBlockPool"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephFilesystem"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephFilesystemSubVolumeGroup"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephNFS"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephObjectStore"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephObjectStoreUser"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.CephRBDMirror"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.PersistentVolumeClaim"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.OCSInitialization"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Service"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Secret"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Prometheus"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.Alertmanager"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ServiceMonitor"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.StorageCluster"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.StorageClass"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.ConfigMap"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Deployment"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1alpha1.ClusterServiceVersion"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Service"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","source":"kind source: *v1.PartialObjectMetadata"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.ConfigMap"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Secret"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Route"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.Template"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.NooBaa"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.PartialObjectMetadata"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.ConfigMap"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephRBDMirror"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageClass"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.StorageClusterPeer"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.VolumeSnapshotClass"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.StorageConsumer"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.StorageClusterPeer"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1.ConfigMap"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","source":"kind source: *v1alpha1.StorageClient"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1alpha1.StorageConsumer"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1alpha1.StorageConsumer"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephBlockPool"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","source":"kind source: *v1.CephBlockPoolRadosNamespace"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1alpha1.NooBaaAccount"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","source":"kind source: *v1.CephBlockPool"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1alpha1.StorageRequest"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephBlockPoolRadosNamespace"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephFilesystemSubVolumeGroup"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.CephClient"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.StorageClass"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting EventSource","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","source":"kind source: *v1.VolumeSnapshotClass"}
-{"level":"info","ts":"2026-06-23T06:01:06Z","msg":"Starting Controller","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest"}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","worker count":1}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Reconciling StorageClusterPeer.","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","StorageClusterPeer":{"name":"ocs-storagecluster","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"ocs-storagecluster","reconcileID":"75b1e9c1-cd66-488a-9e1c-50f0162bed7d","StorageClient":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"StorageClusterPeer resource not found. Ignoring since object must have been deleted.","controller":"storageclusterpeer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageClusterPeer","StorageClusterPeer":{"name":"ocs-storagecluster","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"ocs-storagecluster","reconcileID":"75b1e9c1-cd66-488a-9e1c-50f0162bed7d","StorageClient":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","worker count":1}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting reconcile","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","ConfigMap":{"name":"storage-client-mapping","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"storage-client-mapping","reconcileID":"b864374b-27b8-480d-8a44-3d681ff8b82f","StorageClientMapping":{"name":"storage-client-mapping","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storageconsumer","controllerGroup":"ocs.openshift.io","controllerKind":"StorageConsumer","worker count":1}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"ocsinitialization","controllerGroup":"ocs.openshift.io","controllerKind":"OCSInitialization","worker count":1}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"ConfigMap %s not found. Ignoring since object must be deleted.","controller":"configmap","controllerGroup":"","controllerKind":"ConfigMap","ConfigMap":{"name":"storage-client-mapping","namespace":"openshift-storage"},"namespace":"openshift-storage","name":"storage-client-mapping","reconcileID":"b864374b-27b8-480d-8a44-3d681ff8b82f","StorageClientMapping":{"name":"storage-client-mapping","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Reconciling OCSInitialization.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","OCSInitialization":{"name":"ocsinit","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storagerequest","controllerGroup":"ocs.openshift.io","controllerKind":"StorageRequest","worker count":1}
-{"level":"info","ts":"2026-06-23T06:01:07Z","msg":"Starting workers","controller":"storagecluster","controllerGroup":"ocs.openshift.io","controllerKind":"StorageCluster","worker count":1}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Reconciling StorageCluster.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","StorageCluster":{"name":"ocs-storagecluster","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Spec.AllowRemoteStorageConsumers is disabled","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"rook-ceph"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Resource deletion for provider succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Spec.AllowRemoteStorageConsumers is disabled","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"rook-ceph-csi"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Updating SecurityContextConstraint.","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","SecurityContextConstraint":{"name":"noobaa"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Successfully created/updated rook-ceph-operator-config configmap","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","OperationResult":"unchanged"}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Secret creation succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","Name":"ux-backend-proxy"}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.OCSInitialization","msg":"Service creation succeeded","Request.Namespace":"openshift-storage","Request.Name":"ocsinit","Name":"ux-backend-proxy"}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Updating spec for CephCluster.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephCluster":{"name":"ocs-storagecluster-cephcluster","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[0].volumeClaimTemplates[0].metadata.creationTimestamp\""}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[1].volumeClaimTemplates[0].metadata.creationTimestamp\""}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storage.storageClassDeviceSets[2].volumeClaimTemplates[0].metadata.creationTimestamp\""}
-W0623 06:01:07.388419       7 client_config.go:659] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"prometheus rules deployed","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephCluster":{"name":"ocs-storagecluster-cephcluster","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephFilesystem.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephFileSystem":{"name":"ocs-storagecluster-cephfilesystem","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStore.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStore":{"name":"ocs-storagecluster-cephobjectstore","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStoreUser.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStoreUser":{"name":"ocs-storagecluster-cephobjectstoreuser","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original CephObjectStoreUser.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephObjectStoreUser":{"name":"prometheus-user","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original Ceph RGW Route.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephRGWRoute":{"name":"ocs-storagecluster-cephobjectstore","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Restoring original Ceph RGW Route.","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","CephRGWRoute":{"name":"ocs-storagecluster-cephobjectstore-secure","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"VolumeGroupSnapshotClass CRD is not available","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster"}
-{"level":"info","ts":"2026-06-23T06:01:07Z","logger":"controllers.StorageCluster","msg":"Creating or updating odf-info config map","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","ConfigMap":{"name":"odf-info","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"controllers.StorageCluster","msg":"Reconciling metrics exporter service","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","NamespacedName":{"name":"ocs-metrics-exporter","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"controllers.StorageCluster","msg":"Reconciling metrics exporter service monitor","Request.Namespace":"openshift-storage","Request.Name":"ocs-storagecluster","NamespacedName":{"name":"ocs-metrics-exporter","namespace":"openshift-storage"}}
-{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.managedResources.cephNonResilientPools.volumeClaimTemplate.metadata.creationTimestamp\""}
-{"level":"info","ts":"2026-06-23T06:01:08Z","logger":"KubeAPIWarningLogger","msg":"unknown field \"spec.storageDeviceSets[0].dataPVCTemplate.metadata.creationTimestamp\""}
-[root@bastion01 ~]# oc get cephcsi -A
-error: the server doesn't have a resource type "cephcsi"
-[root@bastion01 ~]#
+[root@bastion01 OCP_operator]# oc get storagecluster
+NAME                 AGE    PHASE         EXTERNAL   CREATED AT             VERSION
+ocs-storagecluster   523d   Progressing              2025-01-16T07:48:21Z   4.18.17
+[root@bastion01 OCP_operator]#  oc describe  storagecluster
+Name:         ocs-storagecluster
+Namespace:    openshift-storage
+Labels:       <none>
+Annotations:  force-reconcile: 1781859921
+              odf.openshift.io/reconcile: true
+              reconcile: force
+              reconcile-now: 1781862075
+              uninstall.ocs.openshift.io/cleanup-policy: delete
+              uninstall.ocs.openshift.io/mode: graceful
+API Version:  ocs.openshift.io/v1
+Kind:         StorageCluster
+Metadata:
+  Creation Timestamp:  2025-01-16T07:48:21Z
+  Finalizers:
+    storagecluster.ocs.openshift.io
+  Generation:  2
+  Owner References:
+    API Version:     odf.openshift.io/v1alpha1
+    Kind:            StorageSystem
+    Name:            ocs-storagecluster-storagesystem
+    UID:             1ba1ec77-c3a1-471d-8f66-cec8797accf2
+  Resource Version:  1012548462
+  UID:               8aea80d8-7077-4ccd-83ca-b0b316150c85
+Spec:
+  Arbiter:
+  Encryption:
+    Kms:
+  External Storage:
+  Flexible Scaling:  true
+  Managed Resources:
+    Ceph Block Pools:
+    Ceph Cluster:
+    Ceph Config:
+    Ceph Dashboard:
+    Ceph Filesystems:
+    Ceph Non Resilient Pools:
+      Count:  1
+    Ceph Object Store Users:
+    Ceph Object Stores:
+    Ceph RBD Mirror:
+      Daemon Count:  1
+    Ceph Toolbox:
+  Mirroring:
+  Mon Data Dir Host Path:  /var/lib/rook
+  Node Topologies:
+  Storage Device Sets:
+    Config:
+    Count:  1
+    Data PVC Template:
+      Metadata:
+      Spec:
+        Access Modes:
+          ReadWriteOnce
+        Resources:
+          Requests:
+            Storage:         1
+        Storage Class Name:  local-volume
+        Volume Mode:         Block
+      Status:
+    Name:  ocs-deviceset-local-volume
+    Placement:
+    Prepare Placement:
+    Replica:  3
+    Resources:
+Status:
+  Conditions:
+    Last Heartbeat Time:      2026-06-19T11:55:42Z
+    Last Transition Time:     2026-06-19T11:55:42Z
+    Message:                  Version check successful
+    Reason:                   VersionMatched
+    Status:                   False
+    Type:                     VersionMismatch
+    Last Heartbeat Time:      2026-06-24T05:14:29Z
+    Last Transition Time:     2026-06-19T11:55:42Z
+    Message:                  Reconcile completed successfully
+    Reason:                   ReconcileCompleted
+    Status:                   True
+    Type:                     ReconcileComplete
+    Last Heartbeat Time:      2026-06-24T05:03:30Z
+    Last Transition Time:     2026-06-19T11:55:42Z
+    Message:                  CephCluster error: Failed to configure ceph cluster
+    Reason:                   ClusterStateError
+    Status:                   False
+    Type:                     Available
+    Last Heartbeat Time:      2026-06-24T05:14:29Z
+    Last Transition Time:     2026-06-19T11:55:42Z
+    Message:                  Waiting on Nooba instance to finish initialization
+    Reason:                   NoobaaInitializing
+    Status:                   True
+    Type:                     Progressing
+    Last Heartbeat Time:      2026-06-24T05:03:30Z
+    Last Transition Time:     2026-06-24T05:00:18Z
+    Message:                  CephCluster error: Failed to configure ceph cluster
+    Reason:                   ClusterStateError
+    Status:                   True
+    Type:                     Degraded
+    Last Heartbeat Time:      2026-06-24T05:05:13Z
+    Last Transition Time:     2026-06-19T12:33:22Z
+    Message:                  CephCluster is creating: Processing OSD 2 on PVC "ocs-deviceset-local-volume-2-data-0d28w2"
+    Reason:                   ClusterStateCreating
+    Status:                   False
+    Type:                     Upgradeable
+  Current Mon Count:          3
+  Default Ceph Device Class:  ssd
+  Failure Domain:             host
+  Failure Domain Key:         kubernetes.io/hostname
+  Failure Domain Values:
+    master01.airtel3novvt.samsungcnfcu.local
+    master02.airtel3novvt.samsungcnfcu.local
+    master03.airtel3novvt.samsungcnfcu.local
+  Images:
+    Ceph:
+      Actual Image:   registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
+      Desired Image:  registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:c32609c9cfeac0009a6a7b25853fde296f47eaa7d0548b87dd64cd19b0dd406c
+    Noobaa Core:
+      Actual Image:   registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
+      Desired Image:  registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
+    Noobaa DB:
+      Actual Image:   registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
+      Desired Image:  registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
+  Kms Server Connection:
+  Node Topologies:
+    Labels:
+      kubernetes.io/hostname:
+        master01.airtel3novvt.samsungcnfcu.local
+        master02.airtel3novvt.samsungcnfcu.local
+        master03.airtel3novvt.samsungcnfcu.local
+  Phase:  Progressing
+  Related Objects:
+    API Version:       ceph.rook.io/v1
+    Kind:              CephCluster
+    Name:              ocs-storagecluster-cephcluster
+    Namespace:         openshift-storage
+    Resource Version:  1012548453
+    UID:               b677bd5f-112c-43d2-bb94-8db826c33c8b
+    API Version:       noobaa.io/v1alpha1
+    Kind:              NooBaa
+    Name:              noobaa
+    Namespace:         openshift-storage
+    Resource Version:  1012548436
+    UID:               01c881a1-81a6-4b2f-9ad9-eed5307ea039
+  Version:             4.18.17
+Events:                <none>
+[root@bastion01 OCP_operator]#
