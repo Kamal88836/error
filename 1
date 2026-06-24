@@ -1,59 +1,144 @@
-[root@bastion01 OCP_operator]# oc get events -n openshift-storage --sort-by=.lastTimestamp | grep -i noobaa-db
-5m56s       Normal    Scheduled                pod/noobaa-db-pg-0                                                                  Successfully assigned openshift-storage/noobaa-db-pg-0 to master01.airtel3novvt.samsungcnfcu.local
-52m         Normal    Scheduled                pod/noobaa-db-pg-0                                                                  Successfully assigned openshift-storage/noobaa-db-pg-0 to master01.airtel3novvt.samsungcnfcu.local
-57m         Warning   FailedAttachVolume       pod/noobaa-db-pg-0                                                                  AttachVolume.Attach failed for volume "pvc-5b8d6ecd-0b28-47a5-8b38-b5c316c91d7b" : timed out waiting for external-attacher of openshift-storage.rbd.csi.ceph.com CSI driver to attach volume 0001-0011-openshift-storage-0000000000000001-1e88a142-6856-44b5-bd31-e9fc3d5b5073
-55m         Normal    SuccessfulAttachVolume   pod/noobaa-db-pg-0                                                                  AttachVolume.Attach succeeded for volume "pvc-5b8d6ecd-0b28-47a5-8b38-b5c316c91d7b"
-54m         Normal    AddedInterface           pod/noobaa-db-pg-0                                                                  Add eth0 [10.10.2.55/24 fd01:0:0:3::36/64] from ovn-kubernetes
-54m         Normal    Pulling                  pod/noobaa-db-pg-0                                                                  Pulling image "nwharbor.sec.samsung.net/team-ocp/ocp/rhel9/postgresql-15@sha256:4d707fc04f13c271b455f7b56c1fda9e232a62214ffc6213c02e41177dd4a13f"
-54m         Normal    Pulled                   pod/noobaa-db-pg-0                                                                  Successfully pulled image "nwharbor.sec.samsung.net/team-ocp/ocp/rhel9/postgresql-15@sha256:4d707fc04f13c271b455f7b56c1fda9e232a62214ffc6213c02e41177dd4a13f" in 466ms (466ms including waiting). Image size: 402988555 bytes.
-54m         Normal    Created                  pod/noobaa-db-pg-0                                                                  Created container: db
-54m         Normal    Started                  pod/noobaa-db-pg-0                                                                  Started container db
-54m         Normal    SuccessfulDelete         statefulset/noobaa-db-pg                                                            delete Pod noobaa-db-pg-0 in StatefulSet noobaa-db-pg successful
-54m         Warning   FailedPreStopHook        pod/noobaa-db-pg-0                                                                  PreStopHook failed
-54m         Normal    Killing                  pod/noobaa-db-pg-0                                                                  Stopping container db
-52m         Normal    AddedInterface           pod/noobaa-db-pg-0                                                                  Add eth0 [10.10.2.67/24 fd01:0:0:3::42/64] from ovn-kubernetes
-52m         Normal    Pulled                   pod/noobaa-db-pg-0                                                                  Container image "registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b" already present on machine
-52m         Normal    Created                  pod/noobaa-db-pg-0                                                                  Created container: db
-52m         Normal    Started                  pod/noobaa-db-pg-0                                                                  Started container db
-5m57s       Warning   FailedPreStopHook        pod/noobaa-db-pg-0                                                                  PreStopHook failed
-5m57s       Normal    Killing                  pod/noobaa-db-pg-0                                                                  Stopping container db
-5m56s       Normal    SuccessfulCreate         statefulset/noobaa-db-pg                                                            create Pod noobaa-db-pg-0 in StatefulSet noobaa-db-pg successful
-5m47s       Normal    AddedInterface           pod/noobaa-db-pg-0                                                                  Add eth0 [10.10.2.71/24 fd01:0:0:3::46/64] from ovn-kubernetes
-5m46s       Normal    Created                  pod/noobaa-db-pg-0                                                                  Created container: db
-5m46s       Normal    Started                  pod/noobaa-db-pg-0                                                                  Started container db
-5m46s       Normal    Pulled                   pod/noobaa-db-pg-0                                                                  Container image "registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b" already present on machine
-[root@bastion01 OCP_operator]#
-[root@bastion01 OCP_operator]# oc get pvc db-noobaa-db-pg-0 -o yaml -n openshift-storage | egrep "creationTimestamp|uid"
-  creationTimestamp: "2026-06-17T13:32:22Z"
-    uid: 01c881a1-81a6-4b2f-9ad9-eed5307ea039
-  uid: 5b8d6ecd-0b28-47a5-8b38-b5c316c91d7b
-[root@bastion01 OCP_operator]# oc rsh noobaa-db-pg-0
-sh-5.1$ psql -U postgres nbcore
-psql (15.15)
-Type "help" for help.
+Good progress. The evidence is now much stronger.
 
-nbcore=# select _id,email from accounts;
-ERROR:  column "email" does not exist
-LINE 1: select _id,email from accounts;
-                   ^
-nbcore=# select count(*) from accounts;
+What we have confirmed
+
+1. NooBaa DB PVC was recreated
+
+
+
+creationTimestamp: "2026-06-17T13:32:22Z"
+
+2. Original NooBaa deployment is from Jan 2025
+
+
+
+NooBaa CR creationTimestamp: 2025-01-16
+
+3. Authentication failure
+
+
+
+account not found 6788bafb4b40bd002623d3a0
+
+4. No OBCs/ObjectBuckets exist
+
+
+
+oc get obc -A
+No resources found
+
+oc get objectbucket -A
+No resources found
+
+5. NooBaa DB is not empty
+
+
+
+select count(*) from accounts;
  count
 -------
-     1
-(1 row)
+ 1
 
-nbcore=# exit
-sh-5.1$
-exit
-[root@bastion01 OCP_operator]# oc get obc -A
-No resources found
-[root@bastion01 OCP_operator]# oc get objectbucketclaim -A
-No resources found
-[root@bastion01 OCP_operator]# oc get objectbucket -A
-No resources found
-[root@bastion01 OCP_operator]# oc get cephobjectstoreuser -n openshift-storage
-NAME                                     PHASE   AGE
-noobaa-ceph-objectstore-user             Ready   523d
-ocs-storagecluster-cephobjectstoreuser   Ready   523d
-prometheus-user                          Ready   523d
-[root@bastion01 OCP_operator]#
+This is important.
+
+
+---
+
+Next step: identify the account present in DB
+
+Reconnect to postgres:
+
+oc rsh noobaa-db-pg-0
+
+psql -U postgres nbcore
+
+List table structure:
+
+\d accounts
+
+Then:
+
+select * from accounts;
+
+or
+
+select _id,name from accounts;
+
+or
+
+select _id,deleted from accounts;
+
+Depending on columns shown by \d accounts.
+
+
+---
+
+Why?
+
+Currently NooBaa operator is trying to authenticate using:
+
+account id = 6788bafb4b40bd002623d3a0
+
+But that account does not exist.
+
+Your database contains exactly one account.
+
+I want to verify whether:
+
+the DB was partially restored
+
+the admin account exists with a different _id
+
+the account is marked deleted
+
+the DB contains only a system account
+
+
+
+---
+
+Also check the auth token
+
+Decode the operator token:
+
+oc get secret noobaa-operator -n openshift-storage \
+-o jsonpath='{.data.auth_token}' | base64 -d
+
+You should get a JWT.
+
+Copy the middle section and decode it:
+
+echo '<middle-part>' | base64 -d
+
+We're looking for something like:
+
+{
+  "account_id":"6788bafb4b40bd002623d3a0"
+}
+
+which will confirm the operator is using a stale account id.
+
+
+---
+
+My current assessment
+
+I would say with ~90% confidence:
+
+The NooBaa PostgreSQL PVC/database was recreated on 17-Jun.
+
+The account referenced by the operator secret no longer exists.
+
+Ceph is healthy enough for NooBaa startup.
+
+ODF is stuck only because NooBaa authentication is broken.
+
+Since there are no OBCs and no ObjectBuckets, rebuilding NooBaa is relatively safe if required.
+
+
+Before we go to deletion/recreation, let's inspect the accounts table contents. Please provide:
+
+\d accounts
+select * from accounts;
+
+from inside psql. That will tell us whether the admin account can be repaired or whether a full NooBaa rebuild is the cleaner option.
