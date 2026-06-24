@@ -1,347 +1,204 @@
-[root@bastion01 OCP_operator]# oc get noobaa
-NAME     S3-ENDPOINTS   STS-ENDPOINTS   SYSLOG-ENDPOINTS   IMAGE                                                                                                            PHASE         AGE
-noobaa                                                     registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f   Configuring   523d
-[root@bastion01 OCP_operator]# oc describe noobaa noobaa
-Name:         noobaa
-Namespace:    openshift-storage
-Labels:       app=noobaa
-Annotations:  <none>
-API Version:  noobaa.io/v1alpha1
-Kind:         NooBaa
-Metadata:
-  Creation Timestamp:  2025-01-16T07:52:48Z
-  Finalizers:
-    noobaa.io/graceful_finalizer
-  Generation:  27
-  Owner References:
-    API Version:           ocs.openshift.io/v1
-    Block Owner Deletion:  true
-    Controller:            true
-    Kind:                  StorageCluster
-    Name:                  ocs-storagecluster
-    UID:                   8aea80d8-7077-4ccd-83ca-b0b316150c85
-  Resource Version:        1012556578
-  UID:                     01c881a1-81a6-4b2f-9ad9-eed5307ea039
-Spec:
-  Affinity:
-    Node Affinity:
-      Required During Scheduling Ignored During Execution:
-        Node Selector Terms:
-          Match Expressions:
-            Key:       cluster.ocs.openshift.io/openshift-storage
-            Operator:  Exists
-  Autoscaler:
-    Autoscaler Type:       hpav2
-    Prometheus Namespace:  openshift-monitoring
-  Bucket Logging:
-  Cleanup Policy:
-  Core Resources:
-    Limits:
-      Cpu:     999m
-      Memory:  4Gi
-    Requests:
-      Cpu:     999m
-      Memory:  4Gi
-  Db Image:    registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
-  Db Resources:
-    Limits:
-      Cpu:     500m
-      Memory:  4Gi
-    Requests:
-      Cpu:           500m
-      Memory:        4Gi
-  Db Storage Class:  ocs-storagecluster-ceph-rbd
-  Db Type:           postgres
-  Db Volume Resources:
-    Requests:
-      Storage:  50Gi
-  Endpoints:
-    Max Count:  2
-    Min Count:  1
-    Resources:
-      Limits:
-        Cpu:     999m
-        Memory:  2Gi
-      Requests:
-        Cpu:     999m
-        Memory:  2Gi
-  Image:         registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
-  Labels:
-    Monitoring:
-  Load Balancer Source Subnets:
-  Pv Pool Default Storage Class:  ocs-storagecluster-ceph-rbd
-  Security:
-    Kms:
-      Schedule:  @weekly
-  Tolerations:
-    Effect:    NoSchedule
-    Key:       node.ocs.openshift.io/storage
-    Operator:  Equal
-    Value:     true
-Status:
-  Accounts:
-    Admin:
-      Secret Ref:
-        Name:       noobaa-admin
-        Namespace:  openshift-storage
-  Actual Image:     registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
-  Conditions:
-    Last Heartbeat Time:   2026-06-24T05:30:49Z
-    Last Transition Time:  2026-06-17T13:18:01Z
-    Message:               cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0
-    Reason:                TemporaryError
-    Status:                False
-    Type:                  Available
-    Last Heartbeat Time:   2026-06-24T05:30:49Z
-    Last Transition Time:  2026-06-17T13:18:01Z
-    Message:               cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0
-    Reason:                TemporaryError
-    Status:                True
-    Type:                  Progressing
-    Last Heartbeat Time:   2026-06-24T05:30:49Z
-    Last Transition Time:  2026-06-17T13:18:01Z
-    Message:               cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0
-    Reason:                TemporaryError
-    Status:                False
-    Type:                  Degraded
-    Last Heartbeat Time:   2026-06-24T05:30:49Z
-    Last Transition Time:  2026-06-17T13:18:01Z
-    Message:               cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0
-    Reason:                TemporaryError
-    Status:                False
-    Type:                  Upgradeable
-    Last Heartbeat Time:   2026-06-24T05:30:49Z
-    Last Transition Time:  2025-01-16T07:52:48Z
-    Status:                k8s
-    Type:                  KMS-Type
-    Last Heartbeat Time:   2026-06-24T05:30:49Z
-    Last Transition Time:  2026-05-21T13:53:00Z
-    Status:                Sync
-    Type:                  KMS-Status
-  Endpoints:
-    Ready Count:  1
-    Virtual Hosts:
-      s3.openshift-storage.svc
-      s3-openshift-storage.apps.airtel3novvt.samsungcnfcu.local
-  Observed Generation:  27
-  Phase:                Configuring
-  Readme:
-
-  NooBaa operator is still working to reconcile this system.
-  Check out the system status.phase, status.conditions, and events with:
-
-    kubectl -n openshift-storage describe noobaa
-    kubectl -n openshift-storage get noobaa -o yaml
-    kubectl -n openshift-storage get events --sort-by=metadata.creationTimestamp
-
-  You can wait for a specific condition with:
-
-    kubectl -n openshift-storage wait noobaa/noobaa --for condition=available --timeout -1s
-
-  NooBaa Core Version:     master-20240520
-  NooBaa Operator Version: 5.18.8
-
-  Services:
-    Service Mgmt:
-      External DNS:
-        https://noobaa-mgmt-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443
-      Internal DNS:
-        https://noobaa-mgmt.openshift-storage.svc:443
-      Internal IP:
-        https://172.100.5.112:443
-      Node Ports:
-        https://172.25.204.46:0
-      Pod Ports:
-        https://10.10.0.39:8443
-    serviceS3:
-      External DNS:
-        https://s3-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443
-      Internal DNS:
-        https://s3.openshift-storage.svc:443
-      Internal IP:
-        https://172.100.132.201:443
-    Service Sts:
-      External DNS:
-        https://sts-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443
-      Internal DNS:
-        https://sts.openshift-storage.svc:443
-      Internal IP:
-        https://172.100.185.58:443
-    Service Syslog:
-Events:  <none>
-[root@bastion01 OCP_operator]# oc get noobaa -o yaml
-apiVersion: v1
-items:
-- apiVersion: noobaa.io/v1alpha1
-  kind: NooBaa
-  metadata:
-    creationTimestamp: "2025-01-16T07:52:48Z"
-    finalizers:
-    - noobaa.io/graceful_finalizer
-    generation: 27
-    labels:
-      app: noobaa
-    name: noobaa
-    namespace: openshift-storage
-    ownerReferences:
-    - apiVersion: ocs.openshift.io/v1
-      blockOwnerDeletion: true
-      controller: true
-      kind: StorageCluster
-      name: ocs-storagecluster
-      uid: 8aea80d8-7077-4ccd-83ca-b0b316150c85
-    resourceVersion: "1012557143"
-    uid: 01c881a1-81a6-4b2f-9ad9-eed5307ea039
-  spec:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: cluster.ocs.openshift.io/openshift-storage
-              operator: Exists
-    autoscaler:
-      autoscalerType: hpav2
-      prometheusNamespace: openshift-monitoring
-    bucketLogging: {}
-    cleanupPolicy: {}
-    coreResources:
-      limits:
-        cpu: 999m
-        memory: 4Gi
-      requests:
-        cpu: 999m
-        memory: 4Gi
-    dbImage: registry.redhat.io/rhel9/postgresql-15@sha256:cba1417b7e8a5b55289aa951c48dc940c72ebea5380045f32cd8faba41937f9b
-    dbResources:
-      limits:
-        cpu: 500m
-        memory: 4Gi
-      requests:
-        cpu: 500m
-        memory: 4Gi
-    dbStorageClass: ocs-storagecluster-ceph-rbd
-    dbType: postgres
-    dbVolumeResources:
-      requests:
-        storage: 50Gi
-    endpoints:
-      maxCount: 2
-      minCount: 1
-      resources:
-        limits:
-          cpu: 999m
-          memory: 2Gi
-        requests:
-          cpu: 999m
-          memory: 2Gi
-    image: registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
-    labels:
-      monitoring: {}
-    loadBalancerSourceSubnets: {}
-    pvPoolDefaultStorageClass: ocs-storagecluster-ceph-rbd
-    security:
-      kms:
-        schedule: '@weekly'
-    tolerations:
-    - effect: NoSchedule
-      key: node.ocs.openshift.io/storage
-      operator: Equal
-      value: "true"
-  status:
-    accounts:
-      admin:
-        secretRef:
-          name: noobaa-admin
-          namespace: openshift-storage
-    actualImage: registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f
-    conditions:
-    - lastHeartbeatTime: "2026-06-24T05:32:01Z"
-      lastTransitionTime: "2026-06-17T13:18:01Z"
-      message: 'cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0'
-      reason: TemporaryError
-      status: "False"
-      type: Available
-    - lastHeartbeatTime: "2026-06-24T05:32:01Z"
-      lastTransitionTime: "2026-06-17T13:18:01Z"
-      message: 'cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0'
-      reason: TemporaryError
-      status: "True"
-      type: Progressing
-    - lastHeartbeatTime: "2026-06-24T05:32:01Z"
-      lastTransitionTime: "2026-06-17T13:18:01Z"
-      message: 'cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0'
-      reason: TemporaryError
-      status: "False"
-      type: Degraded
-    - lastHeartbeatTime: "2026-06-24T05:32:01Z"
-      lastTransitionTime: "2026-06-17T13:18:01Z"
-      message: 'cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0'
-      reason: TemporaryError
-      status: "False"
-      type: Upgradeable
-    - lastHeartbeatTime: "2026-06-24T05:32:01Z"
-      lastTransitionTime: "2025-01-16T07:52:48Z"
-      status: k8s
-      type: KMS-Type
-    - lastHeartbeatTime: "2026-06-24T05:32:01Z"
-      lastTransitionTime: "2026-05-21T13:53:00Z"
-      status: Sync
-      type: KMS-Status
-    endpoints:
-      readyCount: 1
-      virtualHosts:
-      - s3.openshift-storage.svc
-      - s3-openshift-storage.apps.airtel3novvt.samsungcnfcu.local
-    observedGeneration: 27
-    phase: Configuring
-    readme: "\n\n\tNooBaa operator is still working to reconcile this system.\n\tCheck
-      out the system status.phase, status.conditions, and events with:\n\n\t\tkubectl
-      -n openshift-storage describe noobaa\n\t\tkubectl -n openshift-storage get noobaa
-      -o yaml\n\t\tkubectl -n openshift-storage get events --sort-by=metadata.creationTimestamp\n\n\tYou
-      can wait for a specific condition with:\n\n\t\tkubectl -n openshift-storage
-      wait noobaa/noobaa --for condition=available --timeout -1s\n\n\tNooBaa Core
-      Version:     master-20240520\n\tNooBaa Operator Version: 5.18.8\n"
-    services:
-      serviceMgmt:
-        externalDNS:
-        - https://noobaa-mgmt-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443
-        internalDNS:
-        - https://noobaa-mgmt.openshift-storage.svc:443
-        internalIP:
-        - https://172.100.5.112:443
-        nodePorts:
-        - https://172.25.204.46:0
-        podPorts:
-        - https://10.10.0.39:8443
-      serviceS3:
-        externalDNS:
-        - https://s3-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443
-        internalDNS:
-        - https://s3.openshift-storage.svc:443
-        internalIP:
-        - https://172.100.132.201:443
-      serviceSts:
-        externalDNS:
-        - https://sts-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443
-        internalDNS:
-        - https://sts.openshift-storage.svc:443
-        internalIP:
-        - https://172.100.185.58:443
-      serviceSyslog: {}
-kind: List
-metadata:
-  resourceVersion: ""
-[root@bastion01 OCP_operator]# oc get csv
-NAME                                     DISPLAY                            VERSION         REPLACES                                 PHASE
-cephcsi-operator.v4.18.17-rhodf          CephCSI operator                   4.18.17-rhodf   cephcsi-operator.v4.18.16-rhodf          Succeeded
-mcg-operator.v4.18.17-rhodf              NooBaa Operator                    4.18.17-rhodf   mcg-operator.v4.18.16-rhodf              Succeeded
-ocs-client-operator.v4.18.17-rhodf       OpenShift Data Foundation Client   4.18.17-rhodf   ocs-client-operator.v4.18.16-rhodf       Succeeded
-ocs-operator.v4.18.17-rhodf              OpenShift Container Storage        4.18.17-rhodf   ocs-operator.v4.18.16-rhodf              Succeeded
-odf-csi-addons-operator.v4.18.17-rhodf   CSI Addons                         4.18.17-rhodf   odf-csi-addons-operator.v4.18.16-rhodf   Succeeded
-odf-dependencies.v4.18.17-rhodf          Data Foundation Dependencies       4.18.17-rhodf   odf-dependencies.v4.18.16-rhodf          Succeeded
-odf-operator.v4.18.17-rhodf              OpenShift Data Foundation          4.18.17-rhodf   odf-operator.v4.18.16-rhodf              Succeeded
-odf-prometheus-operator.v4.18.17-rhodf   Prometheus Operator                4.18.17-rhodf   odf-prometheus-operator.v4.18.16-rhodf   Succeeded
-recipe.v4.18.17-rhodf                    Recipe                             4.18.17-rhodf   recipe.v4.18.16-rhodf                    Succeeded
-rook-ceph-operator.v4.18.17-rhodf        Rook-Ceph                          4.18.17-rhodf   rook-ceph-operator.v4.18.16-rhodf        Succeeded
+[root@bastion01 OCP_operator]# oc logs deploy noobaa-operator --tail=200
+Error from server (NotFound): pods "deploy" not found
+[root@bastion01 OCP_operator]# oc logs deploy/noobaa-operator --tail=200
+time="2026-06-24T05:35:02Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:02Z" level=info msg="✅ Exists: Service \"noobaa-mgmt\"\n"
+time="2026-06-24T05:35:02Z" level=info msg="✅ Exists: Secret \"noobaa-operator\"\n"
+time="2026-06-24T05:35:02Z" level=info msg="✅ Exists: Secret \"noobaa-admin\"\n"
+time="2026-06-24T05:35:02Z" level=info msg="✈️  RPC: system.read_system() Request: <nil>"
+time="2026-06-24T05:35:02Z" level=error msg="⚠️  RPC: system.read_system() Response Error: Code=UNAUTHORIZED Message=account not found 6788bafb4b40bd002623d3a0"
+time="2026-06-24T05:35:02Z" level=info msg="SetPhase: temporary error during phase \"Connecting\"" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:02Z" level=warning msg="⏳ Temporary Error: account not found 6788bafb4b40bd002623d3a0" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:02Z" level=info msg="UpdateStatus: Done" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:02Z" level=info msg="Update event detected for noobaa-default-backing-store (openshift-storage), queuing Reconcile"
+time="2026-06-24T05:35:02Z" level=info msg="checking which bucketclasses to reconcile. mapping backingstore openshift-storage/noobaa-default-backing-store to bucketclasses"
+time="2026-06-24T05:35:02Z" level=info msg="will reconcile these bucketclasses: [openshift-storage/noobaa-default-bucket-class]"
+time="2026-06-24T05:35:02Z" level=info msg="checking which bucketclasses to reconcile. mapping backingstore openshift-storage/noobaa-default-backing-store to bucketclasses"
+time="2026-06-24T05:35:02Z" level=info msg="Start BucketClass Reconcile..." bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:02Z" level=info msg="will reconcile these bucketclasses: [openshift-storage/noobaa-default-bucket-class]"
+time="2026-06-24T05:35:02Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:02Z" level=info msg="✅ Exists: BucketClass \"noobaa-default-bucket-class\"\n"
+time="2026-06-24T05:35:02Z" level=info msg="SetPhase: Verifying" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:02Z" level=info msg="validating placement policy &{Tiers:[{Placement: BackingStores:[noobaa-default-backing-store]}]}"
+time="2026-06-24T05:35:02Z" level=info msg="✅ Exists: BackingStore \"noobaa-default-backing-store\"\n"
+time="2026-06-24T05:35:02Z" level=info msg="SetPhase: temporary error during phase \"Verifying\"" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:02Z" level=warning msg="⏳ Temporary Error: NooBaa BackingStore \"noobaa-default-backing-store\" is not yet ready" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:02Z" level=info msg="UpdateStatus: Done" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:03Z" level=info msg="Start NooBaa system Reconcile ..." sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="Memory Usage: Phase \"Starting\" - Alloc = 31 MiB  Sys = 84 MiB  NumGC = 581" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="SetPhase: \"Verifying\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="Parsed image (Named) registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f" func=CheckSystemCR sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="Using custom image name \"registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f\" the default is \"noobaa/noobaa-core\"" func=CheckSystemCR sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="SetPhase: \"Creating\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged ServiceAccount noobaa " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged ConfigMap noobaa-config " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Secret noobaa-server " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Secret noobaa-db " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="setKMSConditionType k8s" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - updated Secret noobaa-root-master-key-volume " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="setKMSConditionStatus Sync" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileKeyRotation, KMS Starting" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileKeyRotation, KMS skip reconcile, single master root mode" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="✅ Updated: SecurityContextConstraints \"noobaa-db\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged ServiceAccount noobaa-db " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Role noobaa-db " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged RoleBinding noobaa-db " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged ConfigMap noobaa-postgres-config " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged StatefulSet noobaa-db-pg " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Service noobaa-db-pg " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="✅ Already Exists: SecurityContextConstraints \"noobaa-core\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Service noobaa-mgmt " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - updated StatefulSet noobaa-core " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Route noobaa-mgmt " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Service s3 " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Route s3 " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Service sts " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Route sts " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="Reconciling Backing Store Credentials" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="Not running in AWS. will attempt to create a ceph objectstore user" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="✅ Exists: CephObjectStoreUser \"noobaa-ceph-objectstore-user\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - unchanged Service noobaa-syslog " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="SetPhase: \"Connecting\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="Collected addresses: &{NodePorts:[https://172.25.204.46:0] PodPorts:[https://10.10.0.39:8443] InternalIP:[https://172.100.5.112:443] InternalDNS:[https://noobaa-mgmt.openshift-storage.svc:443] ExternalIP:[] ExternalDNS:[https://noobaa-mgmt-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443]}" func=CheckServiceStatus service=noobaa-mgmt sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="✈️  RPC: auth.read_auth() Request: <nil>"
+time="2026-06-24T05:35:03Z" level=info msg="✅ RPC: auth.read_auth() Response OK: took 0.1ms"
+time="2026-06-24T05:35:03Z" level=info msg="Collected addresses: &{NodePorts:[] PodPorts:[] InternalIP:[https://172.100.132.201:443] InternalDNS:[https://s3.openshift-storage.svc:443] ExternalIP:[] ExternalDNS:[https://s3-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443]}" func=CheckServiceStatus service=s3 sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="Collected addresses: &{NodePorts:[] PodPorts:[] InternalIP:[https://172.100.185.58:443] InternalDNS:[https://sts.openshift-storage.svc:443] ExternalIP:[] ExternalDNS:[https://sts-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443]}" func=CheckServiceStatus service=sts sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="SetPhase: \"Configuring\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - updated Secret noobaa-admin " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="ReconcileObject: Done - updated Secret noobaa-operator " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="✈️  RPC: account.read_account() Request: {Email:admin@noobaa.io}"
+time="2026-06-24T05:35:03Z" level=error msg="⚠️  RPC: account.read_account() Response Error: Code=UNAUTHORIZED Message=account not found 6788bafb4b40bd002623d3a0"
+time="2026-06-24T05:35:03Z" level=error msg="ReconcileObject: Error Secret  cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="SetPhase: temporary error during phase \"Configuring\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=warning msg="⏳ Temporary Error: cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="UpdateStatus: Done generation 27" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:03Z" level=info msg="Update event detected for noobaa (openshift-storage), queuing Reconcile"
+time="2026-06-24T05:35:03Z" level=info msg="Start BackingStore Reconcile ..." backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:03Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="✅ Exists: BackingStore \"noobaa-default-backing-store\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="✅ Exists: Secret \"rook-ceph-object-user-ocs-storagecluster-cephobjectstore-noobaa-ceph-objectstore-user\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="✅ Exists: Secret \"rook-ceph-object-user-ocs-storagecluster-cephobjectstore-noobaa-ceph-objectstore-user\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="✅ Exists: Secret \"rook-ceph-object-user-ocs-storagecluster-cephobjectstore-noobaa-ceph-objectstore-user\"\n"
+time="2026-06-24T05:35:03Z" level=info msg="SetPhase: Verifying" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:03Z" level=info msg="SetPhase: Connecting" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: Service \"noobaa-mgmt\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: Secret \"noobaa-operator\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: Secret \"noobaa-admin\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="✈️  RPC: system.read_system() Request: <nil>"
+time="2026-06-24T05:35:04Z" level=error msg="⚠️  RPC: system.read_system() Response Error: Code=UNAUTHORIZED Message=account not found 6788bafb4b40bd002623d3a0"
+time="2026-06-24T05:35:04Z" level=info msg="SetPhase: temporary error during phase \"Connecting\"" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:04Z" level=warning msg="⏳ Temporary Error: account not found 6788bafb4b40bd002623d3a0" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:04Z" level=info msg="UpdateStatus: Done" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:04Z" level=info msg="Update event detected for noobaa-default-backing-store (openshift-storage), queuing Reconcile"
+time="2026-06-24T05:35:04Z" level=info msg="checking which bucketclasses to reconcile. mapping backingstore openshift-storage/noobaa-default-backing-store to bucketclasses"
+time="2026-06-24T05:35:04Z" level=info msg="will reconcile these bucketclasses: [openshift-storage/noobaa-default-bucket-class]"
+time="2026-06-24T05:35:04Z" level=info msg="checking which bucketclasses to reconcile. mapping backingstore openshift-storage/noobaa-default-backing-store to bucketclasses"
+time="2026-06-24T05:35:04Z" level=info msg="Start BucketClass Reconcile..." bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=info msg="will reconcile these bucketclasses: [openshift-storage/noobaa-default-bucket-class]"
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: BucketClass \"noobaa-default-bucket-class\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="SetPhase: Verifying" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=info msg="validating placement policy &{Tiers:[{Placement: BackingStores:[noobaa-default-backing-store]}]}"
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: BackingStore \"noobaa-default-backing-store\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="SetPhase: temporary error during phase \"Verifying\"" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=warning msg="⏳ Temporary Error: NooBaa BackingStore \"noobaa-default-backing-store\" is not yet ready" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=info msg="UpdateStatus: Done" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=info msg="Start BucketClass Reconcile..." bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: BucketClass \"noobaa-default-bucket-class\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="SetPhase: Verifying" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=info msg="validating placement policy &{Tiers:[{Placement: BackingStores:[noobaa-default-backing-store]}]}"
+time="2026-06-24T05:35:04Z" level=info msg="✅ Exists: BackingStore \"noobaa-default-backing-store\"\n"
+time="2026-06-24T05:35:04Z" level=info msg="SetPhase: temporary error during phase \"Verifying\"" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=warning msg="⏳ Temporary Error: NooBaa BackingStore \"noobaa-default-backing-store\" is not yet ready" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:04Z" level=info msg="UpdateStatus: Done" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:05Z" level=info msg="Start BackingStore Reconcile ..." backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: BackingStore \"noobaa-default-backing-store\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: Secret \"rook-ceph-object-user-ocs-storagecluster-cephobjectstore-noobaa-ceph-objectstore-user\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: Secret \"rook-ceph-object-user-ocs-storagecluster-cephobjectstore-noobaa-ceph-objectstore-user\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: Secret \"rook-ceph-object-user-ocs-storagecluster-cephobjectstore-noobaa-ceph-objectstore-user\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="SetPhase: Verifying" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:05Z" level=info msg="SetPhase: Connecting" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: Service \"noobaa-mgmt\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: Secret \"noobaa-operator\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: Secret \"noobaa-admin\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✈️  RPC: system.read_system() Request: <nil>"
+time="2026-06-24T05:35:05Z" level=error msg="⚠️  RPC: system.read_system() Response Error: Code=UNAUTHORIZED Message=account not found 6788bafb4b40bd002623d3a0"
+time="2026-06-24T05:35:05Z" level=info msg="SetPhase: temporary error during phase \"Connecting\"" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:05Z" level=warning msg="⏳ Temporary Error: account not found 6788bafb4b40bd002623d3a0" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:05Z" level=info msg="Update event detected for noobaa-default-backing-store (openshift-storage), queuing Reconcile"
+time="2026-06-24T05:35:05Z" level=info msg="checking which bucketclasses to reconcile. mapping backingstore openshift-storage/noobaa-default-backing-store to bucketclasses"
+time="2026-06-24T05:35:05Z" level=info msg="UpdateStatus: Done" backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:05Z" level=info msg="will reconcile these bucketclasses: [openshift-storage/noobaa-default-bucket-class]"
+time="2026-06-24T05:35:05Z" level=info msg="checking which bucketclasses to reconcile. mapping backingstore openshift-storage/noobaa-default-backing-store to bucketclasses"
+time="2026-06-24T05:35:05Z" level=info msg="Start BucketClass Reconcile..." bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:05Z" level=info msg="will reconcile these bucketclasses: [openshift-storage/noobaa-default-bucket-class]"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: BucketClass \"noobaa-default-bucket-class\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="SetPhase: Verifying" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:05Z" level=info msg="validating placement policy &{Tiers:[{Placement: BackingStores:[noobaa-default-backing-store]}]}"
+time="2026-06-24T05:35:05Z" level=info msg="✅ Exists: BackingStore \"noobaa-default-backing-store\"\n"
+time="2026-06-24T05:35:05Z" level=info msg="SetPhase: temporary error during phase \"Verifying\"" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:05Z" level=warning msg="⏳ Temporary Error: NooBaa BackingStore \"noobaa-default-backing-store\" is not yet ready" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:05Z" level=info msg="UpdateStatus: Done" bucketclass=openshift-storage/noobaa-default-bucket-class
+time="2026-06-24T05:35:06Z" level=info msg="Start NooBaa system Reconcile ..." sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:06Z" level=info msg="Memory Usage: Phase \"Starting\" - Alloc = 28 MiB  Sys = 84 MiB  NumGC = 582" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="SetPhase: \"Verifying\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="Parsed image (Named) registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f" func=CheckSystemCR sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="Using custom image name \"registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f\" the default is \"noobaa/noobaa-core\"" func=CheckSystemCR sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="SetPhase: \"Creating\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged ServiceAccount noobaa " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged ConfigMap noobaa-config " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged Secret noobaa-server " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged Secret noobaa-db " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="setKMSConditionType k8s" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - updated Secret noobaa-root-master-key-volume " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="setKMSConditionStatus Sync" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileKeyRotation, KMS Starting" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileKeyRotation, KMS skip reconcile, single master root mode" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="✅ Updated: SecurityContextConstraints \"noobaa-db\"\n"
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged ServiceAccount noobaa-db " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged Role noobaa-db " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged RoleBinding noobaa-db " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged ConfigMap noobaa-postgres-config " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged StatefulSet noobaa-db-pg " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged Service noobaa-db-pg " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:06Z" level=info msg="✅ Already Exists: SecurityContextConstraints \"noobaa-core\"\n"
+time="2026-06-24T05:35:06Z" level=info msg="ReconcileObject: Done - unchanged Service noobaa-mgmt " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - updated StatefulSet noobaa-core " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - unchanged Route noobaa-mgmt " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - unchanged Service s3 " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - unchanged Route s3 " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - unchanged Service sts " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - unchanged Route sts " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="Reconciling Backing Store Credentials" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="Not running in AWS. will attempt to create a ceph objectstore user" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="✅ Exists: CephObjectStoreUser \"noobaa-ceph-objectstore-user\"\n"
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - unchanged Service noobaa-syslog " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="SetPhase: \"Connecting\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="Collected addresses: &{NodePorts:[https://172.25.204.46:0] PodPorts:[https://10.10.0.39:8443] InternalIP:[https://172.100.5.112:443] InternalDNS:[https://noobaa-mgmt.openshift-storage.svc:443] ExternalIP:[] ExternalDNS:[https://noobaa-mgmt-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443]}" func=CheckServiceStatus service=noobaa-mgmt sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="✈️  RPC: auth.read_auth() Request: <nil>"
+time="2026-06-24T05:35:07Z" level=info msg="✅ RPC: auth.read_auth() Response OK: took 0.1ms"
+time="2026-06-24T05:35:07Z" level=info msg="Collected addresses: &{NodePorts:[] PodPorts:[] InternalIP:[https://172.100.132.201:443] InternalDNS:[https://s3.openshift-storage.svc:443] ExternalIP:[] ExternalDNS:[https://s3-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443]}" func=CheckServiceStatus service=s3 sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="Collected addresses: &{NodePorts:[] PodPorts:[] InternalIP:[https://172.100.185.58:443] InternalDNS:[https://sts.openshift-storage.svc:443] ExternalIP:[] ExternalDNS:[https://sts-openshift-storage.apps.airtel3novvt.samsungcnfcu.local:443]}" func=CheckServiceStatus service=sts sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="SetPhase: \"Configuring\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - updated Secret noobaa-admin " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="ReconcileObject: Done - updated Secret noobaa-operator " sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="✈️  RPC: account.read_account() Request: {Email:admin@noobaa.io}"
+time="2026-06-24T05:35:07Z" level=error msg="⚠️  RPC: account.read_account() Response Error: Code=UNAUTHORIZED Message=account not found 6788bafb4b40bd002623d3a0"
+time="2026-06-24T05:35:07Z" level=error msg="ReconcileObject: Error Secret  cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="SetPhase: temporary error during phase \"Configuring\"" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=warning msg="⏳ Temporary Error: cannot read admin account info, error: account not found 6788bafb4b40bd002623d3a0" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="UpdateStatus: Done generation 27" sys=openshift-storage/noobaa
+time="2026-06-24T05:35:07Z" level=info msg="Update event detected for noobaa (openshift-storage), queuing Reconcile"
+time="2026-06-24T05:35:07Z" level=info msg="Start BackingStore Reconcile ..." backingstore=openshift-storage/noobaa-default-backing-store
+time="2026-06-24T05:35:07Z" level=info msg="✅ Exists: NooBaa \"noobaa\"\n"
+time="2026-06-24T05:35:07Z" level=info msg="✅ Exists: BackingStore \"noobaa-default-backing-store\"\n"
+time="2026-06-24T05:35:07Z" level=info msg="✅ Exists: Secret \"rook-ceph-object-user-ocs-storagecluster-cephobjectstore-noobaa-ceph-objectstore-user\"\n"
 [root@bastion01 OCP_operator]#
