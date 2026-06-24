@@ -1,85 +1,9 @@
-Good. The patch has been accepted.
-
-Now try deleting NooBaa again:
-
-oc delete noobaa noobaa -n openshift-storage
-
-If deletion succeeds
-
-Watch the resources disappear:
-
-oc get noobaa -n openshift-storage -w
-
-and
-
-oc get pods -n openshift-storage | grep noobaa
-
-You should see:
-
-noobaa-core-0 disappear
-
-noobaa-db-pg-0 disappear
-
-NooBaa CR removed
 
 
-Then check whether ODF recreates it automatically:
-
-oc get noobaa -n openshift-storage -w
-
-and
-
-oc get storagecluster ocs-storagecluster -o yaml | egrep "Progressing|Available|Degraded|Noobaa"
-
-
----
-
-If deletion hangs in Terminating
-
-Check:
-
-oc get noobaa noobaa -n openshift-storage -o yaml | grep finalizers -A5
-
-If it gets stuck with:
-
-finalizers:
-- noobaa.io/graceful_finalizer
-
-then we'll remove the finalizer manually.
-
-
----
-
-Why I'm confident this is the issue
-
-Your investigation already proved:
-
-select count(*) from systems;
-
-returns:
-
-0
-
-and
-
-select * from accounts;
-
-shows only the support account.
-
-Meanwhile the operator is trying to authenticate using:
-
-account_id=6788bafb4b40bd002623d3a0
-
-which does not exist.
-
-In other words, the NooBaa database and the NooBaa operator secrets are speaking two different languages. The DB was recreated on 2026-06-18, while the NooBaa deployment dates back to 2025-01-16. That's the smoking gun.
-
-Run the delete command now and paste:
-
-oc delete noobaa noobaa -n openshift-storage
-
-plus
-
-oc get noobaa -n openshift-storage
-
-afterwards. That will tell us whether ODF is able to rebuild the NooBaa metadata cleanly.
+Events:
+  Type     Reason            Age                  From               Message
+  ----     ------            ----                 ----               -------
+  Warning  FailedScheduling  5m13s                default-scheduler  0/5 nodes are available: 1 Insufficient cpu, 4 node(s) didn't match Pod's node affinity/selector. preemption: 0/5 nodes are available: 1 No preemption victims found for incoming pod, 4 Preemption is not helpful for scheduling.
+  Normal   Scheduled         5m12s                default-scheduler  Successfully assigned bscf-large/bscf600-bip1-6fc85bcfd-4w5h4 to worker2.viairtel.samsungbsc.local
+  Warning  FailedMount       3m25s                kubelet            MountVolume.MountDevice failed for volume "pvc-26611020-0118-4a63-8052-17b0c3a54782" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-20c6298b-a3e8-4e1b-8013-97cae6b394ef already exists
+  Warning  FailedMount       83s (x2 over 3m25s)  kubelet            MountVolume.MountDevice failed for volume "pvc-e4b04aee-e818-4c22-b1ad-fe87a57ca562" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-347c9448-152a-40ee-8a7b-41e7eb591a86 already exists
