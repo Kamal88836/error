@@ -1,75 +1,63 @@
-That's expected. ODF/NooBaa protects against accidental deletion.
-
-The webhook is blocking deletion because:
-
-Noobaa cleanup policy is not set, blocking Noobaa deletion
-
-Before deleting anything
-
-Let's first try a non-destructive recovery because the problem is an authentication mismatch between the NooBaa DB and the noobaa-admin secret.
-
-Run these commands:
-
-oc delete pod noobaa-core-0 -n openshift-storage
-oc delete pod noobaa-db-pg-0 -n openshift-storage
-oc delete pod -l app=noobaa-operator -n openshift-storage
-
-Wait until all NooBaa pods are Running again:
-
-oc get pods -n openshift-storage | grep noobaa
-
-Then check:
-
-oc get noobaa -n openshift-storage
-
-
----
-
-If still Configuring
-
-Let's inspect the admin secret values being used:
-
-oc get secret noobaa-admin -n openshift-storage \
--o jsonpath='{.data.email}' | base64 -d; echo
-
-oc get secret noobaa-admin -n openshift-storage \
--o jsonpath='{.data.system}' | base64 -d; echo
-
-Also check:
-
-oc get secret noobaa-operator -n openshift-storage -o yaml
-
-Sometimes after DB recreation the operator secret and admin secret are out of sync.
-
-
----
-
-If deletion becomes necessary
-
-You'll need to set a cleanup policy first.
-
-Check current NooBaa spec:
-
-oc get noobaa noobaa -n openshift-storage -o yaml | grep -A5 cleanupPolicy
-
-Then patch it, for example:
-
-oc patch noobaa noobaa -n openshift-storage \
---type=merge \
--p '{"spec":{"cleanupPolicy":{"confirm":"yes-really-delete-noobaa"}}}'
-
-The exact cleanup policy format can vary by NooBaa/ODF version, so verify the current CR structure before patching.
-
-
----
-
-Most important next step
-
-Since your cluster is production-like and 523 days old, I would not force-delete NooBaa yet.
-
-First provide:
-
-oc get pods -n openshift-storage | grep noobaa
+[root@bastion01 OCP_operator]# oc delete pod noobaa-db-pg-0 -n openshift-storage
+pod "noobaa-db-pg-0" deleted
+[root@bastion01 OCP_operator]# oc delete pod -l app=noobaa-operator -n openshift-storage
+No resources found
+[root@bastion01 OCP_operator]# oc delete pod -l app=noobaa-operator -n openshift-storage
+No resources found
+[root@bastion01 OCP_operator]# oc get pods -n openshift-storage | grep noobaa
+noobaa-core-0                                                     1/1     Running       0          14s
+noobaa-db-pg-0                                                    1/1     Running       0          12s
+noobaa-operator-764d8bf796-8vswl                                  1/1     Running       0          53m
+[root@bastion01 OCP_operator]# oc get noobaa -n openshift-storage
+NAME     S3-ENDPOINTS   STS-ENDPOINTS   SYSLOG-ENDPOINTS   IMAGE                                                                                                            PHASE        AGE
+noobaa                                                     registry.redhat.io/odf4/mcg-core-rhel9@sha256:0f670b69e69bad7906e14600f888b637460f179d72a291ca8be48d9f3674d55f   Connecting   523d
+[root@bastion01 OCP_operator]# oc get secret noobaa-admin -n openshift-storage \
+> -o jsonpath='{.data.email}' | base64 -d; echo
+admin@noobaa.io
+[root@bastion01 OCP_operator]# oc get secret noobaa-admin -n openshift-storage \
+> -o jsonpath='{.data.system}' | base64 -d; echo
+noobaa
+[root@bastion01 OCP_operator]# oc get secret noobaa-operator -n openshift-storage -o yaml
+apiVersion: v1
+data:
+  auth_token: ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmhZMk52ZFc1MFgybGtJam9pTmpjNE9HSmhabUkwWWpRd1ltUXdNREkyTWpOa00yRXdJaXdpYzNsemRHVnRYMmxrSWpvaU5qYzRPR0poWm1JMFlqUXdZbVF3TURJMk1qTmtNemt4SWl3aWNtOXNaU0k2SW05d1pYSmhkRzl5SWl3aVlYVjBhRzl5YVhwbFpGOWllU0k2SW01dmIySmhZU0lzSW1saGRDSTZNVGN6TnpBeE5EQXhNWDAuZ214Qms0dmduR05rNnFKOUVKOWNQOEpPbFF2MXNabDExVmQ1cnVYNVo0bw==
+kind: Secret
+metadata:
+  creationTimestamp: "2025-01-16T07:53:35Z"
+  labels:
+    app: noobaa
+  name: noobaa-operator
+  namespace: openshift-storage
+  ownerReferences:
+  - apiVersion: noobaa.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: NooBaa
+    name: noobaa
+    uid: 01c881a1-81a6-4b2f-9ad9-eed5307ea039
+  resourceVersion: "523407"
+  uid: 7c327529-bf54-42ed-b4bc-e2b6e5eb030b
+type: Opaque
+[root@bastion01 OCP_operator]# oc get noobaa noobaa -n openshift-storage -o yaml | grep -A5 cleanupPolicy
+  cleanupPolicy: {}
+  coreResources:
+    limits:
+      cpu: 999m
+      memory: 4Gi
+    requests:
+[root@bastion01 OCP_operator]# oc patch noobaa noobaa -n openshift-storage \
+> --type=merge \
+> -p '{"spec":{"cleanupPolicy":{"confirm":"yes-really-delete-noobaa"}}}'
+Warning: unknown field "spec.cleanupPolicy.confirm"
+noobaa.noobaa.io/noobaa patched (no change)
+[root@bastion01 OCP_operator]# oc get noobaa noobaa -n openshift-storage -o yaml | grep -A5 cleanupPolicy
+  cleanupPolicy: {}
+  coreResources:
+    limits:
+      cpu: 999m
+      memory: 4Gi
+    requests:
+[root@bastion01 OCP_operator]# oc get pods -n openshift-storage | grep noobaa
 
 oc get secret noobaa-operator -n openshift-storage -o yaml
 
@@ -78,5 +66,37 @@ oc get secret noobaa-admin -n openshift-storage \
 
 oc get secret noobaa-admin -n openshift-storage \
 -o jsonpath='{.data.system}' | base64 -d; echo
-
-The logs already prove the admin account is missing from the database. The remaining question is whether we can resynchronize the credentials without rebuilding NooBaa.
+noobaa-core-0                                                     1/1     Running   0          2m40s
+noobaa-db-pg-0                                                    1/1     Running   0          2m38s
+noobaa-operator-764d8bf796-8vswl                                  1/1     Running   0          56m
+[root@bastion01 OCP_operator]#
+[root@bastion01 OCP_operator]# oc get secret noobaa-operator -n openshift-storage -o yaml
+apiVersion: v1
+data:
+  auth_token: ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmhZMk52ZFc1MFgybGtJam9pTmpjNE9HSmhabUkwWWpRd1ltUXdNREkyTWpOa00yRXdJaXdpYzNsemRHVnRYMmxrSWpvaU5qYzRPR0poWm1JMFlqUXdZbVF3TURJMk1qTmtNemt4SWl3aWNtOXNaU0k2SW05d1pYSmhkRzl5SWl3aVlYVjBhRzl5YVhwbFpGOWllU0k2SW01dmIySmhZU0lzSW1saGRDSTZNVGN6TnpBeE5EQXhNWDAuZ214Qms0dmduR05rNnFKOUVKOWNQOEpPbFF2MXNabDExVmQ1cnVYNVo0bw==
+kind: Secret
+metadata:
+  creationTimestamp: "2025-01-16T07:53:35Z"
+  labels:
+    app: noobaa
+  name: noobaa-operator
+  namespace: openshift-storage
+  ownerReferences:
+  - apiVersion: noobaa.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: NooBaa
+    name: noobaa
+    uid: 01c881a1-81a6-4b2f-9ad9-eed5307ea039
+  resourceVersion: "523407"
+  uid: 7c327529-bf54-42ed-b4bc-e2b6e5eb030b
+type: Opaque
+[root@bastion01 OCP_operator]#
+[root@bastion01 OCP_operator]# oc get secret noobaa-admin -n openshift-storage \
+> -o jsonpath='{.data.email}' | base64 -d; echo
+admin@noobaa.io
+[root@bastion01 OCP_operator]#
+[root@bastion01 OCP_operator]# oc get secret noobaa-admin -n openshift-storage \
+> -o jsonpath='{.data.system}' | base64 -d; echo
+noobaa
+[root@bastion01 OCP_operator]#
