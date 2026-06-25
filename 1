@@ -1,93 +1,216 @@
-QoS Class:       Guaranteed
-Node-Selectors:  <none>
-Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type     Reason            Age                  From               Message
-  ----     ------            ----                 ----               -------
-  Warning  FailedScheduling  4m30s                default-scheduler  0/5 nodes are available: 1 Insufficient cpu, 4 node(s) didn't match Pod's node affinity/selector. preemption: 0/5 nodes are available: 1 No preemption victims found for incoming pod, 4 Preemption is not helpful for scheduling.
-  Normal   Scheduled         4m29s                default-scheduler  Successfully assigned bscf-large/bscf600-bip1-6fc85bcfd-cf6x9 to worker2.viairtel.samsungbsc.local
-  Warning  FailedMount       92s (x2 over 3m34s)  kubelet            MountVolume.MountDevice failed for volume "pvc-e4b04aee-e818-4c22-b1ad-fe87a57ca562" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-347c9448-152a-40ee-8a7b-41e7eb591a86 already exists
-[root@bastion ~]# oc get no
-NAME                                STATUS   ROLES                         AGE    VERSION
-master1.viairtel.samsungbsc.local   Ready    control-plane,master,worker   578d   v1.33.10
-master2.viairtel.samsungbsc.local   Ready    control-plane,master,worker   197d   v1.33.10
-master3.viairtel.samsungbsc.local   Ready    control-plane,master,worker   578d   v1.33.10
-worker1.viairtel.samsungbsc.local   Ready    large,worker                  505d   v1.33.10
-worker2.viairtel.samsungbsc.local   Ready    large,worker                  505d   v1.33.10
-[root@bastion ~]# ssh core@master2.viairtel.samsungbsc.local
-Red Hat Enterprise Linux CoreOS 9.6.20260504-0
-  Part of OpenShift 4.20, RHCOS is a Kubernetes-native operating system
-  managed by the Machine Config Operator (`clusteroperator/machine-config`).
+apiVersion: v1
+baseDomain: ss.samsung.local
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: vt
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 24
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+  machineNetwork:
+  - cidr: 10.217.61.16/28
+platform:
+  baremetal:
+    apiVIPs:
+    - 10.217.61.21
+    ingressVIPs:
+    - 10.217.61.22
+fips: false
+pullSecret: '{"auths":{"harbor.vt.ss.samsung.local": {"auth": "YWRtaW46SGFyYm9yMTIzNDU=","email":"noemail@localhost"}}}'
+sshKey: |
+  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBWVCbtk2LOoo2xCtfXinWhDoIqeOtBRlWSMJDtIyULGpNGFznOp2+hrsAHgk+1SyKhoaZYm70E3+91SEd20Ls7DU8SWOTOaGzdQazZkpGwFQO8zGyg2By4YnKEQnL1F1DqjVFR/MYvCjeEKBzprXWKgRJUR+w2pwVlDZJcokAN4oi1qRAucyIRDlXIL4uYuGdo8a75WtPCcY7KmcZlwooTsXY3nzcwJwBBndDWL+VqA/TOQ1JSGabi2xiD/cDeJpvBgzzXoE216tJXnKkp1U1x9gT3RmccgtTkpkcxF5HdplrkXaEep3jymuxFkhEro7znzGcQfJc3eifnpmsWSTS+YeK1r3lUSguXIu9XablIXn9Gw249iOiDqbIzHJvKqDaXMkvtCqm9QdV5RiElzEqSyTXXW7R1Ryr19UYdauY1dOMTPQGGtltM9s1RNM6QxJXJrIbFzjgtWqN7hZWzob2+Wonf+nTvmrE8k7kGHcH0/NqMn7hrcuvN5+9jh7M9E+SRRZkRojm0Nak3wvBglcnZQCrF4f7zv+vDvk3Ift33u52Lmjo9I6pjbId5aC1VkoSBbuS7vYJ600KwqjpEkF8ZKPHhP0IPumfvzJakY+n2pH7eJNw1Z2iQwScJk7zrkelZM25ZQdf4qfk0boCkHMgKeqx1EQx3j95E24oJJWz4w== root@bastion
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIFVDCCAzygAwIBAgIUTKGk9nmWlWjzyAvfTSs4hPvotAAwDQYJKoZIhvcNAQEL
+  BQAwJTEjMCEGA1UEAwwaaGFyYm9yLnZ0LnNzLnNhbXN1bmcubG9jYWwwIBcNMjYw
+  NTIyMTIzNTE2WhgPMjEyNjA1MjMxMjM1MTZaMCUxIzAhBgNVBAMMGmhhcmJvci52
+  dC5zcy5zYW1zdW5nLmxvY2FsMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKC
+  AgEA7cNQHNDd9cx423X1rgwk1asl4ykI40mXPxrv9lPdVimaltioVkUQRjO+IK2V
+  3u4uKD0g+7arVX9mAAA8RJFf7g+/NuA2UQ+Qhf3JFT8bEIrbOYYi6K0Nz90+nbwQ
+  GkxsVe/6TP+C2HSRsTSmCxCK3QFK+OlqXw8EppRSWnEgUitcso3BZkBLNK1DZIic
+  Rvl+kFFCsSJ/vDpK/zo61Yhf4DP2wSflVk/o2ZLFYlk+LuS69rI4hTzA3lBHzkuS
+  VWLwxRFuhpTU63r0GXKHK9Cu6mtBKEGbPJP5uaYjw03lRia9IevumNxtqWw9L1EE
+  5XpHX4KsF11tAT3cXlMfljpIHydVSc4UWAbt+xa2svxK9BdBGqBCB69/HVLBvko0
+  Mn4J+X2Vdoctxffd+R95qGP7RV6h9CNx1gLOj2L0nbbg81nW7n333KT4etjQznAo
+  M5D8ByU8rpfX4u1eiSsF/EwAk9c+uzejIzCACIdwMg3LaGWlZOfFz2ZaRBLaioJY
+  Xrs4XOVcsH58ACKSVHoAe9GwXh+H+SRs7o+XlgmH4B6N3H+3Kjrydj0URAIsKizR
+  8l/ebh2A2F5bOr4uupCJTZa/5kMXIiAmJsOx/l8sM6YlrlyowwOk/4QYk6Dc7sn5
+  9bArHPF5/PwZry5vchtiulToSOa9iqTCvhsx9fKPdZGBlL8CAwEAAaN6MHgwHQYD
+  VR0OBBYEFKI7YpI9hZZjAQoRbWuMU/CXtS7cMB8GA1UdIwQYMBaAFKI7YpI9hZZj
+  AQoRbWuMU/CXtS7cMA8GA1UdEwEB/wQFMAMBAf8wJQYDVR0RBB4wHIIaaGFyYm9y
+  LnZ0LnNzLnNhbXN1bmcubG9jYWwwDQYJKoZIhvcNAQELBQADggIBANycLvZZjmMS
+  95QpSVQJCmV+WuhMeW+xrH/RSfVy9hqM7Tl1Z3LWqceVLJ+EoHA3LbJGxcULJwEu
+  kZ1/DoLPlK+UFOBVFXoz/PJOrlkoinIuhHv/u0KfUTkBLiWCnpFA/xL0pREfQb+f
+  DQ9vkx10lylrZBtZ2hAPLUDIOUx9v6w/UHKj5r4+PjLVfD4E5PGwYzazEf/x3Nly
+  05irYocv2xvPv7BRwsw7AcbsPJKwJz91OgjGuJ3UqfElvMmFI+cbXq5tYSI5H+Um
+  TEsgdUSX+u7R+f+p0vBw4kZ2BwPnjnSwve4q+k28ZGfY8qOmAj9BoHypQ/jDRePk
+  5+k+W9J1WWiz90LQN4q3/wW50a/xKEcGyo6DljmwKyRdvov2yxxdkWpoHmFwajHv
+  TPrbeRrXOeyiTg801mXdVxHKLmU7hyCfKZGVVLBlbkMpl+aQ3gJZw5N/J6WSxC4v
+  uXRuHKxfHFPUsap/OTziSoHqgvwVo7NRlvpaW5aEmjP5DOQrCDbY3yzJR1EORVEv
+  Vsi4B5Oi2gFLTONZfc7644RGFeKMIF0WwB7pCt5305N8oGqTIagrvUaSsksoClTL
+  DsZ87SNvtjkWEYfJYpUbB/tn6eqmmKMDGZiyZHyvu+OkO1sYVurl4A641BJTgYQX
+  Lp/L0MPl4N91eZY0OVAOFtI93MyjpDQF
+  -----END CERTIFICATE-----
 
-WARNING: Direct SSH access to machines is not recommended; instead,
-make configuration changes via `machineconfig` objects:
-  https://docs.openshift.com/container-platform/4.20/architecture/architecture-rhcos.html
+imageContentSources:
+- mirrors:
+  - harbor.vt.ss.samsung.local/team-ocp/ocp/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - harbor.vt.ss.samsung.local/team-ocp/ocp/openshift/release-images
+  source: quay.io/openshift-release-dev/ocp-release
 
----
-Last login: Thu Jun 25 05:20:43 2026 from 20.1.30.98
-su[systemd]
-Failed Units: 2
-  chronyd.service
-  NetworkManager-wait-online.service
-d[core@master2 ~]$ sudo -i
-[systemd]
-Failed Units: 2
-  chronyd.service
-  NetworkManager-wait-online.service
-[root@master2 ~]# cd /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage
--bash: cd: /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage: No such file or directory
-[root@master2 ~]# cd /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.
-openshift-storage.cephfs.csi.ceph.com/ openshift-storage.rbd.csi.ceph.com/
-[root@master2 ~]# cd /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/
-[root@master2 openshift-storage.cephfs.csi.ceph.com]# ll
-total 0
-drwxr-x---. 3 root root 46 Jun 19 15:53 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d
-drwxr-x---. 3 root root 46 Jun 19 15:53 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220
-[root@master2 openshift-storage.cephfs.csi.ceph.com]# cd 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d
-[root@master2 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d]# ll
-total 4
-drwxrwsr-x. 6 root 2001   4 Jun 19 14:07 globalmount
--rw-r--r--. 1 root root 154 Jun 25 05:21 vol_data.json
-[root@master2 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d]# cd ..
-[root@master2 openshift-storage.cephfs.csi.ceph.com]# ll
-total 0
-drwxr-x---. 3 root root 46 Jun 19 15:53 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d
-drwxr-x---. 3 root root 46 Jun 19 15:53 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220
-[root@master2 openshift-storage.cephfs.csi.ceph.com]# cd 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220/
-[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# ll
-total 4
-drwxrwsr-x. 17 root 2001  16 Jun 19 16:31 globalmount
--rw-r--r--.  1 root root 154 Jun 25 05:21 vol_data.json
-[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# cd globalmount/
-[root@master2 globalmount]# ll
-total 0
-drwxrwx---.  2 root 2001 12 Jun 19 16:31 CONFIG
-drwxrwsr-x.  2 root 2001  0 Jun 25 05:28 FTM
-drwxrwsr-x.  4 root 2001  3 Jun 19 15:53 HDB
-drwxrwsr-x.  8 root 2001  6 Jun 19 15:54 NFMLogs
-drwxrwsr-x.  3 root 2001  1 Jun 19 16:01 NRFM
-drwxrwsr-x.  4 root 2001  2 Jun 19 16:31 SON
-drwxrwsr-x.  2 root 2001  0 Jun 25 05:30 TESTDKU
-drwxrwsr-x.  2 root 2001  4 Jun 25 05:30 UDM
-drwxrwsr-x. 11 root 2001  9 Jun 19 16:31 VPM
-drwxrwsr-x.  2 root 2001 33 Jun 25 05:19 VPMbackup
-drwxrwsr-x.  2 root 2001  0 Jun 19 14:04 flavor_option
--rwxrwxr-x.  1 root 2001  0 Jun 24 10:21 growcomplete
-drwxrwsr-x.  2 root 2001  1 Jun 19 16:31 vespm
-[root@master2 globalmount]# cd ..
-[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# ;ll
--bash: syntax error near unexpected token `;'
-[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# ll
-total 4
-drwxrwsr-x. 17 root 2001  16 Jun 19 16:31 globalmount
--rw-r--r--.  1 root root 154 Jun 25 05:21 vol_data.json
-[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# cd ..
-[root@master2 openshift-storage.cephfs.csi.ceph.com]# ll
-total 0
-drwxr-x---. 3 root root 46 Jun 19 15:53 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d
-drwxr-x---. 3 root root 46 Jun 19 15:53 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220
-[root@master2 openshift-storage.cephfs.csi.ceph.com]# pwd
-/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com
-[root@master2 openshift-storage.cephfs.csi.ceph.com]#
+==========================
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: vt
+rendezvousIP: 10.217.61.18
+hosts:
+  - hostname: master3.vt.ss.samsung.local
+    role: master
+    rootDeviceHints:
+      wwn: "0x6f4ee080812da300317e603d83ecb763"
+    interfaces:
+      - name: en012409np1
+        macAddress: 8C:84:74:C6:50:91
+    networkConfig:
+      interfaces:
+        - name: bond0.914
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 914
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.18
+                prefix-length: 28
+            dhcp: false
+        - name: bond0
+          type: bond
+          state: up
+          mac-address: 8C:84:74:C6:50:91
+          ipv4:
+            enabled: false
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: "100"
+            port:
+              - en012409np1
+              - ens3f0np0
+      dns-resolver:
+        config:
+          server:
+            - 10.217.61.57
+
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.217.61.17
+            next-hop-interface: bond0.914
+
+          
+  - hostname: master1.vt.ss.samsung.local
+    role: master
+    rootDeviceHints:
+      wwn: "0x6f4ee080812db90031bfe56f7a08fd83"
+    interfaces:
+      - name: en012409np1
+        macAddress: 8C:84:74:C6:43:11
+    networkConfig:
+      interfaces:
+        - name: bond0.914
+          type: vlan 
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 914
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.20
+                prefix-length: 28
+            dhcp: false
+        - name: bond0
+          type: bond
+          mac-address: 8C:84:74:C6:43:11
+          state: up
+          ipv4:
+            enabled: false
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: "100"
+            port:
+              - en012409np1
+              - ens3f0np0
+      dns-resolver:
+        config:
+          server:
+            - 10.217.61.57
+
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.217.61.17
+            next-hop-interface: bond0.914
+
+
+  - hostname: master2.vt.ss.samsung.local
+    role: master
+    rootDeviceHints:
+      wwn: "0x6f4ee080812daf0031bfe58c73ee8e39"
+    interfaces:
+     - name: en012409np1
+       macAddress: 8C:84:74:C6:48:81
+    networkConfig:
+      interfaces:
+        - name: bond0.914
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 914
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.19
+                prefix-length: 28
+            dhcp: false    
+        - name: bond0
+          type: bond
+          mac-address: 8C:84:74:C6:48:81
+          state: up
+          ipv4:
+            enabled: false
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: "100"
+            port:
+             - en012409np1
+             - ens3f0np0
+      dns-resolver:
+        config:
+          server:
+            - 10.217.61.57
+
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.217.61.17
+            next-hop-interface: bond0.914
+
