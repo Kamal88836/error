@@ -1,25 +1,26 @@
-[root@bastion ~]# oc get po
-NAME                            READY   STATUS     RESTARTS   AGE
-bscf600-bip0-646bc7b7ff-84lgk   1/1     Running    0          3m58s
-bscf600-bip1-6fc85bcfd-cs5c9    0/1     Init:0/2   0          4m7s
-bscf600-bpp0-5d8d6c6b8f-jj9vf   1/1     Running    0          4m7s
-bscf600-bpp1-7b65579946-2tsgz   0/1     Init:0/1   0          4m7s
-bscf600-bpp2-74c5bd9d4b-5qn87   1/1     Running    0          4m7s
-bscf600-bpp3-5fd69b4945-nd57d   0/1     Init:0/1   0          4m7s
-bscf600-cmp0-778447bb66-xjg4m   1/1     Running    0          4m7s
-bscf600-cmp1-c7c888d97-2s59g    0/1     Init:0/1   0          4m7s
-bscf600-dmp0-dbc9bdbd6-pfqh5    0/1     Init:0/1   0          4m7s
-bscf600-pmp0-74b98b6f45-q4rcl   1/1     Running    0          4m7s
-[root@bastion ~]# oc get po -n openshift-storage -o wide | grep cephfs
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b857757zfz   8/8     Running     0                43m     10.20.1.163    master3.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b8577pf7ww   8/8     Running     0                3h44m   10.20.0.108    master2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-6nsdn            3/3     Running     0                13m     20.1.30.106    worker2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-99gf8            3/3     Running     0                4h37m   20.1.30.102    master2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-gtqlk            3/3     Running     0                4h37m   20.1.30.105    worker1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-hb5pb            3/3     Running     0                4h37m   20.1.30.103    master1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-w4b2v            3/3     Running     0                4h37m   20.1.30.104    master3.viairtel.samsungbsc.local   <none>           <none>
-[root@bastion ~]# oc get po -n openshift-storage -o wide | grep worker2
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-6nsdn            3/3     Running     0                13m     20.1.30.106    worker2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-7wlqw    2/2     Running     0                4h38m   10.20.16.11    worker2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-svwhk               3/3     Running     0                4h38m   20.1.30.106    worker2.viairtel.samsungbsc.local   <none>           <none>
+Events:
+  Type     Reason       Age    From               Message
+  ----     ------       ----   ----               -------
+  Normal   Scheduled    8m14s  default-scheduler  Successfully assigned bscf-large/bscf600-cmp1-c7c888d97-2s59g to worker2.viairtel.samsungbsc.local
+  Warning  FailedMount  8m5s   kubelet            MountVolume.MountDevice failed for volume "pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b already exists
+[root@bastion ~]# oc get volumeattachment
+NAME                                                                   ATTACHER                                PV                                         NODE                                ATTACHED   AGE
+csi-0e01c699c69d2483ed236f40c66ac66d6de293de9ce52e9d3248f7e2e3665eb1   openshift-storage.cephfs.csi.ceph.com   pvc-958726fe-f336-4663-b21c-ed46887c5c66   master3.viairtel.samsungbsc.local   true       5h
+csi-0e8a008303957f4d22f93a6d765dbfe145833e0e56568fea9cee0e4d9060ca1a   openshift-storage.cephfs.csi.ceph.com   pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288   worker1.viairtel.samsungbsc.local   true       108m
+csi-1191f29016e1ece78d7230b9d688387365d823d64a838f26b7d65bb3005b7ebc   openshift-storage.rbd.csi.ceph.com      pvc-af06cf68-c30d-4bdc-bb6a-c497f2fb08d8   master3.viairtel.samsungbsc.local   true       8d
+csi-4fd15fca68d1127e8386130b542bc7ee994e27e45ffe91d40cfb5f02776722a8   openshift-storage.cephfs.csi.ceph.com   pvc-19d0e136-2421-43ad-9fd1-74e0775147b6   master3.viairtel.samsungbsc.local   true       5h13m
+csi-5c0c8f65f90860e42a8f2e068bcd0b46472d36c96f86eb0d4f1c48c87f92a30c   openshift-storage.rbd.csi.ceph.com      pvc-504f93ac-07ef-49d4-b4bf-3a1c00d0cc1d   master1.viairtel.samsungbsc.local   true       8d
+csi-65261bda015c81feb461ba8ffaae9ff6105fbcdbd739159178b88f0a67bc39f4   openshift-storage.cephfs.csi.ceph.com   pvc-d47ab7c2-3f06-481a-b1a3-31d339f17e6a   worker2.viairtel.samsungbsc.local   true       4h53m
+csi-6778e907b2158521db26e7edaf1bc7dd00241578ae0452ad945ddeba7599bb2d   openshift-storage.cephfs.csi.ceph.com   pvc-dc5f27ef-e6bf-484e-a521-a4ac3bbcf15f   master1.viairtel.samsungbsc.local   true       5h13m
+csi-69a6ef9c1d6507a6a23d9053d61b6e4d2971ada261f15363f5e3c5fc366e5033   openshift-storage.cephfs.csi.ceph.com   pvc-b928e1bd-d4a3-424f-86ea-d8d6580b3cdd   worker2.viairtel.samsungbsc.local   true       4h53m
+csi-73ebff5178f82efaa4c20e7b5ec7b115c8544cb78f11ca049b1c9e1b7e9f6903   openshift-storage.cephfs.csi.ceph.com   pvc-dc5f27ef-e6bf-484e-a521-a4ac3bbcf15f   master3.viairtel.samsungbsc.local   true       5h13m
+csi-7cbbc0b94e7de8bfbb8f8796b307a3e61da9871b847b668c136c798ddf8bf631   openshift-storage.cephfs.csi.ceph.com   pvc-09917a57-3837-45bf-aad8-3126f8d254d0   worker2.viairtel.samsungbsc.local   true       4h53m
+csi-9cc28cc1d9fee3d579c3f4c5596268e8159abfbe45ddfb9bc56ae50485f91584   openshift-storage.cephfs.csi.ceph.com   pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3   worker2.viairtel.samsungbsc.local   true       108m
+csi-a1a995de39ba333befa748d1ace8c89f20113add806cf2fa51d8736499460f4f   openshift-storage.cephfs.csi.ceph.com   pvc-dc5f27ef-e6bf-484e-a521-a4ac3bbcf15f   master2.viairtel.samsungbsc.local   true       5h13m
+csi-a67e2f24e6d5929af11c5d85cadabeda499e8161fb2b936bdc1ec7d5188f6fbb   openshift-storage.cephfs.csi.ceph.com   pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288   worker2.viairtel.samsungbsc.local   true       108m
+csi-ab6224ddbc52c17a75cc4e140875df9df829f4e26e8ababc0c3aa5dfa6c05ced   openshift-storage.cephfs.csi.ceph.com   pvc-19d0e136-2421-43ad-9fd1-74e0775147b6   master1.viairtel.samsungbsc.local   true       5h13m
+csi-b3fadcff2dd6ac1f34cdcd0523fab9fe73e111681b6c02261b7f4419fe8f1576   openshift-storage.cephfs.csi.ceph.com   pvc-26c2bdf6-570c-4a89-a5d7-b15667bfc2d0   worker2.viairtel.samsungbsc.local   true       108m
+csi-ca7caee40e8bd5e0f651691bf897c11e4d9186351503589efa1c92c0fb4f0058   openshift-storage.cephfs.csi.ceph.com   pvc-19d0e136-2421-43ad-9fd1-74e0775147b6   master2.viairtel.samsungbsc.local   true       5h13m
+csi-cf4489991776bf86d758fec99e1eb6b3e0d12ea64e7f2b75396782c0a964f0a8   openshift-storage.cephfs.csi.ceph.com   pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3   worker1.viairtel.samsungbsc.local   true       108m
+[root@bastion ~]# oc get volumeattachment  -o wide | grep 67fbb81e
 [root@bastion ~]#
