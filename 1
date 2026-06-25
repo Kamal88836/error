@@ -1,8 +1,163 @@
-Events:
-  Type     Reason                  Age                  From                     Message
-  ----     ------                  ----                 ----                     -------
-  Normal   Scheduled               72m                  default-scheduler        Successfully assigned bscf-large/bscf600-cmp1-c7c888d97-g4cfh to worker2.viairtel.samsungbsc.local
-  Normal   SuccessfulAttachVolume  72m                  attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3"
-  Warning  FailedMount             17m (x8 over 68m)    kubelet                  MountVolume.MountDevice failed for volume "pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 already exists
-  Warning  FailedMount             3m36s (x2 over 40m)  kubelet                  MountVolume.MountDevice failed for volume "pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b already exists
+[root@bastion ~]# oc get pvc
+NAME                 STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                VOLUMEATTRIBUTESCLASS   AGE
+bscf600-db-pvc       Bound    pvc-26c2bdf6-570c-4a89-a5d7-b15667bfc2d0   8Gi        RWX            ocs-storagecluster-cephfs   <unset>                 76m
+bscf600-log-pvc      Bound    pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288   40Gi       RWX            ocs-storagecluster-cephfs   <unset>                 76m
+bscf600-shared-pvc   Bound    pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3   50Gi       RWX            ocs-storagecluster-cephfs   <unset>                 76m
+[root@bastion ~]# oc get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                           STORAGECLASS                  VOLUMEATTRIBUTESCLASS   REASON   AGE
+local-pv-73c8e0d0                          1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-0-data-0wv4p7   local-volume                  <unset>                          146d
+local-pv-ae8b516                           1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-1-data-05lx56   local-volume                  <unset>                          146d
+local-pv-d50cd219                          1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-2-data-0mb7f8   local-volume                  <unset>                          146d
+pvc-19d0e136-2421-43ad-9fd1-74e0775147b6   50Gi       RWX            Delete           Bound    bscf-medium/bscf500-shared-pvc                  ocs-storagecluster-cephfs     <unset>                          4h42m
+pvc-1eca9057-f9fd-40cd-8de0-97b90c710823   50Gi       RWO            Delete           Bound    openshift-storage/db-noobaa-db-pg-0             ocs-storagecluster-ceph-rbd   <unset>                          142d
+pvc-26c2bdf6-570c-4a89-a5d7-b15667bfc2d0   8Gi        RWX            Delete           Bound    bscf-large/bscf600-db-pvc                       ocs-storagecluster-cephfs     <unset>                          77m
+pvc-504f93ac-07ef-49d4-b4bf-3a1c00d0cc1d   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-2        ocs-storagecluster-ceph-rbd   <unset>                          9d
+pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3   50Gi       RWX            Delete           Bound    bscf-large/bscf600-shared-pvc                   ocs-storagecluster-cephfs     <unset>                          77m
+pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288   40Gi       RWX            Delete           Bound    bscf-large/bscf600-log-pvc                      ocs-storagecluster-cephfs     <unset>                          77m
+pvc-958726fe-f336-4663-b21c-ed46887c5c66   8Gi        RWX            Delete           Bound    bscf-medium/bscf500-db-pvc                      ocs-storagecluster-cephfs     <unset>                          4h42m
+pvc-af06cf68-c30d-4bdc-bb6a-c497f2fb08d8   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-1        ocs-storagecluster-ceph-rbd   <unset>                          9d
+pvc-dc5f27ef-e6bf-484e-a521-a4ac3bbcf15f   40Gi       RWX            Delete           Bound    bscf-medium/bscf500-log-pvc                     ocs-storagecluster-cephfs     <unset>                          4h42m
+[root@bastion ~]# oc describe pv pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3
+Name:            pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3
+Labels:          <none>
+Annotations:     pv.kubernetes.io/provisioned-by: openshift-storage.cephfs.csi.ceph.com
+                 volume.kubernetes.io/provisioner-deletion-secret-name: rook-csi-cephfs-provisioner
+                 volume.kubernetes.io/provisioner-deletion-secret-namespace: openshift-storage
+Finalizers:      [external-provisioner.volume.kubernetes.io/finalizer kubernetes.io/pv-protection external-attacher/openshift-storage-cephfs-csi-ceph-com]
+StorageClass:    ocs-storagecluster-cephfs
+Status:          Bound
+Claim:           bscf-large/bscf600-shared-pvc
+Reclaim Policy:  Delete
+Access Modes:    RWX
+VolumeMode:      Filesystem
+Capacity:        50Gi
+Node Affinity:   <none>
+Message:
+Source:
+    Type:              CSI (a Container Storage Interface (CSI) volume source)
+    Driver:            openshift-storage.cephfs.csi.ceph.com
+    FSType:            ext4
+    VolumeHandle:      0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53
+    ReadOnly:          false
+    VolumeAttributes:      clusterID=openshift-storage
+                           fsName=ocs-storagecluster-cephfilesystem
+                           storage.kubernetes.io/csiProvisionerIdentity=1782377564266-1451-openshift-storage.cephfs.csi.ceph.com
+                           subvolumeName=csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53
+                           subvolumePath=/volumes/csi/csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53/3a81a675-fb67-476f-85a0-5e89836dd5cc
+Events:                <none>
+[root@bastion ~]# oc get po -n openshift-storage
+NAME                                                              READY   STATUS      RESTARTS         AGE
+ceph-csi-controller-manager-69648f56f5-cm4fg                      1/1     Running     34 (3h2m ago)    7d4h
+cnpg-controller-manager-6b8454c795-6gqkz                          1/1     Running     17 (2d19h ago)   5d19h
+csi-addons-controller-manager-78d6655bf-bm5sp                     1/1     Running     34 (3h2m ago)    7d4h
+noobaa-core-0                                                     2/2     Running     0                3h1m
+noobaa-db-pg-cluster-1                                            1/1     Running     5 (5h54m ago)    8d
+noobaa-db-pg-cluster-2                                            1/1     Running     1 (4d1h ago)     8d
+noobaa-endpoint-7d68bb857d-wdgs5                                  1/1     Running     0                3h1m
+noobaa-operator-85c9999776-w9hgz                                  1/1     Running     2 (2d20h ago)    5d19h
+ocs-client-operator-console-c9df58b5b-b7drd                       1/1     Running     2 (6d23h ago)    7d4h
+ocs-client-operator-controller-manager-759cdd8968-mnmc8           1/1     Running     5 (3h1m ago)     7d4h
+ocs-metrics-exporter-7767d7f8b5-llnf7                             3/3     Running     6 (6d23h ago)    8d
+ocs-operator-5dcf776bf7-r4hsj                                     1/1     Running     33 (3h2m ago)    7d4h
+ocs-provider-server-59898b8869-rlpzb                              1/1     Running     0                8d
+odf-console-69fb5dc7c6-4wwrw                                      1/1     Running     1 (6d23h ago)    7d4h
+odf-external-snapshotter-operator-5c457bb69c-9ct6s                1/1     Running     29 (3h2m ago)    7d4h
+odf-operator-controller-manager-fb8ff6bdc-54h5d                   1/1     Running     0                20m
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b857757zfz   8/8     Running     0                20m
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b8577pf7ww   8/8     Running     0                3h22m
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-4xl7n            3/3     Running     0                4h15m
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-99gf8            3/3     Running     0                4h15m
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-gtqlk            3/3     Running     0                4h15m
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-hb5pb            3/3     Running     0                4h15m
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-w4b2v            3/3     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-ctrlplugin-588b8847f-6qcm8     8/8     Running     32 (2d19h ago)   7d4h
+openshift-storage.rbd.csi.ceph.com-ctrlplugin-588b8847f-6rj8r     8/8     Running     34 (2d19h ago)   7d4h
+openshift-storage.rbd.csi.ceph.com-nodeplugin-9gr4k               3/3     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-9j7s2               3/3     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-7wlqw    2/2     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-fzmkw    2/2     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-j4m5m    2/2     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-qqxjb    2/2     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-s95gd    2/2     Running     0                4h14m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-qh5tp               3/3     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-rz64c               3/3     Running     0                4h15m
+openshift-storage.rbd.csi.ceph.com-nodeplugin-svwhk               3/3     Running     0                4h15m
+rook-ceph-crashcollector-master1.viairtel.samsungbsc.local6758s   1/1     Running     0                156m
+rook-ceph-crashcollector-master2.viairtel.samsungbsc.localgvz5t   1/1     Running     0                24h
+rook-ceph-crashcollector-master3.viairtel.samsungbsc.local4ntk6   1/1     Running     0                158m
+rook-ceph-exporter-master1.viairtel.samsungbsc.local-bcf45zswr2   1/1     Running     0                156m
+rook-ceph-exporter-master2.viairtel.samsungbsc.local-85f9chbm6w   1/1     Running     0                24h
+rook-ceph-exporter-master3.viairtel.samsungbsc.local-5dd8cvcc7k   1/1     Running     0                158m
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-89b857cf2s82h   2/2     Running     0                158m
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-86dc8fc754sr8   2/2     Running     0                24h
+rook-ceph-mgr-a-55bb4cf499-76ckd                                  4/4     Running     0                158m
+rook-ceph-mgr-b-6568587fd5-vm4zk                                  4/4     Running     0                3h8m
+rook-ceph-mon-ax-5ff5fd765b-pbs6p                                 2/2     Running     0                3h9m
+rook-ceph-mon-ba-7b8cbd58-sgddz                                   2/2     Running     0                3h9m
+rook-ceph-mon-bb-75d86b8448-ltssp                                 2/2     Running     0                3h9m
+rook-ceph-operator-6446945779-z98vr                               1/1     Running     0                7d4h
+rook-ceph-osd-0-b94fb7c9f-dwr8w                                   2/2     Running     0                3h13m
+rook-ceph-osd-1-67b5f4bb-lttd6                                    2/2     Running     0                3h11m
+rook-ceph-osd-2-5f6867b4c8-v2c5s                                  2/2     Running     0                3h9m
+rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-5bdc6c6jsqt2   2/2     Running     0                158m
+storageclient-737342087af10580-status-reporter-29706494-mvqd8     0/1     Completed   0                52s
+ux-backend-server-54bd7d89c-v7dvx                                 2/2     Running     0                7d4h
+[root@bastion ~]# oc get po -n openshift-storage  -o wide
+NAME                                                              READY   STATUS              RESTARTS         AGE     IP             NODE                                NOMINATED NODE   READINESS GATES
+ceph-csi-controller-manager-69648f56f5-cm4fg                      1/1     Running             34 (3h2m ago)    7d4h    10.20.1.223    master3.viairtel.samsungbsc.local   <none>           <none>
+cnpg-controller-manager-6b8454c795-6gqkz                          1/1     Running             17 (2d19h ago)   5d19h   10.20.15.90    worker1.viairtel.samsungbsc.local   <none>           <none>
+csi-addons-controller-manager-78d6655bf-bm5sp                     1/1     Running             34 (3h2m ago)    7d4h    10.20.1.224    master3.viairtel.samsungbsc.local   <none>           <none>
+noobaa-core-0                                                     2/2     Running             0                3h1m    10.20.0.136    master2.viairtel.samsungbsc.local   <none>           <none>
+noobaa-db-pg-cluster-1                                            1/1     Running             5 (5h54m ago)    8d      10.20.1.213    master3.viairtel.samsungbsc.local   <none>           <none>
+noobaa-db-pg-cluster-2                                            1/1     Running             1 (4d1h ago)     8d      10.20.2.200    master1.viairtel.samsungbsc.local   <none>           <none>
+noobaa-endpoint-7d68bb857d-wdgs5                                  1/1     Running             0                3h1m    10.20.0.137    master2.viairtel.samsungbsc.local   <none>           <none>
+noobaa-operator-85c9999776-w9hgz                                  1/1     Running             2 (2d20h ago)    5d19h   10.20.15.89    worker1.viairtel.samsungbsc.local   <none>           <none>
+ocs-client-operator-console-c9df58b5b-b7drd                       1/1     Running             2 (6d23h ago)    7d4h    10.20.1.229    master3.viairtel.samsungbsc.local   <none>           <none>
+ocs-client-operator-controller-manager-759cdd8968-mnmc8           1/1     Running             5 (3h1m ago)     7d4h    10.20.1.228    master3.viairtel.samsungbsc.local   <none>           <none>
+ocs-metrics-exporter-7767d7f8b5-llnf7                             3/3     Running             6 (6d23h ago)    8d      10.20.1.200    master3.viairtel.samsungbsc.local   <none>           <none>
+ocs-operator-5dcf776bf7-r4hsj                                     1/1     Running             33 (3h2m ago)    7d4h    10.20.1.225    master3.viairtel.samsungbsc.local   <none>           <none>
+ocs-provider-server-59898b8869-rlpzb                              1/1     Running             0                8d      10.20.1.197    master3.viairtel.samsungbsc.local   <none>           <none>
+odf-console-69fb5dc7c6-4wwrw                                      1/1     Running             1 (6d23h ago)    7d4h    10.20.1.226    master3.viairtel.samsungbsc.local   <none>           <none>
+odf-external-snapshotter-operator-5c457bb69c-9ct6s                1/1     Running             29 (3h2m ago)    7d4h    10.20.1.205    master3.viairtel.samsungbsc.local   <none>           <none>
+odf-operator-controller-manager-fb8ff6bdc-54h5d                   1/1     Running             0                21m     10.20.1.164    master3.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b857757zfz   8/8     Running             0                21m     10.20.1.163    master3.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b8577pf7ww   8/8     Running             0                3h22m   10.20.0.108    master2.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-4xl7n            3/3     Running             0                4h15m   20.1.30.106    worker2.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-99gf8            3/3     Running             0                4h15m   20.1.30.102    master2.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-gtqlk            3/3     Running             0                4h15m   20.1.30.105    worker1.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-hb5pb            3/3     Running             0                4h15m   20.1.30.103    master1.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.cephfs.csi.ceph.com-nodeplugin-w4b2v            3/3     Running             0                4h15m   20.1.30.104    master3.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-ctrlplugin-588b8847f-6qcm8     8/8     Running             32 (2d19h ago)   7d4h    10.20.2.240    master1.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-ctrlplugin-588b8847f-6rj8r     8/8     Running             34 (2d19h ago)   7d4h    10.20.0.94     master2.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-9gr4k               3/3     Running             0                4h15m   20.1.30.105    worker1.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-9j7s2               3/3     Running             0                4h15m   20.1.30.103    master1.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-7wlqw    2/2     Running             0                4h15m   10.20.16.11    worker2.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-fzmkw    2/2     Running             0                4h15m   10.20.2.106    master1.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-j4m5m    2/2     Running             0                4h15m   10.20.15.120   worker1.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-qqxjb    2/2     Running             0                4h15m   10.20.0.81     master2.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-s95gd    2/2     Running             0                4h15m   10.20.1.203    master3.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-qh5tp               3/3     Running             0                4h15m   20.1.30.102    master2.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-rz64c               3/3     Running             0                4h15m   20.1.30.104    master3.viairtel.samsungbsc.local   <none>           <none>
+openshift-storage.rbd.csi.ceph.com-nodeplugin-svwhk               3/3     Running             0                4h15m   20.1.30.106    worker2.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-crashcollector-master1.viairtel.samsungbsc.local6758s   1/1     Running             0                156m    10.20.2.235    master1.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-crashcollector-master2.viairtel.samsungbsc.localgvz5t   1/1     Running             0                24h     10.20.0.170    master2.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-crashcollector-master3.viairtel.samsungbsc.local4ntk6   1/1     Running             0                158m    10.20.1.78     master3.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-exporter-master1.viairtel.samsungbsc.local-bcf45zswr2   1/1     Running             0                156m    10.20.2.236    master1.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-exporter-master2.viairtel.samsungbsc.local-85f9chbm6w   1/1     Running             0                24h     10.20.0.171    master2.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-exporter-master3.viairtel.samsungbsc.local-5dd8cvcc7k   1/1     Running             0                158m    10.20.1.79     master3.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-89b857cf2s82h   2/2     Running             0                158m    10.20.1.77     master3.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-86dc8fc754sr8   2/2     Running             0                24h     10.20.0.166    master2.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-mgr-a-55bb4cf499-76ckd                                  4/4     Running             0                158m    10.20.1.76     master3.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-mgr-b-6568587fd5-vm4zk                                  4/4     Running             0                3h8m    10.20.0.119    master2.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-mon-ax-5ff5fd765b-pbs6p                                 2/2     Running             0                3h9m    10.20.2.193    master1.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-mon-ba-7b8cbd58-sgddz                                   2/2     Running             0                3h9m    10.20.1.26     master3.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-mon-bb-75d86b8448-ltssp                                 2/2     Running             0                3h9m    10.20.0.118    master2.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-operator-6446945779-z98vr                               1/1     Running             0                7d4h    10.20.0.89     master2.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-osd-0-b94fb7c9f-dwr8w                                   2/2     Running             0                3h13m   10.20.0.111    master2.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-osd-1-67b5f4bb-lttd6                                    2/2     Running             0                3h11m   10.20.2.190    master1.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-osd-2-5f6867b4c8-v2c5s                                  2/2     Running             0                3h10m   10.20.1.25     master3.viairtel.samsungbsc.local   <none>           <none>
+rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-5bdc6c6jsqt2   2/2     Running             0                159m    10.20.1.75     master3.viairtel.samsungbsc.local   <none>           <none>
+storageclient-737342087af10580-status-reporter-29706494-mvqd8     0/1     Completed           0                60s     10.20.2.234    master1.viairtel.samsungbsc.local   <none>           <none>
+storageclient-737342087af10580-status-reporter-29706495-s6s7m     0/1     ContainerCreating   0                0s      <none>         master1.viairtel.samsungbsc.local   <none>           <none>
+ux-backend-server-54bd7d89c-v7dvx                                 2/2     Running             0                7d4h    10.20.1.216    master3.viairtel.samsungbsc.local   <none>           <none>
 [root@bastion ~]#
