@@ -1,26 +1,27 @@
-Events:
-  Type     Reason       Age    From               Message
-  ----     ------       ----   ----               -------
-  Normal   Scheduled    8m14s  default-scheduler  Successfully assigned bscf-large/bscf600-cmp1-c7c888d97-2s59g to worker2.viairtel.samsungbsc.local
-  Warning  FailedMount  8m5s   kubelet            MountVolume.MountDevice failed for volume "pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b already exists
-[root@bastion ~]# oc get volumeattachment
-NAME                                                                   ATTACHER                                PV                                         NODE                                ATTACHED   AGE
-csi-0e01c699c69d2483ed236f40c66ac66d6de293de9ce52e9d3248f7e2e3665eb1   openshift-storage.cephfs.csi.ceph.com   pvc-958726fe-f336-4663-b21c-ed46887c5c66   master3.viairtel.samsungbsc.local   true       5h
-csi-0e8a008303957f4d22f93a6d765dbfe145833e0e56568fea9cee0e4d9060ca1a   openshift-storage.cephfs.csi.ceph.com   pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288   worker1.viairtel.samsungbsc.local   true       108m
-csi-1191f29016e1ece78d7230b9d688387365d823d64a838f26b7d65bb3005b7ebc   openshift-storage.rbd.csi.ceph.com      pvc-af06cf68-c30d-4bdc-bb6a-c497f2fb08d8   master3.viairtel.samsungbsc.local   true       8d
-csi-4fd15fca68d1127e8386130b542bc7ee994e27e45ffe91d40cfb5f02776722a8   openshift-storage.cephfs.csi.ceph.com   pvc-19d0e136-2421-43ad-9fd1-74e0775147b6   master3.viairtel.samsungbsc.local   true       5h13m
-csi-5c0c8f65f90860e42a8f2e068bcd0b46472d36c96f86eb0d4f1c48c87f92a30c   openshift-storage.rbd.csi.ceph.com      pvc-504f93ac-07ef-49d4-b4bf-3a1c00d0cc1d   master1.viairtel.samsungbsc.local   true       8d
-csi-65261bda015c81feb461ba8ffaae9ff6105fbcdbd739159178b88f0a67bc39f4   openshift-storage.cephfs.csi.ceph.com   pvc-d47ab7c2-3f06-481a-b1a3-31d339f17e6a   worker2.viairtel.samsungbsc.local   true       4h53m
-csi-6778e907b2158521db26e7edaf1bc7dd00241578ae0452ad945ddeba7599bb2d   openshift-storage.cephfs.csi.ceph.com   pvc-dc5f27ef-e6bf-484e-a521-a4ac3bbcf15f   master1.viairtel.samsungbsc.local   true       5h13m
-csi-69a6ef9c1d6507a6a23d9053d61b6e4d2971ada261f15363f5e3c5fc366e5033   openshift-storage.cephfs.csi.ceph.com   pvc-b928e1bd-d4a3-424f-86ea-d8d6580b3cdd   worker2.viairtel.samsungbsc.local   true       4h53m
-csi-73ebff5178f82efaa4c20e7b5ec7b115c8544cb78f11ca049b1c9e1b7e9f6903   openshift-storage.cephfs.csi.ceph.com   pvc-dc5f27ef-e6bf-484e-a521-a4ac3bbcf15f   master3.viairtel.samsungbsc.local   true       5h13m
-csi-7cbbc0b94e7de8bfbb8f8796b307a3e61da9871b847b668c136c798ddf8bf631   openshift-storage.cephfs.csi.ceph.com   pvc-09917a57-3837-45bf-aad8-3126f8d254d0   worker2.viairtel.samsungbsc.local   true       4h53m
-csi-9cc28cc1d9fee3d579c3f4c5596268e8159abfbe45ddfb9bc56ae50485f91584   openshift-storage.cephfs.csi.ceph.com   pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3   worker2.viairtel.samsungbsc.local   true       108m
-csi-a1a995de39ba333befa748d1ace8c89f20113add806cf2fa51d8736499460f4f   openshift-storage.cephfs.csi.ceph.com   pvc-dc5f27ef-e6bf-484e-a521-a4ac3bbcf15f   master2.viairtel.samsungbsc.local   true       5h13m
-csi-a67e2f24e6d5929af11c5d85cadabeda499e8161fb2b936bdc1ec7d5188f6fbb   openshift-storage.cephfs.csi.ceph.com   pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288   worker2.viairtel.samsungbsc.local   true       108m
-csi-ab6224ddbc52c17a75cc4e140875df9df829f4e26e8ababc0c3aa5dfa6c05ced   openshift-storage.cephfs.csi.ceph.com   pvc-19d0e136-2421-43ad-9fd1-74e0775147b6   master1.viairtel.samsungbsc.local   true       5h13m
-csi-b3fadcff2dd6ac1f34cdcd0523fab9fe73e111681b6c02261b7f4419fe8f1576   openshift-storage.cephfs.csi.ceph.com   pvc-26c2bdf6-570c-4a89-a5d7-b15667bfc2d0   worker2.viairtel.samsungbsc.local   true       108m
-csi-ca7caee40e8bd5e0f651691bf897c11e4d9186351503589efa1c92c0fb4f0058   openshift-storage.cephfs.csi.ceph.com   pvc-19d0e136-2421-43ad-9fd1-74e0775147b6   master2.viairtel.samsungbsc.local   true       5h13m
-csi-cf4489991776bf86d758fec99e1eb6b3e0d12ea64e7f2b75396782c0a964f0a8   openshift-storage.cephfs.csi.ceph.com   pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3   worker1.viairtel.samsungbsc.local   true       108m
-[root@bastion ~]# oc get volumeattachment  -o wide | grep 67fbb81e
-[root@bastion ~]#
+[root@worker2 ~]# ls -ltr /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/
+total 0
+drwxr-x---. 3 root root 46 Jun 10 20:16 85f737d8b42435af8257f473a0bd7e59a7b5bbc64aab2db043ab00968f516ba3
+drwxr-x---. 3 root root 46 Jun 10 20:16 dce7c94cb16b1c98a0dbd3e7ac8bfd2eecf31006d1ed1df01baafe736d2d23c9
+drwxr-x---. 3 root root 46 Jun 10 20:16 d1d58cfb71a3cd76ae41d6f91b27fa049ecb0c7d656cd4644190d6dd9785f801
+drwxr-x---. 3 root root 46 Jun 18 05:59 721eba4246675b177aab4c5870dd65d15bf6027a32b52899e77d268a63726406
+drwxr-x---. 3 root root 46 Jun 18 05:59 b5b25402af246259ffce9f6225556d31c0ba9f6a8655fcfd21545b0667d1569d
+drwxr-x---. 3 root root 46 Jun 18 05:59 6fd5ba646474a8bdf44e7dee1d7fdca763dd5aea20515c511bfbaea631913f13
+drwxr-x---. 3 root root 46 Jun 19 12:51 1531ae54288a0a98dbdffbf8e5cd3d1aa13c6c03b5ec71b9eab981cc9e1d769c
+drwxr-x---. 3 root root 46 Jun 19 12:51 8723bb88191ddd983f105af5f9bdeb32dba70aec0027f5c087ba7ca74f961649
+drwxr-x---. 3 root root 46 Jun 19 12:51 5ed19d02563d72ad1c71433974b2da8691f193c2bf17d00fc4801299d5a72c41
+drwxr-x---. 3 root root 46 Jun 22 05:51 e05251625c9dda8ad406bca29c1929c6f439fb89a67411071e3cf05bc78ba44f
+drwxr-x---. 3 root root 46 Jun 24 12:02 db93aa392b4a9cded447d16a717e8991ff277bbb19479da8da3ab821810b7d5e
+drwxr-x---. 3 root root 46 Jun 24 12:02 67489e9c49fe94a245c8d811c2e8e6ca748e16452d75c549ccaf3372169bcc4c
+drwxr-x---. 3 root root 46 Jun 24 12:02 ea2e793fb5317568d99be2e82ffb9b7b7326f83b37590bd2218deaec5126f368
+drwxr-x---. 3 root root 46 Jun 24 13:22 b12eaa6ed7ea3e2a6aae5cb20f20686a88bb36762de832e5b0cf85426a97d505
+drwxr-x---. 3 root root 46 Jun 24 13:22 d3709a090cd66e0e3bb587f0bb2edfeeb669ea59e82da33f3f452aa3bfdb7d68
+drwxr-x---. 3 root root 46 Jun 24 13:22 2c3b8dd710f87f72c14cc4e5263d150e2f333d531b722db2b8b22d14eefbaebf
+drwxr-x---. 3 root root 46 Jun 24 13:30 a242a0e24e9815172321b2583a528c35841f0f51622176052064de47e9b12efb
+drwxr-x---. 3 root root 46 Jun 24 13:30 9730446d10396b1d03fbc165d8e7704124dc19d539a3fd44ef4bf6f551481987
+drwxr-x---. 3 root root 46 Jun 24 13:30 9df8be580a40f44124ea6299ccd977b8a2cfa38f42c93cf3286496d7f5ad3b4b
+drwxr-x---. 3 root root 46 Jun 25 07:26 a277cd22e892e2f858f1557b824c2f794cd959ced24784ae9d012ed8c8ea371c
+drwxr-x---. 3 root root 46 Jun 25 07:26 c98e36e3cc3de9d601810bcff854670ae1c4d4ec3e033bf65da73210b1d233c3
+drwxr-x---. 3 root root 46 Jun 25 10:51 aad1667abe815980630e0e1946fc02bbbb880d2e78a16d86418694017e37a88e
+drwxr-x---. 3 root root 46 Jun 25 10:51 536ff457e5bbb861cd03fbea9208a6a713e1377b58e6fbcb51b6f610a0a1f1ce
+drwxr-x---. 3 root root 46 Jun 25 10:52 9242ff999841fa0db5e7594f663977f231d0b4a7692b09cc3a503a2f2d61ca96
+[root@worker2 ~]#
