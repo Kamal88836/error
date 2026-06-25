@@ -1,163 +1,302 @@
-[root@bastion ~]# oc get pvc
-NAME                 STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                VOLUMEATTRIBUTESCLASS   AGE
-bscf600-db-pvc       Bound    pvc-26c2bdf6-570c-4a89-a5d7-b15667bfc2d0   8Gi        RWX            ocs-storagecluster-cephfs   <unset>                 76m
-bscf600-log-pvc      Bound    pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288   40Gi       RWX            ocs-storagecluster-cephfs   <unset>                 76m
-bscf600-shared-pvc   Bound    pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3   50Gi       RWX            ocs-storagecluster-cephfs   <unset>                 76m
-[root@bastion ~]# oc get pv
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                           STORAGECLASS                  VOLUMEATTRIBUTESCLASS   REASON   AGE
-local-pv-73c8e0d0                          1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-0-data-0wv4p7   local-volume                  <unset>                          146d
-local-pv-ae8b516                           1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-1-data-05lx56   local-volume                  <unset>                          146d
-local-pv-d50cd219                          1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-2-data-0mb7f8   local-volume                  <unset>                          146d
-pvc-19d0e136-2421-43ad-9fd1-74e0775147b6   50Gi       RWX            Delete           Bound    bscf-medium/bscf500-shared-pvc                  ocs-storagecluster-cephfs     <unset>                          4h42m
-pvc-1eca9057-f9fd-40cd-8de0-97b90c710823   50Gi       RWO            Delete           Bound    openshift-storage/db-noobaa-db-pg-0             ocs-storagecluster-ceph-rbd   <unset>                          142d
-pvc-26c2bdf6-570c-4a89-a5d7-b15667bfc2d0   8Gi        RWX            Delete           Bound    bscf-large/bscf600-db-pvc                       ocs-storagecluster-cephfs     <unset>                          77m
-pvc-504f93ac-07ef-49d4-b4bf-3a1c00d0cc1d   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-2        ocs-storagecluster-ceph-rbd   <unset>                          9d
-pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3   50Gi       RWX            Delete           Bound    bscf-large/bscf600-shared-pvc                   ocs-storagecluster-cephfs     <unset>                          77m
-pvc-852c6abd-ebdf-4610-a78b-3b417d0ab288   40Gi       RWX            Delete           Bound    bscf-large/bscf600-log-pvc                      ocs-storagecluster-cephfs     <unset>                          77m
-pvc-958726fe-f336-4663-b21c-ed46887c5c66   8Gi        RWX            Delete           Bound    bscf-medium/bscf500-db-pvc                      ocs-storagecluster-cephfs     <unset>                          4h42m
-pvc-af06cf68-c30d-4bdc-bb6a-c497f2fb08d8   50Gi       RWOP           Delete           Bound    openshift-storage/noobaa-db-pg-cluster-1        ocs-storagecluster-ceph-rbd   <unset>                          9d
-pvc-dc5f27ef-e6bf-484e-a521-a4ac3bbcf15f   40Gi       RWX            Delete           Bound    bscf-medium/bscf500-log-pvc                     ocs-storagecluster-cephfs     <unset>                          4h42m
-[root@bastion ~]# oc describe pv pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3
-Name:            pvc-756571e2-e5ec-47cc-9c14-351ca05bdce3
-Labels:          <none>
-Annotations:     pv.kubernetes.io/provisioned-by: openshift-storage.cephfs.csi.ceph.com
-                 volume.kubernetes.io/provisioner-deletion-secret-name: rook-csi-cephfs-provisioner
-                 volume.kubernetes.io/provisioner-deletion-secret-namespace: openshift-storage
-Finalizers:      [external-provisioner.volume.kubernetes.io/finalizer kubernetes.io/pv-protection external-attacher/openshift-storage-cephfs-csi-ceph-com]
-StorageClass:    ocs-storagecluster-cephfs
-Status:          Bound
-Claim:           bscf-large/bscf600-shared-pvc
-Reclaim Policy:  Delete
-Access Modes:    RWX
-VolumeMode:      Filesystem
-Capacity:        50Gi
-Node Affinity:   <none>
-Message:
-Source:
-    Type:              CSI (a Container Storage Interface (CSI) volume source)
-    Driver:            openshift-storage.cephfs.csi.ceph.com
-    FSType:            ext4
-    VolumeHandle:      0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53
-    ReadOnly:          false
-    VolumeAttributes:      clusterID=openshift-storage
-                           fsName=ocs-storagecluster-cephfilesystem
-                           storage.kubernetes.io/csiProvisionerIdentity=1782377564266-1451-openshift-storage.cephfs.csi.ceph.com
-                           subvolumeName=csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53
-                           subvolumePath=/volumes/csi/csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53/3a81a675-fb67-476f-85a0-5e89836dd5cc
-Events:                <none>
-[root@bastion ~]# oc get po -n openshift-storage
-NAME                                                              READY   STATUS      RESTARTS         AGE
-ceph-csi-controller-manager-69648f56f5-cm4fg                      1/1     Running     34 (3h2m ago)    7d4h
-cnpg-controller-manager-6b8454c795-6gqkz                          1/1     Running     17 (2d19h ago)   5d19h
-csi-addons-controller-manager-78d6655bf-bm5sp                     1/1     Running     34 (3h2m ago)    7d4h
-noobaa-core-0                                                     2/2     Running     0                3h1m
-noobaa-db-pg-cluster-1                                            1/1     Running     5 (5h54m ago)    8d
-noobaa-db-pg-cluster-2                                            1/1     Running     1 (4d1h ago)     8d
-noobaa-endpoint-7d68bb857d-wdgs5                                  1/1     Running     0                3h1m
-noobaa-operator-85c9999776-w9hgz                                  1/1     Running     2 (2d20h ago)    5d19h
-ocs-client-operator-console-c9df58b5b-b7drd                       1/1     Running     2 (6d23h ago)    7d4h
-ocs-client-operator-controller-manager-759cdd8968-mnmc8           1/1     Running     5 (3h1m ago)     7d4h
-ocs-metrics-exporter-7767d7f8b5-llnf7                             3/3     Running     6 (6d23h ago)    8d
-ocs-operator-5dcf776bf7-r4hsj                                     1/1     Running     33 (3h2m ago)    7d4h
-ocs-provider-server-59898b8869-rlpzb                              1/1     Running     0                8d
-odf-console-69fb5dc7c6-4wwrw                                      1/1     Running     1 (6d23h ago)    7d4h
-odf-external-snapshotter-operator-5c457bb69c-9ct6s                1/1     Running     29 (3h2m ago)    7d4h
-odf-operator-controller-manager-fb8ff6bdc-54h5d                   1/1     Running     0                20m
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b857757zfz   8/8     Running     0                20m
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b8577pf7ww   8/8     Running     0                3h22m
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-4xl7n            3/3     Running     0                4h15m
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-99gf8            3/3     Running     0                4h15m
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-gtqlk            3/3     Running     0                4h15m
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-hb5pb            3/3     Running     0                4h15m
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-w4b2v            3/3     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-ctrlplugin-588b8847f-6qcm8     8/8     Running     32 (2d19h ago)   7d4h
-openshift-storage.rbd.csi.ceph.com-ctrlplugin-588b8847f-6rj8r     8/8     Running     34 (2d19h ago)   7d4h
-openshift-storage.rbd.csi.ceph.com-nodeplugin-9gr4k               3/3     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-9j7s2               3/3     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-7wlqw    2/2     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-fzmkw    2/2     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-j4m5m    2/2     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-qqxjb    2/2     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-s95gd    2/2     Running     0                4h14m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-qh5tp               3/3     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-rz64c               3/3     Running     0                4h15m
-openshift-storage.rbd.csi.ceph.com-nodeplugin-svwhk               3/3     Running     0                4h15m
-rook-ceph-crashcollector-master1.viairtel.samsungbsc.local6758s   1/1     Running     0                156m
-rook-ceph-crashcollector-master2.viairtel.samsungbsc.localgvz5t   1/1     Running     0                24h
-rook-ceph-crashcollector-master3.viairtel.samsungbsc.local4ntk6   1/1     Running     0                158m
-rook-ceph-exporter-master1.viairtel.samsungbsc.local-bcf45zswr2   1/1     Running     0                156m
-rook-ceph-exporter-master2.viairtel.samsungbsc.local-85f9chbm6w   1/1     Running     0                24h
-rook-ceph-exporter-master3.viairtel.samsungbsc.local-5dd8cvcc7k   1/1     Running     0                158m
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-89b857cf2s82h   2/2     Running     0                158m
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-86dc8fc754sr8   2/2     Running     0                24h
-rook-ceph-mgr-a-55bb4cf499-76ckd                                  4/4     Running     0                158m
-rook-ceph-mgr-b-6568587fd5-vm4zk                                  4/4     Running     0                3h8m
-rook-ceph-mon-ax-5ff5fd765b-pbs6p                                 2/2     Running     0                3h9m
-rook-ceph-mon-ba-7b8cbd58-sgddz                                   2/2     Running     0                3h9m
-rook-ceph-mon-bb-75d86b8448-ltssp                                 2/2     Running     0                3h9m
-rook-ceph-operator-6446945779-z98vr                               1/1     Running     0                7d4h
-rook-ceph-osd-0-b94fb7c9f-dwr8w                                   2/2     Running     0                3h13m
-rook-ceph-osd-1-67b5f4bb-lttd6                                    2/2     Running     0                3h11m
-rook-ceph-osd-2-5f6867b4c8-v2c5s                                  2/2     Running     0                3h9m
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-5bdc6c6jsqt2   2/2     Running     0                158m
-storageclient-737342087af10580-status-reporter-29706494-mvqd8     0/1     Completed   0                52s
-ux-backend-server-54bd7d89c-v7dvx                                 2/2     Running     0                7d4h
-[root@bastion ~]# oc get po -n openshift-storage  -o wide
-NAME                                                              READY   STATUS              RESTARTS         AGE     IP             NODE                                NOMINATED NODE   READINESS GATES
-ceph-csi-controller-manager-69648f56f5-cm4fg                      1/1     Running             34 (3h2m ago)    7d4h    10.20.1.223    master3.viairtel.samsungbsc.local   <none>           <none>
-cnpg-controller-manager-6b8454c795-6gqkz                          1/1     Running             17 (2d19h ago)   5d19h   10.20.15.90    worker1.viairtel.samsungbsc.local   <none>           <none>
-csi-addons-controller-manager-78d6655bf-bm5sp                     1/1     Running             34 (3h2m ago)    7d4h    10.20.1.224    master3.viairtel.samsungbsc.local   <none>           <none>
-noobaa-core-0                                                     2/2     Running             0                3h1m    10.20.0.136    master2.viairtel.samsungbsc.local   <none>           <none>
-noobaa-db-pg-cluster-1                                            1/1     Running             5 (5h54m ago)    8d      10.20.1.213    master3.viairtel.samsungbsc.local   <none>           <none>
-noobaa-db-pg-cluster-2                                            1/1     Running             1 (4d1h ago)     8d      10.20.2.200    master1.viairtel.samsungbsc.local   <none>           <none>
-noobaa-endpoint-7d68bb857d-wdgs5                                  1/1     Running             0                3h1m    10.20.0.137    master2.viairtel.samsungbsc.local   <none>           <none>
-noobaa-operator-85c9999776-w9hgz                                  1/1     Running             2 (2d20h ago)    5d19h   10.20.15.89    worker1.viairtel.samsungbsc.local   <none>           <none>
-ocs-client-operator-console-c9df58b5b-b7drd                       1/1     Running             2 (6d23h ago)    7d4h    10.20.1.229    master3.viairtel.samsungbsc.local   <none>           <none>
-ocs-client-operator-controller-manager-759cdd8968-mnmc8           1/1     Running             5 (3h1m ago)     7d4h    10.20.1.228    master3.viairtel.samsungbsc.local   <none>           <none>
-ocs-metrics-exporter-7767d7f8b5-llnf7                             3/3     Running             6 (6d23h ago)    8d      10.20.1.200    master3.viairtel.samsungbsc.local   <none>           <none>
-ocs-operator-5dcf776bf7-r4hsj                                     1/1     Running             33 (3h2m ago)    7d4h    10.20.1.225    master3.viairtel.samsungbsc.local   <none>           <none>
-ocs-provider-server-59898b8869-rlpzb                              1/1     Running             0                8d      10.20.1.197    master3.viairtel.samsungbsc.local   <none>           <none>
-odf-console-69fb5dc7c6-4wwrw                                      1/1     Running             1 (6d23h ago)    7d4h    10.20.1.226    master3.viairtel.samsungbsc.local   <none>           <none>
-odf-external-snapshotter-operator-5c457bb69c-9ct6s                1/1     Running             29 (3h2m ago)    7d4h    10.20.1.205    master3.viairtel.samsungbsc.local   <none>           <none>
-odf-operator-controller-manager-fb8ff6bdc-54h5d                   1/1     Running             0                21m     10.20.1.164    master3.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b857757zfz   8/8     Running             0                21m     10.20.1.163    master3.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-ctrlplugin-7f87b8577pf7ww   8/8     Running             0                3h22m   10.20.0.108    master2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-4xl7n            3/3     Running             0                4h15m   20.1.30.106    worker2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-99gf8            3/3     Running             0                4h15m   20.1.30.102    master2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-gtqlk            3/3     Running             0                4h15m   20.1.30.105    worker1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-hb5pb            3/3     Running             0                4h15m   20.1.30.103    master1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.cephfs.csi.ceph.com-nodeplugin-w4b2v            3/3     Running             0                4h15m   20.1.30.104    master3.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-ctrlplugin-588b8847f-6qcm8     8/8     Running             32 (2d19h ago)   7d4h    10.20.2.240    master1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-ctrlplugin-588b8847f-6rj8r     8/8     Running             34 (2d19h ago)   7d4h    10.20.0.94     master2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-9gr4k               3/3     Running             0                4h15m   20.1.30.105    worker1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-9j7s2               3/3     Running             0                4h15m   20.1.30.103    master1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-7wlqw    2/2     Running             0                4h15m   10.20.16.11    worker2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-fzmkw    2/2     Running             0                4h15m   10.20.2.106    master1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-j4m5m    2/2     Running             0                4h15m   10.20.15.120   worker1.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-qqxjb    2/2     Running             0                4h15m   10.20.0.81     master2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-csi-addons-s95gd    2/2     Running             0                4h15m   10.20.1.203    master3.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-qh5tp               3/3     Running             0                4h15m   20.1.30.102    master2.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-rz64c               3/3     Running             0                4h15m   20.1.30.104    master3.viairtel.samsungbsc.local   <none>           <none>
-openshift-storage.rbd.csi.ceph.com-nodeplugin-svwhk               3/3     Running             0                4h15m   20.1.30.106    worker2.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-crashcollector-master1.viairtel.samsungbsc.local6758s   1/1     Running             0                156m    10.20.2.235    master1.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-crashcollector-master2.viairtel.samsungbsc.localgvz5t   1/1     Running             0                24h     10.20.0.170    master2.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-crashcollector-master3.viairtel.samsungbsc.local4ntk6   1/1     Running             0                158m    10.20.1.78     master3.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-exporter-master1.viairtel.samsungbsc.local-bcf45zswr2   1/1     Running             0                156m    10.20.2.236    master1.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-exporter-master2.viairtel.samsungbsc.local-85f9chbm6w   1/1     Running             0                24h     10.20.0.171    master2.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-exporter-master3.viairtel.samsungbsc.local-5dd8cvcc7k   1/1     Running             0                158m    10.20.1.79     master3.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-89b857cf2s82h   2/2     Running             0                158m    10.20.1.77     master3.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-86dc8fc754sr8   2/2     Running             0                24h     10.20.0.166    master2.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-mgr-a-55bb4cf499-76ckd                                  4/4     Running             0                158m    10.20.1.76     master3.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-mgr-b-6568587fd5-vm4zk                                  4/4     Running             0                3h8m    10.20.0.119    master2.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-mon-ax-5ff5fd765b-pbs6p                                 2/2     Running             0                3h9m    10.20.2.193    master1.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-mon-ba-7b8cbd58-sgddz                                   2/2     Running             0                3h9m    10.20.1.26     master3.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-mon-bb-75d86b8448-ltssp                                 2/2     Running             0                3h9m    10.20.0.118    master2.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-operator-6446945779-z98vr                               1/1     Running             0                7d4h    10.20.0.89     master2.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-osd-0-b94fb7c9f-dwr8w                                   2/2     Running             0                3h13m   10.20.0.111    master2.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-osd-1-67b5f4bb-lttd6                                    2/2     Running             0                3h11m   10.20.2.190    master1.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-osd-2-5f6867b4c8-v2c5s                                  2/2     Running             0                3h10m   10.20.1.25     master3.viairtel.samsungbsc.local   <none>           <none>
-rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-5bdc6c6jsqt2   2/2     Running             0                159m    10.20.1.75     master3.viairtel.samsungbsc.local   <none>           <none>
-storageclient-737342087af10580-status-reporter-29706494-mvqd8     0/1     Completed           0                60s     10.20.2.234    master1.viairtel.samsungbsc.local   <none>           <none>
-storageclient-737342087af10580-status-reporter-29706495-s6s7m     0/1     ContainerCreating   0                0s      <none>         master1.viairtel.samsungbsc.local   <none>           <none>
-ux-backend-server-54bd7d89c-v7dvx                                 2/2     Running             0                7d4h    10.20.1.216    master3.viairtel.samsungbsc.local   <none>           <none>
+[root@bastion ~]# oc describe po openshift-storage.cephfs.csi.ceph.com-nodeplugin-4xl7n -n openshift-storage
+Name:                 openshift-storage.cephfs.csi.ceph.com-nodeplugin-4xl7n
+Namespace:            openshift-storage
+Priority:             2000001000
+Priority Class Name:  system-node-critical
+Service Account:      ceph-csi-cephfs-nodeplugin-sa
+Node:                 worker2.viairtel.samsungbsc.local/20.1.30.106
+Start Time:           Thu, 25 Jun 2026 16:58:57 +0900
+Labels:               app=openshift-storage.cephfs.csi.ceph.com-nodeplugin
+                      controller-revision-hash=9846ffd77
+                      pod-template-generation=24
+Annotations:          openshift.io/scc: ceph-csi-op-scc
+                      security.openshift.io/validated-scc-subject-type: serviceaccount
+Status:               Running
+IP:                   20.1.30.106
+IPs:
+  IP:           20.1.30.106
+  IP:           2010:0:0:30::106
+Controlled By:  DaemonSet/openshift-storage.cephfs.csi.ceph.com-nodeplugin
+Containers:
+  csi-cephfsplugin:
+    Container ID:  cri-o://0eaa536a56e74c02b98d82249165ce13a61aa69ff9bec7bdbf4d3bbbac06b7b9
+    Image:         registry.redhat.io/odf4/cephcsi-rhel9@sha256:acb85c8affcf1011fc3f4a441b8714a9639c9ff846ae9553b9bf8f215f2312e9
+    Image ID:      registry.redhat.io/odf4/cephcsi-rhel9@sha256:acb85c8affcf1011fc3f4a441b8714a9639c9ff846ae9553b9bf8f215f2312e9
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      --v=5
+      --type=cephfs
+      --nodeserver=true
+      --nodeid=$(NODE_ID)
+      --drivername=openshift-storage.cephfs.csi.ceph.com
+      --endpoint=unix:///csi/csi.sock
+      --pidlimit=-1
+      --csi-addons-endpoint=unix:///csi/csi-addons.sock
+      --logtostderr=false
+      --alsologtostderr=true
+      --log_file=csi-logs/csi-cephfsplugin.log
+    State:          Running
+      Started:      Thu, 25 Jun 2026 16:58:57 +0900
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     1
+      memory:  1536Mi
+    Requests:
+      cpu:     100m
+      memory:  250Mi
+    Environment:
+      POD_IP:          (v1:status.podIP)
+      NODE_ID:         (v1:spec.nodeName)
+      POD_NAMESPACE:  openshift-storage (v1:metadata.namespace)
+    Mounts:
+      /csi from plugin-dir (rw)
+      /csi-logs from logs-dir (rw)
+      /csi/mountinfo from ceph-csi-mountinfo (rw)
+      /dev from host-dev (rw)
+      /etc/ceph-csi-config from ceph-csi-config (rw)
+      /etc/selinux from etc-selinux (ro)
+      /lib/modules from lib-modules (ro)
+      /run/mount from host-run-mount (rw)
+      /sys from host-sys (rw)
+      /tmp/csi/keys from keys-tmp-dir (rw)
+      /var/lib/kubelet/plugins from plugin-mount-dir (rw)
+      /var/lib/kubelet/pods from pods-mount-dir (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9cxwz (ro)
+  driver-registrar:
+    Container ID:  cri-o://f9b7e9195e172b68b1e3b196eaf385d06be2032999616120a3fda903e5e049fd
+    Image:         registry.redhat.io/openshift4/ose-csi-node-driver-registrar-rhel9@sha256:104a1b6bd918e15c546f72e868df3174aea290b508374c38da47194c5488503e
+    Image ID:      registry.redhat.io/openshift4/ose-csi-node-driver-registrar-rhel9@sha256:104a1b6bd918e15c546f72e868df3174aea290b508374c38da47194c5488503e
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      --v=5
+      --kubelet-registration-path=/var/lib/kubelet/plugins/openshift-storage.cephfs.csi.ceph.com/csi.sock
+      --csi-address=unix:///csi/csi.sock
+    State:          Running
+      Started:      Thu, 25 Jun 2026 16:58:58 +0900
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     50m
+      memory:  50Mi
+    Requests:
+      cpu:        10m
+      memory:     10Mi
+    Environment:  <none>
+    Mounts:
+      /csi from plugin-dir (rw)
+      /registration from registration-dir (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9cxwz (ro)
+  log-rotator:
+    Container ID:  cri-o://86996a1f7e3a816aec4cdc92df4256b3e1963f63eaa8b425e831c5880bf20976
+    Image:         registry.redhat.io/odf4/cephcsi-rhel9@sha256:acb85c8affcf1011fc3f4a441b8714a9639c9ff846ae9553b9bf8f215f2312e9
+    Image ID:      registry.redhat.io/odf4/cephcsi-rhel9@sha256:acb85c8affcf1011fc3f4a441b8714a9639c9ff846ae9553b9bf8f215f2312e9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -c
+      while true; do logrotate --verbose /logrotate-config/csi; sleep 15m; done
+    State:          Running
+      Started:      Thu, 25 Jun 2026 16:58:58 +0900
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     50m
+      memory:  50Mi
+    Requests:
+      cpu:        10m
+      memory:     32Mi
+    Environment:  <none>
+    Mounts:
+      /csi-logs from logs-dir (rw)
+      /logrotate-config from log-rotate-dir (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9cxwz (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True
+  Initialized                 True
+  Ready                       True
+  ContainersReady             True
+  PodScheduled                True
+Volumes:
+  host-dev:
+    Type:          HostPath (bare host directory volume)
+    Path:          /dev
+    HostPathType:
+  host-sys:
+    Type:          HostPath (bare host directory volume)
+    Path:          /sys
+    HostPathType:
+  host-run-mount:
+    Type:          HostPath (bare host directory volume)
+    Path:          /run/mount
+    HostPathType:
+  lib-modules:
+    Type:          HostPath (bare host directory volume)
+    Path:          /lib/modules
+    HostPathType:
+  keys-tmp-dir:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     Memory
+    SizeLimit:  <unset>
+  ceph-csi-config:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      ceph-csi-config
+    Optional:  false
+  plugin-dir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/lib/kubelet/plugins/openshift-storage.cephfs.csi.ceph.com
+    HostPathType:  DirectoryOrCreate
+  plugin-mount-dir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/lib/kubelet/plugins
+    HostPathType:  Directory
+  pods-mount-dir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/lib/kubelet/pods
+    HostPathType:  Directory
+  registration-dir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/lib/kubelet/plugins_registry
+    HostPathType:  Directory
+  ceph-csi-mountinfo:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/lib/kubelet/plugins/openshift-storage.cephfs.csi.ceph.com/mountinfo
+    HostPathType:  DirectoryOrCreate
+  etc-selinux:
+    Type:          HostPath (bare host directory volume)
+    Path:          /etc/selinux
+    HostPathType:
+  logs-dir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/lib/cephcsi/openshift-storage.cephfs.csi.ceph.com-nodeplugin
+    HostPathType:  DirectoryOrCreate
+  log-rotate-dir:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      openshift-storage.cephfs.csi.ceph.com-logrotate-config
+    Optional:  false
+  kube-api-access-9cxwz:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    ConfigMapOptional:       <nil>
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/disk-pressure:NoSchedule op=Exists
+                             node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                             node.kubernetes.io/network-unavailable:NoSchedule op=Exists
+                             node.kubernetes.io/not-ready:NoExecute op=Exists
+                             node.kubernetes.io/pid-pressure:NoSchedule op=Exists
+                             node.kubernetes.io/unreachable:NoExecute op=Exists
+                             node.kubernetes.io/unschedulable:NoSchedule op=Exists
+                             node.ocs.openshift.io/storage=true:NoSchedule
+Events:                      <none>
+[root@bastion ~]# oc logs  openshift-storage.cephfs.csi.ceph.com-nodeplugin-4xl7n -n openshift-storage  --tail=100
+Defaulted container "csi-cephfsplugin" out of: csi-cephfsplugin, driver-registrar, log-rotator
+I0625 12:16:54.034511       1 utils.go:380] ID: 1122 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b Slow GRPC call /csi.v1.Node/NodeStageVolume (1h24m59s)
+I0625 12:16:54.034572       1 utils.go:382] ID: 1122 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/aad1667abe815980630e0e1946fc02bbbb880d2e78a16d86418694017e37a88e/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b","subvolumePath":"/volumes/csi/csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b/430cbb6b-298d-4fc2-9729-b520c3ff38ae"},"volume_id":"0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b"}
+I0625 12:16:54.463030       1 utils.go:380] ID: 1126 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 Slow GRPC call /csi.v1.Node/NodeStageVolume (1h24m59s)
+I0625 12:16:54.463074       1 utils.go:382] ID: 1126 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/536ff457e5bbb861cd03fbea9208a6a713e1377b58e6fbcb51b6f610a0a1f1ce/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53","subvolumePath":"/volumes/csi/csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53/3a81a675-fb67-476f-85a0-5e89836dd5cc"},"volume_id":"0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53"}
+I0625 12:17:03.169199       1 utils.go:380] ID: 1130 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 Slow GRPC call /csi.v1.Node/NodeStageVolume (1h24m59s)
+I0625 12:17:03.169280       1 utils.go:382] ID: 1130 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/9242ff999841fa0db5e7594f663977f231d0b4a7692b09cc3a503a2f2d61ca96/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64","subvolumePath":"/volumes/csi/csi-vol-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64/f7a1796f-3ebe-4b06-9b3e-dbe1e81ea62d"},"volume_id":"0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64"}
+I0625 12:17:21.629658       1 utils.go:380] ID: 10 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 Slow GRPC call /csi.v1.Node/NodeStageVolume (4h17m29s)
+I0625 12:17:21.629668       1 utils.go:380] ID: 14 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 Slow GRPC call /csi.v1.Node/NodeStageVolume (4h17m29s)
+I0625 12:17:21.629814       1 utils.go:382] ID: 10 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/3e5b5ded6dcebadbd1406ee65e4d1aca3210425180755cc74405a8852966e928/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-a2c0708d-82c2-4b50-afe5-fcad91919a96","subvolumePath":"/volumes/csi/csi-vol-a2c0708d-82c2-4b50-afe5-fcad91919a96/af5783e5-1137-4eaf-8b65-fd9deb37825f"},"volume_id":"0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96"}
+I0625 12:17:21.629850       1 utils.go:382] ID: 14 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/769daea39a29c9efd198007b4ad630ccfaab276e5cdfe3c5204ca65f34993a73/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-bc15540f-7359-415c-b7b0-80b92ff19ca1","subvolumePath":"/volumes/csi/csi-vol-bc15540f-7359-415c-b7b0-80b92ff19ca1/e389f6ca-9b96-433c-90da-e4a3fd301529"},"volume_id":"0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1"}
+I0625 12:17:21.631858       1 utils.go:380] ID: 12 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b Slow GRPC call /csi.v1.Node/NodeStageVolume (4h17m29s)
+I0625 12:17:21.631972       1 utils.go:382] ID: 12 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/ae017c095dbc43737e5d63959d87c00144dcd8a13886c24b13f354a83e5d8160/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-89a850e1-b447-4d9e-b1a2-a9423966529b","subvolumePath":"/volumes/csi/csi-vol-89a850e1-b447-4d9e-b1a2-a9423966529b/9f8babd7-306e-4772-a9ea-2923edf3da37"},"volume_id":"0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b"}
+I0625 12:17:24.036302       1 utils.go:380] ID: 1122 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b Slow GRPC call /csi.v1.Node/NodeStageVolume (1h25m29s)
+I0625 12:17:24.036355       1 utils.go:382] ID: 1122 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/aad1667abe815980630e0e1946fc02bbbb880d2e78a16d86418694017e37a88e/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b","subvolumePath":"/volumes/csi/csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b/430cbb6b-298d-4fc2-9729-b520c3ff38ae"},"volume_id":"0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b"}
+I0625 12:17:24.462438       1 utils.go:380] ID: 1126 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 Slow GRPC call /csi.v1.Node/NodeStageVolume (1h25m29s)
+I0625 12:17:24.462490       1 utils.go:382] ID: 1126 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/536ff457e5bbb861cd03fbea9208a6a713e1377b58e6fbcb51b6f610a0a1f1ce/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53","subvolumePath":"/volumes/csi/csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53/3a81a675-fb67-476f-85a0-5e89836dd5cc"},"volume_id":"0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53"}
+I0625 12:17:26.534813       1 utils.go:347] ID: 1947 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:26.534832       1 utils.go:348] ID: 1947 GRPC request: {}
+I0625 12:17:26.534884       1 utils.go:354] ID: 1947 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:26.544432       1 utils.go:347] ID: 1948 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:26.544444       1 utils.go:348] ID: 1948 GRPC request: {}
+I0625 12:17:26.544481       1 utils.go:354] ID: 1948 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:26.545252       1 utils.go:347] ID: 1949 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:26.545265       1 utils.go:348] ID: 1949 GRPC request: {}
+I0625 12:17:26.545290       1 utils.go:354] ID: 1949 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:26.546019       1 utils.go:347] ID: 1950 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b GRPC call: /csi.v1.Node/NodeStageVolume
+I0625 12:17:26.546117       1 utils.go:348] ID: 1950 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/aad1667abe815980630e0e1946fc02bbbb880d2e78a16d86418694017e37a88e/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b","subvolumePath":"/volumes/csi/csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b/430cbb6b-298d-4fc2-9729-b520c3ff38ae"},"volume_id":"0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b"}
+E0625 12:17:26.546172       1 nodeserver.go:223] ID: 1950 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b already exists
+E0625 12:17:26.546189       1 utils.go:352] ID: 1950 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b GRPC error: rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b already exists
+I0625 12:17:26.636624       1 utils.go:347] ID: 1951 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:26.636649       1 utils.go:348] ID: 1951 GRPC request: {}
+I0625 12:17:26.636699       1 utils.go:354] ID: 1951 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:26.646627       1 utils.go:347] ID: 1952 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:26.646648       1 utils.go:348] ID: 1952 GRPC request: {}
+I0625 12:17:26.646684       1 utils.go:354] ID: 1952 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:26.647323       1 utils.go:347] ID: 1953 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:26.647331       1 utils.go:348] ID: 1953 GRPC request: {}
+I0625 12:17:26.647371       1 utils.go:354] ID: 1953 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:26.647959       1 utils.go:347] ID: 1954 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 GRPC call: /csi.v1.Node/NodeStageVolume
+I0625 12:17:26.647996       1 utils.go:348] ID: 1954 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/536ff457e5bbb861cd03fbea9208a6a713e1377b58e6fbcb51b6f610a0a1f1ce/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53","subvolumePath":"/volumes/csi/csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53/3a81a675-fb67-476f-85a0-5e89836dd5cc"},"volume_id":"0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53"}
+E0625 12:17:26.648045       1 nodeserver.go:223] ID: 1954 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 already exists
+E0625 12:17:26.648063       1 utils.go:352] ID: 1954 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 GRPC error: rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 already exists
+I0625 12:17:33.167450       1 utils.go:380] ID: 1130 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 Slow GRPC call /csi.v1.Node/NodeStageVolume (1h25m29s)
+I0625 12:17:33.167570       1 utils.go:382] ID: 1130 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/9242ff999841fa0db5e7594f663977f231d0b4a7692b09cc3a503a2f2d61ca96/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64","subvolumePath":"/volumes/csi/csi-vol-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64/f7a1796f-3ebe-4b06-9b3e-dbe1e81ea62d"},"volume_id":"0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64"}
+I0625 12:17:35.531102       1 utils.go:347] ID: 1955 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:35.531138       1 utils.go:348] ID: 1955 GRPC request: {}
+I0625 12:17:35.531199       1 utils.go:354] ID: 1955 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:35.541449       1 utils.go:347] ID: 1956 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:35.541468       1 utils.go:348] ID: 1956 GRPC request: {}
+I0625 12:17:35.541522       1 utils.go:354] ID: 1956 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:35.542344       1 utils.go:347] ID: 1957 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:35.542360       1 utils.go:348] ID: 1957 GRPC request: {}
+I0625 12:17:35.542390       1 utils.go:354] ID: 1957 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:35.543223       1 utils.go:347] ID: 1958 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 GRPC call: /csi.v1.Node/NodeStageVolume
+I0625 12:17:35.543286       1 utils.go:348] ID: 1958 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/9242ff999841fa0db5e7594f663977f231d0b4a7692b09cc3a503a2f2d61ca96/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64","subvolumePath":"/volumes/csi/csi-vol-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64/f7a1796f-3ebe-4b06-9b3e-dbe1e81ea62d"},"volume_id":"0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64"}
+E0625 12:17:35.543329       1 nodeserver.go:223] ID: 1958 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 already exists
+E0625 12:17:35.543346       1 utils.go:352] ID: 1958 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 GRPC error: rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 already exists
+I0625 12:17:39.963153       1 utils.go:347] ID: 1959 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:39.963182       1 utils.go:348] ID: 1959 GRPC request: {}
+I0625 12:17:39.963232       1 utils.go:354] ID: 1959 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:39.964029       1 utils.go:347] ID: 1960 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 GRPC call: /csi.v1.Node/NodeUnstageVolume
+I0625 12:17:39.964053       1 utils.go:348] ID: 1960 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 GRPC request: {"staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/3e5b5ded6dcebadbd1406ee65e4d1aca3210425180755cc74405a8852966e928/globalmount","volume_id":"0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96"}
+E0625 12:17:39.964075       1 nodeserver.go:812] ID: 1960 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 already exists
+E0625 12:17:39.964083       1 utils.go:352] ID: 1960 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 GRPC error: rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 already exists
+I0625 12:17:40.568869       1 utils.go:347] ID: 1961 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:40.568887       1 utils.go:348] ID: 1961 GRPC request: {}
+I0625 12:17:40.568930       1 utils.go:354] ID: 1961 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:40.569023       1 utils.go:347] ID: 1962 GRPC call: /csi.v1.Node/NodeGetCapabilities
+I0625 12:17:40.569038       1 utils.go:348] ID: 1962 GRPC request: {}
+I0625 12:17:40.569069       1 utils.go:354] ID: 1962 GRPC response: {"capabilities":[{"rpc":{"type":"STAGE_UNSTAGE_VOLUME"}},{"rpc":{"type":"GET_VOLUME_STATS"}},{"rpc":{"type":"VOLUME_CONDITION"}},{"rpc":{"type":"SINGLE_NODE_MULTI_WRITER"}}]}
+I0625 12:17:40.569733       1 utils.go:347] ID: 1963 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b GRPC call: /csi.v1.Node/NodeUnstageVolume
+I0625 12:17:40.569784       1 utils.go:348] ID: 1963 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b GRPC request: {"staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/ae017c095dbc43737e5d63959d87c00144dcd8a13886c24b13f354a83e5d8160/globalmount","volume_id":"0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b"}
+E0625 12:17:40.569805       1 nodeserver.go:812] ID: 1963 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b already exists
+E0625 12:17:40.569815       1 utils.go:352] ID: 1963 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b GRPC error: rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b already exists
+I0625 12:17:40.569838       1 utils.go:347] ID: 1964 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 GRPC call: /csi.v1.Node/NodeUnstageVolume
+I0625 12:17:40.569864       1 utils.go:348] ID: 1964 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 GRPC request: {"staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/769daea39a29c9efd198007b4ad630ccfaab276e5cdfe3c5204ca65f34993a73/globalmount","volume_id":"0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1"}
+E0625 12:17:40.569879       1 nodeserver.go:812] ID: 1964 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 already exists
+E0625 12:17:40.569892       1 utils.go:352] ID: 1964 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 GRPC error: rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 already exists
+I0625 12:17:51.629807       1 utils.go:380] ID: 10 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 Slow GRPC call /csi.v1.Node/NodeStageVolume (4h17m59s)
+I0625 12:17:51.629835       1 utils.go:380] ID: 14 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 Slow GRPC call /csi.v1.Node/NodeStageVolume (4h17m59s)
+I0625 12:17:51.629904       1 utils.go:382] ID: 10 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/3e5b5ded6dcebadbd1406ee65e4d1aca3210425180755cc74405a8852966e928/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-a2c0708d-82c2-4b50-afe5-fcad91919a96","subvolumePath":"/volumes/csi/csi-vol-a2c0708d-82c2-4b50-afe5-fcad91919a96/af5783e5-1137-4eaf-8b65-fd9deb37825f"},"volume_id":"0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96"}
+I0625 12:17:51.629992       1 utils.go:382] ID: 14 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/769daea39a29c9efd198007b4ad630ccfaab276e5cdfe3c5204ca65f34993a73/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-bc15540f-7359-415c-b7b0-80b92ff19ca1","subvolumePath":"/volumes/csi/csi-vol-bc15540f-7359-415c-b7b0-80b92ff19ca1/e389f6ca-9b96-433c-90da-e4a3fd301529"},"volume_id":"0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1"}
+I0625 12:17:51.631966       1 utils.go:380] ID: 12 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b Slow GRPC call /csi.v1.Node/NodeStageVolume (4h17m59s)
+I0625 12:17:51.632005       1 utils.go:382] ID: 12 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/ae017c095dbc43737e5d63959d87c00144dcd8a13886c24b13f354a83e5d8160/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-89a850e1-b447-4d9e-b1a2-a9423966529b","subvolumePath":"/volumes/csi/csi-vol-89a850e1-b447-4d9e-b1a2-a9423966529b/9f8babd7-306e-4772-a9ea-2923edf3da37"},"volume_id":"0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b"}
+I0625 12:17:54.036435       1 utils.go:380] ID: 1122 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b Slow GRPC call /csi.v1.Node/NodeStageVolume (1h25m59s)
+I0625 12:17:54.036501       1 utils.go:382] ID: 1122 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/aad1667abe815980630e0e1946fc02bbbb880d2e78a16d86418694017e37a88e/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b","subvolumePath":"/volumes/csi/csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b/430cbb6b-298d-4fc2-9729-b520c3ff38ae"},"volume_id":"0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b"}
+I0625 12:17:54.462977       1 utils.go:380] ID: 1126 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 Slow GRPC call /csi.v1.Node/NodeStageVolume (1h25m59s)
+I0625 12:17:54.463043       1 utils.go:382] ID: 1126 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/536ff457e5bbb861cd03fbea9208a6a713e1377b58e6fbcb51b6f610a0a1f1ce/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53","subvolumePath":"/volumes/csi/csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53/3a81a675-fb67-476f-85a0-5e89836dd5cc"},"volume_id":"0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53"}
+I0625 12:18:03.167423       1 utils.go:380] ID: 1130 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 Slow GRPC call /csi.v1.Node/NodeStageVolume (1h25m59s)
+I0625 12:18:03.167466       1 utils.go:382] ID: 1130 Req-ID: 0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/9242ff999841fa0db5e7594f663977f231d0b4a7692b09cc3a503a2f2d61ca96/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64","subvolumePath":"/volumes/csi/csi-vol-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64/f7a1796f-3ebe-4b06-9b3e-dbe1e81ea62d"},"volume_id":"0001-0011-openshift-storage-0000000000000001-8d377d8d-6759-43a2-ab2d-e3ca4baf2e64"}
+I0625 12:18:21.629104       1 utils.go:380] ID: 14 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 Slow GRPC call /csi.v1.Node/NodeStageVolume (4h18m29s)
+I0625 12:18:21.629258       1 utils.go:382] ID: 14 Req-ID: 0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/769daea39a29c9efd198007b4ad630ccfaab276e5cdfe3c5204ca65f34993a73/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-bc15540f-7359-415c-b7b0-80b92ff19ca1","subvolumePath":"/volumes/csi/csi-vol-bc15540f-7359-415c-b7b0-80b92ff19ca1/e389f6ca-9b96-433c-90da-e4a3fd301529"},"volume_id":"0001-0011-openshift-storage-0000000000000001-bc15540f-7359-415c-b7b0-80b92ff19ca1"}
+I0625 12:18:21.629283       1 utils.go:380] ID: 10 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 Slow GRPC call /csi.v1.Node/NodeStageVolume (4h18m29s)
+I0625 12:18:21.629316       1 utils.go:382] ID: 10 Req-ID: 0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/3e5b5ded6dcebadbd1406ee65e4d1aca3210425180755cc74405a8852966e928/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-a2c0708d-82c2-4b50-afe5-fcad91919a96","subvolumePath":"/volumes/csi/csi-vol-a2c0708d-82c2-4b50-afe5-fcad91919a96/af5783e5-1137-4eaf-8b65-fd9deb37825f"},"volume_id":"0001-0011-openshift-storage-0000000000000001-a2c0708d-82c2-4b50-afe5-fcad91919a96"}
+I0625 12:18:21.632282       1 utils.go:380] ID: 12 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b Slow GRPC call /csi.v1.Node/NodeStageVolume (4h18m29s)
+I0625 12:18:21.632389       1 utils.go:382] ID: 12 Req-ID: 0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/ae017c095dbc43737e5d63959d87c00144dcd8a13886c24b13f354a83e5d8160/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1781768007792-6946-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-89a850e1-b447-4d9e-b1a2-a9423966529b","subvolumePath":"/volumes/csi/csi-vol-89a850e1-b447-4d9e-b1a2-a9423966529b/9f8babd7-306e-4772-a9ea-2923edf3da37"},"volume_id":"0001-0011-openshift-storage-0000000000000001-89a850e1-b447-4d9e-b1a2-a9423966529b"}
+I0625 12:18:24.036733       1 utils.go:380] ID: 1122 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b Slow GRPC call /csi.v1.Node/NodeStageVolume (1h26m29s)
+I0625 12:18:24.036840       1 utils.go:382] ID: 1122 Req-ID: 0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/aad1667abe815980630e0e1946fc02bbbb880d2e78a16d86418694017e37a88e/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b","subvolumePath":"/volumes/csi/csi-vol-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b/430cbb6b-298d-4fc2-9729-b520c3ff38ae"},"volume_id":"0001-0011-openshift-storage-0000000000000001-4b9b3ac8-9ba6-4a97-945b-19d2cad6db6b"}
+I0625 12:18:24.463243       1 utils.go:380] ID: 1126 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 Slow GRPC call /csi.v1.Node/NodeStageVolume (1h26m29s)
+I0625 12:18:24.463312       1 utils.go:382] ID: 1126 Req-ID: 0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53 Slow GRPC request: {"secrets":"***stripped***","staging_target_path":"/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/536ff457e5bbb861cd03fbea9208a6a713e1377b58e6fbcb51b6f610a0a1f1ce/globalmount","volume_capability":{"access_mode":{"mode":"MULTI_NODE_MULTI_WRITER"},"mount":{"fs_type":"ext4"}},"volume_context":{"clusterID":"openshift-storage","fsName":"ocs-storagecluster-cephfilesystem","storage.kubernetes.io/csiProvisionerIdentity":"1782377564266-1451-openshift-storage.cephfs.csi.ceph.com","subvolumeName":"csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53","subvolumePath":"/volumes/csi/csi-vol-67fbb81e-4552-4934-b9cc-dc7f1f033d53/3a81a675-fb67-476f-85a0-5e89836dd5cc"},"volume_id":"0001-0011-openshift-storage-0000000000000001-67fbb81e-4552-4934-b9cc-dc7f1f033d53"}
 [root@bastion ~]#
