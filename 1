@@ -1,80 +1,93 @@
-Do not delete the Volume ID directly from Ceph CSI unless you have confirmed it is a stale operation. That error usually means the CSI controller has an in-memory lock, not that the volume itself is bad.
+QoS Class:       Guaranteed
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age                  From               Message
+  ----     ------            ----                 ----               -------
+  Warning  FailedScheduling  4m30s                default-scheduler  0/5 nodes are available: 1 Insufficient cpu, 4 node(s) didn't match Pod's node affinity/selector. preemption: 0/5 nodes are available: 1 No preemption victims found for incoming pod, 4 Preemption is not helpful for scheduling.
+  Normal   Scheduled         4m29s                default-scheduler  Successfully assigned bscf-large/bscf600-bip1-6fc85bcfd-cf6x9 to worker2.viairtel.samsungbsc.local
+  Warning  FailedMount       92s (x2 over 3m34s)  kubelet            MountVolume.MountDevice failed for volume "pvc-e4b04aee-e818-4c22-b1ad-fe87a57ca562" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-347c9448-152a-40ee-8a7b-41e7eb591a86 already exists
+[root@bastion ~]# oc get no
+NAME                                STATUS   ROLES                         AGE    VERSION
+master1.viairtel.samsungbsc.local   Ready    control-plane,master,worker   578d   v1.33.10
+master2.viairtel.samsungbsc.local   Ready    control-plane,master,worker   197d   v1.33.10
+master3.viairtel.samsungbsc.local   Ready    control-plane,master,worker   578d   v1.33.10
+worker1.viairtel.samsungbsc.local   Ready    large,worker                  505d   v1.33.10
+worker2.viairtel.samsungbsc.local   Ready    large,worker                  505d   v1.33.10
+[root@bastion ~]# ssh core@master2.viairtel.samsungbsc.local
+Red Hat Enterprise Linux CoreOS 9.6.20260504-0
+  Part of OpenShift 4.20, RHCOS is a Kubernetes-native operating system
+  managed by the Machine Config Operator (`clusteroperator/machine-config`).
 
-First check VolumeAttachment
-
-oc get volumeattachment
-
-Find the attachment for the PVC:
-
-oc get volumeattachment -o yaml | grep -B10 -A20 20c6298b
-
-or
-
-oc get volumeattachment -o yaml | grep -B10 -A20 347c9448
-
-If a VolumeAttachment is stuck and the pod is not using it, delete it:
-
-oc delete volumeattachment <volumeattachment-name>
-
-
----
-
-Most common fix: restart CSI pods
-
-For RBD:
-
-oc delete pod -n openshift-storage -l app=csi-rbdplugin
-oc delete pod -n openshift-storage -l app=csi-rbdplugin-provisioner
-
-For CephFS:
-
-oc delete pod -n openshift-storage -l app=csi-cephfsplugin
-oc delete pod -n openshift-storage -l app=csi-cephfsplugin-provisioner
-
-The DaemonSet/Deployment recreates them automatically and clears the stuck operation.
-
+WARNING: Direct SSH access to machines is not recommended; instead,
+make configuration changes via `machineconfig` objects:
+  https://docs.openshift.com/container-platform/4.20/architecture/architecture-rhcos.html
 
 ---
-
-Check if operation is stuck in Ceph
-
-Enter toolbox:
-
-oc rsh -n openshift-storage deploy/rook-ceph-tools
-
-Check health:
-
-ceph -s
-
-Look for:
-
-slow ops
-blocked requests
-MDS laggy
-
-If present, the CSI operation may be waiting on Ceph.
-
-
----
-
-If you really want to find the PVC from the Volume ID
-
-oc get pv | grep 20c6298b
-
-or
-
-oc get pv -o yaml | grep -B20 -A20 20c6298b
-
-Then identify the PV and PVC.
-
-
----
-
-Before deleting anything, please share:
-
-oc get volumeattachment
-oc get pv | grep 20c6298b
-oc get pods -n openshift-storage | grep csi
-ceph -s
-
-Deleting the wrong RBD image or CephFS volume is a one-way street, and you don't want to throw the baby out with the bathwater. The output will tell us whether this is a CSI lock, a stuck attachment, or a backend Ceph issue.
+Last login: Thu Jun 25 05:20:43 2026 from 20.1.30.98
+su[systemd]
+Failed Units: 2
+  chronyd.service
+  NetworkManager-wait-online.service
+d[core@master2 ~]$ sudo -i
+[systemd]
+Failed Units: 2
+  chronyd.service
+  NetworkManager-wait-online.service
+[root@master2 ~]# cd /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage
+-bash: cd: /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage: No such file or directory
+[root@master2 ~]# cd /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.
+openshift-storage.cephfs.csi.ceph.com/ openshift-storage.rbd.csi.ceph.com/
+[root@master2 ~]# cd /var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com/
+[root@master2 openshift-storage.cephfs.csi.ceph.com]# ll
+total 0
+drwxr-x---. 3 root root 46 Jun 19 15:53 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d
+drwxr-x---. 3 root root 46 Jun 19 15:53 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220
+[root@master2 openshift-storage.cephfs.csi.ceph.com]# cd 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d
+[root@master2 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d]# ll
+total 4
+drwxrwsr-x. 6 root 2001   4 Jun 19 14:07 globalmount
+-rw-r--r--. 1 root root 154 Jun 25 05:21 vol_data.json
+[root@master2 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d]# cd ..
+[root@master2 openshift-storage.cephfs.csi.ceph.com]# ll
+total 0
+drwxr-x---. 3 root root 46 Jun 19 15:53 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d
+drwxr-x---. 3 root root 46 Jun 19 15:53 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220
+[root@master2 openshift-storage.cephfs.csi.ceph.com]# cd 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220/
+[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# ll
+total 4
+drwxrwsr-x. 17 root 2001  16 Jun 19 16:31 globalmount
+-rw-r--r--.  1 root root 154 Jun 25 05:21 vol_data.json
+[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# cd globalmount/
+[root@master2 globalmount]# ll
+total 0
+drwxrwx---.  2 root 2001 12 Jun 19 16:31 CONFIG
+drwxrwsr-x.  2 root 2001  0 Jun 25 05:28 FTM
+drwxrwsr-x.  4 root 2001  3 Jun 19 15:53 HDB
+drwxrwsr-x.  8 root 2001  6 Jun 19 15:54 NFMLogs
+drwxrwsr-x.  3 root 2001  1 Jun 19 16:01 NRFM
+drwxrwsr-x.  4 root 2001  2 Jun 19 16:31 SON
+drwxrwsr-x.  2 root 2001  0 Jun 25 05:30 TESTDKU
+drwxrwsr-x.  2 root 2001  4 Jun 25 05:30 UDM
+drwxrwsr-x. 11 root 2001  9 Jun 19 16:31 VPM
+drwxrwsr-x.  2 root 2001 33 Jun 25 05:19 VPMbackup
+drwxrwsr-x.  2 root 2001  0 Jun 19 14:04 flavor_option
+-rwxrwxr-x.  1 root 2001  0 Jun 24 10:21 growcomplete
+drwxrwsr-x.  2 root 2001  1 Jun 19 16:31 vespm
+[root@master2 globalmount]# cd ..
+[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# ;ll
+-bash: syntax error near unexpected token `;'
+[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# ll
+total 4
+drwxrwsr-x. 17 root 2001  16 Jun 19 16:31 globalmount
+-rw-r--r--.  1 root root 154 Jun 25 05:21 vol_data.json
+[root@master2 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220]# cd ..
+[root@master2 openshift-storage.cephfs.csi.ceph.com]# ll
+total 0
+drwxr-x---. 3 root root 46 Jun 19 15:53 49884c286899199ca4981fdec6ed4ede50cce5a825990da0b07033a4825cca6d
+drwxr-x---. 3 root root 46 Jun 19 15:53 8b291c14db4b6d44bbbb194a0ef4f949f0b90bc95c11014363678e948ce38220
+[root@master2 openshift-storage.cephfs.csi.ceph.com]# pwd
+/var/lib/kubelet/plugins/kubernetes.io/csi/openshift-storage.cephfs.csi.ceph.com
+[root@master2 openshift-storage.cephfs.csi.ceph.com]#
