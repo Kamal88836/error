@@ -1,51 +1,129 @@
-sno10@haproxy:~/ocp-helm$ oc get sriovnetwork bscf-bh0u-3-nad -n openshift-sriov-network-operator -o yaml
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetwork
-metadata:
-  annotations:
-    meta.helm.sh/release-name: bscf-pre
-    meta.helm.sh/release-namespace: bscf
-    operator.sriovnetwork.openshift.io/last-network-namespace: bscf
-  creationTimestamp: "2026-06-29T10:50:41Z"
-  finalizers:
-  - netattdef.finalizers.sriovnetwork.openshift.io
-  generation: 2
-  labels:
-    app.kubernetes.io/managed-by: Helm
-  name: bscf-bh0u-3-nad
-  namespace: openshift-sriov-network-operator
-  resourceVersion: "8327550"
-  uid: 240e3935-e36b-42b4-854d-84dda957a141
+This confirms the root cause with high confidence.
+
+Configuration mismatch
+
+Your SriovNetwork objects are configured to use resources that do not exist.
+
+You have:
+
+bscf-bh0u-3-nad
 spec:
-  ipam: '{}'
-  linkState: auto
-  logLevel: info
-  networkNamespace: bscf
   resourceName: pci_sriov_net_bh0u_3
-  trust: "on"
-sno10@haproxy:~/ocp-helm$ oc get sriovnetwork bscf-bh0u-3-1-nad -n openshift-sriov-network-operator -o yaml
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetwork
-metadata:
-  annotations:
-    meta.helm.sh/release-name: bscf-pre
-    meta.helm.sh/release-namespace: bscf
-    operator.sriovnetwork.openshift.io/last-network-namespace: bscf
-  creationTimestamp: "2026-06-29T10:50:41Z"
-  finalizers:
-  - netattdef.finalizers.sriovnetwork.openshift.io
-  generation: 2
-  labels:
-    app.kubernetes.io/managed-by: Helm
-  name: bscf-bh0u-3-1-nad
-  namespace: openshift-sriov-network-operator
-  resourceVersion: "8327548"
-  uid: 85806d56-c0c3-443c-85cc-6a2eec4717bc
+
+and
+
+bscf-bh0u-3-1-nad
 spec:
-  ipam: '{}'
-  linkState: auto
-  logLevel: info
-  networkNamespace: bscf
   resourceName: pci_sriov_net_bh0u_3_1
-  trust: "on"
-sno10@haproxy:~/ocp-helm$
+
+But your node advertises only:
+
+openshift.io/pci_sriov_net_bh0u
+openshift.io/pci_sriov_net_bh0u_1
+openshift.io/pci_sriov_net_bh0u_2
+openshift.io/pci_sriov_net_bh0u_2_1
+
+There is no:
+
+openshift.io/pci_sriov_net_bh0u_3
+openshift.io/pci_sriov_net_bh0u_3_1
+
+Likewise, your SriovNetworkNodePolicy objects exist only for:
+
+policy-ens1f0-bh0u
+policy-ens3f3-bh0u-1
+policy-ens4f0-bh0u-2
+policy-ens6f0-bh0u-2-1
+
+There are no policies that create:
+
+pci_sriov_net_bh0u_3
+
+pci_sriov_net_bh0u_3_1
+
+
+Therefore the SR-IOV device plugin cannot advertise those resources, and the scheduler reports:
+
+Insufficient openshift.io/pci_sriov_net_bh0u_3
+
+Why this happened
+
+Your Helm chart created:
+
+SriovNetwork for bh0u-3
+
+SriovNetwork for bh0u-3-1
+
+
+but did not create the corresponding SriovNetworkNodePolicy objects.
+
+This is why the NADs exist but the resources are unavailable.
+
+Verify whether your server actually has those NICs
+
+Run:
+
+oc get sriovnetworknodestate ocp-sno.lab10.ocp.lan \
+-n openshift-sriov-network-operator -o yaml | grep -A10 "interfaces:"
+
+or, more specifically:
+
+oc get sriovnetworknodestate ocp-sno.lab10.ocp.lan \
+-n openshift-sriov-network-operator -o yaml | grep "name:"
+
+You should see interface names such as:
+
+ens1f0
+ens3f3
+ens4f0
+ens6f0
+
+If there are no additional interfaces (for example ens7f0 or similar), then bh0u_3 and bh0u_3_1 are invalid for this server.
+
+The fix depends on your hardware
+
+Case 1: The server has only 4 PFs (most likely)
+
+Your Helm values are incorrect. The deployment should use the existing resources:
+
+pci_sriov_net_bh0u
+
+pci_sriov_net_bh0u_1
+
+pci_sriov_net_bh0u_2
+
+pci_sriov_net_bh0u_2_1
+
+
+instead of bh0u_3 and bh0u_3_1.
+
+Case 2: The server should have additional PFs
+
+Then you must create matching SriovNetworkNodePolicy objects for:
+
+pci_sriov_net_bh0u_3
+
+pci_sriov_net_bh0u_3_1
+
+
+so the device plugin advertises those resources.
+
+
+---
+
+One more issue
+
+Even after fixing the SR-IOV mismatch, your node still has:
+
+16 GiB / 18 GiB hugepages already allocated.
+
+Your pending pod requests 8 GiB hugepages.
+
+
+So you'll also need to free hugepages or increase the node's hugepage allocation before that pod can be scheduled.
+
+I have one question
+
+Is this SNO server supposed to have 6 SR-IOV ports or only 4 SR-IOV ports?
+
+That answer will tell us whether the Helm chart is wrong or whether the SR-IOV policies are incomplete.
