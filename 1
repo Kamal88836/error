@@ -1,31 +1,15 @@
-sno10@haproxy:~$ oc get po
-NAME                            READY   STATUS    RESTARTS   AGE
-bscf196-bip0-86b4bcc9d-n6bc6    1/1     Running   0          16d
-bscf196-bpp0-749b89bb4b-whchd   1/1     Running   0          16d
-bscf196-bpp1-59d645785-h8zrc    1/1     Running   0          16d
-bscf196-cmp0-7754846459-m2t9v   1/1     Running   0          16d
-bscf196-dmp0-59648d956-x74cf    1/1     Running   0          16d
-bscf196-pmp0-7c8b7d9744-trhrr   1/1     Running   0          16d
-sno10@haproxy:~$ oc get deploy
-NAME           READY   UP-TO-DATE   AVAILABLE   AGE
-bscf196-bip0   1/1     1            1           16d
-bscf196-bpp0   1/1     1            1           16d
-bscf196-bpp1   1/1     1            1           16d
-bscf196-bpp2   0/1     0            0           16d
-bscf196-cmp0   1/1     1            1           16d
-bscf196-dmp0   1/1     1            1           16d
-bscf196-pmp0   1/1     1            1           16d
-sno10@haproxy:~$ oc logs bscf196-bpp2
-error: error from server (NotFound): pods "bscf196-bpp2" not found in namespace "bscf"
-sno10@haproxy:~$ oc event  bscf196-bpp2
-error: unknown command "event" for "oc"
-
-Did you mean this?
-        events
-sno10@haproxy:~$ oc events  bscf196-bpp2
-LAST SEEN                        TYPE      REASON             OBJECT                               MESSAGE
-<invalid> (x283 over 23h)        Warning   FailedScheduling   Pod/bscf196-bpp2-7f897dddf8-g7f94    0/1 nodes are available: 1 node(s) had untolerated taint {node.kubernetes.io/unreachable: }. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-<invalid> (x2 over <invalid>)    Warning   FailedMount        Pod/bscf196-pmp0-7c8b7d9744-trhrr    MountVolume.SetUp failed for volume "env" : failed to sync configmap cache: timed out waiting for the condition
-<invalid> (x10 over <invalid>)   Warning   FailedScheduling   Pod/bscf196-bpp2-7f897dddf8-g7f94    0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient hugepages-1Gi, 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
-<invalid>                        Warning   FailedScheduling   Pod/bscf196-bpp2-7f897dddf8-g7f94    skip schedule deleting pod: bscf/bscf196-bpp2-7f897dddf8-g7f94
-<invalid> (x14 over <invalid>)   Warning   FailedCreate       ReplicaSet/bscf196-bpp2-7f897dddf8   Error creating: admission webhook "network-resources-injector-config.k8s.io" denied the request: could not find network attachment definition 'bscf/bscf-bh0u-3-nad': could not get Network Attachment Definition bscf/bscf-bh0u-3-nad: the server could not find the requested resource
+Events:
+  Type     Reason                  Age                   From                     Message
+  ----     ------                  ----                  ----                     -------
+  Normal   Scheduled               14m                   default-scheduler        Successfully assigned bscf-large/bscf600-dmp0-dbc9bdbd6-c6nj2 to worker2.viairtel.samsungbsc.local
+  Normal   SuccessfulAttachVolume  14m                   attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-91065f38-3cfa-4b1e-a4d9-92f7968e4208"
+  Normal   SuccessfulAttachVolume  14m                   attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-00c2a4e6-4348-4c5c-bd28-1b4ce318bbae"
+  Normal   SuccessfulAttachVolume  14m                   attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-57dc258f-dd0f-4e2c-9f69-81e2a73dee6e"
+  Warning  FailedMount             11m (x6 over 14m)     kubelet                  MountVolume.MountDevice failed for volume "pvc-91065f38-3cfa-4b1e-a4d9-92f7968e4208" : rpc error: code = Internal desc = rpc error: code = Internal desc = failed to fetch monitor list using clusterID (openshift-storage): error fetching configuration for cluster ID "openshift-storage": open /etc/ceph-csi-config/config.json: no such file or directory
+  Warning  FailedMount             11m (x4 over 14m)     kubelet                  MountVolume.MountDevice failed for volume "pvc-00c2a4e6-4348-4c5c-bd28-1b4ce318bbae" : rpc error: code = Internal desc = rpc error: code = Internal desc = failed to fetch monitor list using clusterID (openshift-storage): error fetching configuration for cluster ID "openshift-storage": open /etc/ceph-csi-config/config.json: no such file or directory
+  Warning  FailedMount             9m57s (x10 over 14m)  kubelet                  MountVolume.MountDevice failed for volume "pvc-57dc258f-dd0f-4e2c-9f69-81e2a73dee6e" : rpc error: code = Internal desc = rpc error: code = Internal desc = failed to fetch monitor list using clusterID (openshift-storage): error fetching configuration for cluster ID "openshift-storage": open /etc/ceph-csi-config/config.json: no such file or directory
+  Warning  FailedMount             5m55s                 kubelet                  MountVolume.MountDevice failed for volume "pvc-57dc258f-dd0f-4e2c-9f69-81e2a73dee6e" : rpc error: code = DeadlineExceeded desc = context deadline exceeded
+  Warning  FailedMount             5m55s                 kubelet                  MountVolume.MountDevice failed for volume "pvc-91065f38-3cfa-4b1e-a4d9-92f7968e4208" : rpc error: code = DeadlineExceeded desc = context deadline exceeded
+  Warning  FailedMount             3m53s                 kubelet                  MountVolume.MountDevice failed for volume "pvc-00c2a4e6-4348-4c5c-bd28-1b4ce318bbae" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-a1301942-6ce9-40ee-94af-2e02959feb92 already exists
+  Warning  FailedMount             3m53s                 kubelet                  MountVolume.MountDevice failed for volume "pvc-91065f38-3cfa-4b1e-a4d9-92f7968e4208" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-868b482c-dbde-43cf-aea5-a4cbc0247e63 already exists
+  Warning  FailedMount             110s (x2 over 3m53s)  kubelet                  MountVolume.MountDevice failed for volume "pvc-57dc258f-dd0f-4e2c-9f69-81e2a73dee6e" : rpc error: code = Aborted desc = an operation with the given Volume ID 0001-0011-openshift-storage-0000000000000001-a43cefa5-4aee-426a-b329-a7fa012e19c6 already exists
