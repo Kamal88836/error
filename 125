@@ -1,123 +1,211 @@
-This confirms the diagnosis.
-
-Evidence
-
-Your NooBaa deployment is 523 days old:
-
-NooBaa CR age: 523d
-noobaa-admin secret age: 523d
-
-But the PostgreSQL database was recreated only recently:
-
-StatefulSet noobaa-db-pg creationTimestamp: 2026-06-18
-PVC db-noobaa-db-pg-0 age: 6d
-
-At the same time, NooBaa continuously reports:
-
-account not found 6788bafb4b40bd002623d3a0
-
-This means:
-
-1. The original NooBaa database was lost/recreated around June 18.
-
-
-2. The old noobaa-admin secret still contains credentials pointing to the old admin account.
-
-
-3. The recreated database does not contain that account ID.
-
-
-4. Authentication fails.
-
-
-5. BackingStore remains Connecting.
-
-
-6. BucketClass remains Verifying.
-
-
-7. NooBaa remains Configuring.
-
-
-8. StorageCluster remains Progressing.
-
-
-
-Good news
-
-You have:
-
-oc get obc -A
-No resources found
-
-oc get objectbucket -A
-No resources found
-
-So there is no object storage metadata that needs protection.
-
-
----
-
-Recommended Recovery
-
-Before changing anything, save the current objects:
-
-oc get noobaa noobaa -n openshift-storage -o yaml > /tmp/noobaa.yaml
-oc get backingstore -n openshift-storage -o yaml > /tmp/backingstore.yaml
-oc get bucketclass -n openshift-storage -o yaml > /tmp/bucketclass.yaml
-
-Then check whether the operator recreates NooBaa automatically after deletion:
-
-oc delete noobaa noobaa -n openshift-storage
-
-Watch:
-
-oc get noobaa -n openshift-storage -w
-
-If it is not recreated automatically within a few minutes:
-
-oc delete pod -l app=ocs-operator -n openshift-storage
-
-oc annotate storagecluster ocs-storagecluster \
-  -n openshift-storage \
-  reconcile-now="$(date +%s)" --overwrite
-
-
----
-
-Alternative (less disruptive)
-
-Before deleting the NooBaa CR, you can try restarting NooBaa components once:
-
-oc delete pod noobaa-core-0 -n openshift-storage
-oc delete pod noobaa-db-pg-0 -n openshift-storage
-oc delete pod -l noobaa-operator=deployment -n openshift-storage
-
-However, based on the logs, I do not expect this to fix it because the admin account is genuinely missing from the database.
-
-
----
-
-What I would do
-
-Given:
-
-CephCluster = HEALTH_OK
-
-All ODF CSVs = Succeeded
-
-No OBCs/ObjectBuckets exist
-
-NooBaa DB recreated 6 days ago
-
-Admin account missing from DB
-
-
-I would proceed with recreating NooBaa metadata rather than spending time trying to repair the database manually.
-
-One thing I'd like to see before you delete the NooBaa CR:
-
-oc get cephobjectstore -n openshift-storage
-oc get cephobjectstoreuser -n openshift-storage
-
-That will confirm the RGW/object-store pieces are healthy and that only NooBaa metadata is broken.
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                             Requests        Limits
+  --------                             --------        ------
+  cpu                                  84832m (80%)    93010m (87%)
+  memory                               223437Mi (46%)  206Gi (44%)
+  ephemeral-storage                    0 (0%)          0 (0%)
+  hugepages-1Gi                        16Gi (88%)      16Gi (88%)
+  hugepages-2Mi                        0 (0%)          0 (0%)
+  openshift.io/pci_sriov_net_bh0c      2               2
+  openshift.io/pci_sriov_net_bh0c_1    2               2
+  openshift.io/pci_sriov_net_bh0u      1               1
+  openshift.io/pci_sriov_net_bh0u_1    0               0
+  openshift.io/pci_sriov_net_bh0u_2    1               1
+  openshift.io/pci_sriov_net_bh0u_2_1  0               0
+Capacity:
+  cpu:                                  112
+  ephemeral-storage:                    1873380608Ki
+  hugepages-1Gi:                        18Gi
+  hugepages-2Mi:                        0
+  memory:                               528020624Ki
+  openshift.io/pci_sriov_net_bh0c:      5
+  openshift.io/pci_sriov_net_bh0c_1:    5
+  openshift.io/pci_sriov_net_bh0u:      4
+  openshift.io/pci_sriov_net_bh0u_1:    4
+  openshift.io/pci_sriov_net_bh0u_2:    4
+  openshift.io/pci_sriov_net_bh0u_2_1:  4
+  pods:                                 250
+Allocatable:
+  cpu:                                  106
+  ephemeral-storage:                    1725433823651
+  hugepages-1Gi:                        18Gi
+  hugepages-2Mi:                        0
+  memory:                               490706064Ki
+  openshift.io/pci_sriov_net_bh0c:      5
+  openshift.io/pci_sriov_net_bh0c_1:    5
+  openshift.io/pci_sriov_net_bh0u:      4
+  openshift.io/pci_sriov_net_bh0u_1:    4
+  openshift.io/pci_sriov_net_bh0u_2:    4
+  openshift.io/pci_sriov_net_bh0u_2_1:  4
+  pods:                                 250
+sno10@haproxy:~/ocp-helm$ oc get po
+NAME                            READY   STATUS    RESTARTS   AGE
+bscf196-bip0-86b4bcc9d-rtmrn    1/1     Running   0          62m
+bscf196-bpp0-749b89bb4b-494jx   1/1     Running   0          62m
+bscf196-bpp1-59d645785-59q4c    1/1     Running   0          62m
+bscf196-bpp2-7f897dddf8-5vpgh   0/1     Pending   0          74m
+bscf196-cmp0-7754846459-fn8hr   1/1     Running   1          74m
+bscf196-dmp0-59648d956-5hw76    1/1     Running   1          74m
+bscf196-pmp0-7c8b7d9744-zmj7r   1/1     Running   1          74m
+sno10@haproxy:~/ocp-helm$ oc describe po bscf196-bpp2-7f897dddf8-5vpgh
+Name:             bscf196-bpp2-7f897dddf8-5vpgh
+Namespace:        bscf
+Priority:         0
+Service Account:  bscf-sa
+Node:             <none>
+Labels:           app=bscf196-bpp2
+                  component=bscf196-bpp
+                  nename=bscf196
+                  pod-template-hash=7f897dddf8
+                  release=bscf
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.v1.cni.cncf.io/networks: [ { "name": "bscf-bh0u-3-nad", "interface": "bh0" } ]
+                  openshift.io/scc: privileged
+Status:           Pending
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/bscf196-bpp2-7f897dddf8
+Init Containers:
+  install:
+    Image:      sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD70_I00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+      chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared; chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log
+    Limits:
+      cpu:                                500m
+      hugepages-1Gi:                      8Gi
+      memory:                             48Gi
+      openshift.io/pci_sriov_net_bh0u_3:  1
+    Requests:
+      cpu:                                500m
+      hugepages-1Gi:                      8Gi
+      memory:                             48Gi
+      openshift.io/pci_sriov_net_bh0u_3:  1
+    Environment:                          <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf196-bpp-log (rw)
+      /mnt/storage/shared from bscf196-bpp-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fdvrz (ro)
+Containers:
+  bpp:
+    Image:      sribharbor.sec.samsung.net/integ-ran/utd-bscf-bpp:SVR26BBSCUTDD70_I00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    Limits:
+      cpu:                                26
+      hugepages-1Gi:                      8Gi
+      memory:                             48Gi
+      openshift.io/pci_sriov_net_bh0u_3:  1
+    Requests:
+      cpu:                                26
+      hugepages-1Gi:                      8Gi
+      memory:                             48Gi
+      openshift.io/pci_sriov_net_bh0u_3:  1
+    Liveness:                             http-get http://:8080/bpp_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              UTC
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+      CONTAINER_NAME:  bpp
+    Mounts:
+      /dev/shm from cshm (rw)
+      /etc/config from env (rw)
+      /etc/podnetinfo from podnetinfo (ro)
+      /etc/ptp4l.conf from ptpconf (ro)
+      /hugepages from hugepage (rw)
+      /mnt/storage/log from bscf196-bpp-log (rw)
+      /mnt/storage/shared from bscf196-bpp-shared (rw)
+      /sys from sys (rw)
+      /var/host-run from ptp4l (ro)
+      /var/run/ptp from ptpdir (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fdvrz (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False
+Volumes:
+  cshm:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     Memory
+    SizeLimit:  <unset>
+  hugepage:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     HugePages
+    SizeLimit:  <unset>
+  sys:
+    Type:          HostPath (bare host directory volume)
+    Path:          /sys
+    HostPathType:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf196-bpp2
+    Optional:  false
+  ptpdir:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/run/ptp
+    HostPathType:  DirectoryOrCreate
+  ptp4l:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/run
+    HostPathType:  Directory
+  ptpconf:
+    Type:          HostPath (bare host directory volume)
+    Path:          /etc/ptp4l.conf
+    HostPathType:  File
+  bscf196-bpp-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf196-log-pvc
+    ReadOnly:   false
+  bscf196-bpp-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf196-shared-pvc
+    ReadOnly:   false
+  kube-api-access-fdvrz:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    ConfigMapOptional:       <nil>
+  podnetinfo:
+    Type:  DownwardAPI (a volume populated by information about the pod)
+    Items:
+      metadata.labels -> labels
+      metadata.annotations -> annotations
+      requests.hugepages-1Gi -> hugepages_1G_request_bpp
+      limits.hugepages-1Gi -> hugepages_1G_limit_bpp
+QoS Class:       Guaranteed
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age                       From               Message
+  ----     ------            ----                      ----               -------
+  Warning  FailedScheduling  44m                       default-scheduler  0/1 nodes are available: 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+  Warning  FailedScheduling  41m (x2 over 44m)         default-scheduler  0/1 nodes are available: 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+  Warning  FailedScheduling  <invalid> (x11 over 38m)  default-scheduler  0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient hugepages-1Gi, 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+  Warning  FailedScheduling  57m (x7 over 58m)         default-scheduler  0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient hugepages-1Gi, 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+sno10@haproxy:~/ocp-helm$ oc get net-attach-def
+NAME                AGE
+bscf-bh0c-1-nad     79m
+bscf-bh0c-nad       79m
+bscf-bh0u-1-nad     79m
+bscf-bh0u-2-1-nad   79m
+bscf-bh0u-2-nad     79m
+bscf-bh0u-3-1-nad   79m
+bscf-bh0u-3-nad     79m
+bscf-bh0u-nad       79m
+bscf-bond-nad       79m
+sno10@haproxy:~/ocp-helm$
