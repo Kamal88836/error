@@ -1,129 +1,95 @@
-This confirms the root cause with high confidence.
-
-Configuration mismatch
-
-Your SriovNetwork objects are configured to use resources that do not exist.
-
-You have:
-
-bscf-bh0u-3-nad
-spec:
-  resourceName: pci_sriov_net_bh0u_3
-
-and
-
-bscf-bh0u-3-1-nad
-spec:
-  resourceName: pci_sriov_net_bh0u_3_1
-
-But your node advertises only:
-
-openshift.io/pci_sriov_net_bh0u
-openshift.io/pci_sriov_net_bh0u_1
-openshift.io/pci_sriov_net_bh0u_2
-openshift.io/pci_sriov_net_bh0u_2_1
-
-There is no:
-
-openshift.io/pci_sriov_net_bh0u_3
-openshift.io/pci_sriov_net_bh0u_3_1
-
-Likewise, your SriovNetworkNodePolicy objects exist only for:
-
-policy-ens1f0-bh0u
-policy-ens3f3-bh0u-1
-policy-ens4f0-bh0u-2
-policy-ens6f0-bh0u-2-1
-
-There are no policies that create:
-
-pci_sriov_net_bh0u_3
-
-pci_sriov_net_bh0u_3_1
-
-
-Therefore the SR-IOV device plugin cannot advertise those resources, and the scheduler reports:
-
-Insufficient openshift.io/pci_sriov_net_bh0u_3
-
-Why this happened
-
-Your Helm chart created:
-
-SriovNetwork for bh0u-3
-
-SriovNetwork for bh0u-3-1
-
-
-but did not create the corresponding SriovNetworkNodePolicy objects.
-
-This is why the NADs exist but the resources are unavailable.
-
-Verify whether your server actually has those NICs
-
-Run:
-
-oc get sriovnetworknodestate ocp-sno.lab10.ocp.lan \
--n openshift-sriov-network-operator -o yaml | grep -A10 "interfaces:"
-
-or, more specifically:
-
-oc get sriovnetworknodestate ocp-sno.lab10.ocp.lan \
--n openshift-sriov-network-operator -o yaml | grep "name:"
-
-You should see interface names such as:
-
-ens1f0
-ens3f3
-ens4f0
-ens6f0
-
-If there are no additional interfaces (for example ens7f0 or similar), then bh0u_3 and bh0u_3_1 are invalid for this server.
-
-The fix depends on your hardware
-
-Case 1: The server has only 4 PFs (most likely)
-
-Your Helm values are incorrect. The deployment should use the existing resources:
-
-pci_sriov_net_bh0u
-
-pci_sriov_net_bh0u_1
-
-pci_sriov_net_bh0u_2
-
-pci_sriov_net_bh0u_2_1
-
-
-instead of bh0u_3 and bh0u_3_1.
-
-Case 2: The server should have additional PFs
-
-Then you must create matching SriovNetworkNodePolicy objects for:
-
-pci_sriov_net_bh0u_3
-
-pci_sriov_net_bh0u_3_1
-
-
-so the device plugin advertises those resources.
-
-
----
-
-One more issue
-
-Even after fixing the SR-IOV mismatch, your node still has:
-
-16 GiB / 18 GiB hugepages already allocated.
-
-Your pending pod requests 8 GiB hugepages.
-
-
-So you'll also need to free hugepages or increase the node's hugepage allocation before that pod can be scheduled.
-
-I have one question
-
-Is this SNO server supposed to have 6 SR-IOV ports or only 4 SR-IOV ports?
-
-That answer will tell us whether the Helm chart is wrong or whether the SR-IOV policies are incomplete.
+sno10@haproxy:~/ocp-helm$ oc get sriovnetworknodestate ocp-sno.lab10.ocp.lan \
+> -n openshift-sriov-network-operator -o yaml | grep "name:"
+  name: ocp-sno.lab10.ocp.lan
+    name: default
+    name: ens1f0
+    name: ens3f3
+    name: ens4f0
+    name: ens6f0
+    name: ens3f0
+    name: ens3f1
+    name: ens3f2
+      name: ens3f3v10
+      name: ens3f3v11
+      name: ens3f3v12
+      name: ens3f3v13
+      name: ens3f3v14
+      name: ens3f3v15
+      name: ens3f3v4
+      name: ens3f3v5
+      name: ens3f3v7
+      name: ens3f3v8
+      name: ens3f3v9
+    name: ens3f3
+      name: ens1f0v10
+      name: ens1f0v11
+      name: ens1f0v12
+      name: ens1f0v13
+      name: ens1f0v14
+      name: ens1f0v15
+      name: ens1f0v6
+      name: ens1f0v7
+      name: ens1f0v8
+      name: ens1f0v9
+    name: ens1f0
+    name: ens1f1
+    name: ens1f2
+    name: ens1f3
+      name: ens6f0v10
+      name: ens6f0v11
+      name: ens6f0v12
+      name: ens6f0v13
+      name: ens6f0v14
+      name: ens6f0v15
+      name: ens6f0v4
+      name: ens6f0v5
+      name: ens6f0v6
+      name: ens6f0v7
+      name: ens6f0v8
+      name: ens6f0v9
+    name: ens6f0
+    name: ens6f1
+    name: ens6f2
+    name: ens6f3
+      name: ens4f0v10
+      name: ens4f0v11
+      name: ens4f0v12
+      name: ens4f0v13
+      name: ens4f0v14
+      name: ens4f0v15
+      name: ens4f0v4
+      name: ens4f0v5
+      name: ens4f0v6
+      name: ens4f0v7
+      name: ens4f0v8
+      name: ens4f0v9
+    name: ens4f0
+    name: ens4f1
+    name: ens4f2
+    name: ens4f3
+sno10@haproxy:~/ocp-helm$ oc get sriovnetworknodestate ocp-sno.lab10.ocp.lan \
+> -n openshift-sriov-network-operator -o yaml | grep -A10 "interfaces:"
+  interfaces:
+  - mtu: 9000
+    name: ens1f0
+    numVfs: 16
+    pciAddress: "0000:11:00.0"
+    vfGroups:
+    - deviceType: vfio-pci
+      mtu: 9000
+      policyName: policy-ens1f0-bh0u
+      resourceName: pci_sriov_net_bh0u
+      vfRange: 0-3
+--
+  interfaces:
+  - deviceID: "1593"
+    driver: ice
+    eSwitchMode: legacy
+    linkAdminState: up
+    linkSpeed: 25000 Mb/s
+    linkType: ETH
+    mac: 6c:fe:54:47:25:58
+    mtu: 8500
+    name: ens3f0
+    pciAddress: 0000:0f:00.0
+sno10@haproxy:~/ocp-helm$
