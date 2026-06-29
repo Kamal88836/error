@@ -1,211 +1,151 @@
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                             Requests        Limits
-  --------                             --------        ------
-  cpu                                  84832m (80%)    93010m (87%)
-  memory                               223437Mi (46%)  206Gi (44%)
-  ephemeral-storage                    0 (0%)          0 (0%)
-  hugepages-1Gi                        16Gi (88%)      16Gi (88%)
-  hugepages-2Mi                        0 (0%)          0 (0%)
-  openshift.io/pci_sriov_net_bh0c      2               2
-  openshift.io/pci_sriov_net_bh0c_1    2               2
-  openshift.io/pci_sriov_net_bh0u      1               1
-  openshift.io/pci_sriov_net_bh0u_1    0               0
-  openshift.io/pci_sriov_net_bh0u_2    1               1
-  openshift.io/pci_sriov_net_bh0u_2_1  0               0
-Capacity:
-  cpu:                                  112
-  ephemeral-storage:                    1873380608Ki
-  hugepages-1Gi:                        18Gi
-  hugepages-2Mi:                        0
-  memory:                               528020624Ki
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
-  openshift.io/pci_sriov_net_bh0u_2:    4
-  openshift.io/pci_sriov_net_bh0u_2_1:  4
-  pods:                                 250
-Allocatable:
-  cpu:                                  106
-  ephemeral-storage:                    1725433823651
-  hugepages-1Gi:                        18Gi
-  hugepages-2Mi:                        0
-  memory:                               490706064Ki
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
-  openshift.io/pci_sriov_net_bh0u_2:    4
-  openshift.io/pci_sriov_net_bh0u_2_1:  4
-  pods:                                 250
-sno10@haproxy:~/ocp-helm$ oc get po
-NAME                            READY   STATUS    RESTARTS   AGE
-bscf196-bip0-86b4bcc9d-rtmrn    1/1     Running   0          62m
-bscf196-bpp0-749b89bb4b-494jx   1/1     Running   0          62m
-bscf196-bpp1-59d645785-59q4c    1/1     Running   0          62m
-bscf196-bpp2-7f897dddf8-5vpgh   0/1     Pending   0          74m
-bscf196-cmp0-7754846459-fn8hr   1/1     Running   1          74m
-bscf196-dmp0-59648d956-5hw76    1/1     Running   1          74m
-bscf196-pmp0-7c8b7d9744-zmj7r   1/1     Running   1          74m
-sno10@haproxy:~/ocp-helm$ oc describe po bscf196-bpp2-7f897dddf8-5vpgh
-Name:             bscf196-bpp2-7f897dddf8-5vpgh
-Namespace:        bscf
-Priority:         0
-Service Account:  bscf-sa
-Node:             <none>
-Labels:           app=bscf196-bpp2
-                  component=bscf196-bpp
-                  nename=bscf196
-                  pod-template-hash=7f897dddf8
-                  release=bscf
-                  restart-on-reboot=true
-                  tech=gsm
-Annotations:      k8s.v1.cni.cncf.io/networks: [ { "name": "bscf-bh0u-3-nad", "interface": "bh0" } ]
-                  openshift.io/scc: privileged
-Status:           Pending
-IP:
-IPs:              <none>
-Controlled By:    ReplicaSet/bscf196-bpp2-7f897dddf8
-Init Containers:
-  install:
-    Image:      sribharbor.sec.samsung.net/integ-ran/utd-bscf-init:SVR26BBSCUTDD70_I00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      sh
-      -c
-      chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared; chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log
-    Limits:
-      cpu:                                500m
-      hugepages-1Gi:                      8Gi
-      memory:                             48Gi
-      openshift.io/pci_sriov_net_bh0u_3:  1
-    Requests:
-      cpu:                                500m
-      hugepages-1Gi:                      8Gi
-      memory:                             48Gi
-      openshift.io/pci_sriov_net_bh0u_3:  1
-    Environment:                          <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf196-bpp-log (rw)
-      /mnt/storage/shared from bscf196-bpp-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fdvrz (ro)
-Containers:
-  bpp:
-    Image:      sribharbor.sec.samsung.net/integ-ran/utd-bscf-bpp:SVR26BBSCUTDD70_I00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    Limits:
-      cpu:                                26
-      hugepages-1Gi:                      8Gi
-      memory:                             48Gi
-      openshift.io/pci_sriov_net_bh0u_3:  1
-    Requests:
-      cpu:                                26
-      hugepages-1Gi:                      8Gi
-      memory:                             48Gi
-      openshift.io/pci_sriov_net_bh0u_3:  1
-    Liveness:                             http-get http://:8080/bpp_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:                            http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:              UTC
-      THIS_NODE_NAME:   (v1:spec.nodeName)
-      CONTAINER_NAME:  bpp
-    Mounts:
-      /dev/shm from cshm (rw)
-      /etc/config from env (rw)
-      /etc/podnetinfo from podnetinfo (ro)
-      /etc/ptp4l.conf from ptpconf (ro)
-      /hugepages from hugepage (rw)
-      /mnt/storage/log from bscf196-bpp-log (rw)
-      /mnt/storage/shared from bscf196-bpp-shared (rw)
-      /sys from sys (rw)
-      /var/host-run from ptp4l (ro)
-      /var/run/ptp from ptpdir (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fdvrz (ro)
-Conditions:
-  Type           Status
-  PodScheduled   False
-Volumes:
-  cshm:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:     Memory
-    SizeLimit:  <unset>
-  hugepage:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:     HugePages
-    SizeLimit:  <unset>
-  sys:
-    Type:          HostPath (bare host directory volume)
-    Path:          /sys
-    HostPathType:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf196-bpp2
-    Optional:  false
-  ptpdir:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/run/ptp
-    HostPathType:  DirectoryOrCreate
-  ptp4l:
-    Type:          HostPath (bare host directory volume)
-    Path:          /var/run
-    HostPathType:  Directory
-  ptpconf:
-    Type:          HostPath (bare host directory volume)
-    Path:          /etc/ptp4l.conf
-    HostPathType:  File
-  bscf196-bpp-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf196-log-pvc
-    ReadOnly:   false
-  bscf196-bpp-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf196-shared-pvc
-    ReadOnly:   false
-  kube-api-access-fdvrz:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-  podnetinfo:
-    Type:  DownwardAPI (a volume populated by information about the pod)
-    Items:
-      metadata.labels -> labels
-      metadata.annotations -> annotations
-      requests.hugepages-1Gi -> hugepages_1G_request_bpp
-      limits.hugepages-1Gi -> hugepages_1G_limit_bpp
-QoS Class:       Guaranteed
-Node-Selectors:  <none>
-Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type     Reason            Age                       From               Message
-  ----     ------            ----                      ----               -------
-  Warning  FailedScheduling  44m                       default-scheduler  0/1 nodes are available: 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
-  Warning  FailedScheduling  41m (x2 over 44m)         default-scheduler  0/1 nodes are available: 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
-  Warning  FailedScheduling  <invalid> (x11 over 38m)  default-scheduler  0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient hugepages-1Gi, 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
-  Warning  FailedScheduling  57m (x7 over 58m)         default-scheduler  0/1 nodes are available: 1 Insufficient cpu, 1 Insufficient hugepages-1Gi, 1 Insufficient openshift.io/pci_sriov_net_bh0u_3. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
-sno10@haproxy:~/ocp-helm$ oc get net-attach-def
-NAME                AGE
-bscf-bh0c-1-nad     79m
-bscf-bh0c-nad       79m
-bscf-bh0u-1-nad     79m
-bscf-bh0u-2-1-nad   79m
-bscf-bh0u-2-nad     79m
-bscf-bh0u-3-1-nad   79m
-bscf-bh0u-3-nad     79m
-bscf-bh0u-nad       79m
-bscf-bond-nad       79m
-sno10@haproxy:~/ocp-helm$
+From the output you shared, the pod is not pending because of memory or PVCs. The scheduler clearly tells you the reason.
+
+Root cause
+
+The event shows:
+
+0/1 nodes are available:
+Insufficient openshift.io/pci_sriov_net_bh0u_3
+Insufficient cpu
+Insufficient hugepages-1Gi
+
+The first failure was:
+
+Insufficient openshift.io/pci_sriov_net_bh0u_3
+
+Your pod requests:
+
+openshift.io/pci_sriov_net_bh0u_3: 1
+
+But in the node capacity you pasted earlier, I only see:
+
+openshift.io/pci_sriov_net_bh0u
+openshift.io/pci_sriov_net_bh0u_1
+openshift.io/pci_sriov_net_bh0u_2
+openshift.io/pci_sriov_net_bh0u_2_1
+
+I do NOT see:
+
+openshift.io/pci_sriov_net_bh0u_3
+
+So Kubernetes cannot allocate that SR-IOV resource.
+
+
+---
+
+Also check CPU and HugePages
+
+Your pod requests:
+
+CPU = 26 cores
+
+HugePages = 8Gi
+
+
+Node allocatable:
+
+CPU = 106
+HugePages = 18Gi
+
+Already allocated:
+
+CPU = 80%
+HugePages = 16Gi
+
+That means only approximately:
+
+CPU free ≈ 21 cores
+
+HugePages free = 2Gi
+
+
+Your pod needs:
+
+26 CPU
+
+8Gi HugePages
+
+
+So even if the SR-IOV VF existed, there still aren't enough CPU and hugepages available.
+
+
+---
+
+Verify the SR-IOV resource
+
+Run:
+
+oc describe node <node-name> | grep -A20 Allocatable
+
+or
+
+oc get node <node-name> -o json | jq '.status.allocatable'
+
+See whether:
+
+openshift.io/pci_sriov_net_bh0u_3
+
+is present.
+
+
+---
+
+Check the SR-IOV NetworkNodeState
+
+oc get networknodestate -n openshift-sriov-network-operator
+
+Then:
+
+oc describe networknodestate <node-name> -n openshift-sriov-network-operator
+
+Verify that a VF pool for bh0u_3 has actually been created.
+
+
+---
+
+Check the NetworkAttachmentDefinition
+
+Run:
+
+oc get net-attach-def bscf-bh0u-3-nad -o yaml
+
+Look for:
+
+resourceName:
+
+If it is:
+
+resourceName: bh0u_3
+
+then the node must advertise:
+
+openshift.io/pci_sriov_net_bh0u_3
+
+If it doesn't, the SR-IOV policy hasn't created that resource.
+
+
+---
+
+Most likely issues (in order)
+
+1. ❌ openshift.io/pci_sriov_net_bh0u_3 resource is not advertised by the node.
+
+
+2. ❌ Only 2Gi HugePages are free, but the pod needs 8Gi.
+
+
+3. ❌ Only about 21 CPUs are free, but the pod requests 26 CPUs.
+
+
+
+Please share the outputs of these commands:
+
+oc get sriovnetworknodepolicy -A
+
+oc get networknodestate -n openshift-sriov-network-operator
+
+oc get net-attach-def bscf-bh0u-3-nad -o yaml
+
+oc describe node <worker-node>
+
+These will confirm whether the problem is the missing SR-IOV resource, insufficient CPU/hugepages, or all three.
