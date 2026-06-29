@@ -1,295 +1,115 @@
-sno10@haproxy:~/ocp-helm$ oc get no
-NAME                    STATUS   ROLES                         AGE   VERSION
-ocp-sno.lab10.ocp.lan   Ready    control-plane,master,worker   66d   v1.31.11
-sno10@haproxy:~/ocp-helm$ oc describe node  | grep -A20 Allocatable
-Allocatable:
-  cpu:                                  106
-  ephemeral-storage:                    1725433823651
-  hugepages-1Gi:                        18Gi
-  hugepages-2Mi:                        0
-  memory:                               490706064Ki
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
-  openshift.io/pci_sriov_net_bh0u_2:    4
-  openshift.io/pci_sriov_net_bh0u_2_1:  4
-  pods:                                 250
-System Info:
-  Machine ID:                                       1bb1815492b24f9c8a3f32526757ba13
-  System UUID:                                      31353050-3237-4753-4834-30314d4a5a4a
-  Boot ID:                                          c6afb74d-0a00-4ad3-9e9f-eb628a891fc1
-  Kernel Version:                                   5.14.0-427.85.1.el9_4.x86_64+rt
-  OS Image:                                         Red Hat Enterprise Linux CoreOS 418.94.202508261658-0
-  Operating System:                                 linux
-  Architecture:                                     amd64
---
-  Normal  NodeAllocatableEnforced  54m                kubelet          Updated Node Allocatable limit across pods
-  Normal  RegisteredNode           53m                node-controller  Node ocp-sno.lab10.ocp.lan event: Registered Node ocp-sno.lab10.ocp.lan in Controller
-sno10@haproxy:~/ocp-helm$ oc get networknodestate -n openshift-sriov-network-operator
-error: the server doesn't have a resource type "networknodestate"
-sno10@haproxy:~/ocp-helm$ oc get net-attach-def bscf-bh0u-3-nad -o yaml
-apiVersion: k8s.cni.cncf.io/v1
-kind: NetworkAttachmentDefinition
-metadata:
-  annotations:
-    k8s.v1.cni.cncf.io/resourceName: openshift.io/pci_sriov_net_bh0u_3
-  creationTimestamp: "2026-06-29T10:50:42Z"
-  generation: 1
-  name: bscf-bh0u-3-nad
-  namespace: bscf
-  resourceVersion: "8326087"
-  uid: 0a7fe421-794c-4c8b-8bef-f2a3470b3f9c
-spec:
-  config: |-
-    {
-        "cniVersion": "1.0.0",
-        "name": "bscf-bh0u-3-nad",
-        "type": "sriov",
-        "vlan": 0,
-        "trust": "on",
-        "vlanQoS": 0,
-        "link_state": "auto",
-        "logLevel": "info",
-        "ipam": {}
-    }
-sno10@haproxy:~/ocp-helm$ oc get sriovnetworknodepolicy -A
-NAMESPACE                          NAME                     AGE
-openshift-sriov-network-operator   policy-ens1f0-bh0c       4h19m
-openshift-sriov-network-operator   policy-ens1f0-bh0u       4h19m
-openshift-sriov-network-operator   policy-ens3f3-bh0c-1     4h19m
-openshift-sriov-network-operator   policy-ens3f3-bh0u-1     4h19m
-openshift-sriov-network-operator   policy-ens4f0-bh0u-2     4h19m
-openshift-sriov-network-operator   policy-ens6f0-bh0u-2-1   4h19m
-sno10@haproxy:~/ocp-helm$ oc get networknodestate -n openshift-sriov-network-operator
-error: the server doesn't have a resource type "networknodestate"
-sno10@haproxy:~/ocp-helm$ oc describe node
-Name:               ocp-sno.lab10.ocp.lan
-Roles:              control-plane,master,worker
-Labels:             beta.kubernetes.io/arch=amd64
-                    beta.kubernetes.io/os=linux
-                    feature.node.kubernetes.io/network-sriov.capable=true
-                    kubernetes.io/arch=amd64
-                    kubernetes.io/hostname=ocp-sno.lab10.ocp.lan
-                    kubernetes.io/os=linux
-                    node-role.kubernetes.io/control-plane=
-                    node-role.kubernetes.io/master=
-                    node-role.kubernetes.io/worker=
-                    node.openshift.io/os_id=rhcos
-                    ptp-notification=true
-                    sriovnetwork.openshift.io/device-plugin=Enabled
-                    topology.topolvm.io/node=ocp-sno.lab10.ocp.lan
-Annotations:        capacity.topolvm.io/00default: 17156137811968
-                    capacity.topolvm.io/vg1: 17156137811968
-                    csi.volume.kubernetes.io/nodeid: {"topolvm.io":"ocp-sno.lab10.ocp.lan"}
-                    k8s.ovn.org/host-cidrs: ["2405:100:200:72::94/64","72.1.0.197/22"]
-                    k8s.ovn.org/l3-gateway-config:
-                      {"default":{"mode":"shared","bridge-id":"br-ex","interface-id":"br-ex_ocp-sno.lab10.ocp.lan","mac-address":"6c:fe:54:47:25:58","ip-address...
-                    k8s.ovn.org/node-chassis-id: 9b3e6da1-66cf-4b68-aa37-3bcde0fd4e2b
-                    k8s.ovn.org/node-encap-ips: ["72.1.0.197"]
-                    k8s.ovn.org/node-gateway-router-lrp-ifaddrs: {"default":{"ipv4":"100.64.0.2/16","ipv6":"fd98::2/64"}}
-                    k8s.ovn.org/node-id: 2
-                    k8s.ovn.org/node-masquerade-subnet: {"ipv4":"169.254.0.0/17","ipv6":"fd69::/112"}
-                    k8s.ovn.org/node-primary-ifaddr: {"ipv4":"72.1.0.197/22","ipv6":"2405:100:200:72::94/64"}
-                    k8s.ovn.org/node-subnets: {"default":["10.128.0.0/23","fd01:0:0:1::/64"]}
-                    k8s.ovn.org/node-transit-switch-port-ifaddr: {"ipv4":"100.88.0.2/16","ipv6":"fd97::2/64"}
-                    k8s.ovn.org/remote-zone-migrated: ocp-sno.lab10.ocp.lan
-                    k8s.ovn.org/zone-name: ocp-sno.lab10.ocp.lan
-                    machineconfiguration.openshift.io/controlPlaneTopology: SingleReplica
-                    machineconfiguration.openshift.io/currentConfig: rendered-master-e264c884b7e0f0d1026747d90b113b62
-                    machineconfiguration.openshift.io/desiredConfig: rendered-master-e264c884b7e0f0d1026747d90b113b62
-                    machineconfiguration.openshift.io/desiredDrain: uncordon-rendered-master-e264c884b7e0f0d1026747d90b113b62
-                    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-e264c884b7e0f0d1026747d90b113b62
-                    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: false
-                    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: 7801200
-                    machineconfiguration.openshift.io/post-config-action:
-                    machineconfiguration.openshift.io/reason:
-                    machineconfiguration.openshift.io/state: Done
-                    sriovnetwork.openshift.io/current-state: Idle
-                    sriovnetwork.openshift.io/state: Idle
-                    tuned.openshift.io/bootcmdline:
-                      skew_tick=1 tsc=reliable rcupdate.rcu_normal_after_boot=1 rcutree.nohz_full_patience_delay=1000 nohz=on rcu_nocbs=1-27,29-54,57-83,85-110 ...
-                    volumes.kubernetes.io/controller-managed-attach-detach: true
-CreationTimestamp:  Fri, 24 Apr 2026 06:03:08 +0000
-Taints:             <none>
-Unschedulable:      false
-Lease:
-  HolderIdentity:  ocp-sno.lab10.ocp.lan
-  AcquireTime:     <unset>
-  RenewTime:       Mon, 29 Jun 2026 12:18:01 +0000
-Conditions:
-  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
-  ----             ------  -----------------                 ------------------                ------                       -------
-  MemoryPressure   False   Mon, 29 Jun 2026 12:18:07 +0000   Fri, 26 Jun 2026 07:16:24 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
-  DiskPressure     False   Mon, 29 Jun 2026 12:18:07 +0000   Fri, 26 Jun 2026 07:16:24 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
-  PIDPressure      False   Mon, 29 Jun 2026 12:18:07 +0000   Fri, 26 Jun 2026 07:16:24 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
-  Ready            True    Mon, 29 Jun 2026 12:18:07 +0000   Mon, 29 Jun 2026 11:07:05 +0000   KubeletReady                 kubelet is posting ready status
-Addresses:
-  InternalIP:  72.1.0.197
-  InternalIP:  2405:100:200:72::94
-  Hostname:    ocp-sno.lab10.ocp.lan
-Capacity:
-  cpu:                                  112
-  ephemeral-storage:                    1873380608Ki
-  hugepages-1Gi:                        18Gi
-  hugepages-2Mi:                        0
-  memory:                               528020624Ki
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
-  openshift.io/pci_sriov_net_bh0u_2:    4
-  openshift.io/pci_sriov_net_bh0u_2_1:  4
-  pods:                                 250
-Allocatable:
-  cpu:                                  106
-  ephemeral-storage:                    1725433823651
-  hugepages-1Gi:                        18Gi
-  hugepages-2Mi:                        0
-  memory:                               490706064Ki
-  openshift.io/pci_sriov_net_bh0c:      5
-  openshift.io/pci_sriov_net_bh0c_1:    5
-  openshift.io/pci_sriov_net_bh0u:      4
-  openshift.io/pci_sriov_net_bh0u_1:    4
-  openshift.io/pci_sriov_net_bh0u_2:    4
-  openshift.io/pci_sriov_net_bh0u_2_1:  4
-  pods:                                 250
-System Info:
-  Machine ID:                                       1bb1815492b24f9c8a3f32526757ba13
-  System UUID:                                      31353050-3237-4753-4834-30314d4a5a4a
-  Boot ID:                                          c6afb74d-0a00-4ad3-9e9f-eb628a891fc1
-  Kernel Version:                                   5.14.0-427.85.1.el9_4.x86_64+rt
-  OS Image:                                         Red Hat Enterprise Linux CoreOS 418.94.202508261658-0
-  Operating System:                                 linux
-  Architecture:                                     amd64
-  Container Runtime Version:                        cri-o://1.31.11-2.rhaos4.18.git65ec77a.el9
-  Kubelet Version:                                  v1.31.11
-  Kube-Proxy Version:                               v1.31.11
-Non-terminated Pods:                                (100 in total)
-  Namespace                                         Name                                                          CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
-  ---------                                         ----                                                          ------------  ----------  ---------------  -------------  ---
-  bscf                                              bscf196-bip0-86b4bcc9d-rtmrn                                  22 (20%)      22 (20%)    16Gi (3%)        16Gi (3%)      54m
-  bscf                                              bscf196-bpp0-749b89bb4b-494jx                                 26 (24%)      26 (24%)    48Gi (10%)       48Gi (10%)     54m
-  bscf                                              bscf196-bpp1-59d645785-59q4c                                  26 (24%)      26 (24%)    48Gi (10%)       48Gi (10%)     54m
-  bscf                                              bscf196-cmp0-7754846459-fn8hr                                 2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       66m
-  bscf                                              bscf196-dmp0-59648d956-5hw76                                  1 (0%)        8 (7%)      44Gi (9%)        44Gi (9%)      66m
-  bscf                                              bscf196-pmp0-7c8b7d9744-zmj7r                                 5 (4%)        9 (8%)      46Gi (9%)        46Gi (9%)      66m
-  openshift-apiserver-operator                      openshift-apiserver-operator-8b47496bb-bjts2                  10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-apiserver                               apiserver-d48499ffc-n4gb6                                     110m (0%)     0 (0%)      250Mi (0%)       0 (0%)         66d
-  openshift-authentication-operator                 authentication-operator-5db94dcd4c-8nccl                      20m (0%)      0 (0%)      200Mi (0%)       0 (0%)         66d
-  openshift-authentication                          oauth-openshift-5fbd94bff8-qmn6z                              10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         21d
-  openshift-catalogd                                catalogd-controller-manager-fdd7f4cf6-vj9v8                   105m (0%)     0 (0%)      264Mi (0%)       0 (0%)         66d
-  openshift-cloud-controller-manager-operator       cluster-cloud-controller-manager-operator-78b6fc648c-hxl6j    30m (0%)      0 (0%)      95Mi (0%)        0 (0%)         66d
-  openshift-cloud-credential-operator               cloud-credential-operator-86994b5f5-frtjw                     20m (0%)      0 (0%)      40Mi (0%)        0 (0%)         66d
-  openshift-cluster-machine-approver                machine-approver-779c9c5477-pdrnh                             20m (0%)      0 (0%)      70Mi (0%)        0 (0%)         66d
-  openshift-cluster-node-tuning-operator            cluster-node-tuning-operator-6bf4447dc4-p9jfs                 10m (0%)      0 (0%)      20Mi (0%)        0 (0%)         66d
-  openshift-cluster-node-tuning-operator            tuned-2t68j                                                   10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-cluster-olm-operator                    cluster-olm-operator-99fc9bb88-9mwhp                          10m (0%)      0 (0%)      20Mi (0%)        0 (0%)         66d
-  openshift-cluster-samples-operator                cluster-samples-operator-5d58cd96bf-89dvg                     20m (0%)      0 (0%)      100Mi (0%)       0 (0%)         66d
-  openshift-cluster-storage-operator                cluster-storage-operator-558fb56f77-lfdsf                     10m (0%)      0 (0%)      20Mi (0%)        0 (0%)         66d
-  openshift-cluster-storage-operator                csi-snapshot-controller-8bcffc844-h2bpx                       10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-cluster-storage-operator                csi-snapshot-controller-operator-7d98c7c976-2gw84             10m (0%)      0 (0%)      65Mi (0%)        0 (0%)         66d
-  openshift-cluster-version                         cluster-version-operator-5779445f85-64gv4                     20m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-config-operator                         openshift-config-operator-685f69769f-qqlnt                    10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-console-operator                        console-operator-664c94c995-ppzsc                             10m (0%)      0 (0%)      100Mi (0%)       0 (0%)         66d
-  openshift-console                                 console-6f5f6754d-f5c8t                                       10m (0%)      0 (0%)      100Mi (0%)       0 (0%)         3d4h
-  openshift-console                                 downloads-d67945594-c9pbr                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-controller-manager-operator             openshift-controller-manager-operator-d78dc649b-9gshr         10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-controller-manager                      controller-manager-8675977d97-wl2qm                           100m (0%)     0 (0%)      100Mi (0%)       0 (0%)         3d4h
-  openshift-dns-operator                            dns-operator-779468654f-vd9jg                                 20m (0%)      0 (0%)      69Mi (0%)        0 (0%)         66d
-  openshift-dns                                     dns-default-w2g8j                                             60m (0%)      0 (0%)      110Mi (0%)       0 (0%)         66d
-  openshift-dns                                     node-resolver-rskf6                                           5m (0%)       0 (0%)      21Mi (0%)        0 (0%)         66d
-  openshift-etcd-operator                           etcd-operator-65484c69b-tqktd                                 10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-etcd                                    etcd-ocp-sno.lab10.ocp.lan                                    370m (0%)     0 (0%)      960Mi (0%)       0 (0%)         66d
-  openshift-image-registry                          cluster-image-registry-operator-8647d5b7f4-4k8gb              10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-image-registry                          node-ca-c7wt9                                                 10m (0%)      0 (0%)      10Mi (0%)        0 (0%)         66d
-  openshift-ingress-canary                          ingress-canary-bmgh4                                          10m (0%)      0 (0%)      20Mi (0%)        0 (0%)         66d
-  openshift-ingress-operator                        ingress-operator-68f48d6574-bx87p                             20m (0%)      0 (0%)      96Mi (0%)        0 (0%)         66d
-  openshift-ingress                                 router-default-678874fdbf-m42l9                               100m (0%)     0 (0%)      256Mi (0%)       0 (0%)         66d
-  openshift-insights                                insights-operator-75bfdcdb99-rx5c5                            10m (0%)      0 (0%)      54Mi (0%)        0 (0%)         66d
-  openshift-kube-apiserver-operator                 kube-apiserver-operator-77fb645684-c8kdq                      10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-kube-apiserver                          kube-apiserver-ocp-sno.lab10.ocp.lan                          290m (0%)     0 (0%)      1224Mi (0%)      0 (0%)         3d4h
-  openshift-kube-controller-manager-operator        kube-controller-manager-operator-7c86bd65c-mp7kr              10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-kube-controller-manager                 kube-controller-manager-ocp-sno.lab10.ocp.lan                 80m (0%)      0 (0%)      500Mi (0%)       0 (0%)         66d
-  openshift-kube-scheduler-operator                 openshift-kube-scheduler-operator-7fd6964986-vqbbv            10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-kube-scheduler                          openshift-kube-scheduler-ocp-sno.lab10.ocp.lan                25m (0%)      0 (0%)      150Mi (0%)       0 (0%)         66d
-  openshift-kube-storage-version-migrator-operator  kube-storage-version-migrator-operator-85fd6679d4-lxfb6       10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-kube-storage-version-migrator           migrator-d8868b89c-lwzhv                                      11m (0%)      0 (0%)      201Mi (0%)       0 (0%)         66d
-  openshift-machine-api                             cluster-autoscaler-operator-bff565675-4j95r                   30m (0%)      0 (0%)      70Mi (0%)        0 (0%)         66d
-  openshift-machine-api                             cluster-baremetal-operator-7959fc785f-nrcwx                   20m (0%)      0 (0%)      70Mi (0%)        0 (0%)         66d
-  openshift-machine-api                             control-plane-machine-set-operator-575b757c4-ct7bv            10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-machine-api                             machine-api-operator-8557c549fc-brhh2                         20m (0%)      0 (0%)      70Mi (0%)        0 (0%)         66d
-  openshift-machine-config-operator                 kube-rbac-proxy-crio-ocp-sno.lab10.ocp.lan                    20m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-machine-config-operator                 machine-config-controller-784d59cf85-cs5wt                    40m (0%)      0 (0%)      100Mi (0%)       0 (0%)         66d
-  openshift-machine-config-operator                 machine-config-daemon-5chvt                                   40m (0%)      0 (0%)      100Mi (0%)       0 (0%)         66d
-  openshift-machine-config-operator                 machine-config-operator-659c6fb5db-tvl8r                      40m (0%)      0 (0%)      100Mi (0%)       0 (0%)         66d
-  openshift-machine-config-operator                 machine-config-server-kcddf                                   20m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-marketplace                             cs-redhat-operator-index-v4-18-c7wcf                          10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         65d
-  openshift-marketplace                             marketplace-operator-75976b75dd-7vmqw                         1m (0%)       0 (0%)      5Mi (0%)         0 (0%)         65d
-  openshift-monitoring                              alertmanager-main-0                                           9m (0%)       0 (0%)      120Mi (0%)       0 (0%)         65d
-  openshift-monitoring                              cluster-monitoring-operator-86d48cf768-69z4p                  10m (0%)      0 (0%)      75Mi (0%)        0 (0%)         65d
-  openshift-monitoring                              kube-state-metrics-77bd57f77d-j7t62                           4m (0%)       0 (0%)      110Mi (0%)       0 (0%)         65d
-  openshift-monitoring                              metrics-server-65766cbd6f-rwwjw                               1m (0%)       0 (0%)      40Mi (0%)        0 (0%)         3d4h
-  openshift-monitoring                              monitoring-plugin-6b644f4696-j8942                            10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         65d
-  openshift-monitoring                              node-exporter-jfc9c                                           9m (0%)       0 (0%)      47Mi (0%)        0 (0%)         65d
-  openshift-monitoring                              openshift-state-metrics-54cf8d66d7-cd78r                      3m (0%)       0 (0%)      72Mi (0%)        0 (0%)         65d
-  openshift-monitoring                              prometheus-k8s-0                                              75m (0%)      0 (0%)      1099Mi (0%)      0 (0%)         65d
-  openshift-monitoring                              prometheus-operator-5d9694b69d-4smz4                          6m (0%)       0 (0%)      165Mi (0%)       0 (0%)         65d
-  openshift-monitoring                              prometheus-operator-admission-webhook-58cd6df765-fqgqp        5m (0%)       0 (0%)      30Mi (0%)        0 (0%)         65d
-  openshift-monitoring                              telemeter-client-7f46c897f7-l6h6k                             3m (0%)       0 (0%)      70Mi (0%)        0 (0%)         65d
-  openshift-monitoring                              thanos-querier-7df7b79986-87ktf                               15m (0%)      0 (0%)      87Mi (0%)        0 (0%)         65d
-  openshift-multus                                  multus-additional-cni-plugins-96qgb                           10m (0%)      0 (0%)      10Mi (0%)        0 (0%)         66d
-  openshift-multus                                  multus-admission-controller-5666df886c-wjxkn                  20m (0%)      0 (0%)      70Mi (0%)        0 (0%)         65d
-  openshift-multus                                  multus-xzbwf                                                  10m (0%)      0 (0%)      65Mi (0%)        0 (0%)         66d
-  openshift-multus                                  network-metrics-daemon-npdts                                  20m (0%)      0 (0%)      120Mi (0%)       0 (0%)         66d
-  openshift-network-console                         networking-console-plugin-7bfcbdd9d4-dqrwf                    10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-network-diagnostics                     network-check-source-69b7cb684c-l4vwb                         10m (0%)      0 (0%)      40Mi (0%)        0 (0%)         66d
-  openshift-network-diagnostics                     network-check-target-4wpzv                                    10m (0%)      0 (0%)      15Mi (0%)        0 (0%)         66d
-  openshift-network-node-identity                   network-node-identity-bcn5q                                   20m (0%)      0 (0%)      100Mi (0%)       0 (0%)         66d
-  openshift-network-operator                        iptables-alerter-vncrn                                        10m (0%)      10m (0%)    65Mi (0%)        0 (0%)         66d
-  openshift-network-operator                        network-operator-595f7fb96d-t6z2x                             10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-oauth-apiserver                         apiserver-6dfc55d67b-zqmhf                                    150m (0%)     0 (0%)      200Mi (0%)       0 (0%)         66d
-  openshift-operator-controller                     operator-controller-controller-manager-7959c57bb8-dz6gj       15m (0%)      0 (0%)      128Mi (0%)       0 (0%)         66d
-  openshift-operator-lifecycle-manager              catalog-operator-54d4bc5bc8-fqt2q                             10m (0%)      0 (0%)      80Mi (0%)        0 (0%)         66d
-  openshift-operator-lifecycle-manager              olm-operator-66c676c4f6-ng7fk                                 10m (0%)      0 (0%)      160Mi (0%)       0 (0%)         66d
-  openshift-operator-lifecycle-manager              package-server-manager-67f88755c5-6hgm9                       20m (0%)      0 (0%)      30Mi (0%)        0 (0%)         66d
-  openshift-operator-lifecycle-manager              packageserver-55d5dfd556-w4r2w                                10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         66d
-  openshift-ovn-kubernetes                          ovnkube-control-plane-789f5b6f98-rpc2t                        20m (0%)      0 (0%)      320Mi (0%)       0 (0%)         66d
-  openshift-ovn-kubernetes                          ovnkube-node-lxpqr                                            80m (0%)      0 (0%)      1630Mi (0%)      0 (0%)         66d
-  openshift-ptp                                     linuxptp-daemon-jql54                                         30m (0%)      0 (0%)      70Mi (0%)        0 (0%)         65d
-  openshift-ptp                                     ptp-operator-5d57874669-7kpn9                                 50m (0%)      0 (0%)      100Mi (0%)       0 (0%)         65d
-  openshift-route-controller-manager                route-controller-manager-cf48d94d9-pvdql                      100m (0%)     0 (0%)      100Mi (0%)       0 (0%)         3d4h
-  openshift-service-ca-operator                     service-ca-operator-68785bc7d8-b46qz                          10m (0%)      0 (0%)      80Mi (0%)        0 (0%)         66d
-  openshift-service-ca                              service-ca-857bcd89dd-hfb25                                   10m (0%)      0 (0%)      120Mi (0%)       0 (0%)         66d
-  openshift-sriov-network-operator                  network-resources-injector-8wzw7                              10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         65m
-  openshift-sriov-network-operator                  operator-webhook-gqshr                                        10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         65m
-  openshift-sriov-network-operator                  sriov-device-plugin-5xm6r                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         54m
-  openshift-sriov-network-operator                  sriov-network-config-daemon-q7tjm                             100m (0%)     0 (0%)      100Mi (0%)       0 (0%)         65m
-  openshift-sriov-network-operator                  sriov-network-operator-6f5d74ccbc-xc8m9                       0 (0%)        0 (0%)      0 (0%)           0 (0%)         65m
-  openshift-storage                                 lvms-operator-6769bf6cf7-864l5                                5m (0%)       0 (0%)      50Mi (0%)        0 (0%)         65d
-  openshift-storage                                 vg-manager-pnl4n                                              5m (0%)       0 (0%)      45Mi (0%)        0 (0%)         65d
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                             Requests        Limits
-  --------                             --------        ------
-  cpu                                  84832m (80%)    93010m (87%)
-  memory                               223437Mi (46%)  206Gi (44%)
-  ephemeral-storage                    0 (0%)          0 (0%)
-  hugepages-1Gi                        16Gi (88%)      16Gi (88%)
-  hugepages-2Mi                        0 (0%)          0 (0%)
-  openshift.io/pci_sriov_net_bh0c      2               2
-  openshift.io/pci_sriov_net_bh0c_1    2               2
-  openshift.io/pci_sriov_net_bh0u      1               1
-  openshift.io/pci_sriov_net_bh0u_1    0               0
-  openshift.io/pci_sriov_net_bh0u_2    1               1
-  openshift.io/pci_sriov_net_bh0u_2_1  0               0
-Events:
-  Type    Reason                   Age                From             Message
-  ----    ------                   ----               ----             -------
-  Normal  Starting                 55m                kubelet          Starting kubelet.
-  Normal  NodeHasSufficientMemory  55m (x8 over 55m)  kubelet          Node ocp-sno.lab10.ocp.lan status is now: NodeHasSufficientMemory
-  Normal  NodeHasNoDiskPressure    55m (x8 over 55m)  kubelet          Node ocp-sno.lab10.ocp.lan status is now: NodeHasNoDiskPressure
-  Normal  NodeHasSufficientPID     55m (x7 over 55m)  kubelet          Node ocp-sno.lab10.ocp.lan status is now: NodeHasSufficientPID
-  Normal  NodeAllocatableEnforced  55m                kubelet          Updated Node Allocatable limit across pods
-  Normal  RegisteredNode           54m                node-controller  Node ocp-sno.lab10.ocp.lan event: Registered Node ocp-sno.lab10.ocp.lan in Controller
-sno10@haproxy:~/ocp-helm$
+Thanks. This output clearly identifies the problem.
+
+Root Cause 1 (Primary): Missing SR-IOV resource
+
+Your pod requests:
+
+openshift.io/pci_sriov_net_bh0u_3: 1
+
+Your NAD also references:
+
+k8s.v1.cni.cncf.io/resourceName: openshift.io/pci_sriov_net_bh0u_3
+
+However, your node advertises only:
+
+openshift.io/pci_sriov_net_bh0u
+openshift.io/pci_sriov_net_bh0u_1
+openshift.io/pci_sriov_net_bh0u_2
+openshift.io/pci_sriov_net_bh0u_2_1
+
+There is NO:
+
+openshift.io/pci_sriov_net_bh0u_3
+
+So the scheduler is correct:
+
+Insufficient openshift.io/pci_sriov_net_bh0u_3
+
+That resource does not exist on the node.
+
+
+---
+
+Root Cause 2: No SR-IOV policy for bh0u_3
+
+Your policies are:
+
+policy-ens1f0-bh0u
+policy-ens3f3-bh0u-1
+policy-ens4f0-bh0u-2
+policy-ens6f0-bh0u-2-1
+
+There is no policy for bh0u_3.
+
+Yet you created:
+
+bscf-bh0u-3-nad
+
+This is an inconsistency.
+
+A NetworkAttachmentDefinition alone does not create SR-IOV resources. It only consumes resources exposed by an existing SR-IOV policy.
+
+
+---
+
+Root Cause 3: CPU/HugePages
+
+Even if you fixed the SR-IOV resource, your node currently has:
+
+CPU Requests = 80%
+
+HugePages Requests = 16Gi/18Gi
+
+
+Your pod requests:
+
+CPU = 26
+HugePages = 8Gi
+
+Only about 2 GiB of hugepages remain available, so the scheduler will also reject the pod because of hugepage exhaustion.
+
+
+---
+
+Why networknodestate is missing
+
+You ran:
+
+oc get networknodestate
+
+The correct resource name is:
+
+oc get sriovnetworknodestate -n openshift-sriov-network-operator
+
+or
+
+oc get sriovnetworknodestates -n openshift-sriov-network-operator
+
+
+---
+
+What to verify next
+
+Run these commands:
+
+oc get sriovnetwork -A
+
+oc get sriovnetworknodestate -n openshift-sriov-network-operator
+
+oc describe sriovnetworknodepolicy policy-ens6f0-bh0u-2-1
+
+oc describe sriovnetworknodepolicy policy-ens4f0-bh0u-2
+
+Also check whether bh0u_3 is expected to be another physical port or whether the application YAML mistakenly references bh0u_3 instead of one of the existing resources (bh0u, bh0u_1, bh0u_2, or bh0u_2_1).
+
+Conclusion
+
+Based on the outputs you provided, the deployment has a configuration mismatch:
+
+❌ The pod requests openshift.io/pci_sriov_net_bh0u_3.
+
+❌ The node does not advertise openshift.io/pci_sriov_net_bh0u_3.
+
+❌ There is no SriovNetworkNodePolicy for bh0u_3.
+
+❌ The node is also short on hugepages (16 GiB of 18 GiB already allocated), so even after fixing the SR-IOV resource, you may still need to free resources or increase the hugepage allocation.
