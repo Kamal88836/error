@@ -1,115 +1,83 @@
-Thanks. This output clearly identifies the problem.
+sno10@haproxy:~/ocp-helm$ oc get sriovnetwork -A
+NAMESPACE                          NAME                AGE
+openshift-sriov-network-operator   bscf-bh0c-1-nad     90m
+openshift-sriov-network-operator   bscf-bh0c-nad       90m
+openshift-sriov-network-operator   bscf-bh0u-1-nad     90m
+openshift-sriov-network-operator   bscf-bh0u-2-1-nad   90m
+openshift-sriov-network-operator   bscf-bh0u-2-nad     90m
+openshift-sriov-network-operator   bscf-bh0u-3-1-nad   90m
+openshift-sriov-network-operator   bscf-bh0u-3-nad     90m
+openshift-sriov-network-operator   bscf-bh0u-nad       90m
+sno10@haproxy:~/ocp-helm$ oc get sriovnetworknodestate -n openshift-sriov-network-operator
+NAME                    SYNC STATUS   DESIRED SYNC STATE   CURRENT SYNC STATE   AGE
+ocp-sno.lab10.ocp.lan   Succeeded     Idle                 Idle                 65d
+sno10@haproxy:~/ocp-helm$ oc describe sriovnetworknodepolicy policy-ens6f0-bh0u-2-1
+Error from server (NotFound): sriovnetworknodepolicies.sriovnetwork.openshift.io "policy-ens6f0-bh0u-2-1" not found
+sno10@haproxy:~/ocp-helm$ oc get  sriovnetworknodepolicy
+No resources found in bscf namespace.
+sno10@haproxy:~/ocp-helm$ oc get  sriovnetworknodepolicy -A
+NAMESPACE                          NAME                     AGE
+openshift-sriov-network-operator   policy-ens1f0-bh0c       4h25m
+openshift-sriov-network-operator   policy-ens1f0-bh0u       4h25m
+openshift-sriov-network-operator   policy-ens3f3-bh0c-1     4h25m
+openshift-sriov-network-operator   policy-ens3f3-bh0u-1     4h25m
+openshift-sriov-network-operator   policy-ens4f0-bh0u-2     4h25m
+openshift-sriov-network-operator   policy-ens6f0-bh0u-2-1   4h25m
+sno10@haproxy:~/ocp-helm$ oc describe sriovnetworknodepolicy policy-ens6f0-bh0u-2-1 -n openshift-sriov-network-operator
+Name:         policy-ens6f0-bh0u-2-1
+Namespace:    openshift-sriov-network-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  sriovnetwork.openshift.io/v1
+Kind:         SriovNetworkNodePolicy
+Metadata:
+  Creation Timestamp:  2026-06-29T07:57:52Z
+  Generation:          1
+  Resource Version:    8302765
+  UID:                 4abb48ca-f807-4f13-9402-147ce8c31802
+Spec:
+  Device Type:     vfio-pci
+  Is Rdma:         false
+  Mtu:             9000
+  Need Vhost Net:  true
+  Nic Selector:
+    Device ID:  1593
+    Pf Names:
+      ens6f0#0-3
+    Vendor:  8086
+  Node Selector:
+    feature.node.kubernetes.io/network-sriov.capable:  true
+  Num Vfs:                                             16
+  Priority:                                            99
+  Resource Name:                                       pci_sriov_net_bh0u_2_1
+Events:                                                <none>
+sno10@haproxy:~/ocp-helm$ oc describe sriovnetworknodepolicy policy-ens6f0-bh0u-2 -n openshift-sriov-network-operator
+Name:         policy-ens6f0-bh0u-2-1
+Namespace:    openshift-sriov-network-operator
+Labels:       <none>
+Annotations:  <none>
+API Version:  sriovnetwork.openshift.io/v1
+Kind:         SriovNetworkNodePolicy
+Metadata:
+  Creation Timestamp:  2026-06-29T07:57:52Z
+  Generation:          1
+  Resource Version:    8302765
+  UID:                 4abb48ca-f807-4f13-9402-147ce8c31802
+Spec:
+  Device Type:     vfio-pci
+  Is Rdma:         false
+  Mtu:             9000
+  Need Vhost Net:  true
+  Nic Selector:
+    Device ID:  1593
+    Pf Names:
+      ens6f0#0-3
+    Vendor:  8086
+  Node Selector:
+    feature.node.kubernetes.io/network-sriov.capable:  true
+  Num Vfs:                                             16
+  Priority:                                            99
+  Resource Name:                                       pci_sriov_net_bh0u_2_1
+Events:                                                <none>
 
-Root Cause 1 (Primary): Missing SR-IOV resource
-
-Your pod requests:
-
-openshift.io/pci_sriov_net_bh0u_3: 1
-
-Your NAD also references:
-
-k8s.v1.cni.cncf.io/resourceName: openshift.io/pci_sriov_net_bh0u_3
-
-However, your node advertises only:
-
-openshift.io/pci_sriov_net_bh0u
-openshift.io/pci_sriov_net_bh0u_1
-openshift.io/pci_sriov_net_bh0u_2
-openshift.io/pci_sriov_net_bh0u_2_1
-
-There is NO:
-
-openshift.io/pci_sriov_net_bh0u_3
-
-So the scheduler is correct:
-
-Insufficient openshift.io/pci_sriov_net_bh0u_3
-
-That resource does not exist on the node.
-
-
----
-
-Root Cause 2: No SR-IOV policy for bh0u_3
-
-Your policies are:
-
-policy-ens1f0-bh0u
-policy-ens3f3-bh0u-1
-policy-ens4f0-bh0u-2
-policy-ens6f0-bh0u-2-1
-
-There is no policy for bh0u_3.
-
-Yet you created:
-
-bscf-bh0u-3-nad
-
-This is an inconsistency.
-
-A NetworkAttachmentDefinition alone does not create SR-IOV resources. It only consumes resources exposed by an existing SR-IOV policy.
-
-
----
-
-Root Cause 3: CPU/HugePages
-
-Even if you fixed the SR-IOV resource, your node currently has:
-
-CPU Requests = 80%
-
-HugePages Requests = 16Gi/18Gi
-
-
-Your pod requests:
-
-CPU = 26
-HugePages = 8Gi
-
-Only about 2 GiB of hugepages remain available, so the scheduler will also reject the pod because of hugepage exhaustion.
-
-
----
-
-Why networknodestate is missing
-
-You ran:
-
-oc get networknodestate
-
-The correct resource name is:
-
-oc get sriovnetworknodestate -n openshift-sriov-network-operator
-
-or
-
-oc get sriovnetworknodestates -n openshift-sriov-network-operator
-
-
----
-
-What to verify next
-
-Run these commands:
-
-oc get sriovnetwork -A
-
-oc get sriovnetworknodestate -n openshift-sriov-network-operator
-
-oc describe sriovnetworknodepolicy policy-ens6f0-bh0u-2-1
-
-oc describe sriovnetworknodepolicy policy-ens4f0-bh0u-2
-
-Also check whether bh0u_3 is expected to be another physical port or whether the application YAML mistakenly references bh0u_3 instead of one of the existing resources (bh0u, bh0u_1, bh0u_2, or bh0u_2_1).
-
-Conclusion
-
-Based on the outputs you provided, the deployment has a configuration mismatch:
-
-❌ The pod requests openshift.io/pci_sriov_net_bh0u_3.
-
-❌ The node does not advertise openshift.io/pci_sriov_net_bh0u_3.
-
-❌ There is no SriovNetworkNodePolicy for bh0u_3.
-
-❌ The node is also short on hugepages (16 GiB of 18 GiB already allocated), so even after fixing the SR-IOV resource, you may still need to free resources or increase the hugepage allocation.
+sno10@haproxy:~/ocp-helm$
