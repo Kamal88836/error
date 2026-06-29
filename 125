@@ -1,83 +1,111 @@
-sno10@haproxy:~/ocp-helm$ oc get sriovnetwork -A
-NAMESPACE                          NAME                AGE
-openshift-sriov-network-operator   bscf-bh0c-1-nad     90m
-openshift-sriov-network-operator   bscf-bh0c-nad       90m
-openshift-sriov-network-operator   bscf-bh0u-1-nad     90m
-openshift-sriov-network-operator   bscf-bh0u-2-1-nad   90m
-openshift-sriov-network-operator   bscf-bh0u-2-nad     90m
-openshift-sriov-network-operator   bscf-bh0u-3-1-nad   90m
-openshift-sriov-network-operator   bscf-bh0u-3-nad     90m
-openshift-sriov-network-operator   bscf-bh0u-nad       90m
-sno10@haproxy:~/ocp-helm$ oc get sriovnetworknodestate -n openshift-sriov-network-operator
-NAME                    SYNC STATUS   DESIRED SYNC STATE   CURRENT SYNC STATE   AGE
-ocp-sno.lab10.ocp.lan   Succeeded     Idle                 Idle                 65d
-sno10@haproxy:~/ocp-helm$ oc describe sriovnetworknodepolicy policy-ens6f0-bh0u-2-1
-Error from server (NotFound): sriovnetworknodepolicies.sriovnetwork.openshift.io "policy-ens6f0-bh0u-2-1" not found
-sno10@haproxy:~/ocp-helm$ oc get  sriovnetworknodepolicy
-No resources found in bscf namespace.
-sno10@haproxy:~/ocp-helm$ oc get  sriovnetworknodepolicy -A
-NAMESPACE                          NAME                     AGE
-openshift-sriov-network-operator   policy-ens1f0-bh0c       4h25m
-openshift-sriov-network-operator   policy-ens1f0-bh0u       4h25m
-openshift-sriov-network-operator   policy-ens3f3-bh0c-1     4h25m
-openshift-sriov-network-operator   policy-ens3f3-bh0u-1     4h25m
-openshift-sriov-network-operator   policy-ens4f0-bh0u-2     4h25m
-openshift-sriov-network-operator   policy-ens6f0-bh0u-2-1   4h25m
-sno10@haproxy:~/ocp-helm$ oc describe sriovnetworknodepolicy policy-ens6f0-bh0u-2-1 -n openshift-sriov-network-operator
-Name:         policy-ens6f0-bh0u-2-1
-Namespace:    openshift-sriov-network-operator
-Labels:       <none>
-Annotations:  <none>
-API Version:  sriovnetwork.openshift.io/v1
-Kind:         SriovNetworkNodePolicy
-Metadata:
-  Creation Timestamp:  2026-06-29T07:57:52Z
-  Generation:          1
-  Resource Version:    8302765
-  UID:                 4abb48ca-f807-4f13-9402-147ce8c31802
-Spec:
-  Device Type:     vfio-pci
-  Is Rdma:         false
-  Mtu:             9000
-  Need Vhost Net:  true
-  Nic Selector:
-    Device ID:  1593
-    Pf Names:
-      ens6f0#0-3
-    Vendor:  8086
-  Node Selector:
-    feature.node.kubernetes.io/network-sriov.capable:  true
-  Num Vfs:                                             16
-  Priority:                                            99
-  Resource Name:                                       pci_sriov_net_bh0u_2_1
-Events:                                                <none>
-sno10@haproxy:~/ocp-helm$ oc describe sriovnetworknodepolicy policy-ens6f0-bh0u-2 -n openshift-sriov-network-operator
-Name:         policy-ens6f0-bh0u-2-1
-Namespace:    openshift-sriov-network-operator
-Labels:       <none>
-Annotations:  <none>
-API Version:  sriovnetwork.openshift.io/v1
-Kind:         SriovNetworkNodePolicy
-Metadata:
-  Creation Timestamp:  2026-06-29T07:57:52Z
-  Generation:          1
-  Resource Version:    8302765
-  UID:                 4abb48ca-f807-4f13-9402-147ce8c31802
-Spec:
-  Device Type:     vfio-pci
-  Is Rdma:         false
-  Mtu:             9000
-  Need Vhost Net:  true
-  Nic Selector:
-    Device ID:  1593
-    Pf Names:
-      ens6f0#0-3
-    Vendor:  8086
-  Node Selector:
-    feature.node.kubernetes.io/network-sriov.capable:  true
-  Num Vfs:                                             16
-  Priority:                                            99
-  Resource Name:                                       pci_sriov_net_bh0u_2_1
-Events:                                                <none>
+This confirms the issue. There is a mismatch between your SriovNetwork objects and the SriovNetworkNodePolicy objects.
 
-sno10@haproxy:~/ocp-helm$
+What I found
+
+Your node advertises only these SR-IOV resources:
+
+openshift.io/pci_sriov_net_bh0u
+openshift.io/pci_sriov_net_bh0u_1
+openshift.io/pci_sriov_net_bh0u_2
+openshift.io/pci_sriov_net_bh0u_2_1
+
+Your pod is requesting:
+
+openshift.io/pci_sriov_net_bh0u_3
+
+There is no such allocatable resource on the node.
+
+At the same time, you have created these SriovNetwork objects:
+
+bscf-bh0u-3-nad
+bscf-bh0u-3-1-nad
+
+But your SriovNetworkNodePolicy list contains only:
+
+policy-ens1f0-bh0u
+policy-ens3f3-bh0u-1
+policy-ens4f0-bh0u-2
+policy-ens6f0-bh0u-2-1
+
+There is no:
+
+policy-*-bh0u-3
+policy-*-bh0u-3-1
+
+So the SR-IOV device plugin never advertises:
+
+openshift.io/pci_sriov_net_bh0u_3
+openshift.io/pci_sriov_net_bh0u_3_1
+
+Therefore the scheduler reports:
+
+Insufficient openshift.io/pci_sriov_net_bh0u_3
+
+
+---
+
+Verify the SriovNetwork resource names
+
+Run:
+
+oc get sriovnetwork bscf-bh0u-3-nad -n openshift-sriov-network-operator -o yaml
+
+and
+
+oc get sriovnetwork bscf-bh0u-3-1-nad -n openshift-sriov-network-operator -o yaml
+
+Pay particular attention to:
+
+spec:
+  resourceName:
+
+If it is:
+
+resourceName: pci_sriov_net_bh0u_3
+
+then the corresponding SriovNetworkNodePolicy must exist with:
+
+spec:
+  resourceName: pci_sriov_net_bh0u_3
+
+Currently it does not.
+
+
+---
+
+Also check your Helm values
+
+Your deployment is requesting:
+
+resources:
+  requests:
+    openshift.io/pci_sriov_net_bh0u_3: 1
+
+Verify whether this is intentional. If your hardware only has four PF groups (bh0u, bh0u_1, bh0u_2, bh0u_2_1), then the Helm chart may be using the wrong resource name.
+
+
+---
+
+Another issue you'll hit next
+
+Even after fixing the SR-IOV resource, your node currently has:
+
+16 GiB / 18 GiB hugepages already allocated.
+
+Your pending pod requires 8 GiB hugepages.
+
+
+So after fixing bh0u_3, you'll still need to either:
+
+free hugepages by stopping other pods,
+
+increase hugepages on the node, or
+
+reduce the pod's hugepage request.
+
+
+My conclusion
+
+The scheduler error is valid. Your deployment references openshift.io/pci_sriov_net_bh0u_3, but the node does not advertise that resource because there is no matching SriovNetworkNodePolicy for bh0u_3.
+
+One question: Is this BSCF Helm chart provided by Samsung, or did you create the SR-IOV policies yourself? That will determine whether the fix is to correct the Helm values or to create the missing SriovNetworkNodePolicy for bh0u_3.
