@@ -1,111 +1,51 @@
-This confirms the issue. There is a mismatch between your SriovNetwork objects and the SriovNetworkNodePolicy objects.
-
-What I found
-
-Your node advertises only these SR-IOV resources:
-
-openshift.io/pci_sriov_net_bh0u
-openshift.io/pci_sriov_net_bh0u_1
-openshift.io/pci_sriov_net_bh0u_2
-openshift.io/pci_sriov_net_bh0u_2_1
-
-Your pod is requesting:
-
-openshift.io/pci_sriov_net_bh0u_3
-
-There is no such allocatable resource on the node.
-
-At the same time, you have created these SriovNetwork objects:
-
-bscf-bh0u-3-nad
-bscf-bh0u-3-1-nad
-
-But your SriovNetworkNodePolicy list contains only:
-
-policy-ens1f0-bh0u
-policy-ens3f3-bh0u-1
-policy-ens4f0-bh0u-2
-policy-ens6f0-bh0u-2-1
-
-There is no:
-
-policy-*-bh0u-3
-policy-*-bh0u-3-1
-
-So the SR-IOV device plugin never advertises:
-
-openshift.io/pci_sriov_net_bh0u_3
-openshift.io/pci_sriov_net_bh0u_3_1
-
-Therefore the scheduler reports:
-
-Insufficient openshift.io/pci_sriov_net_bh0u_3
-
-
----
-
-Verify the SriovNetwork resource names
-
-Run:
-
-oc get sriovnetwork bscf-bh0u-3-nad -n openshift-sriov-network-operator -o yaml
-
-and
-
-oc get sriovnetwork bscf-bh0u-3-1-nad -n openshift-sriov-network-operator -o yaml
-
-Pay particular attention to:
-
+sno10@haproxy:~/ocp-helm$ oc get sriovnetwork bscf-bh0u-3-nad -n openshift-sriov-network-operator -o yaml
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  annotations:
+    meta.helm.sh/release-name: bscf-pre
+    meta.helm.sh/release-namespace: bscf
+    operator.sriovnetwork.openshift.io/last-network-namespace: bscf
+  creationTimestamp: "2026-06-29T10:50:41Z"
+  finalizers:
+  - netattdef.finalizers.sriovnetwork.openshift.io
+  generation: 2
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: bscf-bh0u-3-nad
+  namespace: openshift-sriov-network-operator
+  resourceVersion: "8327550"
+  uid: 240e3935-e36b-42b4-854d-84dda957a141
 spec:
-  resourceName:
-
-If it is:
-
-resourceName: pci_sriov_net_bh0u_3
-
-then the corresponding SriovNetworkNodePolicy must exist with:
-
-spec:
+  ipam: '{}'
+  linkState: auto
+  logLevel: info
+  networkNamespace: bscf
   resourceName: pci_sriov_net_bh0u_3
-
-Currently it does not.
-
-
----
-
-Also check your Helm values
-
-Your deployment is requesting:
-
-resources:
-  requests:
-    openshift.io/pci_sriov_net_bh0u_3: 1
-
-Verify whether this is intentional. If your hardware only has four PF groups (bh0u, bh0u_1, bh0u_2, bh0u_2_1), then the Helm chart may be using the wrong resource name.
-
-
----
-
-Another issue you'll hit next
-
-Even after fixing the SR-IOV resource, your node currently has:
-
-16 GiB / 18 GiB hugepages already allocated.
-
-Your pending pod requires 8 GiB hugepages.
-
-
-So after fixing bh0u_3, you'll still need to either:
-
-free hugepages by stopping other pods,
-
-increase hugepages on the node, or
-
-reduce the pod's hugepage request.
-
-
-My conclusion
-
-The scheduler error is valid. Your deployment references openshift.io/pci_sriov_net_bh0u_3, but the node does not advertise that resource because there is no matching SriovNetworkNodePolicy for bh0u_3.
-
-One question: Is this BSCF Helm chart provided by Samsung, or did you create the SR-IOV policies yourself? That will determine whether the fix is to correct the Helm values or to create the missing SriovNetworkNodePolicy for bh0u_3.
+  trust: "on"
+sno10@haproxy:~/ocp-helm$ oc get sriovnetwork bscf-bh0u-3-1-nad -n openshift-sriov-network-operator -o yaml
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  annotations:
+    meta.helm.sh/release-name: bscf-pre
+    meta.helm.sh/release-namespace: bscf
+    operator.sriovnetwork.openshift.io/last-network-namespace: bscf
+  creationTimestamp: "2026-06-29T10:50:41Z"
+  finalizers:
+  - netattdef.finalizers.sriovnetwork.openshift.io
+  generation: 2
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: bscf-bh0u-3-1-nad
+  namespace: openshift-sriov-network-operator
+  resourceVersion: "8327548"
+  uid: 85806d56-c0c3-443c-85cc-6a2eec4717bc
+spec:
+  ipam: '{}'
+  linkState: auto
+  logLevel: info
+  networkNamespace: bscf
+  resourceName: pci_sriov_net_bh0u_3_1
+  trust: "on"
+sno10@haproxy:~/ocp-helm$
