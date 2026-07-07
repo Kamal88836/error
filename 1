@@ -1,37 +1,65 @@
-[root@bastion2025 ~]# rpm -q kernel-devel-$(uname -r)
-kernel-devel-5.14.0-687.22.1.el9_8.x86_64
-[root@bastion2025 ~]# rpm -q kernel-headers-$(uname -r)
-rpm -q gcc make elfutils-libelf-devel
-kernel-headers-5.14.0-687.22.1.el9_8.x86_64
-gcc-11.5.0-14.el9.x86_64
-make-4.3-8.el9.x86_64
-elfutils-libelf-devel-0.194-1.el9.x86_64
-[root@bastion2025 ~]# mokutil --sb-state
-SecureBoot disabled
-[root@bastion2025 ~]# dnf list installed kernel\*
-Updating Subscription Management repositories.
+Thanks. Your output clearly narrows it down.
 
-The system clock is skewed. There is a time difference of 10.0 seconds with the entitlement server. Please check your clock settings to ensure access to all entitled content.
+What we know
 
-Installed Packages
-kernel.x86_64                                                                          5.14.0-284.11.1.el9_2                                                             @anaconda
-kernel.x86_64                                                                          5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel.x86_64                                                                          5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel-core.x86_64                                                                     5.14.0-284.11.1.el9_2                                                             @anaconda
-kernel-core.x86_64                                                                     5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel-core.x86_64                                                                     5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel-devel.x86_64                                                                    5.14.0-503.26.1.el9_5                                                             @rhel-9-for-x86_64-appstream-rpms
-kernel-devel.x86_64                                                                    5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-appstream-rpms
-kernel-devel.x86_64                                                                    5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-appstream-rpms
-kernel-devel-matched.x86_64                                                            5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-appstream-rpms
-kernel-headers.x86_64                                                                  5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-appstream-rpms
-kernel-modules.x86_64                                                                  5.14.0-284.11.1.el9_2                                                             @anaconda
-kernel-modules.x86_64                                                                  5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel-modules.x86_64                                                                  5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel-modules-core.x86_64                                                             5.14.0-284.11.1.el9_2                                                             @anaconda
-kernel-modules-core.x86_64                                                             5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel-modules-core.x86_64                                                             5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel-srpm-macros.noarch                                                              1.0-14.el9                                                                        @rhel-9-for-x86_64-appstream-rpms
-kernel-tools.x86_64                                                                    5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
-kernel-tools-libs.x86_64                                                               5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
-[root@bastion2025 ~]#
+✅ kernel-devel is installed.
+
+✅ kernel-headers is installed.
+
+✅ gcc, make, and elfutils-libelf-devel are installed.
+
+✅ Secure Boot is disabled.
+
+✅ You have VirtualBox 7.2.12 installed.
+
+❌ vboxdrv fails to compile with errors such as:
+
+open_with_fake_path
+
+p4d_large
+
+get_user_pages
+
+vm_flags
+
+
+
+This indicates a VirtualBox source compatibility issue with your current RHEL 9.8 kernel (5.14.0-687.22.1.el9_8.x86_64), not a missing package issue.
+
+Option 1 (Recommended): Boot the EL9.7 kernel
+
+Since you still have the 5.14.0-611.26.1.el9_7 kernel installed, try booting into it.
+
+Check the GRUB entries:
+
+grubby --info=ALL
+
+or
+
+awk -F\' '$1=="menuentry " {print $2}' /boot/grub2/grub.cfg
+
+Then set the EL9.7 kernel as default:
+
+grubby --set-default /boot/vmlinuz-5.14.0-611.26.1.el9_7.x86_64
+reboot
+
+After reboot:
+
+uname -r
+sudo /sbin/vboxconfig
+
+Option 2: Use a newer VirtualBox build
+
+If you must stay on RHEL 9.8, install the latest Oracle VirtualBox package once Oracle releases a build compatible with this kernel.
+
+One more thing I'd like to verify
+
+Please run:
+
+rpm -qi virtualbox
+
+or
+
+dnf repolist
+
+I want to confirm which Oracle VirtualBox repository your RPM came from. If the RPM isn't the latest available from Oracle, upgrading to a newer build may resolve the issue.
