@@ -1,45 +1,39 @@
-[root@bastion2025 ~]# virtualbox
-WARNING: The vboxdrv kernel module is not loaded. Either there is no module
-         available for the current kernel (5.14.0-687.22.1.el9_8.x86_64) or it failed to
-         load. Please recompile the kernel module and install it by
+The log is still not showing the actual compiler error. It only shows the final make failure:
 
-           sudo /sbin/vboxconfig
-
-         You will not be able to start VMs until this problem is fixed.
-Qt WARNING: virtual void QtWaylandClient::QWaylandTextInputv3::zwp_text_input_v3_leave(wl_surface*) Got leave event for surface 0x0 focused surface 0x4759100
-
-
-^C
-[root@bastion2025 ~]# virtualbox
-WARNING: The vboxdrv kernel module is not loaded. Either there is no module
-         available for the current kernel (5.14.0-687.22.1.el9_8.x86_64) or it failed to
-         load. Please recompile the kernel module and install it by
-
-           sudo /sbin/vboxconfig
-
-         You will not be able to start VMs until this problem is fixed.
-^C
-[root@bastion2025 ~]# sudo /sbin/vboxconfig
-vboxdrv.sh: Stopping VirtualBox services.
-vboxdrv.sh: Starting VirtualBox services.
-vboxdrv.sh: Building VirtualBox kernel modules.
-vboxdrv.sh: failed: Look at /var/log/vbox-setup.log to find out what went wrong.
-
-There were problems setting up VirtualBox.  To re-start the set-up process, run
-  /sbin/vboxconfig
-as root.  If your system is using EFI Secure Boot you may need to sign the
-kernel modules (vboxdrv, vboxnetflt, vboxnetadp, vboxpci) before you can load
-them. Please see your Linux system's documentation for more information.
-[root@bastion2025 ~]#
-
-[root@bastion2025 ~]# tail -f   /var/log/vbox-setup.log
-  if nm /tmp/vbox.0/SUPDrv.o 2>/dev/null | grep -q ' __export_symbol_'; then gcc -E -D__GENKSYMS__ -Wp,-MMD,/tmp/vbox.0/.SUPDrv.o.d -nostdinc -I./arch/x86/include -I./arch/x86/include/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/compiler-version.h -include ./include/linux/kconfig.h -include ./include/linux/compiler_types.h -D__KERNEL__ -fmacro-prefix-map=./= -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE -Werror=implicit-function-declaration -Werror=implicit-int -Werror=return-type -Wno-format-security -std=gnu11 -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fcf-protection=none -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mskip-rax-setup -mtune=generic -mno-red-zone -mcmodel=kernel -Wno-sign-compare -fno-asynchronous-unwind-tables -mindirect-branch=thunk-extern -mindirect-branch-register -mindirect-branch-cs-prefix -mfunction-return=thunk-extern -fno-jump-tables -mharden-sls=all -fpatchable-function-entry=16,16 -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-address-of-packed-member -O2 -fno-allow-store-data-races -Wframe-larger-than=2048 -fstack-protector-strong -Wno-main -Wno-unused-but-set-variable -Wno-unused-const-variable -fno-stack-clash-protection -g -pg -mrecord-mcount -mfentry -DCC_USING_FENTRY -fno-inline-functions-called-once -falign-functions=16 -Wvla -Wno-pointer-sign -Wcast-function-type -Wno-stringop-truncation -Wno-stringop-overflow -Wno-restrict -Wno-maybe-uninitialized -Wno-array-bounds -Wno-alloc-size-larger-than "-Wimplicit-fallthrough=5" -fno-strict-overflow -fno-stack-check -fconserve-stack -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -Wno-packed-not-aligned -include /tmp/vbox.0/include/VBox/SUPDrvMangling.h -fno-omit-frame-pointer -fno-pie -Wno-declaration-after-statement -I./include -I/tmp/vbox.0/ -I/tmp/vbox.0/include -I/tmp/vbox.0/r0drv/linux -D__KERNEL__ -DMODULE -DRT_WITHOUT_PRAGMA_ONCE -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_SUP_R0 -DVBOX -DRT_WITH_VBOX -DVBOX_WITH_HARDENING -DSUPDRV_WITH_RELEASE_LOGGER -DVBOX_WITHOUT_EFLAGS_AC_SET_IN_VBOXDRV -DIPRT_WITHOUT_EFLAGS_AC_PRESERVING -DVBOX_WITH_HOST_VMX -DCONFIG_VBOXDRV_AS_MISC -DRT_ARCH_AMD64 -include /tmp/vbox.0/include/VBox/SUPDrvMangling.h -fno-omit-frame-pointer -fno-pie -Wno-declaration-after-statement -I./include -I/tmp/vbox.0/ -I/tmp/vbox.0/include -I/tmp/vbox.0/r0drv/linux -D__KERNEL__ -DMODULE -DRT_WITHOUT_PRAGMA_ONCE -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_SUP_R0 -DVBOX -DRT_WITH_VBOX -DVBOX_WITH_HARDENING -DSUPDRV_WITH_RELEASE_LOGGER -DVBOX_WITHOUT_EFLAGS_AC_SET_IN_VBOXDRV -DIPRT_WITHOUT_EFLAGS_AC_PRESERVING -DVBOX_WITH_HOST_VMX -DCONFIG_VBOXDRV_AS_MISC -DRT_ARCH_AMD64  -DMODULE  -DKBUILD_BASENAME='"SUPDrv"' -DKBUILD_MODNAME='"vboxdrv"' -D__KBUILD_MODNAME=kmod_vboxdrv /tmp/vbox.0/SUPDrv.c | scripts/genksyms/genksyms   -r /dev/null >> /tmp/vbox.0/.SUPDrv.o.cmd; fi
-   { echo ; echo '/tmp/vbox.0/combined-agnostic2.o: $(wildcard ./tools/objtool/objtool)' ; } >> /tmp/vbox.0/.combined-agnostic2.o.cmd
 cc1: some warnings being treated as errors
-  if nm /tmp/vbox.0/combined-agnostic2.o 2>/dev/null | grep -q ' __export_symbol_'; then gcc -E -D__GENKSYMS__ -Wp,-MMD,/tmp/vbox.0/.combined-agnostic2.o.d -nostdinc -I./arch/x86/include -I./arch/x86/include/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/compiler-version.h -include ./include/linux/kconfig.h -include ./include/linux/compiler_types.h -D__KERNEL__ -fmacro-prefix-map=./= -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE -Werror=implicit-function-declaration -Werror=implicit-int -Werror=return-type -Wno-format-security -std=gnu11 -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fcf-protection=none -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mskip-rax-setup -mtune=generic -mno-red-zone -mcmodel=kernel -Wno-sign-compare -fno-asynchronous-unwind-tables -mindirect-branch=thunk-extern -mindirect-branch-register -mindirect-branch-cs-prefix -mfunction-return=thunk-extern -fno-jump-tables -mharden-sls=all -fpatchable-function-entry=16,16 -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-address-of-packed-member -O2 -fno-allow-store-data-races -Wframe-larger-than=2048 -fstack-protector-strong -Wno-main -Wno-unused-but-set-variable -Wno-unused-const-variable -fno-stack-clash-protection -g -pg -mrecord-mcount -mfentry -DCC_USING_FENTRY -fno-inline-functions-called-once -falign-functions=16 -Wvla -Wno-pointer-sign -Wcast-function-type -Wno-stringop-truncation -Wno-stringop-overflow -Wno-restrict -Wno-maybe-uninitialized -Wno-array-bounds -Wno-alloc-size-larger-than "-Wimplicit-fallthrough=5" -fno-strict-overflow -fno-stack-check -fconserve-stack -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -Wno-packed-not-aligned -include /tmp/vbox.0/include/VBox/SUPDrvMangling.h -fno-omit-frame-pointer -fno-pie -Wno-declaration-after-statement -I./include -I/tmp/vbox.0/ -I/tmp/vbox.0/include -I/tmp/vbox.0/r0drv/linux -D__KERNEL__ -DMODULE -DRT_WITHOUT_PRAGMA_ONCE -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_SUP_R0 -DVBOX -DRT_WITH_VBOX -DVBOX_WITH_HARDENING -DSUPDRV_WITH_RELEASE_LOGGER -DVBOX_WITHOUT_EFLAGS_AC_SET_IN_VBOXDRV -DIPRT_WITHOUT_EFLAGS_AC_PRESERVING -DVBOX_WITH_HOST_VMX -DCONFIG_VBOXDRV_AS_MISC -DRT_ARCH_AMD64 -include /tmp/vbox.0/include/VBox/SUPDrvMangling.h -fno-omit-frame-pointer -fno-pie -Wno-declaration-after-statement -I./include -I/tmp/vbox.0/ -I/tmp/vbox.0/include -I/tmp/vbox.0/r0drv/linux -D__KERNEL__ -DMODULE -DRT_WITHOUT_PRAGMA_ONCE -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_SUP_R0 -DVBOX -DRT_WITH_VBOX -DVBOX_WITH_HARDENING -DSUPDRV_WITH_RELEASE_LOGGER -DVBOX_WITHOUT_EFLAGS_AC_SET_IN_VBOXDRV -DIPRT_WITHOUT_EFLAGS_AC_PRESERVING -DVBOX_WITH_HOST_VMX -DCONFIG_VBOXDRV_AS_MISC -DRT_ARCH_AMD64  -DMODULE  -DKBUILD_BASENAME='"combined_agnostic2"' -DKBUILD_MODNAME='"vboxdrv"' -D__KBUILD_MODNAME=kmod_vboxdrv /tmp/vbox.0/combined-agnostic2.c | scripts/genksyms/genksyms   -r /dev/null >> /tmp/vbox.0/.combined-agnostic2.o.cmd; fi
-make[2]: *** [scripts/Makefile.build:250: /tmp/vbox.0/combined-os-specific.o] Error 1
-make[2]: *** Waiting for unfinished jobs....
-   { echo ; echo '/tmp/vbox.0/combined-agnostic1.o: $(wildcard ./tools/objtool/objtool)' ; } >> /tmp/vbox.0/.combined-agnostic1.o.cmd
-  if nm /tmp/vbox.0/combined-agnostic1.o 2>/dev/null | grep -q ' __export_symbol_'; then gcc -E -D__GENKSYMS__ -Wp,-MMD,/tmp/vbox.0/.combined-agnostic1.o.d -nostdinc -I./arch/x86/include -I./arch/x86/include/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/compiler-version.h -include ./include/linux/kconfig.h -include ./include/linux/compiler_types.h -D__KERNEL__ -fmacro-prefix-map=./= -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE -Werror=implicit-function-declaration -Werror=implicit-int -Werror=return-type -Wno-format-security -std=gnu11 -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fcf-protection=none -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mskip-rax-setup -mtune=generic -mno-red-zone -mcmodel=kernel -Wno-sign-compare -fno-asynchronous-unwind-tables -mindirect-branch=thunk-extern -mindirect-branch-register -mindirect-branch-cs-prefix -mfunction-return=thunk-extern -fno-jump-tables -mharden-sls=all -fpatchable-function-entry=16,16 -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-address-of-packed-member -O2 -fno-allow-store-data-races -Wframe-larger-than=2048 -fstack-protector-strong -Wno-main -Wno-unused-but-set-variable -Wno-unused-const-variable -fno-stack-clash-protection -g -pg -mrecord-mcount -mfentry -DCC_USING_FENTRY -fno-inline-functions-called-once -falign-functions=16 -Wvla -Wno-pointer-sign -Wcast-function-type -Wno-stringop-truncation -Wno-stringop-overflow -Wno-restrict -Wno-maybe-uninitialized -Wno-array-bounds -Wno-alloc-size-larger-than "-Wimplicit-fallthrough=5" -fno-strict-overflow -fno-stack-check -fconserve-stack -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -Wno-packed-not-aligned -include /tmp/vbox.0/include/VBox/SUPDrvMangling.h -fno-omit-frame-pointer -fno-pie -Wno-declaration-after-statement -I./include -I/tmp/vbox.0/ -I/tmp/vbox.0/include -I/tmp/vbox.0/r0drv/linux -D__KERNEL__ -DMODULE -DRT_WITHOUT_PRAGMA_ONCE -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_SUP_R0 -DVBOX -DRT_WITH_VBOX -DVBOX_WITH_HARDENING -DSUPDRV_WITH_RELEASE_LOGGER -DVBOX_WITHOUT_EFLAGS_AC_SET_IN_VBOXDRV -DIPRT_WITHOUT_EFLAGS_AC_PRESERVING -DVBOX_WITH_HOST_VMX -DCONFIG_VBOXDRV_AS_MISC -DRT_ARCH_AMD64 -include /tmp/vbox.0/include/VBox/SUPDrvMangling.h -fno-omit-frame-pointer -fno-pie -Wno-declaration-after-statement -I./include -I/tmp/vbox.0/ -I/tmp/vbox.0/include -I/tmp/vbox.0/r0drv/linux -D__KERNEL__ -DMODULE -DRT_WITHOUT_PRAGMA_ONCE -DRT_OS_LINUX -DIN_RING0 -DIN_RT_R0 -DIN_SUP_R0 -DVBOX -DRT_WITH_VBOX -DVBOX_WITH_HARDENING -DSUPDRV_WITH_RELEASE_LOGGER -DVBOX_WITHOUT_EFLAGS_AC_SET_IN_VBOXDRV -DIPRT_WITHOUT_EFLAGS_AC_PRESERVING -DVBOX_WITH_HOST_VMX -DCONFIG_VBOXDRV_AS_MISC -DRT_ARCH_AMD64  -DMODULE  -DKBUILD_BASENAME='"combined_agnostic1"' -DKBUILD_MODNAME='"vboxdrv"' -D__KBUILD_MODNAME=kmod_vboxdrv /tmp/vbox.0/combined-agnostic1.c | scripts/genksyms/genksyms   -r /dev/null >> /tmp/vbox.0/.combined-agnostic1.o.cmd; fi
-make[1]: *** [Makefile:1968: /tmp/vbox.0] Error 2
-make: *** [/tmp/vbox.0/Makefile-footer.gmk:146: vboxdrv] Error 2
+make[2]: *** ... Error 1
+
+The important line (for example, error: ...) appears just before this section.
+
+Let's identify it.
+
+Run these commands:
+
+grep -n -E "error:|warning:|fatal:" /var/log/vbox-setup.log | tail -30
+
+and
+
+grep -n "combined-os-specific" /var/log/vbox-setup.log -A20 -B20
+
+Also, please confirm the VirtualBox version now:
+
+rpm -qa | grep -i VirtualBox
+VBoxManage --version
+
+One thing I noticed
+
+Your kernel is now:
+
+5.14.0-687.22.1.el9_8.x86_64
+
+This is different from your earlier 5.14.0-611... kernel, which means your system has been updated to RHEL 9.8.
+
+If you installed an older VirtualBox 7.1 RPM (for example, an early 7.1.x release), it may still not support the latest RHEL 9.8 kernel. We need to verify exactly which VirtualBox 7.1 version you installed.
+
+Please share the output of:
+
+rpm -qa | grep -i VirtualBox
+VBoxManage --version
+grep -n -E "error:|fatal:" /var/log/vbox-setup.log | tail -30
+
+Those three outputs will pinpoint whether this is a version compatibility issue or a different build problem.
