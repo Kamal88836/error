@@ -1,51 +1,37 @@
-The important error is this:
-
-error: implicit declaration of function 'open_with_fake_path'
-
-This means the VirtualBox kernel module source is not compatible with your current RHEL 9.8 kernel (5.14.0-687.22.1.el9_8.x86_64). The build fails before the vboxdrv module can be created.
-
-Your system currently has:
-
-Kernel: 5.14.0-687.22.1.el9_8.x86_64 (RHEL 9.8)
-
-VirtualBox: 7.2.12
-
-
-This is not a missing kernel-devel or gcc problem—the kernel API has changed, and the VirtualBox source you're using doesn't compile against it.
-
-First, verify prerequisites
-
-Run:
-
-rpm -q kernel-devel-$(uname -r)
-rpm -q kernel-headers-$(uname -r)
+[root@bastion2025 ~]# rpm -q kernel-devel-$(uname -r)
+kernel-devel-5.14.0-687.22.1.el9_8.x86_64
+[root@bastion2025 ~]# rpm -q kernel-headers-$(uname -r)
 rpm -q gcc make elfutils-libelf-devel
+kernel-headers-5.14.0-687.22.1.el9_8.x86_64
+gcc-11.5.0-14.el9.x86_64
+make-4.3-8.el9.x86_64
+elfutils-libelf-devel-0.194-1.el9.x86_64
+[root@bastion2025 ~]# mokutil --sb-state
+SecureBoot disabled
+[root@bastion2025 ~]# dnf list installed kernel\*
+Updating Subscription Management repositories.
 
-All should report as installed.
+The system clock is skewed. There is a time difference of 10.0 seconds with the entitlement server. Please check your clock settings to ensure access to all entitled content.
 
-If they are installed
-
-The solution is to use a VirtualBox build that supports your kernel.
-
-You have two options:
-
-1. Upgrade VirtualBox to the newest release available from Oracle (preferred).
-
-
-2. Boot an older RHEL kernel that VirtualBox 7.2.12 supports, if one is still installed.
-
-
-
-Also check whether Secure Boot is enabled
-
-mokutil --sb-state
-
-If it says SecureBoot enabled, even a successfully built module must be signed before it can load.
-
-I need one more output
-
-Please run:
-
-dnf list installed kernel\*
-
-This will show whether you have an older kernel available that you can boot temporarily, or whether upgrading VirtualBox is the only practical solution.
+Installed Packages
+kernel.x86_64                                                                          5.14.0-284.11.1.el9_2                                                             @anaconda
+kernel.x86_64                                                                          5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel.x86_64                                                                          5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel-core.x86_64                                                                     5.14.0-284.11.1.el9_2                                                             @anaconda
+kernel-core.x86_64                                                                     5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel-core.x86_64                                                                     5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel-devel.x86_64                                                                    5.14.0-503.26.1.el9_5                                                             @rhel-9-for-x86_64-appstream-rpms
+kernel-devel.x86_64                                                                    5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-appstream-rpms
+kernel-devel.x86_64                                                                    5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-appstream-rpms
+kernel-devel-matched.x86_64                                                            5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-appstream-rpms
+kernel-headers.x86_64                                                                  5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-appstream-rpms
+kernel-modules.x86_64                                                                  5.14.0-284.11.1.el9_2                                                             @anaconda
+kernel-modules.x86_64                                                                  5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel-modules.x86_64                                                                  5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel-modules-core.x86_64                                                             5.14.0-284.11.1.el9_2                                                             @anaconda
+kernel-modules-core.x86_64                                                             5.14.0-611.26.1.el9_7                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel-modules-core.x86_64                                                             5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel-srpm-macros.noarch                                                              1.0-14.el9                                                                        @rhel-9-for-x86_64-appstream-rpms
+kernel-tools.x86_64                                                                    5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
+kernel-tools-libs.x86_64                                                               5.14.0-687.22.1.el9_8                                                             @rhel-9-for-x86_64-baseos-rpms
+[root@bastion2025 ~]#
