@@ -1,96 +1,49 @@
-The log you posted is truncated before the actual error. Right now it only shows the compilation command, not the reason the build failed.
+[root@bastion2025 ~]# VBoxManage --version
+WARNING: The vboxdrv kernel module is not loaded. Either there is no module
+         available for the current kernel (5.14.0-611.26.1.el9_7.x86_64) or it failed to
+         load. Please recompile the kernel module and install it by
 
-Also, there are two separate issues:
+           sudo /sbin/vboxconfig
 
-1. Qt could not connect to display
-
-You're running virtualbox as root from a terminal without an X11 display.
-
-If this is a headless server, use:
-
-VBoxManage --version
-
-instead of virtualbox.
-
-Or launch it from a graphical desktop as a normal user.
-
-
-
-2. Kernel module build failed (this is the real problem)
-
-vboxdrv was not built for your kernel:
-
-5.14.0-611.26.1.el9_7.x86_64
-
-
-
-
-First, check these packages
-
-uname -r
+         You will not be able to start VMs until this problem is fixed.
+6.1.50r161033
+[root@bastion2025 ~]# uname -r
 
 rpm -q kernel-devel-$(uname -r)
 rpm -q kernel-headers-$(uname -r)
 rpm -q gcc
 rpm -q make
 rpm -q elfutils-libelf-devel
+5.14.0-611.26.1.el9_7.x86_64
+kernel-devel-5.14.0-611.26.1.el9_7.x86_64
+kernel-headers-5.14.0-611.26.1.el9_7.x86_64
+gcc-11.5.0-11.el9.x86_64
+make-4.3-8.el9.x86_64
+elfutils-libelf-devel-0.193-1.el9.x86_64
+[root@bastion2025 ~]# dnf install gcc make perl elfutils-libelf-devel kernel-devel-$(uname -r) kernel-headers-$(uname -r)
+Updating Subscription Management repositories.
+Unable to read consumer identity
 
-If any package is missing:
+This system is not registered with an entitlement server. You can use "rhc" or "subscription-manager" to register.
 
-dnf install gcc make perl elfutils-libelf-devel kernel-devel-$(uname -r) kernel-headers-$(uname -r)
+Last metadata expiration check: 0:51:38 ago on Tuesday 07 July 2026 03:41:12 PM.
+Package gcc-11.5.0-11.el9.x86_64 is already installed.
+Package make-1:4.3-8.el9.x86_64 is already installed.
+Package perl-4:5.32.1-481.1.el9_6.x86_64 is already installed.
+Package elfutils-libelf-devel-0.193-1.el9.x86_64 is already installed.
+Package kernel-devel-5.14.0-611.26.1.el9_7.x86_64 is already installed.
+Package kernel-headers-5.14.0-611.26.1.el9_7.x86_64 is already installed.
+Dependencies resolved.
+Nothing to do.
+Complete!
+[root@bastion2025 ~]# /sbin/vboxconfig
+vboxdrv.sh: Stopping VirtualBox services.
+vboxdrv.sh: Starting VirtualBox services.
+vboxdrv.sh: Building VirtualBox kernel modules.
+vboxdrv.sh: failed: Look at /var/log/vbox-setup.log to find out what went wrong.
 
-Then run:
-
-/sbin/vboxconfig
-
-
----
-
-Next, find the real error
-
-Run:
-
-tail -100 /var/log/vbox-setup.log
-
-or
-
-grep -i "error" /var/log/vbox-setup.log
-
-The last 50-100 lines contain the actual compilation failure.
-
-
----
-
-Check Secure Boot
-
-mokutil --sb-state
-
-If it returns:
-
-SecureBoot enabled
-
-then the VirtualBox kernel modules must be signed, or Secure Boot must be disabled.
-
-
----
-
-Check VirtualBox version
-
-VBoxManage --version
-
-Older VirtualBox versions (6.x or early 7.x) often do not support RHEL 9.7 kernel 5.14.0-611.
-
-
----
-
-Please send the output of these commands:
-
-tail -50 /var/log/vbox-setup.log
-
-VBoxManage --version
-
-uname -r
-
-rpm -q kernel-devel-$(uname -r)
-
-The last 50 lines of /var/log/vbox-setup.log will identify the exact cause.
+There were problems setting up VirtualBox.  To re-start the set-up process, run
+  /sbin/vboxconfig
+as root.  If your system is using EFI Secure Boot you may need to sign the
+kernel modules (vboxdrv, vboxnetflt, vboxnetadp, vboxpci) before you can load
+them. Please see your Linux system's documentation for more information.
