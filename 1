@@ -1,50 +1,11 @@
-The last lines you posted show only:
-
-make[1]: *** [Makefile:1953: /tmp/vbox.0] Error 2
-make: *** [/tmp/vbox.0/Makefile-footer.gmk:117: vboxdrv] Error 2
-
-The actual compiler error is still missing. It occurs before these lines and is typically something like:
-
-error: ...
-
-or
-
-fatal error: ...
-
-However, based on everything you've shared, the root cause is very likely:
-
-RHEL 9.7 kernel: 5.14.0-611.26.1.el9_7.x86_64
-
-VirtualBox: 6.1.50 (released years ago and now end-of-life)
-
-
-VirtualBox 6.1.50 is not compatible with the latest RHEL 9.7 kernels.
-
-Find the exact error
-
-Run:
-
-grep -n "error:" /var/log/vbox-setup.log | tail -20
-
-or
-
-grep -n "fatal" /var/log/vbox-setup.log
-
-These commands will show the real compilation failure.
-
-My recommendation
-
-If you are free to upgrade, remove VirtualBox 6.1 and install VirtualBox 7.1.x, which supports newer kernels.
-
-If you must stay on 6.1.50, your options are limited:
-
-Boot an older kernel that VirtualBox 6.1 supports, or
-
-Apply unofficial patches to the VirtualBox source (not recommended).
-
-
-Please run one more command
-
-grep -n -E "error:|fatal:|undefined|implicit" /var/log/vbox-setup.log | tail -20
-
-That will reveal the exact compile error so I can confirm whether it's the expected kernel API incompatibility or a different issue.
+[root@bastion2025 ~]# grep -n "error:" /var/log/vbox-setup.log | tail -20
+111:/tmp/vbox.0/r0drv/linux/memobj-r0drv-linux.c:1081:9: error: implicit declaration of function ‘p4d_large’; did you mean ‘p4d_page’? [-Werror=implicit-function-declaration]
+124:/tmp/vbox.0/r0drv/linux/memobj-r0drv-linux.c:1097:9: error: implicit declaration of function ‘pud_large’; did you mean ‘pud_page’? [-Werror=implicit-function-declaration]
+138:/tmp/vbox.0/r0drv/linux/memobj-r0drv-linux.c:1113:9: error: implicit declaration of function ‘pmd_large’; did you mean ‘pmd_page’? [-Werror=implicit-function-declaration]
+143:/tmp/vbox.0/r0drv/linux/memobj-r0drv-linux.c:1234:18: error: too many arguments to function ‘get_user_pages’
+151:/tmp/vbox.0/r0drv/linux/memobj-r0drv-linux.c:1271:35: error: passing argument 6 of ‘get_user_pages_remote’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+161:/tmp/vbox.0/r0drv/linux/memobj-r0drv-linux.c:1254:18: error: too many arguments to function ‘get_user_pages_remote’
+169:/tmp/vbox.0/r0drv/linux/memobj-r0drv-linux.c:1322:39: error: assignment of read-only member ‘vm_flags’
+177:/tmp/vbox.0/r0drv/linux/memobj-r0drv-linux.c:1802:35: error: assignment of read-only member ‘vm_flags’
+[root@bastion2025 ~]# grep -n "fatal" /var/log/vbox-setup.log
+[root@bastion2025 ~]#
