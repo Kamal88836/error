@@ -1,29 +1,24 @@
-[root@bastion2025 Logs]# lsmod | grep kvm
-kvm_intel             536576  0
-kvm                  1417216  1 kvm_intel
-[root@bastion2025 Logs]# systemctl status libvirtd
-○ libvirtd.service - libvirt legacy monolithic daemon
-     Loaded: loaded (/usr/lib/systemd/system/libvirtd.service; disabled; preset: disabled)
-     Active: inactive (dead)
-TriggeredBy: ○ libvirtd.socket
-             ○ libvirtd-ro.socket
-             ○ libvirtd-admin.socket
-       Docs: man:libvirtd(8)
-             https://libvirt.org/
-[root@bastion2025 Logs]# systemctl status virtqemud
-○ virtqemud.service - libvirt QEMU daemon
-     Loaded: loaded (/usr/lib/systemd/system/virtqemud.service; enabled; preset: enabled)
-     Active: inactive (dead) since Wed 2026-07-08 11:00:10 IST; 41min ago
-   Duration: 2min 88ms
-TriggeredBy: ● virtqemud-ro.socket
-             ● virtqemud.socket
-             ● virtqemud-admin.socket
-       Docs: man:virtqemud(8)
-             https://libvirt.org/
-   Main PID: 3088 (code=exited, status=0/SUCCESS)
-        CPU: 40ms
-
-Jul 08 10:58:10 bastion2025.lab.ocp.lan systemd[1]: Starting libvirt QEMU daemon...
-Jul 08 10:58:10 bastion2025.lab.ocp.lan systemd[1]: Started libvirt QEMU daemon.
-Jul 08 11:00:10 bastion2025.lab.ocp.lan systemd[1]: virtqemud.service: Deactivated successfully.
 [root@bastion2025 Logs]#
+[root@bastion2025 Logs]#
+[root@bastion2025 Logs]#
+[root@bastion2025 Logs]# ps -ef | grep qemu
+root       24720    5792  0 11:43 pts/0    00:00:00 grep --color=auto qemu
+[root@bastion2025 Logs]# modprobe -r kvm_intel
+[root@bastion2025 Logs]# modprobe -r kvm
+[root@bastion2025 Logs]# lsmode | grep kvm
+bash: lsmode: command not found...
+Similar command is: 'lsmod'
+[root@bastion2025 Logs]# lsmod | grep kvm
+[root@bastion2025 Logs]# lsof | grep dev/kvm
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
+lsof: no pwd entry for UID 1001
