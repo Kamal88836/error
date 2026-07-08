@@ -1,14 +1,29 @@
-00:00:01.431769 E1000#1: Larger TX frames    : 0
-00:00:01.431770 E1000#1: Max TX Delay        : 0
-00:00:01.452858 GIM: KVM: Resetting MSRs
-00:00:01.461194 vmmR3LogFlusher: Terminating (VERR_OBJECT_DESTROYED)
-00:00:01.464672 VMSetError: /home/vbox/tinderbox/build-VBox-7.2/svn/src/VBox/VMM/VMMR3/VMR3.cpp(341) int VMR3Create(uint32_t, PCVMM2USERMETHODS, uint64_t, PFNVMATERROR, void*, PFNCFGMCONSTRUCTOR, void*, VM**, UVM**); rc=VERR_VMX_IN_VMX_ROOT_MODE
-00:00:01.464677 VMSetError: VirtualBox can't operate in VMX root mode. Please disable the KVM kernel extension, recompile your kernel and reboot
-00:00:01.464931 ERROR [COM]: aRC=NS_ERROR_FAILURE (0x80004005) aIID={6ac83d89-6ee7-4e33-8ae6-b257b2e81be8} aComponent={ConsoleWrap} aText={VT-x is being used by another hypervisor (VERR_VMX_IN_VMX_ROOT_MODE).
-00:00:01.464935 VirtualBox can't operate in VMX root mode. Please disable the KVM kernel extension, recompile your kernel and reboot (VERR_VMX_IN_VMX_ROOT_MODE)}, preserve=false aResultDetail=-4011
-00:00:01.465002 Console: Machine state changed to 'PoweredOff'
-00:00:01.465693 Power up failed (vrc=VERR_VMX_IN_VMX_ROOT_MODE, hrc=NS_ERROR_FAILURE (0X80004005))
-00:00:01.474530 GUI: Aborting startup due to power up progress issue detected...
-00:00:01.476404 GUI: UICommon: Handling aboutToQuit request..
-00:00:02.189023 GUI: UICommon: aboutToQuit request handled!
+[root@bastion2025 Logs]# lsmod | grep kvm
+kvm_intel             536576  0
+kvm                  1417216  1 kvm_intel
+[root@bastion2025 Logs]# systemctl status libvirtd
+○ libvirtd.service - libvirt legacy monolithic daemon
+     Loaded: loaded (/usr/lib/systemd/system/libvirtd.service; disabled; preset: disabled)
+     Active: inactive (dead)
+TriggeredBy: ○ libvirtd.socket
+             ○ libvirtd-ro.socket
+             ○ libvirtd-admin.socket
+       Docs: man:libvirtd(8)
+             https://libvirt.org/
+[root@bastion2025 Logs]# systemctl status virtqemud
+○ virtqemud.service - libvirt QEMU daemon
+     Loaded: loaded (/usr/lib/systemd/system/virtqemud.service; enabled; preset: enabled)
+     Active: inactive (dead) since Wed 2026-07-08 11:00:10 IST; 41min ago
+   Duration: 2min 88ms
+TriggeredBy: ● virtqemud-ro.socket
+             ● virtqemud.socket
+             ● virtqemud-admin.socket
+       Docs: man:virtqemud(8)
+             https://libvirt.org/
+   Main PID: 3088 (code=exited, status=0/SUCCESS)
+        CPU: 40ms
+
+Jul 08 10:58:10 bastion2025.lab.ocp.lan systemd[1]: Starting libvirt QEMU daemon...
+Jul 08 10:58:10 bastion2025.lab.ocp.lan systemd[1]: Started libvirt QEMU daemon.
+Jul 08 11:00:10 bastion2025.lab.ocp.lan systemd[1]: virtqemud.service: Deactivated successfully.
 [root@bastion2025 Logs]#
