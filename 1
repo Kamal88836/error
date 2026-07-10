@@ -71,3 +71,224 @@ imageContentSources:
   source: quay.io/openshift-release-dev/ocp-release
 
 
+=========================================================
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: vt
+rendezvousIP: 10.217.61.4
+additionalNTPSources:
+  - 10.217.61.56
+hosts:
+  - hostname: master3.vt.ss.samsung.local
+    role: master
+    interfaces:
+      - name: eno12409np1
+        macAddress: 8C:84:74:C6:50:91
+    networkConfig:
+      interfaces:
+        # Physical interfaces – implicit from bond ports, but can be defined explicitly if needed
+        - name: eno12409np1
+          type: ethernet
+          state: up
+          # mac-address and other settings can be left default
+        - name: ens5f1np1
+          type: ethernet
+          state: up
+
+        # Bond interface
+        - name: bond0
+          type: bond
+          state: up
+          mac-address: "8C:84:74:C6:50:91"
+          ipv4:
+            enabled: false
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: "100"
+            port:
+              - eno12409np1
+              - ens5f1np1
+
+        # Kubernetes cluster VLAN 913
+        - name: bond0.913
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 913
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.4
+                prefix-length: 28
+            dhcp: false
+
+        # OAM management VLAN 914
+        - name: bond0.914
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 914
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.20
+                prefix-length: 28
+            dhcp: false
+    
+      dns-resolver:
+        config:
+          server:
+            - 10.217.61.57
+
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.217.61.1
+            next-hop-interface: bond0.913
+
+          
+  - hostname: master1.vt.ss.samsung.local
+    role: master
+    interfaces:
+      - name: eno12409np1
+        macAddress: 8C:84:74:C6:43:11
+    networkConfig:
+      interfaces:
+        # Physical interfaces – implicit from bond ports, but can be defined explicitly if needed
+        - name: eno12409np1
+          type: ethernet
+          state: up
+          # mac-address and other settings can be left default
+        - name: ens5f1np1
+          type: ethernet
+          state: up
+
+        # Bond interface
+        - name: bond0
+          type: bond
+          state: up
+          mac-address: "8C:84:74:C6:43:11"
+          ipv4:
+            enabled: false
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: "100"
+            port:
+              - eno12409np1
+              - ens5f1np1
+
+        # Kubernetes cluster VLAN 913
+        - name: bond0.913
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 913
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.2
+                prefix-length: 28
+            dhcp: false
+
+        # OAM management VLAN 914
+        - name: bond0.914
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 914
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.18
+                prefix-length: 28
+            dhcp: false
+    
+      dns-resolver:
+        config:
+          server:
+            - 10.217.61.57
+
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.217.61.1
+            next-hop-interface: bond0.913
+
+
+  - hostname: master2.vt.ss.samsung.local
+    role: master
+    interfaces:
+     - name: eno12409np1
+       macAddress: 8C:84:74:C6:48:81
+    networkConfig:
+      interfaces:
+        # Physical interfaces – implicit from bond ports, but can be defined explicitly if needed
+        - name: eno12409np1
+          type: ethernet
+          state: up
+          # mac-address and other settings can be left default
+        - name: ens5f1np1
+          type: ethernet
+          state: up
+
+        # Bond interface
+        - name: bond0
+          type: bond
+          state: up
+          mac-address: "8C:84:74:C6:48:81"
+          ipv4:
+            enabled: false
+          link-aggregation:
+            mode: 802.3ad
+            options:
+              miimon: "100"
+            port:
+              - eno12409np1
+              - ens5f1np1
+
+        # Kubernetes cluster VLAN 913
+        - name: bond0.913
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 913
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.3
+                prefix-length: 28
+            dhcp: false
+
+        # OAM management VLAN 914
+        - name: bond0.914
+          type: vlan
+          state: up
+          vlan:
+            base-iface: bond0
+            id: 914
+          ipv4:
+            enabled: true
+            address:
+              - ip: 10.217.61.19
+                prefix-length: 28
+            dhcp: false
+    
+      dns-resolver:
+        config:
+          server:
+            - 10.217.61.57
+
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.217.61.1
+            next-hop-interface: bond0.913
+===================================================
