@@ -99,10 +99,30 @@ spec:
 apiVersion: sriovnetwork.openshift.io/v1
 kind: SriovNetworkNodePolicy
 metadata:
-  name: policy-ens7f0-bh0u-2-1
+  name: policy-ens4f0-bh0u-2-1
   namespace: openshift-sriov-network-operator
 spec:
   resourceName: pci_sriov_net_bh0u_2_1
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  priority: 99
+  mtu: 9000
+  numVfs: 16
+  nicSelector:
+    vendor: '8086'
+    deviceID: '1593'
+    pfNames: ["ens4f0#0-3"]
+  deviceType: vfio-pci
+  needVhostNet: true
+  isRdma: false
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: policy-ens7f0-bh0c-2
+  namespace: openshift-sriov-network-operator
+spec:
+  resourceName: pci_sriov_net_bh0c_2
   nodeSelector:
     feature.node.kubernetes.io/network-sriov.capable: 'true'
   priority: 99
@@ -119,27 +139,7 @@ spec:
 apiVersion: sriovnetwork.openshift.io/v1
 kind: SriovNetworkNodePolicy
 metadata:
-  name: policy-ens4f0-bh0c-2
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0c_2
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens4f0#4-8"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
----
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens1f0-bh0c-2-1
+  name: policy-ens4f0-bh0c-2-1
   namespace: openshift-sriov-network-operator
 spec:
   resourceName: pci_sriov_net_bh0c_2_1
@@ -151,7 +151,7 @@ spec:
   nicSelector:
     vendor: '8086'
     deviceID: '1593'
-    pfNames: ["ens1f0#4-8"]
+    pfNames: ["ens4f0#4-8"]
   deviceType: vfio-pci
   needVhostNet: true
   isRdma: false
