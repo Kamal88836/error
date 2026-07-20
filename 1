@@ -1,135 +1,15 @@
-sno4@haproxy:~$ oc get pods -A \
->   -o custom-columns='NS:.metadata.namespace,NAME:.metadata.name,CPU:.spec.containers[*].resources.requests.cpu'
-NS                                                 NAME                                                              CPU
-assisted-installer                                 assisted-installer-controller-t5jvm                               <none>
-bscf                                               bscf181-bip0-b74746664-nnq95                                      22
-bscf                                               bscf181-bip1-7459c8b765-qphw4                                     22
-bscf                                               bscf181-bpp0-649b6d8df8-tjg4b                                     26
-bscf                                               bscf181-bpp1-f49c9bc67-9tkbn                                      26
-bscf                                               bscf181-cmp0-749f994778-gch94                                     2
-bscf                                               bscf181-cmp1-69649954b8-255f7                                     2
-bscf                                               bscf181-dmp0-5dfc478b97-7hszp                                     1
-bscf                                               bscf181-pmp0-b755b55b9-vhlvv                                      5
-openshift-apiserver-operator                       openshift-apiserver-operator-65b5d5f5b4-4hfj9                     10m
-openshift-apiserver                                apiserver-57fb7489cf-jpbgq                                        100m,10m
-openshift-authentication-operator                  authentication-operator-d55c6544c-8vgkh                           20m
-openshift-authentication                           oauth-openshift-5cb5cf997b-qb4b2                                  10m
-openshift-catalogd                                 catalogd-controller-manager-6c8859d95d-gs6zd                      100m
-openshift-cloud-controller-manager-operator        cluster-cloud-controller-manager-operator-6b7fdc9bd9-lqsr9        10m,10m,10m
-openshift-cloud-credential-operator                cloud-credential-operator-686f775d6f-zcc8w                        10m,10m
-openshift-cluster-machine-approver                 machine-approver-75dc4f5687-42ttt                                 10m,10m
-openshift-cluster-node-tuning-operator             cluster-node-tuning-operator-5cf485f5c7-b8c9p                     10m
-openshift-cluster-node-tuning-operator             tuned-w2dlq                                                       10m
-openshift-cluster-olm-operator                     cluster-olm-operator-6b8db59884-6x2vw                             10m
-openshift-cluster-samples-operator                 cluster-samples-operator-79fb6748fd-ndhg2                         10m,10m
-openshift-cluster-storage-operator                 cluster-storage-operator-5f6c55968d-rx5hq                         10m
-openshift-cluster-storage-operator                 csi-snapshot-controller-7bc8b96b-xf5l5                            10m
-openshift-cluster-storage-operator                 csi-snapshot-controller-operator-5b9f6c9c95-57dcx                 10m
-openshift-cluster-storage-operator                 volume-data-source-validator-5688597b99-2xggg                     10m
-openshift-cluster-version                          cluster-version-operator-644f47c88-j5sbg                          20m
-openshift-config-operator                          openshift-config-operator-5d7c74ff5b-l9gbt                        10m
-openshift-console-operator                         console-operator-6c9887466b-7vrn9                                 10m
-openshift-console                                  console-dcd8dcdd9-z9bqb                                           10m
-openshift-console                                  downloads-c9bc54c96-79vwk                                         10m
-openshift-controller-manager-operator              openshift-controller-manager-operator-69777dbc6f-62vfj            10m
-openshift-controller-manager                       controller-manager-76f5f99465-8nqpx                               100m
-openshift-dns-operator                             dns-operator-7dc75f4b5-mwnzf                                      10m,10m
-openshift-dns                                      dns-default-xvfp6                                                 50m,10m
-openshift-dns                                      node-resolver-7wdq4                                               5m
-openshift-etcd-operator                            etcd-operator-74b584c9f6-kkj9s                                    10m
-openshift-etcd                                     etcd-ocp-sno.lab4.ocp.lan                                         10m,300m,40m,10m,10m
-openshift-etcd                                     installer-1-ocp-sno.lab4.ocp.lan                                  150m
-openshift-etcd                                     installer-2-ocp-sno.lab4.ocp.lan                                  150m
-openshift-etcd                                     installer-3-ocp-sno.lab4.ocp.lan                                  150m
-openshift-image-registry                           cluster-image-registry-operator-9867997f6-dmpgv                   10m
-openshift-image-registry                           image-pruner-29738880-jqgwd                                       100m
-openshift-image-registry                           image-pruner-29740320-hgtk8                                       100m
-openshift-image-registry                           image-pruner-29741760-xwzmn                                       100m
-openshift-image-registry                           node-ca-qwc4j                                                     10m
-openshift-ingress-canary                           ingress-canary-2k5vv                                              10m
-openshift-ingress-operator                         ingress-operator-85d6bcd55c-dt286                                 10m,10m
-openshift-ingress                                  router-default-67959df6c8-8fwsj                                   100m
-openshift-insights                                 insights-operator-6947644dfd-d4vs9                                10m
-openshift-insights                                 insights-runtime-extractor-9d5qw                                  10m,10m,10m
-openshift-kube-apiserver-operator                  kube-apiserver-operator-6bfc78bd58-jlrhj                          10m
-openshift-kube-apiserver                           installer-12-ocp-sno.lab4.ocp.lan                                 150m
-openshift-kube-apiserver                           installer-13-ocp-sno.lab4.ocp.lan                                 150m
-openshift-kube-apiserver                           installer-14-ocp-sno.lab4.ocp.lan                                 150m
-openshift-kube-apiserver                           installer-15-ocp-sno.lab4.ocp.lan                                 150m
-openshift-kube-apiserver                           installer-16-ocp-sno.lab4.ocp.lan                                 150m
-openshift-kube-apiserver                           installer-4-ocp-sno.lab4.ocp.lan                                  150m
-openshift-kube-apiserver                           kube-apiserver-ocp-sno.lab4.ocp.lan                               265m,5m,5m,5m,10m
-openshift-kube-apiserver                           revision-pruner-12-ocp-sno.lab4.ocp.lan                           150m
-openshift-kube-apiserver                           revision-pruner-13-ocp-sno.lab4.ocp.lan                           150m
-openshift-kube-apiserver                           revision-pruner-14-ocp-sno.lab4.ocp.lan                           150m
-openshift-kube-apiserver                           revision-pruner-15-ocp-sno.lab4.ocp.lan                           150m
-openshift-kube-apiserver                           revision-pruner-16-ocp-sno.lab4.ocp.lan                           150m
-openshift-kube-controller-manager-operator         kube-controller-manager-operator-6d854c6d67-hwv8m                 10m
-openshift-kube-controller-manager                  installer-2-ocp-sno.lab4.ocp.lan                                  150m
-openshift-kube-controller-manager                  installer-6-ocp-sno.lab4.ocp.lan                                  150m
-openshift-kube-controller-manager                  kube-controller-manager-ocp-sno.lab4.ocp.lan                      60m,10m,5m,5m
-openshift-kube-controller-manager                  revision-pruner-6-ocp-sno.lab4.ocp.lan                            150m
-openshift-kube-scheduler-operator                  openshift-kube-scheduler-operator-7c77cd9586-x78kq                10m
-openshift-kube-scheduler                           installer-5-retry-1-ocp-sno.lab4.ocp.lan                          150m
-openshift-kube-scheduler                           openshift-kube-scheduler-ocp-sno.lab4.ocp.lan                     15m,5m,5m
-openshift-kube-storage-version-migrator-operator   kube-storage-version-migrator-operator-7fd59576fc-5r928           10m
-openshift-kube-storage-version-migrator            migrator-84fdf84c65-v9wfp                                         10m,1m
-openshift-machine-api                              cluster-autoscaler-operator-6f66f7bf89-rf586                      10m,20m
-openshift-machine-api                              cluster-baremetal-operator-5cb8cf577d-5gvf2                       10m,10m
-openshift-machine-api                              control-plane-machine-set-operator-6b4997f5bc-d7sf8               10m
-openshift-machine-api                              machine-api-operator-557974c5bb-dx4t2                             10m,10m
-openshift-machine-config-operator                  kube-rbac-proxy-crio-ocp-sno.lab4.ocp.lan                         20m
-openshift-machine-config-operator                  machine-config-controller-6f465d68c7-ckt9t                        20m,20m
-openshift-machine-config-operator                  machine-config-daemon-wlqsq                                       20m,20m
-openshift-machine-config-operator                  machine-config-nodes-crd-cleanup-29674508-8kpf9                   10m
-openshift-machine-config-operator                  machine-config-operator-65448746b6-v9wfz                          20m,20m
-openshift-machine-config-operator                  machine-config-server-9gqdb                                       20m
-openshift-marketplace                              45ebed5c1b43ed775ecd07302ec6593f474343b0772bdd7d5bc098e23egx59r   10m
-openshift-marketplace                              4bb0bb3ff874ba8064f3c32f744bfe70cc7fe3bea5f1c6b633785f0b826jjxp   10m
-openshift-marketplace                              56a199c1ed0c12d831a5d634521611a2fcf47b8a3dbbf8c983ad11b5c9b7c79   10m
-openshift-marketplace                              cs-redhat-operator-index-v4-20-zwlwb                              10m
-openshift-marketplace                              e7fdc4144a27974458a8117b69f12ab4f9cfc9cd0dca14932e3a6935954cbhq   10m
-openshift-marketplace                              marketplace-operator-78455558d4-f472s                             1m
-openshift-monitoring                               alertmanager-main-0                                               4m,1m,1m,1m,1m,1m
-openshift-monitoring                               cluster-monitoring-operator-5cdfbb5b89-tzqgc                      10m
-openshift-monitoring                               kube-state-metrics-7854d7dfd8-ldpg9                               2m,1m,1m
-openshift-monitoring                               metrics-server-7798f4b744-tw5x5                                   1m
-openshift-monitoring                               monitoring-plugin-5b66b84d4f-h2p8h                                10m
-openshift-monitoring                               node-exporter-44njc                                               8m,1m
-openshift-monitoring                               openshift-state-metrics-6b547fdbc5-2bwl5                          1m,1m,1m
-openshift-monitoring                               prometheus-k8s-0                                                  70m,1m,1m,1m,1m,1m
-openshift-monitoring                               prometheus-operator-7f88dcd7f6-s7z7p                              5m,1m
-openshift-monitoring                               prometheus-operator-admission-webhook-78bbc956b-6schb             5m
-openshift-monitoring                               telemeter-client-5b99675b79-z2km9                                 1m,1m,1m
-openshift-monitoring                               thanos-querier-7d5976b95f-9m6px                                   10m,1m,1m,1m,1m,1m
-openshift-multus                                   multus-5gt9z                                                      10m
-openshift-multus                                   multus-additional-cni-plugins-jrr4s                               10m
-openshift-multus                                   multus-admission-controller-5b594658ff-ql7g8                      10m,10m
-openshift-multus                                   network-metrics-daemon-zkp28                                      10m,10m
-openshift-network-console                          networking-console-plugin-75b56c876-ctnc7                         10m
-openshift-network-diagnostics                      network-check-source-57cdbb979c-9rh9q                             10m
-openshift-network-diagnostics                      network-check-target-wgnq9                                        10m
-openshift-network-node-identity                    network-node-identity-8bkwd                                       10m,10m
-openshift-network-operator                         iptables-alerter-wfgvf                                            10m
-openshift-network-operator                         network-operator-7798c555c4-rxsl8                                 10m
-openshift-oauth-apiserver                          apiserver-594f47b96b-hbrqs                                        150m
-openshift-operator-controller                      operator-controller-controller-manager-669fd5d544-6nz7n           10m
-openshift-operator-lifecycle-manager               catalog-operator-67dbb47c8-mk2jt                                  10m
-openshift-operator-lifecycle-manager               olm-operator-7476b85bbc-dchwh                                     10m
-openshift-operator-lifecycle-manager               package-server-manager-84567dc64d-72m8z                           10m,10m
-openshift-operator-lifecycle-manager               packageserver-84c4b987d6-r526f                                    10m
-openshift-ovn-kubernetes                           ovnkube-control-plane-84b4c8499c-2ps4q                            10m,10m
-openshift-ovn-kubernetes                           ovnkube-node-d4xdf                                                10m,10m,10m,10m,10m,10m,10m,10m
-openshift-ptp                                      linuxptp-daemon-dwhrt                                             10m,20m
-openshift-ptp                                      ptp-operator-6ccb7b58c9-xktbz                                     50m
-openshift-route-controller-manager                 route-controller-manager-5bf4ccb9d8-wtzbf                         100m
-openshift-service-ca-operator                      service-ca-operator-fff4d5bbc-8k87x                               10m
-openshift-service-ca                               service-ca-686499c559-2j4mb                                       10m
-openshift-sriov-network-operator                   network-resources-injector-x9d75                                  10m
-openshift-sriov-network-operator                   operator-webhook-hgc4l                                            10m
-openshift-sriov-network-operator                   sriov-device-plugin-rz2q7                                         10m
-openshift-sriov-network-operator                   sriov-network-config-daemon-rd89m                                 100m
-openshift-sriov-network-operator                   sriov-network-operator-7cb568d86-c5hnw                            <none>
-openshift-storage                                  lvms-operator-865db58465-p8w5s                                    5m
-openshift-storage                                  vg-manager-fnrtw                                                  5m
-sno4@haproxy:~$
+sno10@haproxy:~/ocp-helm/test$ oc get po
+NAME                            READY   STATUS        RESTARTS   AGE
+bscf196-bip0-576bfcf7-fs72b     1/1     Terminating   0          7d1h
+bscf196-bip1-649fcf7f7d-psd4n   1/1     Terminating   0          7d1h
+bscf196-bpp0-7fd655b5bb-2mhrt   1/1     Terminating   0          7d1h
+bscf196-bpp1-67ffdcdb89-cwmsm   1/1     Terminating   0          7d1h
+bscf196-cmp0-8589d74447-f2zpr   1/1     Terminating   0          7d1h
+bscf196-cmp1-556599596f-g2xll   1/1     Terminating   0          7d1h
+bscf196-dmp0-5cbcc755bb-rmfn2   1/1     Terminating   0          7d
+bscf196-pmp0-7b66c7fdfb-ln5t7   1/1     Terminating   0          7d1h
+sno10@haproxy:~/ocp-helm/test$ oc get deploy
+No resources found in bscf namespace.
+sno10@haproxy:~/ocp-helm/test$ oc delete ns bscf
+namespace "bscf" deleted
+
