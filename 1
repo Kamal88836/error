@@ -1,46 +1,51 @@
-sno4@haproxy:~/ocp-config$ cat performance-profile.yaml
-apiVersion: performance.openshift.io/v2
-kind: PerformanceProfile
-metadata:
-  name: performance-master
-  annotations:
-    kubeletconfig.experimental: |
-      {"systemReserved":{"memory": "17Gi"}}
-spec:
-  cpu:
-    isolated: "1-27,57-83,29-54,85-110"                   #<--- Mapping As shown above
-    reserved: "0,56,28,84,55,111"
-  hugepages:
-    defaultHugepagesSize: 1G
-    pages:
-    - count: 9
-      node: 0
-      size: 1G
-    - count: 9
-      node: 1
-      size: 1G
-  machineConfigPoolSelector:
-    pools.operator.machineconfiguration.openshift.io/master: ""
-  nodeSelector:
-    node-role.kubernetes.io/master: ""
-  numa:
-    topologyPolicy: best-effort
-  realTimeKernel:
-    enabled: true                                #<--- Enable RT Kernel
-  workloadHints:
-    highPowerConsumption: false                  #<--- Low-latency setting
-    realTime: true
-sno4@haproxy:~/ocp-config$
-
- Namespace                                         Name                                                          CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  Hostname:    ocp-sno.lab4.ocp.lan
+Capacity:
+  cpu:                                  112
+  ephemeral-storage:                    1873933640Ki
+  hugepages-1Gi:                        18Gi
+  hugepages-2Mi:                        0
+  memory:                               528010476Ki
+  openshift.io/pci_sriov_net_bh0c:      5
+  openshift.io/pci_sriov_net_bh0c_1:    5
+  openshift.io/pci_sriov_net_bh0u:      4
+  openshift.io/pci_sriov_net_bh0u_1:    4
+  openshift.io/pci_sriov_net_bh0u_2:    4
+  openshift.io/pci_sriov_net_bh0u_2_1:  4
+  pods:                                 250
+Allocatable:
+  cpu:                                  108
+  ephemeral-storage:                    1725943497941
+  hugepages-1Gi:                        18Gi
+  hugepages-2Mi:                        0
+  memory:                               490695916Ki
+  openshift.io/pci_sriov_net_bh0c:      5
+  openshift.io/pci_sriov_net_bh0c_1:    5
+  openshift.io/pci_sriov_net_bh0u:      4
+  openshift.io/pci_sriov_net_bh0u_1:    4
+  openshift.io/pci_sriov_net_bh0u_2:    4
+  openshift.io/pci_sriov_net_bh0u_2_1:  4
+  pods:                                 250
+System Info:
+  Machine ID:                                       1fe331b94e17427cb96054df909b634f
+  System UUID:                                      31353050-3237-4753-4834-31384734394e
+  Boot ID:                                          d946e235-0a3e-4f14-b6d4-ab5c5fd5f85e
+  Kernel Version:                                   5.14.0-570.112.1.el9_6.x86_64+rt
+  OS Image:                                         Red Hat Enterprise Linux CoreOS 9.6.20260504-0 (Plow)
+  Operating System:                                 linux
+  Architecture:                                     amd64
+  Container Runtime Version:                        cri-o://1.33.11-2.rhaos4.20.gitb2a8320.el9
+  Kubelet Version:                                  v1.33.10
+  Kube-Proxy Version:
+Non-terminated Pods:                                (103 in total)
+  Namespace                                         Name                                                          CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
   ---------                                         ----                                                          ------------  ----------  ---------------  -------------  ---
-  bscf                                              bscf181-bip0-b74746664-76ksc                                  22 (20%)      22 (20%)    16Gi (3%)        16Gi (3%)      2m50s
-  bscf                                              bscf181-bpp0-649b6d8df8-887dm                                 26 (24%)      26 (24%)    48Gi (10%)       48Gi (10%)     2m50s
-  bscf                                              bscf181-bpp1-f49c9bc67-dsj8c                                  26 (24%)      26 (24%)    48Gi (10%)       48Gi (10%)     2m50s
-  bscf                                              bscf181-cmp0-749f994778-nr9s9                                 2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       2m50s
-  bscf                                              bscf181-cmp1-69649954b8-42wxt                                 2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       2m50s
-  bscf                                              bscf181-dmp0-5dfc478b97-42qdv                                 1 (0%)        8 (7%)      44Gi (9%)        44Gi (9%)      2m50s
-  bscf                                              bscf181-pmp0-b755b55b9-qmz9n                                  5 (4%)        9 (8%)      46Gi (9%)        46Gi (9%)      2m50s
+  bscf                                              bscf181-bip0-b74746664-pk7mv                                  22 (20%)      22 (20%)    16Gi (3%)        16Gi (3%)      23m
+  bscf                                              bscf181-bpp0-649b6d8df8-cq6kj                                 26 (24%)      26 (24%)    48Gi (10%)       48Gi (10%)     23m
+  bscf                                              bscf181-bpp1-f49c9bc67-sppb7                                  26 (24%)      26 (24%)    48Gi (10%)       48Gi (10%)     23m
+  bscf                                              bscf181-cmp0-749f994778-6dxgd                                 2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       23m
+  bscf                                              bscf181-cmp1-69649954b8-rctdc                                 2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       23m
+  bscf                                              bscf181-dmp0-5dfc478b97-qg6tn                                 1 (0%)        8 (7%)      44Gi (9%)        44Gi (9%)      23m
+  bscf                                              bscf181-pmp0-b755b55b9-z99dg                                  5 (4%)        9 (8%)      46Gi (9%)        46Gi (9%)      23m
   openshift-apiserver-operator                      openshift-apiserver-operator-65b5d5f5b4-4hfj9                 10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         47d
   openshift-apiserver                               apiserver-57fb7489cf-jpbgq                                    110m (0%)     0 (0%)      250Mi (0%)       0 (0%)         47d
   openshift-authentication-operator                 authentication-operator-d55c6544c-8vgkh                       20m (0%)      0 (0%)      200Mi (0%)       0 (0%)         47d
@@ -98,7 +103,7 @@ sno4@haproxy:~/ocp-config$
   openshift-monitoring                              alertmanager-main-0                                           9m (0%)       0 (0%)      120Mi (0%)       0 (0%)         46d
   openshift-monitoring                              cluster-monitoring-operator-5cdfbb5b89-tzqgc                  10m (0%)      0 (0%)      75Mi (0%)        0 (0%)         47d
   openshift-monitoring                              kube-state-metrics-7854d7dfd8-ldpg9                           4m (0%)       0 (0%)      110Mi (0%)       0 (0%)         46d
-  openshift-monitoring                              metrics-server-7798f4b744-tw5x5                               1m (0%)       0 (0%)      40Mi (0%)        0 (0%)         30h
+  openshift-monitoring                              metrics-server-7798f4b744-tw5x5                               1m (0%)       0 (0%)      40Mi (0%)        0 (0%)         31h
   openshift-monitoring                              monitoring-plugin-5b66b84d4f-h2p8h                            10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         47d
   openshift-monitoring                              node-exporter-44njc                                           9m (0%)       0 (0%)      47Mi (0%)        0 (0%)         47d
   openshift-monitoring                              openshift-state-metrics-6b547fdbc5-2bwl5                      3m (0%)       0 (0%)      72Mi (0%)        0 (0%)         46d
@@ -109,7 +114,7 @@ sno4@haproxy:~/ocp-config$
   openshift-monitoring                              thanos-querier-7d5976b95f-9m6px                               15m (0%)      0 (0%)      87Mi (0%)        0 (0%)         46d
   openshift-multus                                  multus-5gt9z                                                  10m (0%)      0 (0%)      65Mi (0%)        0 (0%)         47d
   openshift-multus                                  multus-additional-cni-plugins-jrr4s                           10m (0%)      0 (0%)      10Mi (0%)        0 (0%)         47d
-  openshift-multus                                  multus-admission-controller-5b594658ff-ql7g8                  20m (0%)      0 (0%)      70Mi (0%)        0 (0%)         44d
+  openshift-multus                                  multus-admission-controller-5b594658ff-ql7g8                  20m (0%)      0 (0%)      70Mi (0%)        0 (0%)         45d
   openshift-multus                                  network-metrics-daemon-zkp28                                  20m (0%)      0 (0%)      120Mi (0%)       0 (0%)         47d
   openshift-network-console                         networking-console-plugin-75b56c876-ctnc7                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         47d
   openshift-network-diagnostics                     network-check-source-57cdbb979c-9rh9q                         10m (0%)      0 (0%)      40Mi (0%)        0 (0%)         47d
@@ -125,14 +130,14 @@ sno4@haproxy:~/ocp-config$
   openshift-operator-lifecycle-manager              packageserver-84c4b987d6-r526f                                10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         46d
   openshift-ovn-kubernetes                          ovnkube-control-plane-84b4c8499c-2ps4q                        20m (0%)      0 (0%)      320Mi (0%)       0 (0%)         47d
   openshift-ovn-kubernetes                          ovnkube-node-d4xdf                                            80m (0%)      0 (0%)      1630Mi (0%)      0 (0%)         47d
-  openshift-ptp                                     linuxptp-daemon-dwhrt                                         30m (0%)      0 (0%)      70Mi (0%)        0 (0%)         3d2h
-  openshift-ptp                                     ptp-operator-6ccb7b58c9-xktbz                                 50m (0%)      0 (0%)      100Mi (0%)       0 (0%)         4d1h
+  openshift-ptp                                     linuxptp-daemon-dwhrt                                         30m (0%)      0 (0%)      70Mi (0%)        0 (0%)         3d3h
+  openshift-ptp                                     ptp-operator-6ccb7b58c9-xktbz                                 50m (0%)      0 (0%)      100Mi (0%)       0 (0%)         4d2h
   openshift-route-controller-manager                route-controller-manager-5bf4ccb9d8-wtzbf                     100m (0%)     0 (0%)      100Mi (0%)       0 (0%)         31h
   openshift-service-ca-operator                     service-ca-operator-fff4d5bbc-8k87x                           10m (0%)      0 (0%)      80Mi (0%)        0 (0%)         47d
   openshift-service-ca                              service-ca-686499c559-2j4mb                                   10m (0%)      0 (0%)      120Mi (0%)       0 (0%)         47d
   openshift-sriov-network-operator                  network-resources-injector-x9d75                              10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         45d
   openshift-sriov-network-operator                  operator-webhook-hgc4l                                        10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         45d
-  openshift-sriov-network-operator                  sriov-device-plugin-cqssf                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         44d
+  openshift-sriov-network-operator                  sriov-device-plugin-277dw                                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         24m
   openshift-sriov-network-operator                  sriov-network-config-daemon-rd89m                             100m (0%)     0 (0%)      100Mi (0%)       0 (0%)         45d
   openshift-sriov-network-operator                  sriov-network-operator-7cb568d86-c5hnw                        0 (0%)        0 (0%)      0 (0%)           0 (0%)         45d
   openshift-storage                                 lvms-operator-865db58465-p8w5s                                5m (0%)       0 (0%)      50Mi (0%)        0 (0%)         46d
@@ -141,7 +146,7 @@ Allocated resources:
   (Total limits may be over 100 percent, i.e., overcommitted.)
   Resource                             Requests        Limits
   --------                             --------        ------
-  cpu                                  86862m (81%)    95010m (89%)
+  cpu                                  86862m (80%)    95010m (87%)
   memory                               227955Mi (47%)  210Gi (44%)
   ephemeral-storage                    0 (0%)          0 (0%)
   hugepages-1Gi                        16Gi (88%)      16Gi (88%)
@@ -152,5 +157,159 @@ Allocated resources:
   openshift.io/pci_sriov_net_bh0u_1    0               0
   openshift.io/pci_sriov_net_bh0u_2    1               1
   openshift.io/pci_sriov_net_bh0u_2_1  0               0
-Events:                                <none>
+Events:
+  Type     Reason                   Age                From                 Message
+  ----     ------                   ----               ----                 -------
+  Normal   OSUpdateStaged           32m                machineconfigdaemon  Changes to OS staged
+  Normal   Starting                 25m                kubelet              Starting kubelet.
+  Normal   NodeHasSufficientMemory  25m (x8 over 25m)  kubelet              Node ocp-sno.lab4.ocp.lan status is now: NodeHasSufficientMemory
+  Normal   NodeHasNoDiskPressure    25m (x8 over 25m)  kubelet              Node ocp-sno.lab4.ocp.lan status is now: NodeHasNoDiskPressure
+  Normal   NodeHasSufficientPID     25m (x7 over 25m)  kubelet              Node ocp-sno.lab4.ocp.lan status is now: NodeHasSufficientPID
+  Normal   NodeAllocatableEnforced  25m                kubelet              Updated Node Allocatable limit across pods
+  Warning  Rebooted                 24m                kubelet              Node ocp-sno.lab4.ocp.lan has been rebooted, boot id: d946e235-0a3e-4f14-b6d4-ab5c5fd5f85e
+  Normal   RegisteredNode           24m                node-controller      Node ocp-sno.lab4.ocp.lan event: Registered Node ocp-sno.lab4.ocp.lan in Controller
+sno4@haproxy:~/ocp-config$ oc describe po bscf181-bip1-5c87467449-brjmz
+Name:             bscf181-bip1-5c87467449-brjmz
+Namespace:        bscf
+Priority:         0
+Service Account:  bscf-sa
+Node:             <none>
+Labels:           app=bscf181-bip1
+                  component=bscf181-bip
+                  nename=bscf181
+                  pod-template-hash=5c87467449
+                  release=bscf
+                  restart-on-reboot=true
+                  tech=gsm
+Annotations:      k8s.v1.cni.cncf.io/networks:
+                    [
+                    { "name": "bscf-bh0c-2-nad", "interface": "bh0" } , { "name": "bscf-bh0c-2-nad", "interface": "bh1" } , { "name": "bscf-bh0c-2-1-nad", "in...
+                  openshift.io/scc: privileged
+                  security.openshift.io/validated-scc-subject-type: serviceaccount
+Status:           Pending
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/bscf181-bip1-5c87467449
+Init Containers:
+  sleepy:
+    Image:      sribharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDE16_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+      echo Sleepy has come && sleep 15
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:        500m
+      memory:     256Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-lrx45 (ro)
+  install:
+    Image:      sribharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDE16_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+    Args:
+      find /mnt/storage/log -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chown root:2001; find /mnt/storage/shared -type d | xargs chmod 775; find /mnt/storage/log -type d | xargs chmod 775; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log; if [ -d /proc/sys/net/sctp ]; then echo 1 > /proc/sys/net/sctp/sndbuf_policy; echo 1 > /proc/sys/net/sctp/rcvbuf_policy; fi
+    Limits:
+      cpu:                                  500m
+      memory:                               16Gi
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Requests:
+      cpu:                                  500m
+      memory:                               16Gi
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Environment:                            <none>
+    Mounts:
+      /etc/config from env (rw)
+      /mnt/storage/log from bscf181-bip-log (rw)
+      /mnt/storage/shared from bscf181-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-lrx45 (ro)
+Containers:
+  bip:
+    Image:      sribharbor.sec.samsung.net/rel-ran/utd-bscf-bip:SVR26ABSCUTDE16_R00
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      /bin/bash
+      -c
+    Args:
+      /pkg/bin/appStart.sh
+    Limits:
+      cpu:                                  18
+      memory:                               16Gi
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Requests:
+      cpu:                                  18
+      memory:                               16Gi
+      openshift.io/pci_sriov_net_bh0c_2:    2
+      openshift.io/pci_sriov_net_bh0c_2_1:  2
+    Liveness:                               http-get http://:8080/bip_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Readiness:                              http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
+    Environment:
+      TZ:              UTC
+      THIS_NODE_NAME:   (v1:spec.nodeName)
+    Mounts:
+      /etc/config from env (rw)
+      /etc/podnetinfo from podnetinfo (ro)
+      /mnt/storage/log from bscf181-bip-log (rw)
+      /mnt/storage/shared from bscf181-bip-shared (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-lrx45 (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False
+Volumes:
+  env:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      bscf181-bip1
+    Optional:  false
+  bscf181-bip-log:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf181-log-pvc
+    ReadOnly:   false
+  bscf181-bip-shared:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  bscf181-shared-pvc
+    ReadOnly:   false
+  kube-api-access-lrx45:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    ConfigMapOptional:       <nil>
+  podnetinfo:
+    Type:  DownwardAPI (a volume populated by information about the pod)
+    Items:
+      metadata.labels -> labels
+      metadata.annotations -> annotations
+QoS Class:       Guaranteed
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age   From               Message
+  ----     ------            ----  ----               -------
+  Warning  FailedScheduling  74s   default-scheduler  0/1 nodes are available: 1 Insufficient openshift.io/pci_sriov_net_bh0c_2, 1 Insufficient openshift.io/pci_sriov_net_bh0c_2_1. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+sno4@haproxy:~/ocp-config$ oc get po
+NAME                            READY   STATUS    RESTARTS   AGE
+bscf181-bip0-b74746664-pk7mv    1/1     Running   0          24m
+bscf181-bip1-5c87467449-brjmz   0/1     Pending   0          115s
+bscf181-bpp0-649b6d8df8-cq6kj   1/1     Running   0          24m
+bscf181-bpp1-f49c9bc67-sppb7    1/1     Running   0          24m
+bscf181-cmp0-749f994778-6dxgd   1/1     Running   0          24m
+bscf181-cmp1-69649954b8-rctdc   1/1     Running   0          24m
+bscf181-dmp0-5dfc478b97-qg6tn   1/1     Running   0          24m
+bscf181-pmp0-b755b55b9-z99dg    1/1     Running   0          24m
 sno4@haproxy:~/ocp-config$
