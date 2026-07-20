@@ -1,169 +1,107 @@
-sno4@haproxy:~$ oc describe pod bscf181-pmp0-b755b55b9-8w4n2
-Name:             bscf181-pmp0-b755b55b9-8w4n2
-Namespace:        bscf
-Priority:         0
-Service Account:  bscf-sa
-Node:             <none>
-Labels:           app=bscf181-pmp0
-                  component=bscf181-pmp
-                  nename=bscf181
-                  pod-template-hash=b755b55b9
-                  release=bscf
-                  tech=gsm
-Annotations:      openshift.io/scc: privileged
-                  security.openshift.io/validated-scc-subject-type: serviceaccount
-Status:           Pending
-IP:
-IPs:              <none>
-Controlled By:    ReplicaSet/bscf181-pmp0-b755b55b9
-Init Containers:
-  install:
-    Image:      sribharbor.sec.samsung.net/rel-ran/utd-bscf-init:SVR26ABSCUTDE16_R00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      sh
-      -c
-      chown -R root:2001 /mnt/storage/log; chown -R root:2001 /mnt/storage/shared; chmod -R 775 /mnt/storage/shared; chmod -R 775 /mnt/storage/log; chmod g+s /mnt/storage/shared; chmod g+s /mnt/storage/log
-    Limits:
-      cpu:     9
-      memory:  46Gi
-    Requests:
-      cpu:        5
-      memory:     46Gi
-    Environment:  <none>
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf181-pmp-log (rw)
-      /mnt/storage/shared from bscf181-pmp-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qdvjx (ro)
-Containers:
-  pmp:
-    Image:      sribharbor.sec.samsung.net/rel-ran/utd-bscf-pmp:SVR26ABSCUTDE16_R00
-    Port:       <none>
-    Host Port:  <none>
-    Command:
-      /bin/bash
-      -c
-    Args:
-      /pkg/bin/appStart.sh
-    Limits:
-      cpu:     9
-      memory:  46Gi
-    Requests:
-      cpu:      5
-      memory:   46Gi
-    Liveness:   http-get http://:8080/pmp_live_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Readiness:  http-get http://:8080/swm_read_probe delay=30s timeout=5s period=10s #success=1 #failure=5
-    Environment:
-      TZ:              UTC
-      THIS_NODE_NAME:   (v1:spec.nodeName)
-    Mounts:
-      /etc/config from env (rw)
-      /mnt/storage/log from bscf181-pmp-log (rw)
-      /mnt/storage/shared from bscf181-pmp-shared (rw)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qdvjx (ro)
-Conditions:
-  Type           Status
-  PodScheduled   False
-Volumes:
-  env:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      bscf181-pmp
-    Optional:  false
-  bscf181-pmp-log:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf181-log-pvc
-    ReadOnly:   false
-  bscf181-pmp-shared:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  bscf181-shared-pvc
-    ReadOnly:   false
-  kube-api-access-qdvjx:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-    ConfigMapName:           openshift-service-ca.crt
-    ConfigMapOptional:       <nil>
-QoS Class:                   Burstable
-Node-Selectors:              <none>
-Tolerations:                 node.kubernetes.io/memory-pressure:NoSchedule op=Exists
-                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type     Reason            Age                    From               Message
-  ----     ------            ----                   ----               -------
-  Warning  FailedScheduling  4m22s (x9 over 9m32s)  default-scheduler  0/1 nodes are available: 1 Insufficient cpu. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
-sno4@haproxy:~$ oc get performanceprofile -o yaml
-apiVersion: v1
-items:
-- apiVersion: performance.openshift.io/v2
-  kind: PerformanceProfile
-  metadata:
-    annotations:
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"performance.openshift.io/v2","kind":"PerformanceProfile","metadata":{"annotations":{"kubeletconfig.experimental":"{\"systemReserved\":{\"memory\": \"17Gi\"}}\n"},"name":"performance-master"},"spec":{"cpu":{"isolated":"1-27,29-55,57-83,85-111","reserved":"0,28,56,84"},"hugepages":{"defaultHugepagesSize":"1G","pages":[{"count":9,"node":0,"size":"1G"},{"count":9,"node":1,"size":"1G"}]},"machineConfigPoolSelector":{"pools.operator.machineconfiguration.openshift.io/master":""},"nodeSelector":{"node-role.kubernetes.io/master":""},"numa":{"topologyPolicy":"best-effort"},"realTimeKernel":{"enabled":true},"workloadHints":{"highPowerConsumption":false,"realTime":true}}}
-      kubeletconfig.experimental: |
-        {"systemReserved":{"memory": "17Gi"}}
-    creationTimestamp: "2026-06-03T10:06:08Z"
-    finalizers:
-    - foreground-deletion
-    generation: 2
-    name: performance-master
-    resourceVersion: "7733984"
-    uid: cc47f1ab-9c37-4d2a-a6ca-072133b4f513
-  spec:
-    cpu:
-      isolated: 1-27,29-55,57-83,85-111
-      reserved: 0,28,56,84
-    hugepages:
-      defaultHugepagesSize: 1G
-      pages:
-      - count: 9
-        node: 0
-        size: 1G
-      - count: 9
-        node: 1
-        size: 1G
-    kernelPageSize: 4k
-    machineConfigPoolSelector:
-      pools.operator.machineconfiguration.openshift.io/master: ""
-    nodeSelector:
-      node-role.kubernetes.io/master: ""
-    numa:
-      topologyPolicy: best-effort
-    realTimeKernel:
-      enabled: true
-    workloadHints:
-      highPowerConsumption: false
-      realTime: true
-  status:
-    conditions:
-    - lastHeartbeatTime: "2026-06-19T05:48:59Z"
-      lastTransitionTime: "2026-06-19T05:48:59Z"
-      status: "False"
-      type: Available
-    - lastHeartbeatTime: "2026-06-19T05:48:59Z"
-      lastTransitionTime: "2026-06-19T05:48:59Z"
-      status: "False"
-      type: Upgradeable
-    - lastHeartbeatTime: "2026-06-19T05:48:59Z"
-      lastTransitionTime: "2026-06-19T05:48:59Z"
-      status: "False"
-      type: Progressing
-    - lastHeartbeatTime: "2026-06-19T05:48:59Z"
-      lastTransitionTime: "2026-06-19T05:48:59Z"
-      message: |
-        Tuned ocp-sno.lab4.ocp.lan Degraded Reason: TunedError.
-        Tuned ocp-sno.lab4.ocp.lan Degraded Message: TuneD daemon issued one or more error message(s) during profile application. TuneD stderr: .
-      reason: TunedProfileDegraded
-      status: "True"
-      type: Degraded
-    runtimeClass: performance-performance-master
-    tuned: openshift-cluster-node-tuning-operator/openshift-node-performance-performance-master
-kind: List
-metadata:
-  resourceVersion: ""
-sno4@haproxy:~$
+Thanks, this identifies the issue.
+
+1. PerformanceProfile is correct
+
+Your PerformanceProfile reserves only 4 CPUs:
+
+reserved: 0,28,56,84
+isolated: 1-27,29-55,57-83,85-111
+
+This matches the node showing:
+
+Capacity = 112 CPUs
+
+Allocatable = 108 CPUs
+
+
+So the PerformanceProfile is not the problem.
+
+
+---
+
+2. Why PMP0 cannot schedule
+
+Your pmp0 pod requests:
+
+CPU request: 5
+
+CPU limit: 9
+
+
+The scheduler says:
+
+0/1 nodes are available: 1 Insufficient cpu
+
+The node currently has:
+
+CPU requests: 103862m (≈103.9 CPUs)
+
+Allocatable: 108 CPUs
+
+
+That leaves only about 4.1 CPUs free.
+
+Since pmp0 requests 5 CPUs, it cannot fit.
+
+
+---
+
+3. Why oc adm top node shows only 13%
+
+This often causes confusion.
+
+oc adm top node reports current CPU usage (~14 cores).
+
+The Kubernetes scheduler uses requested CPU, not actual usage.
+
+
+A Guaranteed/Burstable pod requesting 5 CPUs reserves those 5 CPUs for scheduling even if it's currently idle.
+
+
+---
+
+4. One more thing to check
+
+There is a small discrepancy between your expected workload requests and the node's total requests. To identify what's consuming the remaining CPU requests, run:
+
+oc get pods -A \
+  -o custom-columns='NS:.metadata.namespace,NAME:.metadata.name,CPU:.spec.containers[*].resources.requests.cpu'
+
+or, if you have jq:
+
+oc get pods -A -o json | jq -r '
+.items[] |
+[
+.metadata.namespace,
+.metadata.name,
+([.spec.containers[].resources.requests.cpu // "0"] | join(","))
+] | @tsv'
+
+This will show every pod's CPU request.
+
+
+---
+
+5. My conclusion
+
+Based on everything you've shared:
+
+✅ SR-IOV resources are configured correctly.
+
+✅ HugePages are sufficient.
+
+✅ Memory is sufficient.
+
+✅ PerformanceProfile is correct.
+
+❌ The only blocker is that the node has 108 allocatable CPUs, while the workload plus system pods leave less than 5 CPUs available for pmp0.
+
+
+If this Samsung BSCF deployment is expected to run all eight CNFs (including pmp0) on a 112-core SNO, then either:
+
+the vendor's sizing assumes lower CPU requests for one or more components, or
+
+the host is expected to have more allocatable CPUs.
+
+
+If this is Samsung's reference deployment, I'd recommend comparing your BSCF Helm values (or deployment manifests) with the reference values, especially the CPU requests for pmp0, bpp0, and bpp1. A small difference of 1–2 CPUs in one component is enough to prevent pmp0 from scheduling.
