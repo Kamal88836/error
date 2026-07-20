@@ -1,33 +1,72 @@
-sno4@haproxy:~$ oc adm top node
-NAME                   CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
-ocp-sno.lab4.ocp.lan   14150m       13%    97628Mi         20%
-sno4@haproxy:~$ oc describe no | grep "Allocated resources"
-Allocated resources:
-sno4@haproxy:~$ oc describe no ocp-sno.lab4.ocp.lan | grep -A15 "Allocated resources"
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                             Requests        Limits
-  --------                             --------        ------
-  cpu                                  103862m (96%)   108010m (100%)
-  memory                               197235Mi (41%)  180Gi (38%)
-  ephemeral-storage                    0 (0%)          0 (0%)
-  hugepages-1Gi                        16Gi (88%)      16Gi (88%)
-  hugepages-2Mi                        0 (0%)          0 (0%)
-  openshift.io/pci_sriov_net_bh0c      2               2
-  openshift.io/pci_sriov_net_bh0c_1    2               2
-  openshift.io/pci_sriov_net_bh0c_2    2               2
-  openshift.io/pci_sriov_net_bh0c_2_1  2               2
-  openshift.io/pci_sriov_net_bh0u      1               1
-  openshift.io/pci_sriov_net_bh0u_1    0               0
-  openshift.io/pci_sriov_net_bh0u_2    1               1
-sno4@haproxy:~$ oc get po
-NAME                            READY   STATUS    RESTARTS      AGE
-bscf181-bip0-b74746664-nnq95    1/1     Running   0             6m41s
-bscf181-bip1-7459c8b765-qphw4   1/1     Running   0             6m41s
-bscf181-bpp0-649b6d8df8-tjg4b   1/1     Running   0             6m41s
-bscf181-bpp1-f49c9bc67-9tkbn    1/1     Running   1 (38s ago)   6m41s
-bscf181-cmp0-749f994778-gch94   1/1     Running   0             6m41s
-bscf181-cmp1-69649954b8-255f7   1/1     Running   0             6m41s
-bscf181-dmp0-5dfc478b97-7hszp   1/1     Running   0             6m41s
-bscf181-pmp0-b755b55b9-8w4n2    0/1     Pending   0             6m41s
-sno4@haproxy:~$
+This is now very clear.
+
+Root cause
+
+The only pending pod is:
+
+bscf181-pmp0-b755b55b9-8w4n2
+STATUS: Pending
+
+The node shows:
+
+Allocatable CPU : 108
+Requested CPU   : 103.862
+Remaining       : ~4.138 CPUs
+
+From your earlier deployment, PMP0 requests 5 CPUs.
+
+Since only about 4.1 CPUs are available, the scheduler reports:
+
+0/1 nodes are available: 1 Insufficient cpu
+
+Why oc adm top node shows only 13% CPU
+
+This is expected.
+
+oc adm top node shows actual CPU usage (currently ~14 cores).
+
+The scheduler uses CPU requests, not current usage.
+
+
+A pod requesting 5 CPUs reserves those CPUs even if it's currently using only a fraction of them.
+
+Verify PMP0 request
+
+Run:
+
+oc describe pod bscf181-pmp0-b755b55b9-8w4n2
+
+or
+
+oc get pod bscf181-pmp0-b755b55b9-8w4n2 -o jsonpath='{.spec.containers[*].resources.requests.cpu}'
+
+It should show a request of 5 CPUs.
+
+Options to resolve
+
+1. Reduce PMP0 CPU request (if the BSCF application supports it).
+
+
+2. Free at least 1 more CPU request by reducing another workload's request or scaling something down.
+
+
+3. Increase node CPU capacity if the hardware supports additional cores.
+
+
+
+One thing to verify
+
+Earlier you shared a PerformanceProfile with:
+
+Reserved CPUs: 4
+
+Isolated CPUs: 108
+
+
+Can you run:
+
+oc get performanceprofile -o yaml
+
+(or at least the cpu: section)
+
+I want to verify that the current PerformanceProfile still has only 4 reserved CPUs and that no configuration change reduced the allocatable CPU further.
