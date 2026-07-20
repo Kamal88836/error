@@ -1,15 +1,73 @@
-sno10@haproxy:~/ocp-helm/test$ oc get po
-NAME                            READY   STATUS        RESTARTS   AGE
-bscf196-bip0-576bfcf7-fs72b     1/1     Terminating   0          7d1h
-bscf196-bip1-649fcf7f7d-psd4n   1/1     Terminating   0          7d1h
-bscf196-bpp0-7fd655b5bb-2mhrt   1/1     Terminating   0          7d1h
-bscf196-bpp1-67ffdcdb89-cwmsm   1/1     Terminating   0          7d1h
-bscf196-cmp0-8589d74447-f2zpr   1/1     Terminating   0          7d1h
-bscf196-cmp1-556599596f-g2xll   1/1     Terminating   0          7d1h
-bscf196-dmp0-5cbcc755bb-rmfn2   1/1     Terminating   0          7d
-bscf196-pmp0-7b66c7fdfb-ln5t7   1/1     Terminating   0          7d1h
-sno10@haproxy:~/ocp-helm/test$ oc get deploy
-No resources found in bscf namespace.
-sno10@haproxy:~/ocp-helm/test$ oc delete ns bscf
-namespace "bscf" deleted
+From your output:
 
+All pods are stuck in Terminating for about 7 days.
+
+There are no Deployments remaining.
+
+You have already run:
+
+oc delete ns bscf
+
+
+If the namespace is still stuck in the Terminating state, it's usually because one of these reasons:
+
+1. A pod has a finalizer.
+
+
+2. A PVC/PV or another resource has a finalizer.
+
+
+3. An APIService or controller is unavailable.
+
+
+
+Step 1: Check if the namespace is still terminating
+
+oc get ns bscf
+
+Step 2: Check namespace conditions
+
+oc describe ns bscf
+
+Step 3: Check for finalizers
+
+oc get ns bscf -o json | jq '.spec.finalizers'
+
+Step 4: If you want to force delete the namespace
+
+oc get namespace bscf -o json > ns.json
+
+Edit ns.json and change:
+
+"spec": {
+  "finalizers": [
+    "kubernetes"
+  ]
+}
+
+to:
+
+"spec": {
+  "finalizers": []
+}
+
+Then run:
+
+oc replace --raw "/api/v1/namespaces/bscf/finalize" -f ns.json
+
+If only the pods are stuck
+
+You can also force delete them:
+
+oc delete pod --all --grace-period=0 --force -n bscf
+
+or
+
+oc delete pod <pod-name> --grace-period=0 --force -n bscf
+
+Can you share the output of these commands?
+
+oc get ns bscf
+oc describe ns bscf
+
+That will show exactly why the namespace is still stuck in Terminating.
