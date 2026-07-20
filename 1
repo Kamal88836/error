@@ -1,118 +1,427 @@
-sno4@haproxy:~/ocp-config$ cat sriov-node-network.yaml
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens1f0-bh0u
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0u
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens1f0#0-3"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
----
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens1f3-bh0u-1
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0u_1
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens1f3#0-3"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
----
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens1f0-bh0c
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0c
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens1f0#4-8"]
-  deviceType: netdevice
-  isRdma: false
----
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens1f3-bh0c-1
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0c_1
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens1f3#4-8"]
-  deviceType: netdevice
-  isRdma: false
----
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens7f0-bh0u-2
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0u_2
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens7f0#0-3"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
----
-apiVersion: sriovnetwork.openshift.io/v1
-kind: SriovNetworkNodePolicy
-metadata:
-  name: policy-ens7f3-bh0u-2-1
-  namespace: openshift-sriov-network-operator
-spec:
-  resourceName: pci_sriov_net_bh0u_2_1
-  nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: 'true'
-  priority: 99
-  mtu: 9000
-  numVfs: 16
-  nicSelector:
-    vendor: '8086'
-    deviceID: '1593'
-    pfNames: ["ens7f3#0-3"]
-  deviceType: vfio-pci
-  needVhostNet: true
-  isRdma: false
+[root@ocp-sno ~]# ip link show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: ens10f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 50:7c:6f:6b:b9:74 brd ff:ff:ff:ff:ff:ff
+    altname enp72s0f0
+3: ens10f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 50:7c:6f:6b:b9:75 brd ff:ff:ff:ff:ff:ff
+    altname enp72s0f1
+4: ens10f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 50:7c:6f:6b:b9:76 brd ff:ff:ff:ff:ff:ff
+    altname enp72s0f2
+5: ens10f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 50:7c:6f:6b:b9:77 brd ff:ff:ff:ff:ff:ff
+    altname enp72s0f3
+6: ens3f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc mq master ovs-system state UP mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:62:d6:f4 brd ff:ff:ff:ff:ff:ff
+    altname enp15s0f0
+7: ens3f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:62:d6:f5 brd ff:ff:ff:ff:ff:ff
+    altname enp15s0f1
+8: ens3f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:62:d6:f6 brd ff:ff:ff:ff:ff:ff
+    altname enp15s0f2
+9: ens3f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:62:d6:f7 brd ff:ff:ff:ff:ff:ff
+    altname enp15s0f3
+10: ens1f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 50:7c:6f:4b:9b:e0 brd ff:ff:ff:ff:ff:ff
+    vf 0     link/ether 36:60:eb:6d:37:36 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 1     link/ether ca:93:8e:df:7d:9d brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust on
+    vf 2     link/ether b6:69:7f:d9:43:71 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 3     link/ether 4e:81:5b:e1:c5:70 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 4     link/ether 8a:41:7e:3b:7f:ec brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 5     link/ether 8e:4f:3e:34:23:d5 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 6     link/ether c2:75:a7:71:ae:c5 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 7     link/ether ce:f6:5e:7d:0e:ee brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust on
+    vf 8     link/ether 2e:03:46:9e:76:78 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust on
+    vf 9     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 10     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 11     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 12     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 13     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 14     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 15     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    altname enp17s0f0
+11: ens1f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 50:7c:6f:4b:9b:e1 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f1
+12: ens1f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 50:7c:6f:4b:9b:e2 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f2
+13: ens1f3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 50:7c:6f:4b:9b:e3 brd ff:ff:ff:ff:ff:ff
+    vf 0     link/ether 06:d7:cd:1d:51:ec brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 1     link/ether ae:9b:da:c5:b7:5c brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 2     link/ether da:9f:3f:ae:50:cf brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 3     link/ether b2:6f:4b:80:c2:2a brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 4     link/ether ca:42:9c:26:09:27 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 5     link/ether fe:fe:5d:ab:d5:05 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 6     link/ether aa:cc:b6:6e:3a:8e brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 7     link/ether 7e:20:c7:97:2e:97 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 8     link/ether 96:28:49:44:37:50 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust on
+    vf 9     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 10     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 11     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 12     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 13     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 14     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 15     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    altname enp17s0f3
+14: ens4f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:63:64:44 brd ff:ff:ff:ff:ff:ff
+    vf 0     link/ether 5a:c2:e3:f5:79:da brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 1     link/ether 36:cd:89:fe:0e:a9 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 2     link/ether ce:2b:e2:ad:e3:ff brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 3     link/ether be:ff:8e:78:23:a9 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust on
+    vf 4     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 5     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 6     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 7     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 8     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 9     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 10     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 11     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 12     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 13     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 14     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 15     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    altname enp133s0f0
+15: ens4f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:63:64:45 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f1
+16: ens4f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:63:64:46 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f2
+17: ens4f3: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:63:64:47 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f3
+18: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:63:c0:b0 brd ff:ff:ff:ff:ff:ff
+    vf 0     link/ether c2:76:09:49:50:86 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 1     link/ether 82:a9:9a:30:5b:ed brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 2     link/ether 3a:fd:b3:41:5f:f4 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 3     link/ether 42:ff:a7:be:9f:76 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 4     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 5     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 6     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 7     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 8     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 9     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 10     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 11     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 12     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 13     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 14     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    vf 15     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off
+    altname enp192s0f0
+19: ens7f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:63:c0:b1 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f1
+20: ens7f2: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:63:c0:b2 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f2
+21: ens7f3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:63:c0:b3 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f3
+22: ovs-system: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether be:68:fb:06:02:9e brd ff:ff:ff:ff:ff:ff
+23: ovn-k8s-mp0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/ether 0a:58:0a:80:00:02 brd ff:ff:ff:ff:ff:ff
+24: br-int: <BROADCAST,MULTICAST> mtu 8400 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ee:e7:ab:8d:a7:f7 brd ff:ff:ff:ff:ff:ff
+25: br-ex: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/ether 6c:fe:54:62:d6:f4 brd ff:ff:ff:ff:ff:ff
+29: ens1f0v11: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether de:fd:d4:d4:90:89 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v11
+30: ens1f0v6: <BROADCAST,MULTICAST> mtu 9000 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether c2:75:a7:71:ae:c5 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v6
+31: ens1f0v4: <BROADCAST,MULTICAST> mtu 9000 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 8a:41:7e:3b:7f:ec brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v4
+32: ens1f0v12: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 0e:c2:2f:b9:d5:f1 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v12
+34: ens1f0v15: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 82:bc:2d:1b:89:f3 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v15
+36: ens1f0v10: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether f6:b2:fe:7d:de:5a brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v10
+37: ens1f0v5: <BROADCAST,MULTICAST> mtu 9000 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 8e:4f:3e:34:23:d5 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v5
+38: ens1f0v13: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether e2:42:a9:fb:2c:1f brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v13
+39: ens1f0v14: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 16:2d:ea:c7:02:0b brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v14
+41: ens1f0v9: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 52:6a:84:b5:79:e2 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f0v9
+45: ens1f3v11: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 2a:fb:b9:6c:7e:0c brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v11
+46: ens1f3v6: <BROADCAST,MULTICAST> mtu 9000 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether aa:cc:b6:6e:3a:8e brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v6
+47: ens1f3v14: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether a6:38:2e:8a:9c:43 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v14
+49: ens1f3v9: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 6a:15:a2:77:e5:89 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v9
+50: ens1f3v4: <BROADCAST,MULTICAST> mtu 9000 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ca:42:9c:26:09:27 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v4
+51: ens1f3v12: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 52:4a:3c:29:e5:9a brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v12
+52: ens1f3v7: <BROADCAST,MULTICAST> mtu 9000 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 7e:20:c7:97:2e:97 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v7
+53: ens1f3v15: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 32:8d:a4:04:79:36 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v15
+55: ens1f3v10: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 8a:95:2b:dc:f2:3f brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v10
+56: ens1f3v5: <BROADCAST,MULTICAST> mtu 9000 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether fe:fe:5d:ab:d5:05 brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v5
+57: ens1f3v13: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ee:62:1a:8a:cb:cf brd ff:ff:ff:ff:ff:ff
+    altname enp17s0f3v13
+59: ens4f0v8: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 1a:c0:25:8e:de:ec brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v8
+61: ens4f0v11: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 2a:50:fb:49:3d:25 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v11
+62: ens4f0v6: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether e2:5f:44:a7:41:86 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v6
+63: ens4f0v14: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether f2:e0:70:44:c8:57 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v14
+64: ens4f0v9: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 32:50:93:43:80:27 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v9
+65: ens4f0v4: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 26:9c:5b:df:7f:04 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v4
+66: ens4f0v12: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 1e:8c:2d:0a:21:35 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v12
+67: ens4f0v7: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 96:9a:d5:4c:27:4a brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v7
+68: ens4f0v15: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 52:60:b8:36:92:08 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v15
+70: ens4f0v10: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 7a:e1:66:16:4e:9d brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v10
+71: ens4f0v5: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 8e:59:47:21:f0:31 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v5
+72: ens4f0v13: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 12:d2:9f:3f:72:60 brd ff:ff:ff:ff:ff:ff
+    altname enp133s0f0v13
+75: ens7f0v11: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether f6:67:48:1a:b3:f7 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v11
+76: ens7f0v6: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 46:3a:02:4f:9d:87 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v6
+77: ens7f0v14: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 2a:77:31:a6:6c:4d brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v14
+79: ens7f0v9: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ee:40:0e:0c:e8:24 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v9
+80: ens7f0v4: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 72:53:f5:99:a4:95 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v4
+81: ens7f0v12: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 2a:d2:28:7d:c9:74 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v12
+82: ens7f0v7: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether a2:6d:01:c5:41:5d brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v7
+83: ens7f0v15: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether be:e4:89:a2:67:28 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v15
+85: ens7f0v10: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ee:a5:fc:36:49:52 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v10
+86: ens7f0v5: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 92:8d:b0:55:42:5f brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v5
+87: ens7f0v13: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 22:4c:c9:9c:f6:ed brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v13
+88: ens7f0v8: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 46:17:da:f7:ae:45 brd ff:ff:ff:ff:ff:ff
+    altname enp192s0f0v8
+90: bc8583dd8e7190f@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 72:12:8b:53:6a:3d brd ff:ff:ff:ff:ff:ff link-netns b35f64ab-991c-477a-aa8b-20113e89cd36
+91: 46c8cc5e1711847@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether c6:43:01:38:87:3d brd ff:ff:ff:ff:ff:ff link-netns 6dab3287-d554-406a-9850-6048ed569ab9
+92: b8a5c80fe5efafb@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 66:3f:d1:4c:0b:85 brd ff:ff:ff:ff:ff:ff link-netns 298645f4-5163-4d48-a753-930dafceb49f
+93: 212ae784bde5722@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 8e:05:d6:c6:a0:f2 brd ff:ff:ff:ff:ff:ff link-netns 5a1ad464-75f1-41e9-ae19-e8be6e68a942
+94: 8d3a548b9de8b93@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether d6:70:79:83:7e:75 brd ff:ff:ff:ff:ff:ff link-netns d073f0cc-cc15-4a34-af6b-4eb8add8385c
+95: 2aa9d27b770cb5c@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether d2:c9:b3:21:e0:4a brd ff:ff:ff:ff:ff:ff link-netns 2290758d-30aa-4333-b62a-530c703304d0
+96: aa23dc75272911d@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether ee:c6:b8:2b:40:d3 brd ff:ff:ff:ff:ff:ff link-netns 015f1ef5-6457-4a77-8521-c0d5acaf8427
+97: 228c799300347e2@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 0a:f4:ea:8e:49:d0 brd ff:ff:ff:ff:ff:ff link-netns 175c3790-a843-4bef-9d9c-08d43044ba1a
+98: 03276a15de92772@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether a2:0c:d8:09:85:60 brd ff:ff:ff:ff:ff:ff link-netns 47ec19b9-7609-4851-867c-c773b22cee80
+99: 93e3a6d7ddbc69c@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether fe:1d:95:a6:e7:a6 brd ff:ff:ff:ff:ff:ff link-netns 1bd5fb13-5833-4d29-a055-8855919eb9ff
+100: feb216df5ce5b96@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether ce:c4:39:89:eb:95 brd ff:ff:ff:ff:ff:ff link-netns 0abda8fe-ef4e-405a-8457-17c6da2d5f48
+101: e957b2bf3d9810e@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether d2:31:77:7c:a5:0b brd ff:ff:ff:ff:ff:ff link-netns 24f19595-82bc-4601-b527-776d433daee4
+102: 99a4501b387bba7@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether c2:f2:97:63:3e:82 brd ff:ff:ff:ff:ff:ff link-netns f6c1619e-7c43-4fff-a82d-fbdae48713a3
+103: ed5f79f5c48dcb6@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 56:1a:47:a7:2a:62 brd ff:ff:ff:ff:ff:ff link-netns 444f607f-8a63-4827-a7e0-5dd0b21db743
+104: c8d526a58f0f8d6@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 36:90:dc:e3:24:5c brd ff:ff:ff:ff:ff:ff link-netns 8c4b5270-82d0-4ca4-9741-2b52e2fe513c
+105: 6730ffbb5f3e8f5@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 7e:5f:c8:a0:9f:e1 brd ff:ff:ff:ff:ff:ff link-netns 0e4f8794-8a7d-4d15-93fc-231be21ff98e
+106: 427620c68153224@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 92:7d:97:a1:02:c3 brd ff:ff:ff:ff:ff:ff link-netns 64c897c0-9a3e-4634-87ce-1418dc0578ca
+107: a977298d3bfa4f1@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 86:55:7d:0b:7c:c2 brd ff:ff:ff:ff:ff:ff link-netns 20492ee1-3158-4d86-a357-af016e641db8
+108: 50635a1a04ec590@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 16:5e:27:0e:5a:01 brd ff:ff:ff:ff:ff:ff link-netns 1460ae76-4a4e-4e74-9072-df849ce0542b
+109: 38e75c3ee8ee048@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 56:88:55:1d:54:35 brd ff:ff:ff:ff:ff:ff link-netns 8b07ae1c-2f45-41dc-8f97-8a1990cb10d6
+110: 8e86f7ac5619299@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 8e:18:d5:f9:00:9c brd ff:ff:ff:ff:ff:ff link-netns 37504484-367b-4952-81d8-334ee8b164d9
+111: e29419ee900c7d2@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 96:cd:59:07:71:c9 brd ff:ff:ff:ff:ff:ff link-netns 947fd66e-b1d8-4af1-867e-7b0b432916ea
+112: b1d253ac43f4b49@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 0a:b4:f6:0b:dc:a3 brd ff:ff:ff:ff:ff:ff link-netns 56f75f87-2ef7-4021-a01f-05d5be94057a
+113: 5f5930e4979ac59@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 0a:9d:40:62:6c:61 brd ff:ff:ff:ff:ff:ff link-netns 8699ff5b-eba9-410b-90d9-f62c286923b5
+114: 3c1b7b6f6d14147@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 26:59:65:78:95:d5 brd ff:ff:ff:ff:ff:ff link-netns 4bbe6725-f72f-4ae6-8024-c693f55bcc23
+115: 5a91de92e72ea66@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 8e:92:ac:f3:29:65 brd ff:ff:ff:ff:ff:ff link-netns e186b512-d157-485b-a407-275018114ece
+116: 4dd52593f75fe06@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 7a:71:17:fc:b8:bb brd ff:ff:ff:ff:ff:ff link-netns 7225dd9e-d919-4357-a3eb-26bebea4a55a
+117: d4cc942e165bb6b@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether d6:f6:2e:2e:17:9b brd ff:ff:ff:ff:ff:ff link-netns 107d534c-2dc3-45e4-89e1-c4036173926f
+118: c3de145de05ee6b@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether a6:c2:f8:e6:cf:13 brd ff:ff:ff:ff:ff:ff link-netns 7b12e34e-01da-4f26-b0db-2f9830e09490
+119: 356433dcb10e774@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 8a:14:fb:4f:e4:ef brd ff:ff:ff:ff:ff:ff link-netns 696b85fa-fa18-4ceb-a49d-45a114d177d5
+120: 7dff2c96a61f34f@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 6a:99:9f:3a:e6:21 brd ff:ff:ff:ff:ff:ff link-netns 99ee883f-1b04-4c06-bb46-21716a6ec000
+121: dbb5fe19d25dd5a@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether a6:d8:58:85:b2:5a brd ff:ff:ff:ff:ff:ff link-netns a4ed70c8-23ef-4c18-841f-c4a5e647e2dd
+122: 052125783b2d554@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether ca:5d:89:25:33:02 brd ff:ff:ff:ff:ff:ff link-netns eba97846-1f3e-497c-8468-6c0e07da6791
+123: d486acc0fbacb46@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 76:8f:7e:6e:cc:9d brd ff:ff:ff:ff:ff:ff link-netns 61a45624-6f43-4a40-bdf3-ede58f956303
+124: 0b4318a0f98fb7c@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether e6:ca:b5:c9:39:42 brd ff:ff:ff:ff:ff:ff link-netns 3910a84b-edb9-4504-9ad4-28a71e14f526
+125: 0d8a329d2df350a@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 6e:aa:62:6d:24:2d brd ff:ff:ff:ff:ff:ff link-netns b4a8d7ac-6f39-404a-8f8c-bfd9728c1aff
+126: 6f363d0294a3a77@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 4e:6d:2f:e3:16:b0 brd ff:ff:ff:ff:ff:ff link-netns 0643757a-acf0-42db-9d5d-dd8ce3e593b1
+127: 6c2025f8cf8703f@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 2a:39:b6:f5:a3:44 brd ff:ff:ff:ff:ff:ff link-netns cf463bcf-8db8-4df4-a948-7905cdddd186
+128: b50df71ba19a7cb@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 4e:ed:c9:28:4a:5b brd ff:ff:ff:ff:ff:ff link-netns 3ed67473-85b4-4697-8772-d60f24370dce
+129: f0f11f0a4289541@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 62:a0:6c:a0:d0:56 brd ff:ff:ff:ff:ff:ff link-netns c071521d-b820-4418-88c3-2c7fa9a1023d
+130: ca5fec4cf6502fc@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 6e:6c:fa:30:ab:d2 brd ff:ff:ff:ff:ff:ff link-netns 26a9173b-d7c8-4eea-add9-9267b88f9c3c
+131: 30cab87ce91fdc1@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 06:19:f4:68:9b:fc brd ff:ff:ff:ff:ff:ff link-netns fc46f8e6-488b-4ea5-ba7a-939edde6b729
+132: 16f35742dcf9e27@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 3e:48:13:8b:3a:85 brd ff:ff:ff:ff:ff:ff link-netns 09aa4336-118d-4060-9665-f472a75ffd4f
+133: f3a5d1a01999e7d@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 8a:02:19:4f:46:61 brd ff:ff:ff:ff:ff:ff link-netns f5d1e32b-a1e3-4603-8205-f62a8ad11e54
+134: 04a3312cc5cc50e@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 1a:b3:af:96:38:e5 brd ff:ff:ff:ff:ff:ff link-netns 38821ae1-9f79-4e8d-a976-2ffba5df729c
+135: d7ddc23bf65d0bd@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether ba:2c:9f:dc:22:d9 brd ff:ff:ff:ff:ff:ff link-netns fae05896-ebd1-4cdf-b643-1f34fb601b96
+136: ee10d4c2d4659c7@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 36:b9:cb:ed:17:d3 brd ff:ff:ff:ff:ff:ff link-netns dbdb76b0-e31c-45b7-b0b7-29cce1299221
+137: cb20b3b799a7091@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 4a:6b:af:7b:29:00 brd ff:ff:ff:ff:ff:ff link-netns 43275bc8-d735-42a2-a4dc-59b0a89bc0ca
+138: c2aa186ab43daa7@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 86:e9:a3:2b:84:34 brd ff:ff:ff:ff:ff:ff link-netns 3936bc99-e33c-4e35-ac87-3c181eb8c595
+139: 049aebb342b9e0b@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether a6:3c:db:61:ff:92 brd ff:ff:ff:ff:ff:ff link-netns 32fb3e06-b159-4ce7-8d24-d28ffe37c3a3
+140: 5b1008cdce2e47f@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 0e:ae:50:9e:6a:e3 brd ff:ff:ff:ff:ff:ff link-netns 036a69fe-eb32-424c-9df2-faae443984d5
+141: 9de11f3919ca194@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether f2:93:08:2b:0a:af brd ff:ff:ff:ff:ff:ff link-netns db935856-7806-4612-8c6e-c198ce672eac
+142: a620a6ae119f671@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether fa:99:f7:88:97:14 brd ff:ff:ff:ff:ff:ff link-netns 0a0d841e-8cba-42e5-a4a9-6a3cbdcd2ba5
+143: a2289c15666e045@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 9e:34:85:a5:8f:60 brd ff:ff:ff:ff:ff:ff link-netns 65bd1caf-88cb-41d9-b13a-db4c04c8a39f
+144: 5620d4c750f111b@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether c2:2d:5f:ec:93:ed brd ff:ff:ff:ff:ff:ff link-netns bb1ca887-56d5-420a-af56-e243ec11fc98
+145: bc5aff16fa1f55a@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 5e:be:d2:03:cd:ad brd ff:ff:ff:ff:ff:ff link-netns c47ca3d0-5537-4af4-8087-9602fa786bcf
+146: 501329ccc81099c@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether ee:2e:57:60:66:30 brd ff:ff:ff:ff:ff:ff link-netns d3948e23-b654-40f0-a991-77b6cc63fe0d
+147: 9579c185d5b51e6@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 92:ee:d0:83:c9:35 brd ff:ff:ff:ff:ff:ff link-netns a96afcec-1d65-4aae-bcd3-74c0192a9952
+148: 46db4e794f8c02f@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 6a:a8:0b:39:8c:f8 brd ff:ff:ff:ff:ff:ff link-netns a49268d3-00f4-4152-aec1-6542b0bf19db
+149: 4700578bb6fab12@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether c2:3f:0a:dd:21:7d brd ff:ff:ff:ff:ff:ff link-netns 924512d8-d005-48c6-bf66-078d3baa3133
+150: 9f8a13cde9dd27e@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether aa:67:3b:7c:74:92 brd ff:ff:ff:ff:ff:ff link-netns 61ce2503-7a67-4ae2-a136-b0e30ca93dba
+151: 89697c97551037e@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether fe:ee:f4:5b:64:88 brd ff:ff:ff:ff:ff:ff link-netns 0ffbc9ab-1658-4a2c-a725-b34337138493
+152: d5fa593b94624bd@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 12:3f:6e:96:21:d9 brd ff:ff:ff:ff:ff:ff link-netns 954cdfff-1e36-4fa1-a254-df9114da8c9a
+153: ed18f5d31064e5d@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 8e:60:44:fb:6f:88 brd ff:ff:ff:ff:ff:ff link-netns 40796907-1cda-4499-9346-912c27bbdf44
+154: 73aa168fc13dc06@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether e6:9e:56:d4:18:b1 brd ff:ff:ff:ff:ff:ff link-netns 53d51a74-34b4-4fc1-ba29-ece5d4fa5cc5
+155: 64c312ca6ae2931@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 9a:2c:87:02:db:3c brd ff:ff:ff:ff:ff:ff link-netns 799461db-c990-40a7-b07f-70e6b787473f
+156: 52976729c527429@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 86:a8:1a:98:33:d5 brd ff:ff:ff:ff:ff:ff link-netns 7a865310-bb22-4047-847e-fa0a0cfbcc65
+157: 312b77215bf454e@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether de:af:6e:4c:5b:9c brd ff:ff:ff:ff:ff:ff link-netns 445b6ec7-4d73-49b5-9425-750d163b8045
+158: f5724bb2d4cb891@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 9a:7f:19:25:70:fd brd ff:ff:ff:ff:ff:ff link-netns 8df56bfa-be6e-4789-b63a-bf415a63ddd3
+159: 06a0a693f84138d@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether ba:67:c5:15:bf:15 brd ff:ff:ff:ff:ff:ff link-netns 11157094-9597-461e-9814-32b64588105e
+160: 612a71bc960ce4c@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether e6:44:c2:5a:7d:5e brd ff:ff:ff:ff:ff:ff link-netns 5215832c-16ac-4022-b717-c651d52df181
+165: c575e42d4880923@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 0a:48:c7:57:6f:aa brd ff:ff:ff:ff:ff:ff link-netns b3404031-9ea0-49c5-82e7-a78d559a5bf1
+166: ef3a0271108b653@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether f2:ad:96:5a:85:ab brd ff:ff:ff:ff:ff:ff link-netns bfcb5a93-7cde-4fa4-9435-506865753ca3
+167: 34c223bbed96cc0@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether d6:bb:88:0f:6b:26 brd ff:ff:ff:ff:ff:ff link-netns 0937e0e5-611e-4711-94bf-84c30e9f5013
+168: c79676a8a9bbcdf@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 96:73:e9:bc:04:87 brd ff:ff:ff:ff:ff:ff link-netns d3ebf909-5b7d-4a4c-8cc5-b426bf610e24
+169: 1880870eb3a991b@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether ae:18:d5:70:99:27 brd ff:ff:ff:ff:ff:ff link-netns e195811b-c51e-4bfc-99a4-ba19970a4bb8
+170: a267d798cbbdd83@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 6a:bf:8a:14:6c:04 brd ff:ff:ff:ff:ff:ff link-netns 72251fb8-8b4b-4eff-8068-67436cd92093
+171: 405c4cf7fded6a7@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8400 qdisc noqueue master ovs-system state UP mode DEFAULT group default
+    link/ether 5e:f8:a4:c5:90:15 brd ff:ff:ff:ff:ff:ff link-netns ca242985-f775-4388-8cfe-85f682cfd106
+[root@ocp-sno ~]#
