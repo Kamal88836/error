@@ -1,51 +1,13 @@
-sno10@haproxy:~/ocp-helm/test$ oc project
-Error from server (ServiceUnavailable): the server is currently unable to handle the request (get projects.project.openshift.io bscf)
-sno10@haproxy:~/ocp-helm/test$ oc whoami
-system:admin
-sno10@haproxy:~/ocp-helm/test$
-sno10@haproxy:~/ocp-helm/test$ oc config view --minify | grep manespace
-sno10@haproxy:~/ocp-helm/test$ oc config view --minify | grep namespace
-    namespace: bscf
-sno10@haproxy:~/ocp-helm/test$ oc get project nscf
-Error from server (NotFound): projects.config.openshift.io "nscf" not found
-sno10@haproxy:~/ocp-helm/test$ oc get project bscf
-Error from server (NotFound): projects.config.openshift.io "bscf" not found
-sno10@haproxy:~/ocp-helm/test$ oc get apiservice | grep project
-v1.project.openshift.io                       openshift-apiserver/api                                      False (MissingEndpoints)   87d
-sno10@haproxy:~/ocp-helm/test$ oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.18.23   False       False         True       6h40m   APIServerDeploymentAvailable: no apiserver.openshift-oauth-apiserver pods available on any node....
-baremetal                                  4.18.23   True        False         False      87d
-cloud-controller-manager                   4.18.23   True        False         False      87d
-cloud-credential                           4.18.23   True        False         False      87d
-cluster-autoscaler                         4.18.23   True        False         False      87d
-config-operator                            4.18.23   True        False         False      87d
-console                                    4.18.23   False       True          True       6h40m   DeploymentAvailable: 0 replicas available for console deployment...
-control-plane-machine-set                  4.18.23   True        False         False      87d
-csi-snapshot-controller                    4.18.23   False       True          False      6h40m   CSISnapshotControllerAvailable: Waiting for Deployment
-dns                                        4.18.23   False       True          True       6h40m   DNS "default" is unavailable.
-etcd                                       4.18.23   True        False         True       87d     NodeControllerDegraded: The master nodes not ready: node "ocp-sno.lab10.ocp.lan" not ready since 2026-07-20 05:38:24 +0000 UTC because NodeStatusUnknown (Kubelet stopped posting node status.)
-image-registry                             4.18.23   False       True          False      6h40m   NodeCADaemonAvailable: The daemon set node-ca does not have available replicas...
-ingress                                    4.18.23   True        True          True       87d     The "default" ingress controller reports Degraded=True: DegradedConditions: One or more other status conditions indicate a degraded state: DeploymentReplicasAllAvailable=False (DeploymentReplicasNotAvailable: 0/1 of replicas are available)
-insights                                   4.18.23   False       False         True       18d     Unable to report: unable to build request to connect to Insights server: Post "https://console.redhat.com/api/ingress/v1/upload": dial tcp: lookup console.redhat.com on 172.30.0.10:53: read udp 10.128.0.54:42352->172.30.0.10:53: i/o timeout
-kube-apiserver                             4.18.23   True        False         False      87d
-kube-controller-manager                    4.18.23   True        False         False      87d
-kube-scheduler                             4.18.23   True        False         False      87d
-kube-storage-version-migrator              4.18.23   False       True          False      6h40m   KubeStorageVersionMigratorAvailable: Waiting for Deployment
-machine-api                                4.18.23   True        False         False      87d
-machine-approver                           4.18.23   True        False         False      87d
-machine-config                             4.18.23   True        False         True       87d     Failed to resync 4.18.23 because: error during waitForDaemonsetRollout: [context deadline exceeded, daemonset machine-config-daemon is not ready. status: (desired: 1, updated: 1, ready: 0, unavailable: 1)]
-marketplace                                4.18.23   True        False         False      87d
-monitoring                                 4.18.23   False       True          True       6h34m   UpdatingPrometheusOperator: reconciling Prometheus Operator Admission Webhook Deployment failed: updating Deployment object failed: waiting for DeploymentRollout of openshift-monitoring/prometheus-operator-admission-webhook: context deadline exceeded: got 1 unavailable replicas
-network                                    4.18.23   True        False         False      87d
-node-tuning                                4.18.23   False       True          True       6h40m   DaemonSet "tuned" has no available Pod(s)
-olm                                        4.18.23   False       True          False      6h40m   CatalogdDeploymentCatalogdControllerManagerAvailable: Waiting for Deployment...
-openshift-apiserver                        4.18.23   False       False         True       6h40m   APIServerDeploymentAvailable: no apiserver.openshift-apiserver pods available on any node....
-openshift-controller-manager               4.18.23   False       True          False      6h41m   Available: no pods available on any node.
-openshift-samples                          4.18.23   True        False         False      87d
-operator-lifecycle-manager                 4.18.23   True        False         False      87d
-operator-lifecycle-manager-catalog         4.18.23   True        False         False      87d
-operator-lifecycle-manager-packageserver   4.18.23   False       True          False      6h40m   ClusterServiceVersion openshift-operator-lifecycle-manager/packageserver observed in phase Failed with reason: InstallCheckFailed, message: install timeout
-service-ca                                 4.18.23   True        True          False      87d     Progressing: ...
-storage                                    4.18.23   True        False         False      87d
-sno10@haproxy:~/ocp-helm/test$
+Events:
+  Type     Reason           Age                            From     Message
+  ----     ------           ----                           ----     -------
+  Warning  NetworkNotReady  <invalid> (x2 over <invalid>)  kubelet  network is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: no CNI configuration file in /etc/kubernetes/cni/net.d/. Has your network provider started?
+  Warning  FailedMount      <invalid> (x2 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "trusted-ca-bundle" : object "openshift-apiserver"/"trusted-ca-bundle" not registered
+  Warning  FailedMount      <invalid> (x2 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "etcd-serving-ca" : object "openshift-apiserver"/"etcd-serving-ca" not registered
+  Warning  FailedMount      <invalid> (x2 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "encryption-config" : object "openshift-apiserver"/"encryption-config-1" not registered
+  Warning  FailedMount      <invalid> (x2 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "kube-api-access-zgjl4" : [object "openshift-apiserver"/"kube-root-ca.crt" not registered, object "openshift-apiserver"/"openshift-service-ca.crt" not registered]
+  Warning  FailedMount      <invalid> (x3 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "config" : object "openshift-apiserver"/"config" not registered
+  Warning  FailedMount      <invalid> (x3 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "image-import-ca" : object "openshift-apiserver"/"image-import-ca" not registered
+  Warning  FailedMount      <invalid> (x3 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "audit" : object "openshift-apiserver"/"audit-1" not registered
+  Warning  FailedMount      <invalid> (x3 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "serving-cert" : object "openshift-apiserver"/"serving-cert" not registered
+  Warning  FailedMount      <invalid> (x3 over <invalid>)  kubelet  MountVolume.SetUp failed for volume "etcd-client" : object "openshift-apiserver"/"etcd-client" not registered
