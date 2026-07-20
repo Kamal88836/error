@@ -1,18 +1,33 @@
-Non-terminated Pods:                                (103 in total)
-  Namespace                                         Name                                                          CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
-  ---------                                         ----                                                          ------------  ----------  ---------------  -------------  ---
-  bscf                                              bscf181-bip0-b74746664-nnq95                                  22 (20%)      22 (20%)    16Gi (3%)        16Gi (3%)      94s
-  bscf                                              bscf181-bip1-7459c8b765-qphw4                                 22 (20%)      22 (20%)    16Gi (3%)        16Gi (3%)      94s
-  bscf                                              bscf181-bpp0-649b6d8df8-tjg4b                                 26 (24%)      26 (24%)    48Gi (10%)       48Gi (10%)     94s
-  bscf                                              bscf181-bpp1-f49c9bc67-9tkbn                                  26 (24%)      26 (24%)    48Gi (10%)       48Gi (10%)     94s
-  bscf                                              bscf181-cmp0-749f994778-gch94                                 2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       94s
-  bscf                                              bscf181-cmp1-69649954b8-255f7                                 2 (1%)        2 (1%)      4Gi (0%)         4Gi (0%)       94s
-  bscf                                              bscf181-dmp0-5dfc478b97-7hszp                                 1 (0%)        8 (7%)      44Gi (9%)        44Gi (9%)      94s
-  openshift-apiserver-operator                      openshift-apiserve
-
-
-  Events:
-  Type     Reason            Age                   From               Message
-  ----     ------            ----                  ----               -------
-  Warning  FailedScheduling  3m6s (x8 over 3m13s)  default-scheduler  0/1 nodes are available: 1 Insufficient cpu. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.
+sno4@haproxy:~$ oc adm top node
+NAME                   CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+ocp-sno.lab4.ocp.lan   14150m       13%    97628Mi         20%
+sno4@haproxy:~$ oc describe no | grep "Allocated resources"
+Allocated resources:
+sno4@haproxy:~$ oc describe no ocp-sno.lab4.ocp.lan | grep -A15 "Allocated resources"
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                             Requests        Limits
+  --------                             --------        ------
+  cpu                                  103862m (96%)   108010m (100%)
+  memory                               197235Mi (41%)  180Gi (38%)
+  ephemeral-storage                    0 (0%)          0 (0%)
+  hugepages-1Gi                        16Gi (88%)      16Gi (88%)
+  hugepages-2Mi                        0 (0%)          0 (0%)
+  openshift.io/pci_sriov_net_bh0c      2               2
+  openshift.io/pci_sriov_net_bh0c_1    2               2
+  openshift.io/pci_sriov_net_bh0c_2    2               2
+  openshift.io/pci_sriov_net_bh0c_2_1  2               2
+  openshift.io/pci_sriov_net_bh0u      1               1
+  openshift.io/pci_sriov_net_bh0u_1    0               0
+  openshift.io/pci_sriov_net_bh0u_2    1               1
+sno4@haproxy:~$ oc get po
+NAME                            READY   STATUS    RESTARTS      AGE
+bscf181-bip0-b74746664-nnq95    1/1     Running   0             6m41s
+bscf181-bip1-7459c8b765-qphw4   1/1     Running   0             6m41s
+bscf181-bpp0-649b6d8df8-tjg4b   1/1     Running   0             6m41s
+bscf181-bpp1-f49c9bc67-9tkbn    1/1     Running   1 (38s ago)   6m41s
+bscf181-cmp0-749f994778-gch94   1/1     Running   0             6m41s
+bscf181-cmp1-69649954b8-255f7   1/1     Running   0             6m41s
+bscf181-dmp0-5dfc478b97-7hszp   1/1     Running   0             6m41s
+bscf181-pmp0-b755b55b9-8w4n2    0/1     Pending   0             6m41s
 sno4@haproxy:~$
