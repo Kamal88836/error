@@ -1,34 +1,71 @@
-sno10@haproxy:~/ocp-helm$ helm install bscf oci://sribharbor.sec.samsung.net/rel-ran/bscf -f local-values.yaml --version 262.0.9
-Pulled: sribharbor.sec.samsung.net/rel-ran/bscf:262.0.9
-Digest: sha256:9b253ae868e3f90c9ea288a3f513d45df334bcac962523e473598cebb314ddbc
-I0720 12:44:41.081369  126328 warnings.go:107] "Warning: would violate PodSecurity \"restricted:latest\": privileged (container \"install\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (containers \"sleepy\", \"install\", \"bip\" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (containers \"sleepy\", \"install\", \"bip\" must set securityContext.capabilities.drop=[\"ALL\"]; container \"bip\" must not include \"DAC_READ_SEARCH\", \"IPC_LOCK\", \"NET_ADMIN\", \"NET_RAW\", \"SETFCAP\", \"SYS_ADMIN\", \"SYS_CHROOT\", \"SYS_MODULE\", \"SYS_NICE\", \"SYS_PTRACE\", \"SYS_RAWIO\", \"SYS_RESOURCE\", \"SYS_TIME\", \"SYS_TTY_CONFIG\" in securityContext.capabilities.add), runAsNonRoot != true (pod or containers \"sleepy\", \"install\" must set securityContext.runAsNonRoot=true), runAsUser=0 (container \"install\" must not set runAsUser=0), seccompProfile (pod or containers \"sleepy\", \"install\", \"bip\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
-I0720 12:44:41.081773  126328 warnings.go:107] "Warning: would violate PodSecurity \"restricted:latest\": privileged (container \"install\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (containers \"sleepy\", \"install\", \"bip\" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (containers \"sleepy\", \"install\", \"bip\" must set securityContext.capabilities.drop=[\"ALL\"]; container \"bip\" must not include \"DAC_READ_SEARCH\", \"IPC_LOCK\", \"NET_ADMIN\", \"NET_RAW\", \"SETFCAP\", \"SYS_ADMIN\", \"SYS_CHROOT\", \"SYS_MODULE\", \"SYS_NICE\", \"SYS_PTRACE\", \"SYS_RAWIO\", \"SYS_RESOURCE\", \"SYS_TIME\", \"SYS_TTY_CONFIG\" in securityContext.capabilities.add), runAsNonRoot != true (pod or containers \"sleepy\", \"install\" must set securityContext.runAsNonRoot=true), runAsUser=0 (container \"install\" must not set runAsUser=0), seccompProfile (pod or containers \"sleepy\", \"install\", \"bip\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
-I0720 12:44:41.082819  126328 warnings.go:107] "Warning: would violate PodSecurity \"restricted:latest\": privileged (containers \"install\", \"bpp\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (containers \"install\", \"bpp\" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (containers \"install\", \"bpp\" must set securityContext.capabilities.drop=[\"ALL\"]; container \"bpp\" must not include \"AUDIT_WRITE\", \"NET_ADMIN\", \"NET_RAW\", \"SYS_CHROOT\" in securityContext.capabilities.add), restricted volume types (volume \"sys\" uses restricted volume type \"hostPath\"), runAsNonRoot != true (pod or containers \"install\", \"bpp\" must set securityContext.runAsNonRoot=true), runAsUser=0 (containers \"install\", \"bpp\" must not set runAsUser=0), seccompProfile (pod or containers \"install\", \"bpp\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
-I0720 12:44:41.083101  126328 warnings.go:107] "Warning: would violate PodSecurity \"restricted:latest\": privileged (container \"install\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (containers \"install\", \"pmp\" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (containers \"install\", \"pmp\" must set securityContext.capabilities.drop=[\"ALL\"]; container \"pmp\" must not include \"DAC_READ_SEARCH\", \"IPC_LOCK\", \"NET_ADMIN\", \"NET_RAW\", \"SETFCAP\", \"SYS_ADMIN\", \"SYS_CHROOT\", \"SYS_MODULE\", \"SYS_NICE\", \"SYS_PTRACE\", \"SYS_RAWIO\", \"SYS_RESOURCE\", \"SYS_TIME\", \"SYS_TTY_CONFIG\" in securityContext.capabilities.add), runAsNonRoot != true (pod or container \"install\" must set securityContext.runAsNonRoot=true), runAsUser=0 (container \"install\" must not set runAsUser=0), seccompProfile (pod or containers \"install\", \"pmp\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
-I0720 12:44:41.084075  126328 warnings.go:107] "Warning: would violate PodSecurity \"restricted:latest\": privileged (container \"install\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (containers \"install\", \"cmp\" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (containers \"install\", \"cmp\" must set securityContext.capabilities.drop=[\"ALL\"]; container \"cmp\" must not include \"DAC_READ_SEARCH\", \"IPC_LOCK\", \"NET_ADMIN\", \"NET_RAW\", \"SETFCAP\", \"SYS_ADMIN\", \"SYS_CHROOT\", \"SYS_MODULE\", \"SYS_NICE\", \"SYS_PTRACE\", \"SYS_RAWIO\", \"SYS_RESOURCE\", \"SYS_TIME\", \"SYS_TTY_CONFIG\" in securityContext.capabilities.add), runAsNonRoot != true (pod or container \"install\" must set securityContext.runAsNonRoot=true), runAsUser=0 (container \"install\" must not set runAsUser=0), seccompProfile (pod or containers \"install\", \"cmp\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
-I0720 12:44:41.084633  126328 warnings.go:107] "Warning: would violate PodSecurity \"restricted:latest\": privileged (containers \"install\", \"bpp\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (containers \"install\", \"bpp\" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (containers \"install\", \"bpp\" must set securityContext.capabilities.drop=[\"ALL\"]; container \"bpp\" must not include \"AUDIT_WRITE\", \"NET_ADMIN\", \"NET_RAW\", \"SYS_CHROOT\" in securityContext.capabilities.add), restricted volume types (volume \"sys\" uses restricted volume type \"hostPath\"), runAsNonRoot != true (pod or containers \"install\", \"bpp\" must set securityContext.runAsNonRoot=true), runAsUser=0 (containers \"install\", \"bpp\" must not set runAsUser=0), seccompProfile (pod or containers \"install\", \"bpp\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
-I0720 12:44:41.085287  126328 warnings.go:107] "Warning: would violate PodSecurity \"restricted:latest\": privileged (container \"install\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (containers \"install\", \"cmp\" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (containers \"install\", \"cmp\" must set securityContext.capabilities.drop=[\"ALL\"]; container \"cmp\" must not include \"DAC_READ_SEARCH\", \"IPC_LOCK\", \"NET_ADMIN\", \"NET_RAW\", \"SETFCAP\", \"SYS_ADMIN\", \"SYS_CHROOT\", \"SYS_MODULE\", \"SYS_NICE\", \"SYS_PTRACE\", \"SYS_RAWIO\", \"SYS_RESOURCE\", \"SYS_TIME\", \"SYS_TTY_CONFIG\" in securityContext.capabilities.add), runAsNonRoot != true (pod or container \"install\" must set securityContext.runAsNonRoot=true), runAsUser=0 (container \"install\" must not set runAsUser=0), seccompProfile (pod or containers \"install\", \"cmp\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
-I0720 12:44:41.086023  126328 warnings.go:107] "Warning: would violate PodSecurity \"restricted:latest\": privileged (container \"install\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (containers \"install\", \"dmp\" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (containers \"install\", \"dmp\" must set securityContext.capabilities.drop=[\"ALL\"]; container \"dmp\" must not include \"AUDIT_WRITE\", \"DAC_READ_SEARCH\", \"IPC_LOCK\", \"NET_ADMIN\", \"NET_RAW\", \"SETFCAP\", \"SYS_ADMIN\", \"SYS_CHROOT\", \"SYS_MODULE\", \"SYS_NICE\", \"SYS_PTRACE\", \"SYS_RAWIO\", \"SYS_RESOURCE\", \"SYS_TIME\", \"SYS_TTY_CONFIG\" in securityContext.capabilities.add), runAsNonRoot != true (pod or container \"install\" must set securityContext.runAsNonRoot=true), runAsUser=0 (container \"install\" must not set runAsUser=0), seccompProfile (pod or containers \"install\", \"dmp\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
-NAME: bscf
-LAST DEPLOYED: Mon Jul 20 12:44:40 2026
-NAMESPACE: bscf
-STATUS: deployed
-REVISION: 1
-DESCRIPTION: Install complete
-NOTES:
-Your release is named "bscf" and this chart is "bscf-262.0.9".
+apiVersion: v1
+baseDomain: ocp.lan                                                                                # Planned main domain-name (added in DNS Server)
+imageDigestSources:
+- mirrors:
+  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/release-images
+  source: quay.io/openshift-release-dev/ocp-release
+compute:
+  - hyperthreading: Enabled
+    name: worker
+    replicas: 0                                                                                             # Must be set to 0 for User Provisioned Installation as worker nodes will be manually deployed.
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 1                                                                                               # Must be set to 1 for SNO
+metadata:
+  name: lab4                                                                                                # Planned cluster-name
+networking:
+  clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+    - cidr: fd01::/48
+      hostPrefix: 64
+  networkType: OVNKubernetes
+  serviceNetwork:
+    - 172.30.0.0/16
+    - fd02::/112
+  machineNetwork:
+    - cidr: 72.1.0.0/22                                                                                     # Current Cluster IPv4 address with subbnet
+    - cidr: 2405:100:200:72::/64
+platform:
+  none: {}
+fips: false
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA==","email":"issaac.k@samsung.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfZjBmODc1ODBkNWNhNDBkMDgyMzk3ODUwMTM2NjNkOGY6TVhUMDIzVkVMRjVHQkxGNzJSOU5GWEo2TkROVUdHVU80SkZNVjIwSkhHTlc5MVg3RFNOV0ZYOUpQTlBUNkNPOA==","email":"issaac.k@samsung.com"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA==","email":"issaac.k@samsung.com"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLWY4YzY3ZTk4LWJkMDEtNDM3ZC1iYTZkLWNmY2FmMmEzNDVmZDpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTJaVGxoT0RGaFpXTXpZMlEwWkdNME9EbGpNbU01TnpZMVpEYzROemMxTlNKOS5oa0ZwRGFzTi0walJIVzZ4QjRZUDdISFRHS0RSa2VnVDNFRlJpdEdGMW9ITC11b2pTMzVZVVVIN2lnbTNDQ1lwUElOYmplVlB5RW81SEtNVWVUbUlLOHFzd0U5T3RBRl9XTWxfVDZreUJja2NxSkhYRy02d2ZIU2ZwOTJvS291RnpIOWNiQ2k3T1J0Rk0wR0NjXzViRHBUS2JBZ2hSS3d1cnRBcVN6NGYxbGM0ZDRKMHNEczdNajRnUWxTZVBIbUsyeUxjS3VvUDFaTkJPb0stNUdNcDVOTXV2TjBPSGhVQ1BlTEJidUxTaFk2dy15cE0zWEo4RUhLcmZVU1ozczMxYkpzeVRSLXpMWlF2U21XakZXUkN2VkhGd0NBaEx1aG10UTRWZWVMZmN6WGFzX1ZsUTlIV1FIY29ual9xY0lrdmFyLVQ0dElscFlJT3BTSWJnVFQ2Nm5NamdKdEF1bG0zeklLQ05TczB3cTNQeWZJc2p6OU1yeGdacDJNQW9EeGxBdXc4Z2ttZGQxSnNkS3FCdngzNk9CM3R4Si05blRGUkhXTFEtV0NseW45Ml84eTNYc1pGOUplbWZSRE1TYXpTWk5Db19LNEYtcnpSZ1F1bUtuaW01SW9HN2RoNnBzZkt5cmpDbVo0OUhMWmJ0Uy1UUkNXbkE3ZkZfR3J6VVRITEl6WkdBTG9VTmUydFBCN3lXRXVoOTgxcTExN21qajI1akwzcnJRU0RRam1kY1RBX01VNkNwX1pla2U0eEM0aDNTZXk5RTdobk5HVG1Od0pDaWxGZzkzQnRucV8tNnhocGFpNmtkbEdRXzFfWkJSVXBGRUZ5TFhySlZTRXBWeWRpUTlxWloxYjI3ektPZ0hSYmFWYm0tVzRjUGdpUEs4WXlGbGVLWExZRlo3NA==","email":"issaac.k@samsung.com"},"bastion-sno.lab.ocp.lan:8443": {"auth": "c3lzYWRtaW46c2Ftc3VuZzEyMw=="}}}'                                 # PullSecret from Mirror-Registry without newline
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCVdIBLoJoH9Ysxw+4FvFR59+brIi4go2epLt6u+xnVxQKcC/Pd1QPkBi7WvCYyOyD2Vk2U1J8vF4CfvaxbcvswSGC8goDhJlkihoAA6esQjx0pSiPLbSzpkF5Sd/k6A5HU+UD9gUsIGVf69qU5BMO2nBla9M/IFvExzsSuO92RPxa0TRkCaKGHYfXhxai9wA0gq6g864b3f6j93J1X7YDOGrxcsxuknVAaEy/5p7PJLqGNFhwRdGUBZ86kBKfRIc+kCtaJ9WpyfuOo8mZAHTdUb09vJYvFU6SwhWp0+05awRLj+VgKewHpJpjnrGH44uGwAO8pcm9oxltEZyeaww7isFX9DZpZDqvZ+7XAqkH8W6MBiu3eTLXQ/6aqPBGli36AM4nkwoPpIJ9lab1NTvKfR/vWMJllNF5gp2urmdvkxzZhW9KU3Qt+R9rYzpGs2Td1pPuBv4TedulDHU0OExAIn7A5+tOjfAYlSrOVjCCxIR2YUYvQRr5Rw+Q3uuGLaYk= sno4@haproxy.lab4.ocp.lan
+'                                            # SSH Pub Key from above step 7.1
+# Get root ca cert from Mirror Registry Server and keep proper indentation while pasting here (cat /root/quay-install/quay-rootCA/rootCA.pem)
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIID6zCCAtOgAwIBAgIUeBtKZdvPaXAzpfSqL8/4tyv5mKQwDQYJKoZIhvcNAQEL
+  BQAwcTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+  azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xIDAeBgNVBAMMF2Jh
+  c3Rpb24tc25vLmxhYi5vY3AubGFuMB4XDTI2MDQwOTA5MzI1NloXDTI5MDEyNzA5
+  MzI1NlowcTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcg
+  WW9yazENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xIDAeBgNVBAMM
+  F2Jhc3Rpb24tc25vLmxhYi5vY3AubGFuMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+  MIIBCgKCAQEAtcVlDf+Ukew+T24jA8zV2PHrdLLU1rAHgU+8GAZJebcg487FFNmi
+  nwnV98Y27InZmqQElr5KNO4kPifCzqhLhBiy5SpR/M5HTQJ1NeawqzM3NK9EmZyo
+  R7KBRSuo+0JkwdPMzICsUE1oIu2l/4eWGOR1cCmDQ/icSenWYPSzYj2iphkUkI1c
+  +3585nR6ZiFvByzAtwGNls6o9Xjeie1feHzNGeKHsUXtr7wZCAxzcpz6329LegxK
+  Isfrtk2qXmX63VkrUZIlfzKshR5csHmo2imx9ibecVw63GvY9T3FkNqrIlkTSS4G
+  X81wEzxwtMSIcHrNfhkTgMGwGAf94BDpgQIDAQABo3sweTALBgNVHQ8EBAMCAuQw
+  EwYDVR0lBAwwCgYIKwYBBQUHAwEwIgYDVR0RBBswGYIXYmFzdGlvbi1zbm8ubGFi
+  Lm9jcC5sYW4wEgYDVR0TAQH/BAgwBgEB/wIBATAdBgNVHQ4EFgQU7uGgS6BZan1t
+  pr+H34uL7gGU7agwDQYJKoZIhvcNAQELBQADggEBACbU5uJWKAhWdggqLgURMd0E
+  gRmbA1v0mUPnJo5qfjR9I9msoX+4qQtkfmAjHjtFp6Z9I+J+G56oMoOCzwVw3bJl
+  eyWeWcBJhATCXvbeZka5a5hMXpxuk90cYUXpqvP2p10S5CYX8LRvss7zH28dZ6+L
+  unVvZIKZWEZ1XQobeNlD9kSxl6CEFVTLiwXvDrr6RDrrAPmNAWMlkKqGTe5SrXp2
+  9LwfEwKwZsT7rTyn3T7yQ8lumldA9KDmSsX75KU7u50SrFQbyH1icqRd/CPGNyfK
+  v3ARZymvQt73UmkODWnddxVILhLYGZDdwqlC2bFJm1g/xNdGq8AlzDgAjqFRHO4=
+  -----END CERTIFICATE-----
 
-Check again if you have selected the appropriate chart version for your purpose.
-The recommended platform and patch according to the chart version is as below:
+[root@bastion-sno kamal]#
 
-  262.0.0   SVR26B Initial version(261.0.13 included)                  WRCP22.12/OCP_4.18
-  262.0.1   Increasing 2 core in large-2u-t2 bpp[48vcore > 50vcore]    WRCP22.12/OCP_4.18
-  262.0.2   Increasing 2 cores in tiny-2u-t2, tiny-2u-t3 (24 -> 26)    WRCP22.12/OCP_4.18
-  262.0.3   Add TLS port for RMS Valkey                                WRCP22.12/OCP_4.18
-  262.0.4   Added new ports for FM Alarm Audit Support                 WRCP22.12/OCP_4.18
-  262.0.5   Fix TLS port for RMS Valkey for LTE                        WRCP22.12/OCP_4.18
-  262.0.6   Added 5 extra GSOB Cell Setup Threads                      WRCP22.12/OCP_4.18
-  262.0.7   Service ip version selection                               WRCP22.12/OCP_4.18
-  262.0.8   tiny-2u-t1 flavor bond code changes                        WRCP22.12/OCP_4.18
-  262.0.9   Resource update in dmp and pmp                             WRCP22.12/OCP_4.18
-sno10@haproxy:~/ocp-helm$
+
+
+
+
+cpuPartitioningMode
