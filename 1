@@ -1,33 +1,50 @@
 [root@bastion2025 kamal]# ./oc-mirror -c  imageset-config_4_20_30.yaml  file:///root/kamal --v2
-2026/07/22 17:16:43  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/07/22 17:16:43  [INFO]   : ⚙️  setting up the environment for you...
-2026/07/22 17:16:43  [INFO]   : ⚙️  environment version: 4.20.0-202607141720.p2.g9b18640.assembly.stream.el9-9b18640
-2026/07/22 17:16:43  [INFO]   : 🔀 workflow mode: mirrorToDisk
-2026/07/22 17:16:43  [INFO]   : 🕵  going to discover the necessary images...
-2026/07/22 17:16:43  [INFO]   : 🔍 collecting release images...
-2026/07/22 17:16:47  [INFO]   : mirror time     : 4.586893208s
-2026/07/22 17:16:47  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
-2026/07/22 17:16:47  [ERROR]  : [Executor] collection error: [GetReleaseReferenceImages] no release images found
-[root@bastion2025 kamal]# ./oc-mirror version
-W0722 17:17:06.388786  605520 mirror.go:88] ⚠️  oc-mirror v1 is deprecated (started in 4.18 release) and will be removed in a future release - please migrate to oc-mirror --v2
-W0722 17:17:06.388802  605520 mirror.go:89] ⚠️  starting with oc-mirror 4.21, the use of the flag --v1 or --v2 is mandatory, please use --v2 to use the supported oc-mirror version or --v1 to continue using the oc-mirror deprecated version
-W0722 17:17:06.388809  605520 mirror.go:90] ⚠️  the sub-commands list, describe and init are only implemented in oc-mirror v1, so please use --v1 for these sub-commands until some replacement is provided
-
-WARNING: This version information is deprecated and will be replaced with the output from --short. Use --output=yaml|json to get the full version.
-Client Version: version.Info{Major:"", Minor:"", EmulationMajor:"", EmulationMinor:"", MinCompatibilityMajor:"", MinCompatibilityMinor:"", GitVersion:"4.20.0-202607141720.p2.g9b18640.assembly.stream.el9-9b18640", GitCommit:"9b186403c88394b54ab491871a158a124df39a02", GitTreeState:"clean", BuildDate:"2026-07-14T18:16:53Z", GoVersion:"go1.24.13 (Red Hat 1.24.13-5.el8_10) X:strictfipsruntime", Compiler:"gc", Platform:"linux/amd64"}
-[root@bastion2025 kamal]# vi imageset-config_4_20_30.yaml
-[root@bastion2025 kamal]# cat imageset-config_4_20_30.yaml
-apiVersion: mirror.openshift.io/v2alpha1
-kind: ImageSetConfiguration
-
-archiveSize: 4
-
-mirror:
-  platform:
-    channels:
-      - name: stable-4.20
-        minVersion: 4.20.30
-        maxVersion: 4.20.30
-
-
+2026/07/22 17:19:30  [INFO]   : 👋 Hello, welcome to oc-mirror
+2026/07/22 17:19:30  [INFO]   : ⚙️  setting up the environment for you...
+2026/07/22 17:19:30  [INFO]   : ⚙️  environment version: 4.20.0-202607141720.p2.g9b18640.assembly.stream.el9-9b18640
+2026/07/22 17:19:30  [INFO]   : 🔀 workflow mode: mirrorToDisk
+2026/07/22 17:19:30  [INFO]   : 🕵  going to discover the necessary images...
+2026/07/22 17:19:30  [INFO]   : 🔍 collecting release images...
+2026/07/22 17:19:34  [INFO]   : mirror time     : 3.590313123s
+2026/07/22 17:19:34  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+2026/07/22 17:19:34  [ERROR]  : [Executor] collection error: [GetReleaseReferenceImages] no release images found
+[root@bastion2025 kamal]# oc adm release info quay.io/openshift-release-dev/ocp-release:4.20.30-x86_64 --output=json | grep version
+        "__doozer_key=cluster-version-operator",
+        "__doozer_uuid_tag=ose-cluster-version-rhel9-operator-v4.20.0-20260714.175317",
+        "__doozer_version=v4.20.0",
+        "SOURCE_GIT_URL=https://github.com/openshift/cluster-version-operator"
+        "/usr/bin/cluster-version-operator"
+    "version": "4.20.30",
+            "io.openshift.build.version-display-names": "",
+            "io.openshift.build.versions": "kubectl=1.33.3"
+            "io.openshift.build.version-display-names": "",
+            "io.openshift.build.versions": "kubectl=1.33.3"
+          "name": "cluster-kube-storage-version-migrator-operator",
+            "io.openshift.build.source-location": "https://github.com/openshift/cluster-kube-storage-version-migrator-operator"
+          "name": "cluster-version-operator",
+            "io.openshift.build.source-location": "https://github.com/openshift/cluster-version-operator"
+            "io.openshift.build.version-display-names": "",
+            "io.openshift.build.versions": "kubectl=1.33.3"
+            "io.openshift.build.version-display-names": "",
+            "io.openshift.build.versions": "kubernetes=1.33.13"
+          "name": "kube-storage-version-migrator",
+            "io.openshift.build.source-location": "https://github.com/openshift/kubernetes-kube-storage-version-migrator"
+            "io.openshift.build.version-display-names": "",
+            "io.openshift.build.versions": "kubectl=1.33.3"
+            "io.openshift.build.version-display-names": "",
+            "io.openshift.build.versions": "kubectl=1.33.3"
+            "io.openshift.build.version-display-names": "machine-os=Red Hat Enterprise Linux CoreOS",
+            "io.openshift.build.versions": "machine-os=9.6.20260715-0"
+            "io.openshift.build.version-display-names": "",
+            "io.openshift.build.versions": "kubernetes-tests=1.33.4"
+            "io.openshift.build.version-display-names": "",
+            "io.openshift.build.versions": "kubectl=1.33.3"
+  "versions": null,
+[root@bastion2025 kamal]# ls -ltra
+total 307556
+-rwxrwxrwx.  1 flatpak pipewire 314924480 Jul 14 23:49 oc-mirror
+dr-xr-x---. 34 root    root          4096 Jul 22 12:36 ..
+-rw-r--r--.  1 root    root           204 Jul 22 17:13 imageset-config_4_20_30.yaml
+drwxr-xr-x.  3 root    root            78 Jul 22 17:19 .
+drwxr-xr-x. 10 root    root           156 Jul 22 17:19 working-dir
 [root@bastion2025 kamal]#
