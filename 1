@@ -1,74 +1,116 @@
-sno4@haproxy:~/ocp-config$ oc get performanceprofiles -A
-NAME                 AGE
-performance-master   89s
-sno4@haproxy:~/ocp-config$
-sno4@haproxy:~/ocp-config$
-sno4@haproxy:~/ocp-config$
-sno4@haproxy:~/ocp-config$ oc describe performanceprofile performance-master
-Name:         performance-master
-Namespace:
-Labels:       <none>
-Annotations:  kubeletconfig.experimental: {"systemReserved":{"memory": "17Gi"}}
-API Version:  performance.openshift.io/v2
-Kind:         PerformanceProfile
-Metadata:
-  Creation Timestamp:  2026-07-22T07:59:45Z
-  Finalizers:
-    foreground-deletion
-  Generation:        1
-  Resource Version:  8060432
-  UID:               cda78145-d66e-4582-91e2-00cf532132b1
-Spec:
-  Cpu:
-    Isolated:  1-27,29-55,57-83,85-111
-    Reserved:  0,28,56,84
-  Hugepages:
-    Default Hugepages Size:  1G
-    Pages:
-      Count:         9
-      Node:          0
-      Size:          1G
-      Count:         9
-      Node:          1
-      Size:          1G
-  Kernel Page Size:  4k
-  Machine Config Pool Selector:
-    pools.operator.machineconfiguration.openshift.io/master:
-  Node Selector:
-    node-role.kubernetes.io/master:
-  Numa:
-    Topology Policy:  best-effort
-  Real Time Kernel:
-    Enabled:  true
-  Workload Hints:
-    High Power Consumption:  false
-    Real Time:               true
-Status:
-  Conditions:
-    Last Heartbeat Time:   2026-07-22T07:59:45Z
-    Last Transition Time:  2026-07-22T07:59:45Z
-    Status:                False
-    Type:                  Available
-    Last Heartbeat Time:   2026-07-22T07:59:45Z
-    Last Transition Time:  2026-07-22T07:59:45Z
-    Status:                False
-    Type:                  Upgradeable
-    Last Heartbeat Time:   2026-07-22T07:59:45Z
-    Last Transition Time:  2026-07-22T07:59:45Z
-    Status:                False
-    Type:                  Progressing
-    Last Heartbeat Time:   2026-07-22T07:59:45Z
-    Last Transition Time:  2026-07-22T07:59:45Z
-    Message:               Tuned ocp-sno.lab4.ocp.lan Degraded Reason: TunedError.
-Tuned ocp-sno.lab4.ocp.lan Degraded Message: TuneD daemon issued one or more error message(s) during profile application. TuneD stderr: .
+Your PerformanceProfile has been created successfully, but it has not been applied successfully.
 
-    Reason:       TunedProfileDegraded
-    Status:       True
-    Type:         Degraded
-  Runtime Class:  performance-performance-master
-  Tuned:          openshift-cluster-node-tuning-operator/openshift-node-performance-performance-master
-Events:
-  Type    Reason              Age                From                            Message
-  ----    ------              ----               ----                            -------
-  Normal  Creation succeeded  89s (x3 over 99s)  performance-profile-controller  Succeeded to create all components
-sno4@haproxy:~/ocp-config$
+The key part is:
+
+Type: Degraded
+Reason: TunedProfileDegraded
+
+TuneD daemon issued one or more error message(s) during profile application.
+
+This is not directly related to cpuPartitioningMode. It indicates the Node Tuning Operator (TuneD) failed to apply the profile.
+
+First, check whether cpuPartitioningMode is enabled
+
+Run:
+
+oc get node ocp-sno.lab4.ocp.lan -o jsonpath='{.metadata.annotations.workload\.openshift\.io/enable-cpu-partitioning}{"\n"}'
+
+If it returns:
+
+true
+
+then CPU partitioning is enabled.
+
+If it returns:
+
+false
+
+or nothing, then CPU partitioning is not enabled.
+
+
+---
+
+Next, check the TuneD pod logs
+
+Find the TuneD pod:
+
+oc get pods -n openshift-cluster-node-tuning-operator
+
+Then check its logs:
+
+oc logs -n openshift-cluster-node-tuning-operator <tuned-pod-name> -c tuned
+
+Look for errors such as:
+
+CPU partitioning not enabled
+
+Invalid CPU set
+
+Hugepages configuration error
+
+Real-time kernel error
+
+
+
+---
+
+Also check the generated MachineConfig
+
+oc get mc
+
+You should see a MachineConfig similar to:
+
+50-performance-performance-master
+
+Then verify the MachineConfigPool:
+
+oc get mcp master
+oc describe mcp master
+
+See whether it is:
+
+Updated=True
+
+Updating=True
+
+Degraded=True
+
+
+
+---
+
+Based on your profile
+
+Your CPU allocation is valid:
+
+Reserved: 0,28,56,84
+Isolated: 1-27,29-55,57-83,85-111
+
+This reserves one logical CPU from each NUMA group and isolates the rest, which is a supported layout.
+
+The issue is most likely one of:
+
+1. CPU partitioning is not enabled.
+
+
+2. The required MachineConfig has not been applied yet (node reboot pending).
+
+
+3. The real-time kernel or hugepages configuration failed.
+
+
+4. TuneD encountered an application error.
+
+
+
+Please run these commands and share the output:
+
+oc get mcp master
+
+oc get mc | grep performance
+
+oc get pods -n openshift-cluster-node-tuning-operator
+
+oc logs -n openshift-cluster-node-tuning-operator <tuned-pod-name> -c tuned
+
+These outputs will pinpoint the exact reason why the PerformanceProfile is degraded.
