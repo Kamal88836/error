@@ -1,13 +1,16 @@
-[root@bastion-sno mirror_4_20_30]# ./oc-mirror -c  imageset-config_4_20_30.yaml  file:///root/mirror_4_20_30 --v2
-2026/07/22 09:35:44  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/07/22 09:35:44  [INFO]   : ⚙️  setting up the environment for you...
-2026/07/22 09:35:44  [INFO]   : ⚙️  environment version: 4.21.0-202604222219.p2.g994deeb.assembly.stream.el9-994deeb
-2026/07/22 09:35:44  [INFO]   : 🔀 workflow mode: mirrorToDisk
-2026/07/22 09:35:44  [INFO]   : 🕵  going to discover the necessary images...
-2026/07/22 09:35:44  [INFO]   : 🔍 collecting release images...
-2026/07/22 09:36:14  [INFO]   : mirror time     : 30.005323212s
-2026/07/22 09:36:14  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
-2026/07/22 09:36:14  [ERROR]  : [Executor] collection error: [GetReleaseReferenceImages] no release images found
+[root@bastion-sno mirror_4_20_30]#  ./oc-mirror -c  imageset-config_4_20_30.yaml --from file:///root/mirror_4_20_30 docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
+2026/07/22 11:38:01  [INFO]   : 👋 Hello, welcome to oc-mirror
+2026/07/22 11:38:01  [INFO]   : ⚙️  setting up the environment for you...
+2026/07/22 11:38:01  [INFO]   : ⚙️  environment version: 4.21.0-202604222219.p2.g994deeb.assembly.stream.el9-994deeb
+2026/07/22 11:38:01  [INFO]   : 🔀 workflow mode: diskToMirror
+2026/07/22 11:38:01  [INFO]   : Verified we can authenticate against registry "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
+2026/07/22 11:38:01  [INFO]   : 📦 Extracting mirror archive(s)...
+/root/mirror_4_20_30/mirror_000001.tar (634.9 MiB / 634.9 MiB) [==========================================================================================================================================] 2s
+2026/07/22 11:38:04  [INFO]   : 🕵  going to discover the necessary images...
+2026/07/22 11:38:04  [INFO]   : 🔍 collecting release images...
+2026/07/22 11:38:04  [INFO]   : mirror time     : 2.523302431s
+2026/07/22 11:38:04  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+2026/07/22 11:38:04  [ERROR]  : [Executor] collection error: [GetReleaseReferenceImages] no release images found
 [root@bastion-sno mirror_4_20_30]# cat imageset-config_4_20_30.yaml
 apiVersion: mirror.openshift.io/v2alpha1
 kind: ImageSetConfiguration
@@ -23,12 +26,33 @@ mirror:
         maxVersion: 4.20.30
 
 
-  operators:
-    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.20
-      packages:
-
-        - name: ptp-operator
-          channels:
-            - name: stable
-
 [root@bastion-sno mirror_4_20_30]#
+
+[root@bastion2025 kamal]# oc-mirror -c  imageset-config_4_20_30.yaml  file:///root/kamal --v2
+
+2026/07/22 17:05:59  [INFO]   : 👋 Hello, welcome to oc-mirror
+2026/07/22 17:05:59  [INFO]   : ⚙️  setting up the environment for you...
+2026/07/22 17:05:59  [INFO]   : 🔀 workflow mode: mirrorToDisk
+2026/07/22 17:05:59  [INFO]   : 🕵  going to discover the necessary images...
+2026/07/22 17:05:59  [INFO]   : 🔍 collecting release images...
+2026/07/22 17:06:32  [INFO]   : 🔍 collecting operator images...
+2026/07/22 17:06:32  [INFO]   : 🔍 collecting additional images...
+2026/07/22 17:06:32  [INFO]   : 🔍 collecting helm images...
+2026/07/22 17:06:32  [INFO]   : 🔂 rebuilding catalogs
+2026/07/22 17:06:32  [INFO]   : 🚀 Start copying the images...
+2026/07/22 17:06:32  [INFO]   : 📌 images to copy 1
+1 / 1 () [=============================================================================================================================================================================================] 100 %
+ ✓   () graph-image:latest ➡️  cache
+2026/07/22 17:06:32  [INFO]   : === Results ===
+2026/07/22 17:06:32  [INFO]   :  ✓  1 / 1 release images mirrored successfully
+2026/07/22 17:06:32  [INFO]   : 📦 Preparing the tarball archive...
+2026/07/22 17:06:33  [INFO]   : mirror time     : 34.067370713s
+2026/07/22 17:06:33  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+[root@bastion2025 kamal]# ll
+total 650096
+-rw-r--r--.  1 root root       220 Jul 22 17:05 imageset-config_4_20_30.yaml
+-rw-r--r--.  1 root root 665692672 Jul 22 17:06 mirror_000001.tar
+drwxr-xr-x. 11 root root       181 Jul 22 17:06 working-dir
+[root@bastion2025 kamal]# du -sh
+944M    .
+[root@bastion2025 kamal]#
