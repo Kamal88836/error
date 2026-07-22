@@ -1,116 +1,14 @@
-Your PerformanceProfile has been created successfully, but it has not been applied successfully.
+sno4@haproxy:~/ocp-config$ oc get tuned -A
+NAMESPACE                                NAME                                            VALID   AGE
+openshift-cluster-node-tuning-operator   default                                         True    49d
+openshift-cluster-node-tuning-operator   openshift-node-performance-performance-master   True    38m
+openshift-cluster-node-tuning-operator   ptp-performance-patch                           True    33d
+sno4@haproxy:~/ocp-config$ oc get node ocp-sno.lab4.ocp.lan -o jsonpath='{.metadata.annotations.workload\.openshift\.io/enable-cpu-partitioning}{"\n"}'
 
-The key part is:
-
-Type: Degraded
-Reason: TunedProfileDegraded
-
-TuneD daemon issued one or more error message(s) during profile application.
-
-This is not directly related to cpuPartitioningMode. It indicates the Node Tuning Operator (TuneD) failed to apply the profile.
-
-First, check whether cpuPartitioningMode is enabled
-
-Run:
-
-oc get node ocp-sno.lab4.ocp.lan -o jsonpath='{.metadata.annotations.workload\.openshift\.io/enable-cpu-partitioning}{"\n"}'
-
-If it returns:
-
-true
-
-then CPU partitioning is enabled.
-
-If it returns:
-
-false
-
-or nothing, then CPU partitioning is not enabled.
-
-
----
-
-Next, check the TuneD pod logs
-
-Find the TuneD pod:
-
-oc get pods -n openshift-cluster-node-tuning-operator
-
-Then check its logs:
-
-oc logs -n openshift-cluster-node-tuning-operator <tuned-pod-name> -c tuned
-
-Look for errors such as:
-
-CPU partitioning not enabled
-
-Invalid CPU set
-
-Hugepages configuration error
-
-Real-time kernel error
-
-
-
----
-
-Also check the generated MachineConfig
-
-oc get mc
-
-You should see a MachineConfig similar to:
-
-50-performance-performance-master
-
-Then verify the MachineConfigPool:
-
-oc get mcp master
-oc describe mcp master
-
-See whether it is:
-
-Updated=True
-
-Updating=True
-
-Degraded=True
-
-
-
----
-
-Based on your profile
-
-Your CPU allocation is valid:
-
-Reserved: 0,28,56,84
-Isolated: 1-27,29-55,57-83,85-111
-
-This reserves one logical CPU from each NUMA group and isolates the rest, which is a supported layout.
-
-The issue is most likely one of:
-
-1. CPU partitioning is not enabled.
-
-
-2. The required MachineConfig has not been applied yet (node reboot pending).
-
-
-3. The real-time kernel or hugepages configuration failed.
-
-
-4. TuneD encountered an application error.
-
-
-
-Please run these commands and share the output:
-
-oc get mcp master
-
-oc get mc | grep performance
-
-oc get pods -n openshift-cluster-node-tuning-operator
-
-oc logs -n openshift-cluster-node-tuning-operator <tuned-pod-name> -c tuned
-
-These outputs will pinpoint the exact reason why the PerformanceProfile is degraded.
+sno4@haproxy:~/ocp-config$ oc get pods -n openshift-cluster-node-tuning-operator
+NAME                                            READY   STATUS    RESTARTS   AGE
+cluster-node-tuning-operator-5cf485f5c7-b8c9p   1/1     Running   12         49d
+tuned-w2dlq                                     1/1     Running   11         49d
+sno4@haproxy:~/ocp-config$ oc logs -n openshift-cluster-node-tuning-operator <tuned-pod-name> -c tuned
+-bash: tuned-pod-name: No such file or directory
+sno4@haproxy:~/ocp-config$
