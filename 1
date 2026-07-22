@@ -1,21 +1,8 @@
-[root@bastion-sno mirror_4_20_30]#  ./oc-mirror -c  imageset-config_4_20_30.yaml --from file:///root/mirror_4_20_30 docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
-2026/07/22 11:38:01  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/07/22 11:38:01  [INFO]   : ⚙️  setting up the environment for you...
-2026/07/22 11:38:01  [INFO]   : ⚙️  environment version: 4.21.0-202604222219.p2.g994deeb.assembly.stream.el9-994deeb
-2026/07/22 11:38:01  [INFO]   : 🔀 workflow mode: diskToMirror
-2026/07/22 11:38:01  [INFO]   : Verified we can authenticate against registry "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
-2026/07/22 11:38:01  [INFO]   : 📦 Extracting mirror archive(s)...
-/root/mirror_4_20_30/mirror_000001.tar (634.9 MiB / 634.9 MiB) [==========================================================================================================================================] 2s
-2026/07/22 11:38:04  [INFO]   : 🕵  going to discover the necessary images...
-2026/07/22 11:38:04  [INFO]   : 🔍 collecting release images...
-2026/07/22 11:38:04  [INFO]   : mirror time     : 2.523302431s
-2026/07/22 11:38:04  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
-2026/07/22 11:38:04  [ERROR]  : [Executor] collection error: [GetReleaseReferenceImages] no release images found
-[root@bastion-sno mirror_4_20_30]# cat imageset-config_4_20_30.yaml
-apiVersion: mirror.openshift.io/v2alpha1
-kind: ImageSetConfiguration
+From the logs, the root cause is clear.
 
-archiveSize: 4
+What happened
+
+Your ImageSetConfiguration is:
 
 mirror:
   platform:
@@ -25,34 +12,106 @@ mirror:
         minVersion: 4.20.30
         maxVersion: 4.20.30
 
+During mirrorToDisk, oc-mirror reports:
 
-[root@bastion-sno mirror_4_20_30]#
+images to copy 1
+✓ graph-image:latest -> cache
 
-[root@bastion2025 kamal]# oc-mirror -c  imageset-config_4_20_30.yaml  file:///root/kamal --v2
+A valid OpenShift release mirror for a platform release should copy hundreds of images (typically 200–400+), not just one.
 
-2026/07/22 17:05:59  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/07/22 17:05:59  [INFO]   : ⚙️  setting up the environment for you...
-2026/07/22 17:05:59  [INFO]   : 🔀 workflow mode: mirrorToDisk
-2026/07/22 17:05:59  [INFO]   : 🕵  going to discover the necessary images...
-2026/07/22 17:05:59  [INFO]   : 🔍 collecting release images...
-2026/07/22 17:06:32  [INFO]   : 🔍 collecting operator images...
-2026/07/22 17:06:32  [INFO]   : 🔍 collecting additional images...
-2026/07/22 17:06:32  [INFO]   : 🔍 collecting helm images...
-2026/07/22 17:06:32  [INFO]   : 🔂 rebuilding catalogs
-2026/07/22 17:06:32  [INFO]   : 🚀 Start copying the images...
-2026/07/22 17:06:32  [INFO]   : 📌 images to copy 1
-1 / 1 () [=============================================================================================================================================================================================] 100 %
- ✓   () graph-image:latest ➡️  cache
-2026/07/22 17:06:32  [INFO]   : === Results ===
-2026/07/22 17:06:32  [INFO]   :  ✓  1 / 1 release images mirrored successfully
-2026/07/22 17:06:32  [INFO]   : 📦 Preparing the tarball archive...
-2026/07/22 17:06:33  [INFO]   : mirror time     : 34.067370713s
-2026/07/22 17:06:33  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
-[root@bastion2025 kamal]# ll
-total 650096
--rw-r--r--.  1 root root       220 Jul 22 17:05 imageset-config_4_20_30.yaml
--rw-r--r--.  1 root root 665692672 Jul 22 17:06 mirror_000001.tar
-drwxr-xr-x. 11 root root       181 Jul 22 17:06 working-dir
-[root@bastion2025 kamal]# du -sh
-944M    .
-[root@bastion2025 kamal]#
+Because the tarball contains only the graph-image, when you run diskToMirror it fails with:
+
+[GetReleaseReferenceImages] no release images found
+
+
+---
+
+Possible causes
+
+1. Verify the release exists
+
+Run on the connected bastion:
+
+oc adm release info quay.io/openshift-release-dev/ocp-release:4.20.30-x86_64
+
+If this fails with manifest unknown or not found, then 4.20.30 is not available.
+
+
+---
+
+2. Check the update graph
+
+Run:
+
+oc adm upgrade
+
+or
+
+oc adm release info --commits quay.io/openshift-release-dev/ocp-release:4.20.30-x86_64
+
+
+---
+
+3. Try disabling graph mirroring
+
+Edit the YAML:
+
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+
+archiveSize: 4
+
+mirror:
+  platform:
+    channels:
+      - name: stable-4.20
+        minVersion: 4.20.30
+        maxVersion: 4.20.30
+
+Remove:
+
+graph: true
+
+Then rerun:
+
+oc-mirror -c imageset-config_4_20_30.yaml file:///root/kamal --v2
+
+If it still copies only one image, the issue is not the graph option.
+
+
+---
+
+4. Check your oc-mirror version
+
+Run:
+
+oc-mirror version
+
+and
+
+oc version
+
+
+---
+
+Most likely issue
+
+Based on the logs, oc-mirror is not finding the 4.20.30 release payload, so it mirrors only the update graph image. That is why the disconnected import reports "no release images found."
+
+To confirm exactly why, please provide the output of these commands from the connected bastion:
+
+oc-mirror version
+
+oc version
+
+oc adm release info quay.io/openshift-release-dev/ocp-release:4.20.30-x86_64
+
+tar -tf mirror_000001.tar | head -20
+
+Those four outputs will confirm whether the problem is:
+
+the release doesn't exist,
+
+an oc-mirror bug,
+
+or a configuration issue.
