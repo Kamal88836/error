@@ -1,3 +1,74 @@
-Hi Team,
+sno4@haproxy:~/ocp-config$ oc get performanceprofiles -A
+NAME                 AGE
+performance-master   89s
+sno4@haproxy:~/ocp-config$
+sno4@haproxy:~/ocp-config$
+sno4@haproxy:~/ocp-config$
+sno4@haproxy:~/ocp-config$ oc describe performanceprofile performance-master
+Name:         performance-master
+Namespace:
+Labels:       <none>
+Annotations:  kubeletconfig.experimental: {"systemReserved":{"memory": "17Gi"}}
+API Version:  performance.openshift.io/v2
+Kind:         PerformanceProfile
+Metadata:
+  Creation Timestamp:  2026-07-22T07:59:45Z
+  Finalizers:
+    foreground-deletion
+  Generation:        1
+  Resource Version:  8060432
+  UID:               cda78145-d66e-4582-91e2-00cf532132b1
+Spec:
+  Cpu:
+    Isolated:  1-27,29-55,57-83,85-111
+    Reserved:  0,28,56,84
+  Hugepages:
+    Default Hugepages Size:  1G
+    Pages:
+      Count:         9
+      Node:          0
+      Size:          1G
+      Count:         9
+      Node:          1
+      Size:          1G
+  Kernel Page Size:  4k
+  Machine Config Pool Selector:
+    pools.operator.machineconfiguration.openshift.io/master:
+  Node Selector:
+    node-role.kubernetes.io/master:
+  Numa:
+    Topology Policy:  best-effort
+  Real Time Kernel:
+    Enabled:  true
+  Workload Hints:
+    High Power Consumption:  false
+    Real Time:               true
+Status:
+  Conditions:
+    Last Heartbeat Time:   2026-07-22T07:59:45Z
+    Last Transition Time:  2026-07-22T07:59:45Z
+    Status:                False
+    Type:                  Available
+    Last Heartbeat Time:   2026-07-22T07:59:45Z
+    Last Transition Time:  2026-07-22T07:59:45Z
+    Status:                False
+    Type:                  Upgradeable
+    Last Heartbeat Time:   2026-07-22T07:59:45Z
+    Last Transition Time:  2026-07-22T07:59:45Z
+    Status:                False
+    Type:                  Progressing
+    Last Heartbeat Time:   2026-07-22T07:59:45Z
+    Last Transition Time:  2026-07-22T07:59:45Z
+    Message:               Tuned ocp-sno.lab4.ocp.lan Degraded Reason: TunedError.
+Tuned ocp-sno.lab4.ocp.lan Degraded Message: TuneD daemon issued one or more error message(s) during profile application. TuneD stderr: .
 
-We are currently investigating a PerformanceProfile-related issue reported by the user. As part of the investigation, we are checking whether any OpenShift (OCP) system pods are consuming CPUs reserved by the PerformanceProfile. We will share an update once we complete the analysis.
+    Reason:       TunedProfileDegraded
+    Status:       True
+    Type:         Degraded
+  Runtime Class:  performance-performance-master
+  Tuned:          openshift-cluster-node-tuning-operator/openshift-node-performance-performance-master
+Events:
+  Type    Reason              Age                From                            Message
+  ----    ------              ----               ----                            -------
+  Normal  Creation succeeded  89s (x3 over 99s)  performance-profile-controller  Succeeded to create all components
+sno4@haproxy:~/ocp-config$
