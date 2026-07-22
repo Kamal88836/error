@@ -1,14 +1,34 @@
-sno4@haproxy:~/ocp-config$ oc get tuned -A
-NAMESPACE                                NAME                                            VALID   AGE
-openshift-cluster-node-tuning-operator   default                                         True    49d
-openshift-cluster-node-tuning-operator   openshift-node-performance-performance-master   True    38m
-openshift-cluster-node-tuning-operator   ptp-performance-patch                           True    33d
-sno4@haproxy:~/ocp-config$ oc get node ocp-sno.lab4.ocp.lan -o jsonpath='{.metadata.annotations.workload\.openshift\.io/enable-cpu-partitioning}{"\n"}'
+[root@bastion-sno mirror_4_20_30]# ./oc-mirror -c  imageset-config_4_20_30.yaml  file:///root/mirror_4_20_30 --v2
+2026/07/22 09:35:44  [INFO]   : 👋 Hello, welcome to oc-mirror
+2026/07/22 09:35:44  [INFO]   : ⚙️  setting up the environment for you...
+2026/07/22 09:35:44  [INFO]   : ⚙️  environment version: 4.21.0-202604222219.p2.g994deeb.assembly.stream.el9-994deeb
+2026/07/22 09:35:44  [INFO]   : 🔀 workflow mode: mirrorToDisk
+2026/07/22 09:35:44  [INFO]   : 🕵  going to discover the necessary images...
+2026/07/22 09:35:44  [INFO]   : 🔍 collecting release images...
+2026/07/22 09:36:14  [INFO]   : mirror time     : 30.005323212s
+2026/07/22 09:36:14  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+2026/07/22 09:36:14  [ERROR]  : [Executor] collection error: [GetReleaseReferenceImages] no release images found
+[root@bastion-sno mirror_4_20_30]# cat imageset-config_4_20_30.yaml
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
 
-sno4@haproxy:~/ocp-config$ oc get pods -n openshift-cluster-node-tuning-operator
-NAME                                            READY   STATUS    RESTARTS   AGE
-cluster-node-tuning-operator-5cf485f5c7-b8c9p   1/1     Running   12         49d
-tuned-w2dlq                                     1/1     Running   11         49d
-sno4@haproxy:~/ocp-config$ oc logs -n openshift-cluster-node-tuning-operator <tuned-pod-name> -c tuned
--bash: tuned-pod-name: No such file or directory
-sno4@haproxy:~/ocp-config$
+archiveSize: 4
+
+mirror:
+  platform:
+    graph: true
+    channels:
+      - name: stable-4.20
+        minVersion: 4.20.30
+        maxVersion: 4.20.30
+
+
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.20
+      packages:
+
+        - name: ptp-operator
+          channels:
+            - name: stable
+
+[root@bastion-sno mirror_4_20_30]#
