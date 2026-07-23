@@ -1,5 +1,39 @@
-[root@bastion2025 kamal]# ./oc-mirror -c  imageset-config_4_20_30.yaml  file:///root/kamal --v2
-2026/07/22 17:26:41  [INFO]   : 👋 Hello, welcome to oc-mirror
-2026/07/22 17:26:41  [INFO]   : ⚙️  setting up the environment for you...
-2026/07/22 17:26:41  [ERROR]  : [Executor] decode ImageSetConfiguration: json: unknown field "releases"
-[root@bastion2025 kamal]#
+[root@bastion-sno mirror_4_20_30]# podman login -u sysadmin -p samsung123 bastion-sno.lab.ocp.lan:8443
+Login Succeeded!
+[root@bastion-sno mirror_4_20_30]# ./oc-mirror -c  imageset-config_4_20_30.yaml --from file:///root/mirror_4_20_30 docker://${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} --v2
+2026/07/23 05:47:50  [INFO]   : 👋 Hello, welcome to oc-mirror
+2026/07/23 05:47:50  [INFO]   : ⚙️  setting up the environment for you...
+2026/07/23 05:47:50  [INFO]   : ⚙️  environment version: 4.20.0-202607141720.p2.g9b18640.assembly.stream.el9-9b18640
+2026/07/23 05:47:50  [INFO]   : 🔀 workflow mode: diskToMirror
+2026/07/23 05:47:50  [INFO]   : Verified we can authenticate against registry "bastion-sno.lab.ocp.lan:8443/ocp4/openshift4"
+2026/07/23 05:47:50  [INFO]   : 📦 Extracting mirror archive(s)...
+/root/mirror_4_20_30/mirror_000001.tar (4.0 GiB / 4.0 GiB) [==============================================================================================================================================] 9s
+/root/mirror_4_20_30/mirror_000002.tar (1.2 GiB / 1.2 GiB) [==============================================================================================================================================] 2s
+2026/07/23 05:48:03  [INFO]   : 🕵  going to discover the necessary images...
+2026/07/23 05:48:03  [INFO]   : 🔍 collecting release images...
+2026/07/23 05:48:03  [INFO]   : 🔍 collecting operator images...
+ ✓   () Collecting catalog registry.redhat.io/redhat/redhat-operator-index:v4.20
+2026/07/23 05:48:03  [INFO]   : 🔍 collecting additional images...
+2026/07/23 05:48:03  [INFO]   : 🔍 collecting helm images...
+2026/07/23 05:48:03  [INFO]   : 🚀 Start copying the images...
+2026/07/23 05:48:03  [INFO]   : 📌 images to copy 196
+0 / 196 () [---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------] 0 %
+ ✗   ()  ocp-v4.0-art-dev@sha256:09373c3becd67190036886c0ead0cd55a14b8732b9b88fe7baf2781259b56e7b ➡️  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/
+ ✗   ()  ocp-v4.0-art-dev@sha256:090c04787967dadfc5f554acc4db5893ee4eccf8627d2794e9ede93389811816 ➡️  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/
+ ✗   ()  ocp-v4.0-art-dev@sha256:08e1b1f4cac08c201cd88e031cb412623c4f5e76b5499a17c0f02ad20c7ae204 ➡️  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/
+ ✗   ()  ocp-v4.0-art-dev@sha256:0405032dd1a437af3b85108f475afd3b6d795a59a063ca3180913e738c1fe643 ➡️  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/
+ ✗   ()  ocp-v4.0-art-dev@sha256:00875ec8eb8248d3621356c45bab3ec3e6720d0a6d1b88cad0e392a160b568e2 ➡️  bastion-sno.lab.ocp.lan:8443/ocp4/openshift4/openshift/
+2026/07/23 05:48:03  [INFO]   : === Results ===
+2026/07/23 05:48:03  [INFO]   :  ✗  0 / 190 release images mirrored: Some release images failed to be mirrored - please check the logs
+2026/07/23 05:48:03  [INFO]   :  ✗  0 / 6 operator images mirrored: Some operator images failed to be mirrored - please check the logs
+2026/07/23 05:48:03  [ERROR]  : [Worker] error mirroring image quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:00875ec8eb8248d3621356c45bab3ec3e6720d0a6d1b88cad0e392a160b568e2 error: initializing source docker://localhost:55000/openshift/release:4.20.30-x86_64-openstack-cinder-csi-driver: reading manifest 4.20.30-x86_64-openstack-cinder-csi-driver in localhost:55000/openshift/release: manifest unknown
+2026/07/23 05:48:03  [INFO]   : 📄 Nothing mirrored. Skipping IDMS and ITMS files generation.
+2026/07/23 05:48:03  [INFO]   : mirror time     : 13.027880695s
+2026/07/23 05:48:03  [INFO]   : 👋 Goodbye, thank you for using oc-mirror
+2026/07/23 05:48:03  [ERROR]  : [Executor] [Worker] some errors occurred during the mirroring.
+         Please review /root/mirror_4_20_30/working-dir/logs/mirroring_errors_20260723_054750.txt for a list of mirroring errors.
+         You may consider:
+         * removing images or operators that cause the error from the image set config, and retrying
+         * keeping the image set config (images are mandatory for you), and retrying
+         * mirroring the failing images manually, if retries also fail.
+[root@bastion-sno mirror_4_20_30]#
