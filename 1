@@ -1,4 +1,7 @@
-armor@apparmor:~$ cat app.sh
+The reason your AppArmor profile is not capturing touch and rm is because your profile is incomplete.
+
+Your script:
+
 #!/bin/bash
 touch /tmp/file.txt
 echo "New File Created"
@@ -6,56 +9,117 @@ echo "New File Created"
 rm -rf /tmp/file.txt
 echo "New file removed"
 
-armor@apparmor:~$
+executes these binaries:
+
+/usr/bin/touch
+
+/usr/bin/rm
+
+/usr/bin/echo (built into bash)
 
 
-===================================================================
-armor@apparmor:/etc/apparmor.d$ sudo cat home.armor.app.sh
-# Last Modified: Tue Jul 28 13:13:42 2026
+But your profile only contains:
+
+/home/armor/app.sh r,
+/usr/bin/bash ix,
+/usr/bin/gnurm mr,
+
+There is no rule for touch or rm, and you also have a typo:
+
+/usr/bin/gnurm mr,
+
+There is no binary called gnurm. It should be:
+
+/usr/bin/rm mrix,
+
+Correct profile
+
 abi <abi/5.0>,
 
 include <tunables/global>
 
 /home/armor/app.sh {
-  include <abstractions/base>
-  include <abstractions/bash>
-  include <abstractions/consoles>
-  include <abstractions/ubuntu-browsers.d/plugins-common>
+    include <abstractions/base>
+    include <abstractions/bash>
+    include <abstractions/consoles>
+    include <abstractions/user-tmp>
 
-  /home/armor/app.sh r,
-  /usr/bin/bash ix,
-  /usr/bin/gnurm mr,
+    /home/armor/app.sh r,
 
+    /usr/bin/bash ix,
+    /usr/bin/touch mrix,
+    /usr/bin/rm mrix,
+
+    owner /etc/ld.so.cache r,
+    owner /etc/locale.alias r,
 }
-armor@apparmor:/etc/apparmor.d$
 
-====================================================
+Notice these additions:
 
-
-root@ubuntu: ~/apparmor
-
-X
-
-root@ubuntu: /etc/apparmor X
-99. Practical AppArmofor.d# cat root.apparmor.app.sh
-# Last Modified: Mon Mar 10 17:15:57 2025
-abi <abi/3.0>,
-
-include <tunables/global>
-
-/root/apparmor/app.sh {
-include <abstractions/base>
-include <abstractions/bash>
-include <abstractions/consoles>
 include <abstractions/user-tmp>
 
-/root/apparmor/app.sh r,
-/usr/bin/bash ix,
-/usr/bin/rm mrix,
 /usr/bin/touch mrix,
-owner /etc/ld.so.cache r,
-owner /etc/locale.alias r,
+/usr/bin/rm mrix,
 
-+
+The user-tmp abstraction provides the permissions required to access files under /tmp.
 
-root@ubuntu:/etc/apparmor.d#
+
+---
+
+Reload the profile
+
+sudo apparmor_parser -r /etc/apparmor.d/home.armor.app.sh
+
+or
+
+sudo systemctl reload apparmor
+
+
+---
+
+Put it into enforce mode
+
+sudo aa-enforce /etc/apparmor.d/home.armor.app.sh
+
+Verify:
+
+sudo aa-status
+
+
+---
+
+Run the script
+
+/home/armor/app.sh
+
+If you remove the following rules:
+
+/usr/bin/touch mrix,
+/usr/bin/rm mrix,
+
+and reload the profile, AppArmor should generate DENIED audit messages.
+
+Check them with:
+
+sudo dmesg | grep DENIED
+
+or
+
+sudo journalctl -k | grep DENIED
+
+
+---
+
+One more thing
+
+Your profile is generated with:
+
+abi <abi/5.0>
+
+while the example uses:
+
+abi <abi/3.0>
+
+This is not a problem—Ubuntu 24.04/25.04 uses ABI 5.0. The important issue is the missing touch, rm, and user-tmp rules.
+
+If your goal is to learn AppArmor profiling, I can also show you how to use aa-genprof so that running app.sh automatically records every command (touch, rm, cat, mkdir, etc.) and builds the profile interactively.
