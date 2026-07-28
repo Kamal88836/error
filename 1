@@ -1,40 +1,21 @@
-ed_mask="x" fsuid=1000 ouid=0
-[338823.463158] audit: type=1400 audit(1785245477.428:814): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16585 comm="app.sh" capability=2  capname="dac_read_search"
-[338823.463167] audit: type=1400 audit(1785245477.428:815): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16585 comm="app.sh" capability=1  capname="dac_override"
-[338828.323299] audit: type=1400 audit(1785245482.288:816): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16598 comm="app.sh" capability=2  capname="dac_read_search"
-[338828.323305] audit: type=1400 audit(1785245482.288:817): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16598 comm="app.sh" capability=1  capname="dac_override"
-[338836.398259] audit: type=1400 audit(1785245490.363:818): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16611 comm="app.sh" capability=2  capname="dac_read_search"
-[338836.398282] audit: type=1400 audit(1785245490.363:819): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16611 comm="app.sh" capability=1  capname="dac_override"
-armor@apparmor:~$ sudo journalctl -k | grep DENIED
-=====================
-Jul 28 13:31:06 apparmor kernel: audit: type=1400 audit(1785245466.493:812): apparmor="DENIED" operation="exec" class="file" profile="/home/armor/app.sh" name="/usr/lib/cargo/bin/coreutils/touch" pid=16570 comm="app.sh" requested_mask="x" denied_mask="x" fsuid=1000 ouid=0
-Jul 28 13:31:06 apparmor kernel: audit: type=1400 audit(1785245466.493:813): apparmor="DENIED" operation="exec" class="file" profile="/home/armor/app.sh" name="/usr/bin/gnurm" pid=16571 comm="app.sh" requested_mask="x" denied_mask="x" fsuid=1000 ouid=0
-Jul 28 13:31:17 apparmor kernel: audit: type=1400 audit(1785245477.428:814): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16585 comm="app.sh" capability=2  capname="dac_read_search"
-Jul 28 13:31:17 apparmor kernel: audit: type=1400 audit(1785245477.428:815): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16585 comm="app.sh" capability=1  capname="dac_override"
-Jul 28 13:31:22 apparmor kernel: audit: type=1400 audit(1785245482.288:816): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16598 comm="app.sh" capability=2  capname="dac_read_search"
-Jul 28 13:31:22 apparmor kernel: audit: type=1400 audit(1785245482.288:817): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16598 comm="app.sh" capability=1  capname="dac_override"
-Jul 28 13:31:30 apparmor kernel: audit: type=1400 audit(1785245490.363:818): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16611 comm="app.sh" capability=2  capname="dac_read_search"
-Jul 28 13:31:30 apparmor kernel: audit: type=1400 audit(1785245490.363:819): apparmor="DENIED" operation="capable" class="cap" profile="/home/armor/app.sh" pid=16611 comm="app.sh" capability=1  capname="dac_override"
-armor@apparmor:~$
-=============================
-
-But still same
-
-armor@apparmor:/etc/apparmor.d$ sudo cat home.armor.app.sh
-# Last Modified: Tue Jul 28 13:13:42 2026
-abi <abi/5.0>,
-
-include <tunables/global>
-
-/home/armor/app.sh {
-  include <abstractions/base>
-  include <abstractions/bash>
-  include <abstractions/consoles>
-  include <abstractions/ubuntu-browsers.d/plugins-common>
-
-  /home/armor/app.sh r,
-  /usr/bin/bash ix,
-  /usr/bin/gnurm mr,
-
-}
+armor@apparmor:/etc/apparmor.d$ type rm
+rm is /usr/bin/rm
+armor@apparmor:/etc/apparmor.d$ which rm
+/usr/bin/rm
+armor@apparmor:/etc/apparmor.d$ cat -n /home/armor/app.sh
+     1  #!/bin/bash
+     2  touch /tmp/file.txt
+     3  echo "New File Created"
+     4
+     5  rm -rf /tmp/file.txt
+     6  echo "New file removed"
+     7
+armor@apparmor:/etc/apparmor.d$ ls -l /usr/bin/gnu
+Display all 104 possibilities? (y or n)
+armor@apparmor:/etc/apparmor.d$ ls -l /usr/bin/gnurm
+-rwxr-xr-x 1 root root 64096 Jan 23  2026 /usr/bin/gnurm
+armor@apparmor:/etc/apparmor.d$ type touch
+touch is /usr/bin/touch
+armor@apparmor:/etc/apparmor.d$ which  touch
+/usr/bin/touch
 armor@apparmor:/etc/apparmor.d$
