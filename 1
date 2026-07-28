@@ -1,3 +1,31 @@
-armor@apparmor:/usr/bin$ readlink -f /usr/bin/touch
-/usr/lib/cargo/bin/coreutils/touch
-armor@apparmor:/usr/bin$
+sysadmin@controller-0:/etc/apparmor.d$ sudo cat var.home.sysadmin.app.sh
+# Last Modified: Tue Jul 28 09:55:48 2026
+#include <tunables/global>
+
+/var/home/sysadmin/app.sh {
+  #include <abstractions/base>
+  #include <abstractions/bash>
+
+  /usr/bin/bash ix,
+  /var/home/sysadmin/app.sh r,
+
+}
+sysadmin@controller-0:/etc/apparmor.d$ cd /usr/bin/
+sysadmin@controller-0:/usr/bin$ which rm
+/usr/bin/rm
+sysadmin@controller-0:/usr/bin$ which touch
+/usr/bin/touch
+sysadmin@controller-0:/usr/bin$ type rm
+rm is /usr/bin/rm
+sysadmin@controller-0:/usr/bin$ type touch
+touch is /usr/bin/touch
+sysadmin@controller-0:/usr/bin$ cd ~
+sysadmin@controller-0:~$ cat app.sh
+#!/bin/bash
+touch /tmp/file.txt
+echo "New File Created"
+
+rm -rf /tmp/file.txt
+echo "New file removed"
+
+sysadmin@controller-0:~$
