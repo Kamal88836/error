@@ -1,77 +1,61 @@
-[root@sno1 ~]# systemctl status crio
-● crio.service - Container Runtime Interface for OCI (CRI-O)
-     Loaded: loaded (/usr/lib/systemd/system/crio.service; disabled; preset: disabled)
-    Drop-In: /etc/systemd/system/crio.service.d
-             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
-     Active: activating (auto-restart) (Result: exit-code) since Tue 2026-07-28 05:33:04 UTC; 3s ago
-       Docs: https://github.com/cri-o/cri-o
-    Process: 2748192 ExecStart=/usr/bin/crio $CRIO_CONFIG_OPTIONS $CRIO_RUNTIME_OPTIONS $CRIO_STORAGE_OPTIONS $CRIO_NETWORK_OPTIONS $CRIO_METRICS_OPTIONS (code=exited, status=1/FAILURE)
-   Main PID: 2748192 (code=exited, status=1/FAILURE)
-        CPU: 5.361s
+armor@apparmor:~$ cat app.sh
+#!/bin/bash
+touch /tmp/file.txt
+echo "New File Created"
 
-Jul 28 05:33:04 sno1.lab1.ocp.lan systemd[1]: Failed to start Container Runtime Interface for OCI (CRI-O).
-Jul 28 05:33:04 sno1.lab1.ocp.lan systemd[1]: crio.service: Consumed 5.361s CPU time.
-[root@sno1 ~]#
-[root@sno1 ~]#
-[root@sno1 ~]# systemctl start  crio
-Job for crio.service failed because the control process exited with error code.
-See "systemctl status crio.service" and "journalctl -xeu crio.service" for details.
-[root@sno1 ~]# journalctl -xeu crio.service
-░░
-░░ Automatic restarting of the unit crio.service has been scheduled, as the result for
-░░ the configured Restart= setting for the unit.
-Jul 28 05:33:44 sno1.lab1.ocp.lan systemd[1]: Stopped Container Runtime Interface for OCI (CRI-O).
-░░ Subject: A stop job for unit crio.service has finished
-░░ Defined-By: systemd
-░░ Support: https://access.redhat.com/support
-░░
-░░ A stop job for unit crio.service has finished.
-░░
-░░ The job identifier is 596127 and the job result is done.
-Jul 28 05:33:44 sno1.lab1.ocp.lan systemd[1]: crio.service: Consumed 5.417s CPU time.
-░░ Subject: Resources consumed by unit runtime
-░░ Defined-By: systemd
-░░ Support: https://access.redhat.com/support
-░░
-░░ The unit crio.service completed and consumed the indicated resources.
-Jul 28 05:33:44 sno1.lab1.ocp.lan systemd[1]: Starting Container Runtime Interface for OCI (CRI-O)...
-░░ Subject: A start job for unit crio.service has begun execution
-░░ Defined-By: systemd
-░░ Support: https://access.redhat.com/support
-░░
-░░ A start job for unit crio.service has begun execution.
-░░
-░░ The job identifier is 596127.
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.783964790Z" level=info msg="Updating config from single file: /etc/crio/crio.conf"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.783985713Z" level=info msg="Updating config from drop-in file: /etc/crio/crio.conf"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.784613293Z" level=info msg="Updating config from path: /etc/crio/crio.conf.d"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.784645009Z" level=info msg="Updating config from drop-in file: /etc/crio/crio.conf.d/00-default"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.784925127Z" level=info msg="Updating config from drop-in file: /etc/crio/crio.conf.d/99-runtimes.conf"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.794373921Z" level=info msg="Starting CRI-O, version: 1.31.11-2.rhaos4.18.git65ec77a.el9, git: unknown(clean)"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.794451571Z" level=info msg="Node configuration value for hugetlb cgroup is true"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.794466120Z" level=info msg="Node configuration value for pid cgroup is true"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.794521516Z" level=info msg="Node configuration value for memoryswap cgroup is true"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.794531768Z" level=info msg="Node configuration value for cgroup v2 is true"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.801598363Z" level=info msg="Node configuration value for systemd AllowedCPUs is true"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.808242763Z" level=info msg="Using default capabilities: CAP_CHOWN, CAP_DAC_OVERRIDE, CAP_FSETID, CAP_FOWNER, CAP_SETGID, CAP_SETUI>
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.808289132Z" level=info msg="Inheriting runtime configuration \"high-performance\" from \"crun\""
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.810114258Z" level=info msg="Using runtime handler crun version 1.23.1, commit: d20b23dba05e822b93b82f2f34fd5dada433e0c2, rundir: />
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.816709214Z" level=info msg="Using runtime handler runc version 1.1.14, spec: 1.0.2-dev, go: go1.22.12 (Red Hat 1.22.12-2.el9_5), l>
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.823150117Z" level=info msg="Using runtime handler crun version 1.23.1, commit: d20b23dba05e822b93b82f2f34fd5dada433e0c2, rundir: />
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.828335386Z" level=info msg="Checkpoint/restore support enabled"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.828352595Z" level=info msg="Using the internal default seccomp profile"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.828360864Z" level=info msg="AppArmor is disabled by the system or at CRI-O build-time"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.828369067Z" level=info msg="No blockio config file specified, blockio not configured"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.828376589Z" level=info msg="RDT not available in the host system"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.830306650Z" level=info msg="Conmon does support the --sync option"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.830372893Z" level=info msg="Conmon does support the --log-global-size-max option"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.832480269Z" level=info msg="Conmon does support the --sync option"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.832498696Z" level=info msg="Conmon does support the --log-global-size-max option"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.834408340Z" level=info msg="Conmon does support the --sync option"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.834423108Z" level=info msg="Conmon does support the --log-global-size-max option"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.834562228Z" level=info msg="Updated default CNI network name to "
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.834690965Z" level=info msg="FLAG: --enable-profile-unix-socket=\"true\"\n"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.834703828Z" level=info msg="FLAG: --stream-address=\"2405:100:200:72:881e:df7b:f42e:9621\"\n"
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.835059857Z" level=info msg="Current CRI-O configuration:\n[crio]\n  root = \"/var/lib/containers/storage\"\n  runroot = \"/run/con>
-Jul 28 05:33:44 sno1.lab1.ocp.lan crio[2750659]: time="2026-07-28 05:33:44.835255400Z" level=warning msg="Checking storage directory /var/lib/containers/storage for errors because of unclean shutdown"
-lines 2022-2078/2078 (END)
+rm -rf /tmp/file.txt
+echo "New file removed"
+
+armor@apparmor:~$
+
+
+===================================================================
+armor@apparmor:/etc/apparmor.d$ sudo cat home.armor.app.sh
+# Last Modified: Tue Jul 28 13:13:42 2026
+abi <abi/5.0>,
+
+include <tunables/global>
+
+/home/armor/app.sh {
+  include <abstractions/base>
+  include <abstractions/bash>
+  include <abstractions/consoles>
+  include <abstractions/ubuntu-browsers.d/plugins-common>
+
+  /home/armor/app.sh r,
+  /usr/bin/bash ix,
+  /usr/bin/gnurm mr,
+
+}
+armor@apparmor:/etc/apparmor.d$
+
+====================================================
+
+
+root@ubuntu: ~/apparmor
+
+X
+
+root@ubuntu: /etc/apparmor X
+99. Practical AppArmofor.d# cat root.apparmor.app.sh
+# Last Modified: Mon Mar 10 17:15:57 2025
+abi <abi/3.0>,
+
+include <tunables/global>
+
+/root/apparmor/app.sh {
+include <abstractions/base>
+include <abstractions/bash>
+include <abstractions/consoles>
+include <abstractions/user-tmp>
+
+/root/apparmor/app.sh r,
+/usr/bin/bash ix,
+/usr/bin/rm mrix,
+/usr/bin/touch mrix,
+owner /etc/ld.so.cache r,
+owner /etc/locale.alias r,
+
++
+
+root@ubuntu:/etc/apparmor.d#
