@@ -1,15 +1,3 @@
-armor@apparmor:/etc/apparmor.d$ type rm
-rm is /usr/bin/rm
-armor@apparmor:/etc/apparmor.d$ which rm
-/usr/bin/rm
-armor@apparmor:/etc/apparmor.d$ cat -n /home/armor/app.sh
-     1  #!/bin/bash
-     2  touch /tmp/file.txt
-     3  echo "New File Created"
-     4
-     5  rm -rf /tmp/file.txt
-     6  echo "New file removed"
-     7
 armor@apparmor:/etc/apparmor.d$ ls -l /usr/bin/gnu
 Display all 104 possibilities? (y or n)
 armor@apparmor:/etc/apparmor.d$ ls -l /usr/bin/gnurm
@@ -18,4 +6,16 @@ armor@apparmor:/etc/apparmor.d$ type touch
 touch is /usr/bin/touch
 armor@apparmor:/etc/apparmor.d$ which  touch
 /usr/bin/touch
-armor@apparmor:/etc/apparmor.d$
+armor@apparmor:/etc/apparmor.d$ ls -l /usr/bin/rm /usr/bin/gunrm
+ls: cannot access '/usr/bin/gunrm': No such file or directory
+lrwxrwxrwx 1 root root 5 Mar 30 16:50 /usr/bin/rm -> gnurm
+armor@apparmor:/etc/apparmor.d$ readlink -f /usr/bin/gnurm
+/usr/bin/gnurm
+armor@apparmor:/etc/apparmor.d$ ms5sum /usr/bin/rm /usr/bin/gnurm
+Command 'ms5sum' not found, did you mean:
+  command 'md5sum' from deb coreutils-from-gnu (0.0.0~ubuntu25)
+  command 'md5sum' from deb coreutils-from-uutils (0.0.0~ubuntu25)
+  command 'md5sum' from deb coreutils-from-busybox (0.0.0~ubuntu25)
+  command 'md5sum' from deb coreutils-from-toybox (0.0.0~ubuntu25)
+Try: sudo apt install <deb name>
+armor@apparmor:/etc/apparmor.d$ ls -l /usr/bin/rm /usr/bin/gunrm
