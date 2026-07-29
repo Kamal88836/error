@@ -1,389 +1,153 @@
-NAME                STATUS                     ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$ oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21   True      False      False      1              1                   1                     0                      26d
-worker   rendered-worker-ee996864827422f1f23516eeb46f0de2   True      False      False      0              0                   0                     0                      26d
-sno1@haproxy1:~/ocp-helm$ oc get no
-NAME                STATUS                     ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$ oc describe mcp master
-Name:         master
-Namespace:
-Labels:       machineconfiguration.openshift.io/mco-built-in=
-              operator.machineconfiguration.openshift.io/required-for-upgrade=
-              pools.operator.machineconfiguration.openshift.io/master=
-Annotations:  sriovnetwork.openshift.io/state: Paused
-API Version:  machineconfiguration.openshift.io/v1
-Kind:         MachineConfigPool
-Metadata:
-  Creation Timestamp:  2026-07-03T06:37:58Z
-  Generation:          19
-  Resource Version:    3395341
-  UID:                 72d97bf6-949f-4446-85c4-d29509b50ddf
+This is excellent information. It changes my confidence level.
+
+Good news
+
+The node itself is now healthy:
+
+✅ MCP:
+
+Updated=True
+Updating=False
+Degraded=False
+
+✅ Node:
+
+Ready
+
+✅ MachineConfig state:
+
+machineconfiguration.openshift.io/state: Done
+
+✅ Current and Desired MachineConfig are identical.
+
+✅ Kubernetes has the correct addresses registered:
+
+InternalIP: 72.1.1.25
+InternalIP: 2405:100:200:72::1:25
+
+✅ OVN also has the correct primary interface:
+
+node-primary-ifaddr:
+IPv4: 72.1.1.25
+IPv6: 2405:100:200:72::1:25
+
+
+So OpenShift is no longer using the incorrect IPv6 address.
+
+
+---
+
+But I noticed two things
+
+1. Your Master MCP is paused again
+
+Your oc describe mcp master shows:
+
 Spec:
-  Configuration:
-    Name:  rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-    Source:
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         00-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-container-runtime
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         97-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-load-sctp-module-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-registries
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-ssh
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-set-core-master-password
-  Machine Config Selector:
-    Match Labels:
-      machineconfiguration.openshift.io/role:  master
-  Node Selector:
-    Match Labels:
-      node-role.kubernetes.io/master:
-  Paused:                              true
-Status:
-  Cert Expirys:
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-06-29T11:36:54Z
-    Subject:  CN=admin-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-08-02T10:37:25Z
-    Subject:  CN=kube-csr-signer_@1783075045
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-09-01T06:49:25Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1783061365
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-08-17T10:37:27Z
-    Subject:  CN=kube-csr-signer_@1784371046
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-02T11:36:59Z
-    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-02T11:36:58Z
-    Subject:  CN=kube-control-plane-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-06-29T11:36:56Z
-    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-03T06:34:52Z
-    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1783060492
-  Conditions:
-    Last Transition Time:  2026-07-03T06:38:30Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  RenderDegraded
-    Last Transition Time:  2026-07-03T06:38:35Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  NodeDegraded
-    Last Transition Time:  2026-07-03T06:38:35Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Degraded
-    Last Transition Time:  2026-07-29T09:14:30Z
-    Message:               All nodes are updated with MachineConfig rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-    Reason:
-    Status:                True
-    Type:                  Updated
-    Last Transition Time:  2026-07-29T09:14:30Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Updating
-  Configuration:
-    Name:  rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-    Source:
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   00-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-container-runtime
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   97-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   98-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-load-sctp-module-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-generated-registries
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-ssh
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-set-core-master-password
-  Degraded Machine Count:     0
-  Machine Count:              1
-  Observed Generation:        18
-  Ready Machine Count:        1
-  Unavailable Machine Count:  0
-  Updated Machine Count:      1
-Events:                       <none>
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$ oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.18.23   False       False         False      16m     APIServicesAvailable: PreconditionNotReady
-baremetal                                  4.18.23   True        False         False      26d
-cloud-controller-manager                   4.18.23   True        False         False      26d
-cloud-credential                           4.18.23   True        False         False      26d
-cluster-autoscaler                         4.18.23   True        False         False      26d
-config-operator                            4.18.23   True        False         False      26d
-console                                    4.18.23   True        False         False      9d
-control-plane-machine-set                  4.18.23   True        False         False      26d
-csi-snapshot-controller                    4.18.23   True        False         False      3h25m
-dns                                        4.18.23   True        False         False      22m
-etcd                                       4.18.23   True        False         False      26d
-image-registry                             4.18.23   True        False         True       26d     Degraded: The registry is removed...
-ingress                                    4.18.23   True        False         False      26d
-insights                                   4.18.23   True        False         False      47h
-kube-apiserver                             4.18.23   True        False         False      26d
-kube-controller-manager                    4.18.23   True        False         False      26d
-kube-scheduler                             4.18.23   True        False         False      26d
-kube-storage-version-migrator              4.18.23   True        False         False      26d
-machine-api                                4.18.23   True        False         False      26d
-machine-approver                           4.18.23   True        False         False      26d
-machine-config                             4.18.23   True        False         True       26d     Failed to resync 4.18.23 because: the required MachineConfigPool master was paused with no pending updates; no further syncing will occur until it is unpaused
-marketplace                                4.18.23   True        False         False      26d
-monitoring                                 4.18.23   True        False         False      10d
-network                                    4.18.23   True        False         False      26d
-node-tuning                                4.18.23   True        False         False      26d
-olm                                        4.18.23   False       True          False      16m     CatalogdDeploymentCatalogdControllerManagerAvailable: Waiting for Deployment...
-openshift-apiserver                        4.18.23   False       False         False      16m     APIServerDeploymentAvailable: no apiserver.openshift-apiserver pods available on any node....
-openshift-controller-manager               4.18.23   True        False         False      17m
-openshift-samples                          4.18.23   True        False         False      26d
-operator-lifecycle-manager                 4.18.23   True        False         False      26d
-operator-lifecycle-manager-catalog         4.18.23   True        False         False      26d
-operator-lifecycle-manager-packageserver   4.18.23   True        False         False      22m
-service-ca                                 4.18.23   True        False         False      26d
-storage                                    4.18.23   True        False         False      26d
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$ oc describe no
-Name:               sno1.lab1.ocp.lan
-Roles:              control-plane,master,worker
-Labels:             beta.kubernetes.io/arch=amd64
-                    beta.kubernetes.io/os=linux
-                    feature.node.kubernetes.io/network-sriov.capable=true
-                    kubernetes.io/arch=amd64
-                    kubernetes.io/hostname=sno1.lab1.ocp.lan
-                    kubernetes.io/os=linux
-                    node-role.kubernetes.io/control-plane=
-                    node-role.kubernetes.io/master=
-                    node-role.kubernetes.io/worker=
-                    node.openshift.io/os_id=rhcos
-                    ptp-notification=true
-                    sriovnetwork.openshift.io/device-plugin=Enabled
-                    topology.topolvm.io/node=sno1.lab1.ocp.lan
-Annotations:        capacity.topolvm.io/00default: 17161212919808
-                    capacity.topolvm.io/vg1: 17161212919808
-                    csi.volume.kubernetes.io/nodeid: {"topolvm.io":"sno1.lab1.ocp.lan"}
-                    k8s.ovn.org/host-cidrs: ["2405:100:200:72:202d:9558:ad57:2117/64","2405:100:200:72::1:25/64","72.1.1.25/22"]
-                    k8s.ovn.org/l3-gateway-config:
-                      {"default":{"mode":"shared","bridge-id":"br-ex","interface-id":"br-ex_sno1.lab1.ocp.lan","mac-address":"6c:fe:54:62:d5:38","ip-addresses":...
-                    k8s.ovn.org/node-chassis-id: 602909f9-2ca9-465d-8676-841dcb88a5e1
-                    k8s.ovn.org/node-encap-ips: ["72.1.1.25"]
-                    k8s.ovn.org/node-gateway-router-lrp-ifaddrs: {"default":{"ipv4":"100.64.0.2/16","ipv6":"fd98::2/64"}}
-                    k8s.ovn.org/node-id: 2
-                    k8s.ovn.org/node-masquerade-subnet: {"ipv4":"169.254.0.0/17","ipv6":"fd69::/112"}
-                    k8s.ovn.org/node-primary-ifaddr: {"ipv4":"72.1.1.25/22","ipv6":"2405:100:200:72::1:25/64"}
-                    k8s.ovn.org/node-subnets: {"default":["10.128.0.0/23","fd01:0:0:1::/64"]}
-                    k8s.ovn.org/node-transit-switch-port-ifaddr: {"ipv4":"100.88.0.2/16","ipv6":"fd97::2/64"}
-                    k8s.ovn.org/remote-zone-migrated: sno1.lab1.ocp.lan
-                    k8s.ovn.org/zone-name: sno1.lab1.ocp.lan
-                    machineconfiguration.openshift.io/controlPlaneTopology: SingleReplica
-                    machineconfiguration.openshift.io/currentConfig: rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-                    machineconfiguration.openshift.io/desiredConfig: rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-                    machineconfiguration.openshift.io/desiredDrain: uncordon-rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-                    machineconfiguration.openshift.io/lastAppliedDrain: uncordon-rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-                    machineconfiguration.openshift.io/lastObservedServerCAAnnotation: false
-                    machineconfiguration.openshift.io/lastSyncedControllerConfigResourceVersion: 1873296
-                    machineconfiguration.openshift.io/post-config-action:
-                    machineconfiguration.openshift.io/reason:
-                    machineconfiguration.openshift.io/state: Done
-                    sriovnetwork.openshift.io/current-state: Idle
-                    sriovnetwork.openshift.io/state: Reboot_Required
-                    tuned.openshift.io/bootcmdline:
-                    volumes.kubernetes.io/controller-managed-attach-detach: true
-CreationTimestamp:  Fri, 03 Jul 2026 06:33:16 +0000
-Taints:             node.kubernetes.io/unschedulable:NoSchedule
-Unschedulable:      true
-Lease:
-  HolderIdentity:  sno1.lab1.ocp.lan
-  AcquireTime:     <unset>
-  RenewTime:       Wed, 29 Jul 2026 09:31:15 +0000
-Conditions:
-  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
-  ----             ------  -----------------                 ------------------                ------                       -------
-  MemoryPressure   False   Wed, 29 Jul 2026 09:31:05 +0000   Fri, 03 Jul 2026 06:33:16 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
-  DiskPressure     False   Wed, 29 Jul 2026 09:31:05 +0000   Fri, 03 Jul 2026 06:33:16 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
-  PIDPressure      False   Wed, 29 Jul 2026 09:31:05 +0000   Fri, 03 Jul 2026 06:33:16 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
-  Ready            True    Wed, 29 Jul 2026 09:31:05 +0000   Wed, 29 Jul 2026 09:08:20 +0000   KubeletReady                 kubelet is posting ready status
-Addresses:
-  InternalIP:  72.1.1.25
-  InternalIP:  2405:100:200:72::1:25
-  Hostname:    sno1.lab1.ocp.lan
-Capacity:
-  cpu:                                  112
-  ephemeral-storage:                    1873933640Ki
-  hugepages-1Gi:                        0
-  hugepages-2Mi:                        0
-  memory:                               528019620Ki
-  openshift.io/pci_sriov_net_bh0c:      0
-  openshift.io/pci_sriov_net_bh0c_1:    0
-  openshift.io/pci_sriov_net_bh0c_2:    0
-  openshift.io/pci_sriov_net_bh0c_2_1:  0
-  openshift.io/pci_sriov_net_bh0u:      0
-  openshift.io/pci_sriov_net_bh0u_1:    0
-  openshift.io/pci_sriov_net_bh0u_2:    0
-  openshift.io/pci_sriov_net_bh0u_2_1:  0
-  openshift.io/pci_sriov_net_bh0u_3:    0
-  openshift.io/pci_sriov_net_bh0u_3_1:  0
-  pods:                                 250
-Allocatable:
-  cpu:                                  111500m
-  ephemeral-storage:                    1725943497941
-  hugepages-1Gi:                        0
-  hugepages-2Mi:                        0
-  memory:                               526868644Ki
-  openshift.io/pci_sriov_net_bh0c:      0
-  openshift.io/pci_sriov_net_bh0c_1:    0
-  openshift.io/pci_sriov_net_bh0c_2:    0
-  openshift.io/pci_sriov_net_bh0c_2_1:  0
-  openshift.io/pci_sriov_net_bh0u:      0
-  openshift.io/pci_sriov_net_bh0u_1:    0
-  openshift.io/pci_sriov_net_bh0u_2:    0
-  openshift.io/pci_sriov_net_bh0u_2_1:  0
-  openshift.io/pci_sriov_net_bh0u_3:    0
-  openshift.io/pci_sriov_net_bh0u_3_1:  0
-  pods:                                 250
-System Info:
-  Machine ID:                             fd94c36dbc6046138124011720d81381
-  System UUID:                            31353050-3237-4753-4833-34334d51504a
-  Boot ID:                                f7a76a52-804b-4ba0-8148-ab1630c962bd
-  Kernel Version:                         5.14.0-427.85.1.el9_4.x86_64
-  OS Image:                               Red Hat Enterprise Linux CoreOS 418.94.202508261658-0
-  Operating System:                       linux
-  Architecture:                           amd64
-  Container Runtime Version:              cri-o://1.31.11-2.rhaos4.18.git65ec77a.el9
-  Kubelet Version:                        v1.31.11
-  Kube-Proxy Version:                     v1.31.11
-Non-terminated Pods:                      (26 in total)
-  Namespace                               Name                                          CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
-  ---------                               ----                                          ------------  ----------  ---------------  -------------  ---
-  openshift-cluster-node-tuning-operator  tuned-knz9b                                   10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         26d
-  openshift-dns                           dns-default-lw7sk                             60m (0%)      0 (0%)      110Mi (0%)       0 (0%)         26d
-  openshift-dns                           node-resolver-njzz5                           5m (0%)       0 (0%)      21Mi (0%)        0 (0%)         26d
-  openshift-etcd                          etcd-sno1.lab1.ocp.lan                        370m (0%)     0 (0%)      960Mi (0%)       0 (0%)         26d
-  openshift-image-registry                node-ca-7trpz                                 10m (0%)      0 (0%)      10Mi (0%)        0 (0%)         26d
-  openshift-ingress-canary                ingress-canary-vfqnk                          10m (0%)      0 (0%)      20Mi (0%)        0 (0%)         26d
-  openshift-kube-apiserver                kube-apiserver-sno1.lab1.ocp.lan              290m (0%)     0 (0%)      1224Mi (0%)      0 (0%)         3d9h
-  openshift-kube-controller-manager       kube-controller-manager-sno1.lab1.ocp.lan     80m (0%)      0 (0%)      500Mi (0%)       0 (0%)         26d
-  openshift-kube-scheduler                openshift-kube-scheduler-sno1.lab1.ocp.lan    25m (0%)      0 (0%)      150Mi (0%)       0 (0%)         26d
-  openshift-machine-config-operator       kube-rbac-proxy-crio-sno1.lab1.ocp.lan        20m (0%)      0 (0%)      50Mi (0%)        0 (0%)         26d
-  openshift-machine-config-operator       machine-config-daemon-qz495                   40m (0%)      0 (0%)      100Mi (0%)       0 (0%)         26d
-  openshift-machine-config-operator       machine-config-server-6ts47                   20m (0%)      0 (0%)      50Mi (0%)        0 (0%)         26d
-  openshift-monitoring                    node-exporter-w5xh8                           9m (0%)       0 (0%)      47Mi (0%)        0 (0%)         26d
-  openshift-multus                        multus-7q7sb                                  10m (0%)      0 (0%)      65Mi (0%)        0 (0%)         26d
-  openshift-multus                        multus-additional-cni-plugins-prtkg           10m (0%)      0 (0%)      10Mi (0%)        0 (0%)         26d
-  openshift-multus                        network-metrics-daemon-frzb2                  20m (0%)      0 (0%)      120Mi (0%)       0 (0%)         26d
-  openshift-network-diagnostics           network-check-target-bm9rk                    10m (0%)      0 (0%)      15Mi (0%)        0 (0%)         26d
-  openshift-network-node-identity         network-node-identity-mcxkp                   20m (0%)      0 (0%)      100Mi (0%)       0 (0%)         26d
-  openshift-network-operator              iptables-alerter-8dm76                        10m (0%)      10m (0%)    65Mi (0%)        0 (0%)         26d
-  openshift-ovn-kubernetes                ovnkube-node-qbgqv                            80m (0%)      0 (0%)      1630Mi (0%)      0 (0%)         26d
-  openshift-ptp                           linuxptp-daemon-lcj4r                         30m (0%)      0 (0%)      70Mi (0%)        0 (0%)         8d
-  openshift-sriov-network-operator        network-resources-injector-ggp6q              10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         7d23h
-  openshift-sriov-network-operator        operator-webhook-92w6q                        10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         7d23h
-  openshift-sriov-network-operator        sriov-device-plugin-gsv7c                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         3d9h
-  openshift-sriov-network-operator        sriov-network-config-daemon-d2cwh             100m (0%)     0 (0%)      100Mi (0%)       0 (0%)         7d23h
-  openshift-storage                       vg-manager-m8jlm                              5m (0%)       0 (0%)      45Mi (0%)        0 (0%)         7d23h
-Allocated resources:
-  (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource                             Requests     Limits
-  --------                             --------     ------
-  cpu                                  1274m (1%)   10m (0%)
-  memory                               5662Mi (1%)  0 (0%)
-  ephemeral-storage                    0 (0%)       0 (0%)
-  hugepages-1Gi                        0 (0%)       0 (0%)
-  hugepages-2Mi                        0 (0%)       0 (0%)
-  openshift.io/pci_sriov_net_bh0c      0            0
-  openshift.io/pci_sriov_net_bh0c_1    0            0
-  openshift.io/pci_sriov_net_bh0c_2    0            0
-  openshift.io/pci_sriov_net_bh0c_2_1  0            0
-  openshift.io/pci_sriov_net_bh0u      0            0
-  openshift.io/pci_sriov_net_bh0u_1    0            0
-  openshift.io/pci_sriov_net_bh0u_2    0            0
-  openshift.io/pci_sriov_net_bh0u_2_1  0            0
-  openshift.io/pci_sriov_net_bh0u_3    0            0
-  openshift.io/pci_sriov_net_bh0u_3_1  0            0
-Events:
-  Type    Reason                   Age                  From                 Message
-  ----    ------                   ----                 ----                 -------
-  Normal  NodeSchedulable          3h26m                kubelet              Node sno1.lab1.ocp.lan status is now: NodeSchedulable
-  Normal  NodeNotSchedulable       3h25m (x2 over 27h)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeNotSchedulable
-  Normal  NodeAllocatableEnforced  169m                 kubelet              Updated Node Allocatable limit across pods
-  Normal  Starting                 169m                 kubelet              Starting kubelet.
-  Normal  NodeHasNoDiskPressure    169m (x8 over 169m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasNoDiskPressure
-  Normal  NodeHasSufficientPID     169m (x7 over 169m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientPID
-  Normal  NodeHasSufficientMemory  169m (x8 over 169m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientMemory
-  Normal  RegisteredNode           168m                 node-controller      Node sno1.lab1.ocp.lan event: Registered Node sno1.lab1.ocp.lan in Controller
-  Normal  NodeHasNoDiskPressure    129m (x8 over 129m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasNoDiskPressure
-  Normal  NodeAllocatableEnforced  129m                 kubelet              Updated Node Allocatable limit across pods
-  Normal  NodeHasSufficientPID     129m (x7 over 129m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientPID
-  Normal  Starting                 129m                 kubelet              Starting kubelet.
-  Normal  NodeHasSufficientMemory  129m (x8 over 129m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientMemory
-  Normal  RegisteredNode           128m                 node-controller      Node sno1.lab1.ocp.lan event: Registered Node sno1.lab1.ocp.lan in Controller
-  Normal  NodeSchedulable          73m                  kubelet              Node sno1.lab1.ocp.lan status is now: NodeSchedulable
-  Normal  OSUpdateStaged           71m                  machineconfigdaemon  Changes to OS staged
-  Normal  Starting                 23m                  kubelet              Starting kubelet.
-  Normal  NodeHasSufficientMemory  23m (x8 over 23m)    kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientMemory
-  Normal  NodeHasNoDiskPressure    23m (x8 over 23m)    kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasNoDiskPressure
-  Normal  NodeHasSufficientPID     23m (x7 over 23m)    kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientPID
-  Normal  NodeAllocatableEnforced  23m                  kubelet              Updated Node Allocatable limit across pods
-  Normal  RegisteredNode           22m                  node-controller      Node sno1.lab1.ocp.lan event: Registered Node sno1.lab1.ocp.lan in Controller
-  Normal  NodeNotSchedulable       16m                  kubelet              Node sno1.lab1.ocp.lan status is now: NodeNotSchedulable
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$ oc get no
-NAME                STATUS                     ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$
+  Paused: true
+
+and the Machine Config operator reports:
+
+machine-config
+Degraded=True
+
+Failed to resync 4.18.23 because:
+the required MachineConfigPool master was paused
+
+Earlier in the conversation you unpaused it. Now it is paused again.
+
+Please verify:
+
+oc get mcp master -o jsonpath='{.spec.paused}'; echo
+
+If it prints:
+
+true
+
+and you do not intentionally want it paused, unpause it:
+
+oc patch mcp master --type=merge -p '{"spec":{"paused":false}}'
+
+After a minute:
+
+oc get co machine-config
+
+The degraded message should disappear.
+
+
+---
+
+2. Your node is cordoned
+
+Ready,SchedulingDisabled
+
+and
+
+Unschedulable: true
+
+If this is not intentional, uncordon it:
+
+oc adm uncordon sno1.lab1.ocp.lan
+
+
+---
+
+Regarding the original CRI-O issue
+
+After reviewing everything you've provided, my conclusion is:
+
+Your networking configuration is fundamentally correct.
+
+Kubernetes knows the correct IPv4 and IPv6 addresses.
+
+OVN knows the correct addresses.
+
+20-nodenet.conf is currently correct.
+
+The bad IPv6 address never actually existed on the node.
+
+
+That means the original failure was most likely a transient generation problem during the MachineConfig reboot sequence, not a permanent networking misconfiguration.
+
+
+---
+
+One thing I would still fix
+
+Your .nmconnection file still contains:
+
+dns=22405:100:200:72::1:17
+
+This is invalid.
+
+It should be:
+
+dns=2405:100:200:72::1:17
+
+Although this wasn't the cause of the CRI-O failure, it's a configuration error that should be corrected.
+
+
+---
+
+My recommendation
+
+I would not make any more changes related to CRI-O or kubelet now because they are working correctly.
+
+Instead:
+
+1. Fix the invalid IPv6 DNS entry.
+
+
+2. Ensure the Master MCP is only paused if that is intentional.
+
+
+3. Uncordon the node if it should schedule workloads.
+
+
+4. Observe the next planned reboot.
+
+
+
+If the next reboot again generates a 20-nodenet.conf with a nonexistent IPv6 address, then I would consider it a reproducible OpenShift issue and collect logs for a Red Hat support case.
+
+One question: Did you intentionally pause the Master MCP and cordon the SNO node for SR-IOV or maintenance, or did those happen automatically?
