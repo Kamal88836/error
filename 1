@@ -1,98 +1,40 @@
-The CRI-O logs identify the root cause.
-
-Root cause
-
-The fatal error is:
-
-Failed to start streaming server:
-listen tcp [2405:100:200:72:881e:df7b:f42e:9621]:0:
-bind: cannot assign requested address
-
-CRI-O is trying to bind its streaming server to the IPv6 address:
-
-2405:100:200:72:881e:df7b:f42e:9621
-
-but that IPv6 address is not currently configured on any interface after the reboot. Because CRI-O cannot bind to it, it exits, and since kubelet depends on CRI-O, kubelet never starts.
-
-
----
-
-First, verify whether the IPv6 address exists
-
-Run:
-
-ip -6 addr
-
-and
-
-ip addr
-
-Check whether you can find:
-
-2405:100:200:72:881e:df7b:f42e:9621
-
-If it is missing, that's exactly why CRI-O fails.
-
-
----
-
-Find where this address is configured
-
-Run:
-
-grep -R "2405:100:200:72:881e:df7b:f42e:9621" /etc/crio /etc/systemd /etc/kubernetes /etc
-
-and
-
-grep -R "stream-address" /etc/crio
-
-The log shows:
-
-FLAG: --stream-address="2405:100:200:72:881e:df7b:f42e:9621"
-
-We need to determine which MachineConfig or CRI-O configuration set this value.
-
-
----
-
-Also inspect the CRI-O drop-ins
-
-Since you have:
-
-/etc/systemd/system/crio.service.d/
-  01-kubens.conf
-  05-mco-ordering.conf
-  10-mco-default-madv.conf
-  10-mco-profile-unix-socket.conf
-  20-nodenet.conf
-
-show the contents of:
-
-cat /etc/systemd/system/crio.service.d/20-nodenet.conf
-
-and
-
-cat /etc/systemd/system/crio.service.d/10-mco-profile-unix-socket.conf
-
-Also check:
-
-grep -R stream_address /etc/crio
-
-or
-
-grep -R stream-address /etc/crio
-
-
----
-
-My suspicion
-
-Earlier, your cluster had PerformanceProfile, Node Tuning Operator, and SR-IOV MachineConfigs. After the MCP reconciled, a new rendered MachineConfig was created. One of those MachineConfigs may have changed the CRI-O stream-address to a specific IPv6 address that is no longer present after reboot.
-
-Please share the outputs of:
-
-ip -6 addr
-cat /etc/systemd/system/crio.service.d/20-nodenet.conf
-grep -R "stream-address" /etc/crio
-
-Those three outputs should pinpoint exactly why CRI-O is binding to an unavailable IPv6 address.
+[root@sno1 ~]# ip -6 addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 state UNKNOWN qlen 1000
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+6: ens3f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8500 state UP qlen 1000
+    inet6 2405:100:200:72::1:25/64 scope global noprefixroute
+       valid_lft forever preferred_lft forever
+    inet6 fe80::6efe:54ff:fe62:d538/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+25: br-ex: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UNKNOWN qlen 1000
+    inet6 2405:100:200:72:50ed:ffbc:eea5:3135/64 scope global dynamic noprefixroute
+       valid_lft 2591928sec preferred_lft 604728sec
+    inet6 fe80::9233:28b1:3c74:91a9/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+[root@sno1 ~]# grep -R "2405:100:200:72:881e:df7b:f42e:9621" /etc/crio /etc/systemd /etc/kubernetes /etc
+/etc/systemd/system/kubelet.service.d/20-nodenet.conf:Environment="KUBELET_NODE_IP=2405:100:200:72:881e:df7b:f42e:9621" "KUBELET_NODE_IPS=2405:100:200:72:881e:df7b:f42e:9621,72.1.1.25"
+/etc/systemd/system/crio.service.d/20-nodenet.conf:Environment="CONTAINER_STREAM_ADDRESS=2405:100:200:72:881e:df7b:f42e:9621"
+grep: /etc/rhsm-host: No such file or directory
+grep: /etc/pki/entitlement-host: No such file or directory
+/etc/systemd/system/kubelet.service.d/20-nodenet.conf:Environment="KUBELET_NODE_IP=2405:100:200:72:881e:df7b:f42e:9621" "KUBELET_NODE_IPS=2405:100:200:72:881e:df7b:f42e:9621,72.1.1.25"
+/etc/systemd/system/crio.service.d/20-nodenet.conf:Environment="CONTAINER_STREAM_ADDRESS=2405:100:200:72:881e:df7b:f42e:9621"
+[root@sno1 ~]# grep -R "stream-address" /etc/crio
+[root@sno1 ~]# ls -ltr /etc/systemd/system/crio.service.d/
+total 20
+-rw-r--r--. 1 root root  56 Jul 29 08:17 10-mco-profile-unix-socket.conf
+-rw-r--r--. 1 root root 262 Jul 29 08:17 01-kubens.conf
+-rw-r--r--. 1 root root  62 Jul 29 08:17 10-mco-default-madv.conf
+-rw-r--r--. 1 root root  78 Jul 29 08:17 05-mco-ordering.conf
+-rw-r--r--. 1 root root  85 Jul 29 08:26 20-nodenet.conf
+[root@sno1 ~]# cat /etc/systemd/system/crio.service.d/20-nodenet.conf
+[Service]
+Environment="CONTAINER_STREAM_ADDRESS=2405:100:200:72:881e:df7b:f42e:9621"
+[root@sno1 ~]# cat /etc/systemd/system/crio.service.d/10-mco-profile-unix-socket.conf
+[Service]
+Environment="ENABLE_PROFILE_UNIX_SOCKET=true"
+[root@sno1 ~]# grep -R stream_address /etc/crio
+/etc/crio/crio.conf:# stream_address = "127.0.0.1"
+/etc/crio/crio.conf.d/00-default:stream_address = "127.0.0.1"
+[root@sno1 ~]# grep -R stream-address /etc/crio
+[root@sno1 ~]#
