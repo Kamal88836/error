@@ -1,99 +1,171 @@
-This explains the root cause.
-
-The key error is:
-
-FailedScheduling
-0/1 nodes are available: 1 node(s) were unschedulable.
-
-The scheduler is not rejecting the pod because of CPU, memory, or taints. It is refusing because the only node in the SNO cluster is marked unschedulable (cordoned).
-
-Earlier you showed:
-
-NAME                STATUS
-sno1.lab1.ocp.lan   Ready,SchedulingDisabled
-
-SchedulingDisabled means the node is cordoned.
-
-Because this is an SNO cluster:
-
-There is only one node.
-
-The machine-config-operator and machine-config-controller Deployments must run on that node.
-
-Since the node is cordoned, they remain Pending.
-
-Because they are Pending, the MCP never reconciles its status (ObservedGeneration stays at 16).
-
-
-Verify whether the node is cordoned
-
-Run:
-
-oc get node
-
-or
-
-oc describe node sno1.lab1.ocp.lan | grep Unschedulable
-
-You should see:
-
-Unschedulable: true
-
-Fix it
-
-If you did not intentionally cordon the node, uncordon it:
-
-oc adm uncordon sno1.lab1.ocp.lan
-
-Then verify:
-
-oc get nodes
-
-Expected:
-
-Ready
-
-instead of
-
-Ready,SchedulingDisabled
-
-After uncordoning
-
-Watch these commands:
-
-oc get pods -n openshift-machine-config-operator -w
-
-The following pods should transition from Pending to Running:
-
-machine-config-operator
-
-machine-config-controller
-
-
-Then monitor:
-
-oc get mcp -w
-
-You should eventually see:
-
-UPDATED   True
-UPDATING  False
-DEGRADED  False
-READYMACHINECOUNT 1
-
-One more thing
-
-Your MCP still has the annotation:
-
-sriovnetwork.openshift.io/state: Paused
-
-Once the node is uncordoned and the MCO pods are running, check whether the SR-IOV Operator clears that annotation automatically. If it does not, we can investigate why the SR-IOV Operator left the MCP in that state.
-
-Please run:
-
-oc adm uncordon sno1.lab1.ocp.lan
-oc get nodes
-oc get pods -n openshift-machine-config-operator
-oc get mcp
-
-Those outputs will confirm whether the cluster recovers after making the node schedulable again.
+sno1@haproxy1:~/ocp-helm$ oc get pods -n openshift-machine-config-operator
+NAME                                         READY   STATUS              RESTARTS   AGE
+kube-rbac-proxy-crio-sno1.lab1.ocp.lan       1/1     Running             11         26d
+machine-config-controller-784d59cf85-cjfmf   0/2     ContainerCreating   0          133m
+machine-config-daemon-qz495                  2/2     Running             21         26d
+machine-config-operator-659c6fb5db-lfw27     2/2     Running             0          133m
+machine-config-server-6ts47                  1/1     Running             7          26d
+sno1@haproxy1:~/ocp-helm$ oc get no
+NAME                STATUS   ROLES                         AGE   VERSION
+sno1.lab1.ocp.lan   Ready    control-plane,master,worker   26d   v1.31.11
+sno1@haproxy1:~/ocp-helm$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-b45e8d1765e899e360eff85f3349861b   False     True       False      1              0                   0                     0                      26d
+worker   rendered-worker-ee996864827422f1f23516eeb46f0de2   True      False      False      0              0                   0                     0                      26d
+sno1@haproxy1:~/ocp-helm$ oc describe  mcp master
+Name:         master
+Namespace:
+Labels:       machineconfiguration.openshift.io/mco-built-in=
+              operator.machineconfiguration.openshift.io/required-for-upgrade=
+              pools.operator.machineconfiguration.openshift.io/master=
+Annotations:  sriovnetwork.openshift.io/state: Paused
+API Version:  machineconfiguration.openshift.io/v1
+Kind:         MachineConfigPool
+Metadata:
+  Creation Timestamp:  2026-07-03T06:37:58Z
+  Generation:          18
+  Resource Version:    3390495
+  UID:                 72d97bf6-949f-4446-85c4-d29509b50ddf
+Spec:
+  Configuration:
+    Name:  rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
+    Source:
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         00-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-container-runtime
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         97-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         98-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-load-sctp-module-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-registries
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-set-core-master-password
+  Machine Config Selector:
+    Match Labels:
+      machineconfiguration.openshift.io/role:  master
+  Node Selector:
+    Match Labels:
+      node-role.kubernetes.io/master:
+  Paused:                              false
+Status:
+  Cert Expirys:
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-06-29T11:36:54Z
+    Subject:  CN=admin-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-08-02T10:37:25Z
+    Subject:  CN=kube-csr-signer_@1783075045
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-09-01T06:49:25Z
+    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1783061365
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-08-17T10:37:27Z
+    Subject:  CN=kube-csr-signer_@1784371046
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-02T11:36:59Z
+    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-02T11:36:58Z
+    Subject:  CN=kube-control-plane-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-06-29T11:36:56Z
+    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-03T06:34:52Z
+    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1783060492
+  Conditions:
+    Last Transition Time:  2026-07-03T06:38:30Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  RenderDegraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  NodeDegraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Degraded
+    Last Transition Time:  2026-07-29T08:17:50Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Updated
+    Last Transition Time:  2026-07-29T08:17:50Z
+    Message:               All nodes are updating to MachineConfig rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
+    Reason:
+    Status:                True
+    Type:                  Updating
+  Configuration:
+    Name:  rendered-master-b45e8d1765e899e360eff85f3349861b
+    Source:
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   00-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   01-master-container-runtime
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   01-master-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   50-nto-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   50-performance-performance-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   97-master-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   98-master-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-load-sctp-module-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-master-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-master-generated-registries
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-master-ssh
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-set-core-master-password
+  Degraded Machine Count:     0
+  Machine Count:              1
+  Observed Generation:        18
+  Ready Machine Count:        0
+  Unavailable Machine Count:  1
+  Updated Machine Count:      0
+Events:                       <none>
+sno1@haproxy1:~/ocp-helm$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-b45e8d1765e899e360eff85f3349861b   False     True       False      1              0                   0                     0                      26d
+worker   rendered-worker-ee996864827422f1f23516eeb46f0de2   True      False      False      0              0                   0                     0                      26d
+sno1@haproxy1:~/ocp-helm$ oc get no
+NAME                STATUS   ROLES                         AGE   VERSION
+sno1.lab1.ocp.lan   Ready    control-plane,master,worker   26d   v1.31.11
