@@ -1,203 +1,94 @@
-sno1@haproxy1:~/ocp-helm$ oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.18.23   False       False         False      23m     APIServicesAvailable: PreconditionNotReady
-baremetal                                  4.18.23   True        False         False      26d
-cloud-controller-manager                   4.18.23   True        False         False      26d
-cloud-credential                           4.18.23   True        False         False      26d
-cluster-autoscaler                         4.18.23   True        False         False      26d
-config-operator                            4.18.23   True        False         False      26d
-console                                    4.18.23   True        False         False      9d
-control-plane-machine-set                  4.18.23   True        False         False      26d
-csi-snapshot-controller                    4.18.23   False       True          False      74s     CSISnapshotControllerAvailable: Waiting for Deployment
-dns                                        4.18.23   True        False         False      29m
-etcd                                       4.18.23   True        False         False      26d
-image-registry                             4.18.23   True        False         True       26d     Degraded: The registry is removed...
-ingress                                    4.18.23   True        True          False      26d     ingresscontroller "default" is progressing: IngressControllerProgressing: One or more status conditions indicate progressing: DeploymentRollingOut=True (DeploymentRollingOut: Waiting for router deployment rollout to finish: 0 of 1 updated replica(s) are available......
-insights                                   4.18.23   True        False         False      2d
-kube-apiserver                             4.18.23   True        False         False      26d
-kube-controller-manager                    4.18.23   True        False         False      26d
-kube-scheduler                             4.18.23   True        False         False      26d
-kube-storage-version-migrator              4.18.23   False       True          False      73s     KubeStorageVersionMigratorAvailable: Waiting for Deployment
-machine-api                                4.18.23   True        False         False      26d
-machine-approver                           4.18.23   True        False         False      26d
-machine-config                             4.18.23   True        False         True       26d     Failed to resync 4.18.23 because: the required MachineConfigPool master was paused with no pending updates; no further syncing will occur until it is unpaused
-marketplace                                4.18.23   True        False         False      26d
-monitoring                                 4.18.23   True        False         False      10d
-network                                    4.18.23   True        True          False      26d     Deployment "/openshift-multus/multus-admission-controller" is waiting for other operators to become ready...
-node-tuning                                4.18.23   True        False         False      26d
-olm                                        4.18.23   False       True          False      23m     CatalogdDeploymentCatalogdControllerManagerAvailable: Waiting for Deployment...
-openshift-apiserver                        4.18.23   False       False         False      23m     APIServerDeploymentAvailable: no apiserver.openshift-apiserver pods available on any node....
-openshift-controller-manager               4.18.23   True        False         False      23m
-openshift-samples                          4.18.23   True        False         False      26d
-operator-lifecycle-manager                 4.18.23   True        False         False      26d
-operator-lifecycle-manager-catalog         4.18.23   True        False         False      26d
-operator-lifecycle-manager-packageserver   4.18.23   False       True          False      74s     ClusterServiceVersion openshift-operator-lifecycle-manager/packageserver observed in phase Failed with reason: ComponentUnhealthy, message: apiServices not installed
-service-ca                                 4.18.23   True        True          False      26d     Progressing: ...
-storage                                    4.18.23   True        False         False      26d
-sno1@haproxy1:~/ocp-helm$ oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21   True      False      False      1              1                   1                     0                      26d
-worker   rendered-worker-ee996864827422f1f23516eeb46f0de2   True      False      False      0              0                   0                     0                      26d
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$
-sno1@haproxy1:~/ocp-helm$ oc get co machine-config
-NAME             VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-machine-config   4.18.23   True        False         True       26d     Failed to resync 4.18.23 because: the required MachineConfigPool master was paused with no pending updates; no further syncing will occur until it is unpaused
-sno1@haproxy1:~/ocp-helm$ oc get no
-NAME                STATUS                     ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$ oc adm uncordon sno1.lab1.ocp.lan
-node/sno1.lab1.ocp.lan uncordoned
-sno1@haproxy1:~/ocp-helm$ oc get no
-NAME                STATUS   ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready    control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$ oc get no
-NAME                STATUS   ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready    control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$ oc get no
-NAME                STATUS                     ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$ oc describe mcp master
-Name:         master
-Namespace:
-Labels:       machineconfiguration.openshift.io/mco-built-in=
-              operator.machineconfiguration.openshift.io/required-for-upgrade=
-              pools.operator.machineconfiguration.openshift.io/master=
-Annotations:  sriovnetwork.openshift.io/state: Paused
-API Version:  machineconfiguration.openshift.io/v1
-Kind:         MachineConfigPool
-Metadata:
-  Creation Timestamp:  2026-07-03T06:37:58Z
-  Generation:          21
-  Resource Version:    3398887
-  UID:                 72d97bf6-949f-4446-85c4-d29509b50ddf
+This output reveals the remaining issue.
+
+Root cause is no longer CRI-O
+
+Your node is healthy:
+
+✅ Node = Ready
+
+✅ MCP = Updated=True
+
+✅ Kubelet and CRI-O are running
+
+✅ MachineConfig applied successfully
+
+
+The remaining problem is this:
+
+machine-config:
+Failed to resync because:
+the required MachineConfigPool master was paused
+
+And your MCP shows:
+
 Spec:
-  Configuration:
-    Name:  rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-    Source:
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         00-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-container-runtime
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         97-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-load-sctp-module-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-registries
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-ssh
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-set-core-master-password
-  Machine Config Selector:
-    Match Labels:
-      machineconfiguration.openshift.io/role:  master
-  Node Selector:
-    Match Labels:
-      node-role.kubernetes.io/master:
-  Paused:                              true
-Status:
-  Cert Expirys:
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-06-29T11:36:54Z
-    Subject:  CN=admin-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-08-02T10:37:25Z
-    Subject:  CN=kube-csr-signer_@1783075045
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-09-01T06:49:25Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1783061365
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-08-17T10:37:27Z
-    Subject:  CN=kube-csr-signer_@1784371046
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-02T11:36:59Z
-    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-02T11:36:58Z
-    Subject:  CN=kube-control-plane-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-06-29T11:36:56Z
-    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-03T06:34:52Z
-    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1783060492
-  Conditions:
-    Last Transition Time:  2026-07-03T06:38:30Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  RenderDegraded
-    Last Transition Time:  2026-07-03T06:38:35Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  NodeDegraded
-    Last Transition Time:  2026-07-03T06:38:35Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Degraded
-    Last Transition Time:  2026-07-29T09:14:30Z
-    Message:               All nodes are updated with MachineConfig rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-    Reason:
-    Status:                True
-    Type:                  Updated
-    Last Transition Time:  2026-07-29T09:14:30Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Updating
-  Configuration:
-    Name:  rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-    Source:
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   00-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-container-runtime
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   97-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   98-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-load-sctp-module-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-generated-registries
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-ssh
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-set-core-master-password
-  Degraded Machine Count:     0
-  Machine Count:              1
-  Observed Generation:        18
-  Ready Machine Count:        1
-  Unavailable Machine Count:  0
-  Updated Machine Count:      1
-Events:                       <none>
-sno1@haproxy1:~/ocp-helm$
+  Paused: true
+
+Something is automatically pausing the MCP
+
+Notice this annotation:
+
+Annotations:
+  sriovnetwork.openshift.io/state: Paused
+
+This is not a standard MCO annotation.
+
+Because you are using the SR-IOV Network Operator, it is likely managing the MCP and setting it back to Paused. That explains why:
+
+You uncordoned the node.
+
+A few seconds later it became SchedulingDisabled again.
+
+The MCP remains Paused.
+
+
+This is usually done by the SR-IOV operator during policy application or reboot-required workflows.
+
+Verify this
+
+Run:
+
+oc get sriovoperatorconfig -A -o yaml
+
+and
+
+oc get sriovnetworknodepolicy -A
+
+Also check:
+
+oc get sriovnetworknodestate -A
+
+I especially want to see whether the node state reports RebootRequired or SyncStatus.
+
+From your node description I already noticed:
+
+sriovnetwork.openshift.io/state: Reboot_Required
+
+That is another clue that the SR-IOV Operator still thinks the node requires a reboot or is in a paused state.
+
+Why the node gets cordoned again
+
+The SR-IOV Operator can:
+
+cordon the node,
+
+pause the MCP,
+
+wait for configuration to complete,
+
+uncordon the node when finished.
+
+
+If it never reaches the final step, the node stays cordoned and the MCP stays paused.
+
+Next commands
+
+Please run:
+
+oc get sriovnetworknodestate -A
+
+and
+
+oc describe sriovnetworknodestate sno1.lab1.ocp.lan -n openshift-sriov-network-operator
+
+I suspect we'll find the SR-IOV operator is what's reapplying the pause and cordon, rather than a Machine Config or CRI-O issue. That will tell us why it is not completing its workflow.
