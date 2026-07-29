@@ -1,130 +1,380 @@
-From the logs, the SR-IOV Config Daemon is working correctly, but the SR-IOV Operator Deployment is not.
-
-What the logs show
-
-The config daemon repeatedly detects that it needs to modify the node:
-
-Adds kernel arguments:
-
-intel_iommu=on
-
-iommu=pt
-
-
-Determines that a reboot is required:
-
-drain-required: true
-reboot-required: true
-
-But then it reports:
-
-handleDrain(): the node is still draining
-
-
-This means the daemon is waiting. It will not configure the NICs until the node drain/reboot process completes.
-
-
----
-
-More important issue
-
-Your deployment status is:
-
-oc get deploy -n openshift-sriov-network-operator
-
-NAME                     READY   AVAILABLE
-sriov-network-operator   0/1     0
-
-This is not normal.
-
-The operator itself is down, while the daemonset pods are still running.
-
-
----
-
-First check why the operator isn't running
-
-Run:
-
-oc get pods -n openshift-sriov-network-operator -o wide
-
-Then:
-
-oc describe pod -n openshift-sriov-network-operator <operator-pod-name>
-
-and
-
-oc logs -n openshift-sriov-network-operator <operator-pod-name> --previous
-
-if it is CrashLooping.
-
-
----
-
-Also check the ClusterServiceVersion
-
-oc get csv -n openshift-sriov-network-operator
-
-
----
-
-Check the SriovNetworkNodeState
-
-oc get sriovnetworknodestates -A
-
-or
-
-oc get sriovnetworknodestate -n openshift-sriov-network-operator
-
-You will probably see the node stuck in InProgress.
-
-
----
-
-Check the MachineConfigPool
-
-Since the daemon wants to reboot the node, verify whether the MCP is waiting:
-
-oc get mcp
-
-and
-
-oc describe mcp worker
-
-(if SNO, also check master).
-
-
----
-
-At this point
-
-I don't think the issue is the SR-IOV policy itself. The logs indicate:
-
-✅ Policies are being read.
-
-✅ Intel NICs are detected.
-
-✅ Desired configuration is generated.
-
-✅ Kernel arguments are prepared.
-
-✅ Reboot is requested.
-
-❌ Node drain/reboot isn't completing.
-
-❌ SR-IOV Operator deployment is unavailable (0/1).
-
-
-The unavailable operator deployment is likely preventing reconciliation from finishing.
-
-Please share the outputs of these four commands:
-
-oc get pods -n openshift-sriov-network-operator -o wide
-
-oc describe deploy sriov-network-operator -n openshift-sriov-network-operator
-
-oc get csv -n openshift-sriov-network-operator
-
-oc get mcp
-
-These should identify why the operator is stuck at 0/1 and why the node remains in the InProgress state.
+sno1@haproxy1:~/ocp-helm$ oc get pods -n openshift-sriov-network-operator -o wide
+NAME                                      READY   STATUS    RESTARTS   AGE     IP             NODE                NOMINATED NODE   READINESS GATES
+network-resources-injector-ggp6q          1/1     Running   7          7d23h   10.128.0.157   sno1.lab1.ocp.lan   <none>           <none>
+operator-webhook-92w6q                    1/1     Running   7          7d23h   10.128.0.158   sno1.lab1.ocp.lan   <none>           <none>
+sriov-device-plugin-gsv7c                 1/1     Running   5          3d9h    72.1.1.25      sno1.lab1.ocp.lan   <none>           <none>
+sriov-network-config-daemon-d2cwh         1/1     Running   7          7d23h   72.1.1.25      sno1.lab1.ocp.lan   <none>           <none>
+sriov-network-operator-6f5d74ccbc-xql2h   0/1     Pending   0          15m     <none>         <none>              <none>           <none>
+sno1@haproxy1:~/ocp-helm$ oc describe pod -n openshift-sriov-network-operator sriov-network-operator-6f5d74ccbc-xql2h
+Name:             sriov-network-operator-6f5d74ccbc-xql2h
+Namespace:        openshift-sriov-network-operator
+Priority:         0
+Service Account:  sriov-network-operator
+Node:             <none>
+Labels:           name=sriov-network-operator
+                  pod-template-hash=6f5d74ccbc
+Annotations:      alm-examples:
+                    [
+                      {
+                        "apiVersion": "sriovnetwork.openshift.io/v1",
+                        "kind": "SriovIBNetwork",
+                        "metadata": {
+                          "name": "example-sriovibnetwork",
+                          "namespace": "openshift-sriov-network-operator"
+                        },
+                        "spec": {
+                          "ipam": "{\n  \"type\": \"host-local\",\n  \"subnet\": \"10.56.217.0/24\",\n  \"rangeStart\": \"10.56.217.171\",\n  \"rangeEnd\": \"...
+                          "linkState": "auto",
+                          "networkNamespace": "default",
+                          "resourceName": "mellanoxnics"
+                        }
+                      },
+                      {
+                        "apiVersion": "sriovnetwork.openshift.io/v1",
+                        "kind": "SriovNetwork",
+                        "metadata": {
+                          "name": "example-sriovnetwork",
+                          "namespace": "openshift-sriov-network-operator"
+                        },
+                        "spec": {
+                          "ipam": "{\n  \"type\": \"host-local\",\n  \"subnet\": \"10.56.217.0/24\",\n  \"rangeStart\": \"10.56.217.171\",\n  \"rangeEnd\": \"...
+                          "networkNamespace": "default",
+                          "resourceName": "intelnics",
+                          "spoofChk": "on",
+                          "trust": "off",
+                          "vlan": 0
+                        }
+                      },
+                      {
+                        "apiVersion": "sriovnetwork.openshift.io/v1",
+                        "kind": "SriovNetworkNodePolicy",
+                        "metadata": {
+                          "name": "policy-1",
+                          "namespace": "openshift-sriov-network-operator"
+                        },
+                        "spec": {
+                          "deviceType": "vfio-pci",
+                          "mtu": 9000,
+                          "nicSelector": {
+                            "pfNames": [
+                              "eth1"
+                            ],
+                            "rootDevices": [
+                              "0000:01:00.1"
+                            ],
+                            "vendor": "8086"
+                          },
+                          "nodeSelector": {
+                            "feature.node.kubernetes.io/network-sriov.capable": "true"
+                          },
+                          "numVfs": 6,
+                          "priority": 99,
+                          "resourceName": "intelnics"
+                        }
+                      },
+                      {
+                        "apiVersion": "sriovnetwork.openshift.io/v1",
+                        "kind": "SriovNetworkNodeState",
+                        "metadata": {
+                          "name": "minikube",
+                          "namespace": "openshift-sriov-network-operator"
+                        },
+                        "spec": {
+                          "interfaces": []
+                        }
+                      },
+                      {
+                        "apiVersion": "sriovnetwork.openshift.io/v1",
+                        "kind": "SriovNetworkPoolConfig",
+                        "metadata": {
+                          "name": "sriovnetworkpoolconfig-sample"
+                        },
+                        "spec": {
+                          "foo": "bar"
+                        }
+                      },
+                      {
+                        "apiVersion": "sriovnetwork.openshift.io/v1",
+                        "kind": "SriovOperatorConfig",
+                        "metadata": {
+                          "name": "default",
+                          "namespace": "openshift-sriov-network-operator"
+                        },
+                        "spec": {
+                          "enableInjector": true,
+                          "enableOperatorWebhook": true,
+                          "logLevel": 2
+                        }
+                      }
+                    ]
+                  capabilities: Basic Install
+                  categories: Networking
+                  certified: false
+                  containerImage:
+                    registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b
+                  createdAt: 2024-11-21T23:48:37Z
+                  description: An operator for configuring SR-IOV components and initializing SRIOV network devices in Openshift cluster.
+                  features.operators.openshift.io/cnf: false
+                  features.operators.openshift.io/cni: true
+                  features.operators.openshift.io/csi: false
+                  features.operators.openshift.io/disconnected: true
+                  features.operators.openshift.io/fips-compliant: true
+                  features.operators.openshift.io/proxy-aware: false
+                  features.operators.openshift.io/tls-profiles: false
+                  features.operators.openshift.io/token-auth-aws: false
+                  features.operators.openshift.io/token-auth-azure: false
+                  features.operators.openshift.io/token-auth-gcp: false
+                  olm.operatorGroup: sriov-network-operators
+                  olm.operatorNamespace: openshift-sriov-network-operator
+                  olm.skipRange: >=4.3.0-0 <4.18.0-202604141055
+                  olm.targetNamespaces: openshift-sriov-network-operator
+                  openshift.io/required-scc: restricted-v2
+                  openshift.io/scc: restricted-v2
+                  operatorframework.io/cluster-monitoring: true
+                  operatorframework.io/initialization-resource:
+                    {
+                      "apiVersion": "sriovnetwork.openshift.io/v1",
+                      "kind": "SriovOperatorConfig",
+                      "metadata": {
+                        "name": "default"
+                      },
+                      "spec": {
+                        "configurationMode": "daemon",
+                        "disableDrain": false,
+                        "enableInjector": true,
+                        "enableOperatorWebhook": true,
+                        "logLevel": 2
+                      }
+                    }
+                  operatorframework.io/properties:
+                    {"properties":[{"type":"olm.gvk","value":{"group":"sriovnetwork.openshift.io","kind":"OVSNetwork","version":"v1"}},{"type":"olm.gvk","valu...
+                  operatorframework.io/suggested-namespace: openshift-sriov-network-operator
+                  operatorframework.io/suggested-namespace-template:
+                    {
+                      "apiVersion": "v1",
+                      "kind": "Namespace",
+                      "metadata": {
+                        "name": "openshift-sriov-network-operator",
+                        "annotations": {
+                          "workload.openshift.io/allowed": "management"
+                        }
+                      }
+                    }
+                  operators.openshift.io/valid-subscription: ["OpenShift Kubernetes Engine", "OpenShift Container Platform", "OpenShift Platform Plus"]
+                  operators.operatorframework.io/builder: operator-sdk-v1.34.1
+                  operators.operatorframework.io/internal-objects: ["sriovnetworknodestates.sriovnetwork.openshift.io"]
+                  operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+                  repository: https://github.com/k8snetworkplumbingwg/sriov-network-operator
+                  seccomp.security.alpha.kubernetes.io/pod: runtime/default
+                  support: Red Hat
+Status:           Pending
+SeccompProfile:   RuntimeDefault
+IP:
+IPs:              <none>
+Controlled By:    ReplicaSet/sriov-network-operator-6f5d74ccbc
+Containers:
+  sriov-network-operator:
+    Image:      registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sriov-network-operator
+    Args:
+      --leader-elect
+    Liveness:   http-get http://:8081/healthz delay=15s timeout=1s period=20s #success=1 #failure=3
+    Readiness:  http-get http://:8081/readyz delay=5s timeout=1s period=10s #success=1 #failure=3
+    Environment:
+      WATCH_NAMESPACE:                                           (v1:metadata.annotations['olm.targetNamespaces'])
+      SRIOV_CNI_IMAGE:                                          registry.redhat.io/openshift4/sriov-cni-rhel9@sha256:7e0f884c32af6b2e45cba142296e1ed08205c9ef4db9d5b5dc25805d63c134a0
+      SRIOV_DEVICE_PLUGIN_IMAGE:                                registry.redhat.io/openshift4/ose-sriov-network-device-plugin-rhel9@sha256:192e211916e559cd62ba2368cbe1940ff742b5df45344acf66270895680a5c5f
+      NETWORK_RESOURCES_INJECTOR_IMAGE:                         registry.redhat.io/openshift4/ose-sriov-dp-admission-controller-rhel9@sha256:ff02c0f85447592a122f1e39646f4b50b3287f99db09217451482b0201741564
+      OPERATOR_NAME:                                            sriov-network-operator
+      SRIOV_NETWORK_CONFIG_DAEMON_IMAGE:                        registry.redhat.io/openshift4/ose-sriov-network-config-daemon-rhel9@sha256:a55b2c3e4c2bee60b2393d9e44053399b9ac0aac73c700a0154aa7c72ebaa08f
+      SRIOV_NETWORK_WEBHOOK_IMAGE:                              registry.redhat.io/openshift4/ose-sriov-network-webhook-rhel9@sha256:422b72d9ebd9baa27df9124a473674aceb7b41ac7f468f5917e10a3b49c0be1f
+      SRIOV_INFINIBAND_CNI_IMAGE:                               registry.redhat.io/openshift4/ose-sriov-infiniband-cni-rhel9@sha256:7bf02998c9d17acc9a913552000bc870ef27865e902f373c0324798a0aa7c185
+      RDMA_CNI_IMAGE:                                           registry.redhat.io/openshift4/ose-sriov-rdma-cni-rhel9@sha256:d4f0a749413038beb8916c3ea075e8ea1826ca4e01cd3ecf021e7e8f8435a426
+      RESOURCE_PREFIX:                                          openshift.io
+      ADMISSION_CONTROLLERS_ENABLED:                            true
+      ADMISSION_CONTROLLERS_CERTIFICATES_OPERATOR_SECRET_NAME:  operator-webhook-service
+      ADMISSION_CONTROLLERS_CERTIFICATES_INJECTOR_SECRET_NAME:  network-resources-injector-secret
+      METRICS_EXPORTER_IMAGE:                                   registry.redhat.io/openshift4/ose-sriov-network-metrics-exporter-rhel9@sha256:b856edf8fb4aa2cb5a8fbff530c9dbd7e0316574a0e010a5e09b7551befcb6f6
+      METRICS_EXPORTER_KUBE_RBAC_PROXY_IMAGE:                   registry.redhat.io/openshift4/ose-kube-rbac-proxy-rhel9@sha256:c08c0b390b531338ea71deb9b4bc1344c8f5bfcccf62f113756a378001a7c468
+      METRICS_EXPORTER_SECRET_NAME:                             metrics-exporter-cert
+      METRICS_EXPORTER_PROMETHEUS_OPERATOR_ENABLED:             true
+      METRICS_EXPORTER_PROMETHEUS_DEPLOY_RULES:                 true
+      METRICS_EXPORTER_PROMETHEUS_OPERATOR_NAMESPACE:           openshift-monitoring
+      METRICS_EXPORTER_PROMETHEUS_OPERATOR_SERVICE_ACCOUNT:     prometheus-k8s
+      METRICS_EXPORTER_PORT:                                    9110
+      NAMESPACE:                                                openshift-sriov-network-operator (v1:metadata.namespace)
+      NODE_NAME:                                                 (v1:spec.nodeName)
+      POD_NAME:                                                 sriov-network-operator-6f5d74ccbc-xql2h (v1:metadata.name)
+      RELEASE_VERSION:                                          4.18.0
+      OPERATOR_CONDITION_NAME:                                  sriov-network-operator.v4.18.0-202604141055
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-cwp7h (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False
+Volumes:
+  kube-api-access-cwp7h:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    ConfigMapOptional:       <nil>
+QoS Class:                   BestEffort
+Node-Selectors:              node-role.kubernetes.io/master=
+Tolerations:                 node-role.kubernetes.io/master:NoSchedule op=Exists
+                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age                  From               Message
+  ----     ------            ----                 ----               -------
+  Warning  FailedScheduling  15m                  default-scheduler  0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling  4m48s (x2 over 10m)  default-scheduler  0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+sno1@haproxy1:~/ocp-helm$ oc logs -n openshift-sriov-network-operator sriov-network-operator-6f5d74ccbc-xql2h --previous
+sno1@haproxy1:~/ocp-helm$ oc logs -n openshift-sriov-network-operator sriov-network-operator-6f5d74ccbc-xql2h
+sno1@haproxy1:~/ocp-helm$ oc get csv -n openshift-sriov-network-operator
+NAME                                          DISPLAY                   VERSION               REPLACES   PHASE
+sriov-network-operator.v4.18.0-202604141055   SR-IOV Network Operator   4.18.0-202604141055              Installing
+sno1@haproxy1:~/ocp-helm$ oc get sriovnetworknodestates -A
+NAMESPACE                          NAME                SYNC STATUS   DESIRED SYNC STATE   CURRENT SYNC STATE   AGE
+openshift-sriov-network-operator   sno1.lab1.ocp.lan   InProgress    Reboot_Required      Draining             7d23h
+sno1@haproxy1:~/ocp-helm$ oc get sriovnetworknodestate -n openshift-sriov-network-operator
+NAME                SYNC STATUS   DESIRED SYNC STATE   CURRENT SYNC STATE   AGE
+sno1.lab1.ocp.lan   InProgress    Reboot_Required      Draining             7d23h
+sno1@haproxy1:~/ocp-helm$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21   True      False      False      1              1                   1                     0                      26d
+worker   rendered-worker-ee996864827422f1f23516eeb46f0de2   True      False      False      0              0                   0                     0                      26d
+sno1@haproxy1:~/ocp-helm$ oc describe mcp worker
+Name:         worker
+Namespace:
+Labels:       machineconfiguration.openshift.io/mco-built-in=
+              pools.operator.machineconfiguration.openshift.io/worker=
+Annotations:  <none>
+API Version:  machineconfiguration.openshift.io/v1
+Kind:         MachineConfigPool
+Metadata:
+  Creation Timestamp:  2026-07-03T06:37:58Z
+  Generation:          3
+  Resource Version:    2163248
+  UID:                 11a3c8ad-f4c4-4467-b805-21eaf0475a51
+Spec:
+  Configuration:
+    Name:  rendered-worker-ee996864827422f1f23516eeb46f0de2
+    Source:
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         00-worker
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-worker-container-runtime
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-worker-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         97-worker-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         98-worker-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-worker-generated-registries
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-worker-ssh
+  Machine Config Selector:
+    Match Labels:
+      machineconfiguration.openshift.io/role:  worker
+  Node Selector:
+    Match Labels:
+      node-role.kubernetes.io/worker:
+  Paused:                              false
+Status:
+  Cert Expirys:
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-06-29T11:36:54Z
+    Subject:  CN=admin-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-08-02T10:37:25Z
+    Subject:  CN=kube-csr-signer_@1783075045
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-09-01T06:49:25Z
+    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1783061365
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-08-17T10:37:27Z
+    Subject:  CN=kube-csr-signer_@1784371046
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-02T11:36:59Z
+    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-02T11:36:58Z
+    Subject:  CN=kube-control-plane-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-06-29T11:36:56Z
+    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-03T06:34:52Z
+    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1783060492
+  Conditions:
+    Last Transition Time:  2026-07-03T06:38:30Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  RenderDegraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Updating
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  NodeDegraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Degraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:               All nodes are updated with MachineConfig rendered-worker-ee996864827422f1f23516eeb46f0de2
+    Reason:
+    Status:                True
+    Type:                  Updated
+  Configuration:
+    Name:  rendered-worker-ee996864827422f1f23516eeb46f0de2
+    Source:
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   00-worker
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   01-worker-container-runtime
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   01-worker-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   97-worker-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   98-worker-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-worker-generated-registries
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-worker-ssh
+  Degraded Machine Count:     0
+  Machine Count:              0
+  Observed Generation:        3
+  Ready Machine Count:        0
+  Unavailable Machine Count:  0
+  Updated Machine Count:      0
+Events:                       <none>
+sno1@haproxy1:~/ocp-helm$
