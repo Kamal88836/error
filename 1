@@ -1,55 +1,6 @@
-This is a classic Kubernetes orphaned admission webhook problem.
-
-The SR-IOV Operator has been removed, but its ValidatingWebhookConfiguration/MutatingWebhookConfiguration still exists. When you try to delete a SriovNetworkNodePolicy or SriovOperatorConfig, the API server attempts to call:
-
-operator-webhook-service.openshift-sriov-network-operator.svc
-
-but that service no longer exists, so the API server rejects the request.
-
-Step 1: Find the leftover webhook
-
-Run:
-
-oc get validatingwebhookconfigurations
-oc get mutatingwebhookconfigurations
-
-Look for entries containing sriov.
-
-For example, you may see something like:
-
-operator-webhook
-sriov-operator-webhook
-
-Step 2: Delete the leftover webhook(s)
-
-For each SR-IOV webhook, delete it:
-
-oc delete validatingwebhookconfiguration <webhook-name>
-oc delete mutatingwebhookconfiguration <webhook-name>
-
-For example:
-
-oc delete validatingwebhookconfiguration operator-webhook
-oc delete mutatingwebhookconfiguration operator-webhook
-
-(Use the exact names from oc get.)
-
-Step 3: Delete the SR-IOV resources
-
-After removing the webhook, retry:
-
-oc delete sriovnetworknodepolicy --all -n openshift-sriov-network-operator
-
-oc delete sriovoperatorconfig default -n openshift-sriov-network-operator
-
-These should now succeed.
-
-If you don't see any SR-IOV webhook
-
-Run:
-
-oc get validatingwebhookconfigurations -o yaml | grep -i -A5 -B5 sriov
-
-oc get mutatingwebhookconfigurations -o yaml | grep -i -A5 -B5 sriov
-
-Share the output, and I'll tell you exactly which webhook object to delete. This is the last piece of cleanup before reinstalling the SR-IOV Operator.
+sno1@haproxy1:~/ocp-config$ oc apply -f sriov-operator.yaml
+Warning: Detected changes to resource openshift-sriov-network-operator which is currently being deleted.
+namespace/openshift-sriov-network-operator unchanged
+Error from server (Forbidden): error when creating "sriov-operator.yaml": operatorgroups.operators.coreos.com "sriov-network-operators" is forbidden: unable to create new content in namespace openshift-sriov-network-operator because it is being terminated
+Error from server (Forbidden): error when creating "sriov-operator.yaml": subscriptions.operators.coreos.com "sriov-network-operator-subscription" is forbidden: unable to create new content in namespace openshift-sriov-network-operator because it is being terminated
+sno1@haproxy1:~/ocp-config$
