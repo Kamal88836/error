@@ -1,6 +1,76 @@
-sno1@haproxy1:~/ocp-config$ oc apply -f sriov-operator.yaml
-Warning: Detected changes to resource openshift-sriov-network-operator which is currently being deleted.
-namespace/openshift-sriov-network-operator unchanged
-Error from server (Forbidden): error when creating "sriov-operator.yaml": operatorgroups.operators.coreos.com "sriov-network-operators" is forbidden: unable to create new content in namespace openshift-sriov-network-operator because it is being terminated
-Error from server (Forbidden): error when creating "sriov-operator.yaml": subscriptions.operators.coreos.com "sriov-network-operator-subscription" is forbidden: unable to create new content in namespace openshift-sriov-network-operator because it is being terminated
-sno1@haproxy1:~/ocp-config$
+The error clearly indicates that the namespace openshift-sriov-network-operator is stuck in the Terminating state. Kubernetes/OpenShift does not allow creating new resources in a namespace that is being deleted.
+
+The key message is:
+
+unable to create new content in namespace openshift-sriov-network-operator because it is being terminated
+
+Step 1: Verify the namespace status
+
+oc get ns openshift-sriov-network-operator
+
+If it shows:
+
+STATUS
+Terminating
+
+then the namespace must be cleaned up before reinstalling the operator.
+
+Step 2: Find what is blocking deletion
+
+oc describe ns openshift-sriov-network-operator
+
+Also check for remaining resources:
+
+oc api-resources --verbs=list --namespaced -o name | \
+xargs -n1 oc get -n openshift-sriov-network-operator --ignore-not-found
+
+Look for resources that still have finalizers.
+
+Step 3: Check the namespace finalizers
+
+oc get ns openshift-sriov-network-operator -o json | jq '.spec.finalizers'
+
+If the namespace is stuck because of finalizers, you can remove them.
+
+Step 4: Force remove the namespace finalizer (only if it is permanently stuck)
+
+oc get ns openshift-sriov-network-operator -o json > ns.json
+
+Edit ns.json and change:
+
+"spec": {
+  "finalizers": [
+    "kubernetes"
+  ]
+}
+
+to:
+
+"spec": {
+  "finalizers": []
+}
+
+Then run:
+
+oc replace --raw "/api/v1/namespaces/openshift-sriov-network-operator/finalize" -f ns.json
+
+Step 5: Wait until the namespace disappears
+
+oc get ns
+
+Once the namespace is completely gone, reapply:
+
+oc apply -f sriov-operator.yaml
+
+
+---
+
+Since I saw in your earlier logs that deleting the SR-IOV resources failed because the validating webhook was unavailable, it's possible the namespace is stuck due to SR-IOV CRs with finalizers or a missing webhook/service.
+
+Please share the output of these commands:
+
+oc get ns openshift-sriov-network-operator -o yaml
+oc describe ns openshift-sriov-network-operator
+oc get all -n openshift-sriov-network-operator
+
+That will help identify exactly what is preventing the namespace from being deleted.
