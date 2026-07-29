@@ -1,103 +1,4 @@
-sno1@haproxy1:~/ocp-helm$ oc logs -n openshift-sriov-network-operator sriov-network-config-daemon-d2cwh --tail=200
-2026-07-29T09:48:28.085718279Z  INFO    daemon/daemon.go:278    Successfully synced
-2026-07-29T09:48:28.085728038Z  LEVEL(-2)       daemon/daemon.go:223    processNextWorkItem     {"worker-queue-size": 0}
-2026-07-29T09:48:42.868703319Z  LEVEL(-2)       daemon/daemon.go:223    get item from queue     {"item": 9}
-2026-07-29T09:48:42.873542567Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): new generation  {"generation": 9}
-2026-07-29T09:48:42.873559515Z  INFO    daemon/daemon.go:378    shouldSkipReconciliation()
-2026-07-29T09:48:42.873569072Z  INFO    runtime/asm_amd64.s:1695        Run(): refresh trigger
-2026-07-29T09:48:42.873575999Z  LEVEL(-2)       daemon/writer.go:99     pollNicStatus()
-2026-07-29T09:48:42.873583897Z  LEVEL(-2)       daemon/writer.go:130    DiscoverSriovDevices
-2026-07-29T09:48:42.950004575Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f0"}
-2026-07-29T09:48:42.95040787Z   LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f0"}
-2026-07-29T09:48:42.95051144Z   LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:0f:00.0"}
-2026-07-29T09:48:42.950686019Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f1"}
-2026-07-29T09:48:42.951038178Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f1"}
-2026-07-29T09:48:42.951100573Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:0f:00.1"}
-2026-07-29T09:48:42.951251401Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f2"}
-2026-07-29T09:48:42.951602675Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f2"}
-2026-07-29T09:48:42.951665093Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:0f:00.2"}
-2026-07-29T09:48:42.951814635Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f3"}
-2026-07-29T09:48:42.952163989Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f3"}
-2026-07-29T09:48:42.952226744Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:0f:00.3"}
-2026-07-29T09:48:42.95237762Z   LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens1f0"}
-2026-07-29T09:48:42.978775293Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens1f0"}
-2026-07-29T09:48:42.97887765Z   LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:11:00.0"}
-2026-07-29T09:48:42.979031699Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens1f1"}
-2026-07-29T09:48:42.980373705Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens1f1"}
-2026-07-29T09:48:42.980626129Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:11:00.1"}
-2026-07-29T09:48:42.981122775Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens1f2"}
-2026-07-29T09:48:42.981519731Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens1f2"}
-2026-07-29T09:48:42.981581532Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:11:00.2"}
-2026-07-29T09:48:42.981723822Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens1f3"}
-2026-07-29T09:48:42.982073283Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens1f3"}
-2026-07-29T09:48:42.982148921Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:11:00.3"}
-2026-07-29T09:48:42.982227467Z  INFO    sriovnetwork    sriov/sriov.go:244      IsSupportedModel(): found unsupported model     {"vendorId:": "8086", "deviceId:": "1521"}
-2026-07-29T09:48:42.982233962Z  INFO    daemon/writer.go:130    DiscoverSriovDevices(): unsupported device      {"device": "0000:48:00.0 -> driver: 'igb' class: 'Network controller' vendor: 'Intel Corporation' product: 'I350 Gigabit Network Connection'"}
-2026-07-29T09:48:42.982252397Z  INFO    sriovnetwork    sriov/sriov.go:244      IsSupportedModel(): found unsupported model     {"vendorId:": "8086", "deviceId:": "1521"}
-2026-07-29T09:48:42.982257184Z  INFO    daemon/writer.go:130    DiscoverSriovDevices(): unsupported device      {"device": "0000:48:00.1 -> driver: 'igb' class: 'Network controller' vendor: 'Intel Corporation' product: 'I350 Gigabit Network Connection'"}
-2026-07-29T09:48:42.982269594Z  INFO    sriovnetwork    sriov/sriov.go:244      IsSupportedModel(): found unsupported model     {"vendorId:": "8086", "deviceId:": "1521"}
-2026-07-29T09:48:42.982273655Z  INFO    daemon/writer.go:130    DiscoverSriovDevices(): unsupported device      {"device": "0000:48:00.2 -> driver: 'igb' class: 'Network controller' vendor: 'Intel Corporation' product: 'I350 Gigabit Network Connection'"}
-2026-07-29T09:48:42.982286822Z  INFO    sriovnetwork    sriov/sriov.go:244      IsSupportedModel(): found unsupported model     {"vendorId:": "8086", "deviceId:": "1521"}
-2026-07-29T09:48:42.982290727Z  INFO    daemon/writer.go:130    DiscoverSriovDevices(): unsupported device      {"device": "0000:48:00.3 -> driver: 'igb' class: 'Network controller' vendor: 'Intel Corporation' product: 'I350 Gigabit Network Connection'"}
-2026-07-29T09:48:42.982380981Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens6f0"}
-2026-07-29T09:48:42.982728932Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens6f0"}
-2026-07-29T09:48:42.982807037Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:84:00.0"}
-2026-07-29T09:48:42.982948869Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens6f1"}
-2026-07-29T09:48:42.983296727Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens6f1"}
-2026-07-29T09:48:42.983355316Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:84:00.1"}
-2026-07-29T09:48:42.983503649Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens6f2"}
-2026-07-29T09:48:42.983854372Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens6f2"}
-2026-07-29T09:48:42.983916158Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:84:00.2"}
-2026-07-29T09:48:42.984061143Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens6f3"}
-2026-07-29T09:48:42.984407767Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens6f3"}
-2026-07-29T09:48:42.984486773Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:84:00.3"}
-2026-07-29T09:48:42.984638503Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens4f0"}
-2026-07-29T09:48:42.984988196Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens4f0"}
-2026-07-29T09:48:42.98506234Z   LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:86:00.0"}
-2026-07-29T09:48:42.985208596Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens4f1"}
-2026-07-29T09:48:42.985557361Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens4f1"}
-2026-07-29T09:48:42.985619503Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:86:00.1"}
-2026-07-29T09:48:42.985759466Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens4f2"}
-2026-07-29T09:48:42.986107451Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens4f2"}
-2026-07-29T09:48:42.98616862Z   LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:86:00.2"}
-2026-07-29T09:48:42.986310114Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens4f3"}
-2026-07-29T09:48:42.986621878Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens4f3"}
-2026-07-29T09:48:42.986681073Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:86:00.3"}
-2026-07-29T09:48:42.989890728Z  INFO    daemon/writer.go:166    setNodeStateStatus(): status    {"sync-status": "InProgress", "last-sync-error": ""}
-2026-07-29T09:48:42.998728894Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): calling OnNodeStateChange for a new node state
-2026-07-29T09:48:42.998744756Z  INFO    daemon/daemon.go:419    intel-plugin OnNodeStateChange()
-2026-07-29T09:48:42.998751218Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): OnNodeStateChange result        {"plugin": "intel", "drain-required": false, "reboot-required": false}
-2026-07-29T09:48:42.998759722Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): calling OnNodeStateChange for a new node state
-2026-07-29T09:48:42.998763718Z  INFO    daemon/daemon.go:419    generic plugin OnNodeStateChange()
-2026-07-29T09:48:42.998769846Z  LEVEL(-2)       generic/generic_plugin.go:155   generic plugin needDrainNode()  {"current": {"interfaces":[{"name":"ens3f0","mac":"6c:fe:54:62:d5:38","driver":"ice","pciAddress":"0000:0f:00.0","vendor":"8086","deviceID":"1593","mtu":8500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens3f1","mac":"6c:fe:54:62:d5:39","driver":"ice","pciAddress":"0000:0f:00.1","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens3f2","mac":"6c:fe:54:62:d5:3a","driver":"ice","pciAddress":"0000:0f:00.2","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens3f3","mac":"6c:fe:54:62:d5:3b","driver":"ice","pciAddress":"0000:0f:00.3","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens1f0","mac":"50:7c:6f:4b:9d:9c","driver":"ice","pciAddress":"0000:11:00.0","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens1f1","mac":"50:7c:6f:4b:9d:9d","driver":"ice","pciAddress":"0000:11:00.1","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens1f2","mac":"50:7c:6f:4b:9d:9e","driver":"ice","pciAddress":"0000:11:00.2","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens1f3","mac":"50:7c:6f:4b:9d:9f","driver":"ice","pciAddress":"0000:11:00.3","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens6f0","mac":"6c:fe:54:63:5f:44","driver":"ice","pciAddress":"0000:84:00.0","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens6f1","mac":"6c:fe:54:63:5f:45","driver":"ice","pciAddress":"0000:84:00.1","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens6f2","mac":"6c:fe:54:63:5f:46","driver":"ice","pciAddress":"0000:84:00.2","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens6f3","mac":"6c:fe:54:63:5f:47","driver":"ice","pciAddress":"0000:84:00.3","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens4f0","mac":"6c:fe:54:63:04:ac","driver":"ice","pciAddress":"0000:86:00.0","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens4f1","mac":"6c:fe:54:63:04:ad","driver":"ice","pciAddress":"0000:86:00.1","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens4f2","mac":"6c:fe:54:63:04:ae","driver":"ice","pciAddress":"0000:86:00.2","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens4f3","mac":"6c:fe:54:63:04:af","driver":"ice","pciAddress":"0000:86:00.3","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64}],"bridges":{},"system":{"rdmaMode":"shared"},"syncStatus":"InProgress"}, "desired": {"interfaces":[{"pciAddress":"0000:11:00.0","numVfs":16,"mtu":9000,"name":"ens1f0","vfGroups":[{"resourceName":"pci_sriov_net_bh0u","deviceType":"vfio-pci","vfRange":"0-1","policyName":"policy-ens1f0-bh0u","mtu":9000},{"resourceName":"pci_sriov_net_bh0c","deviceType":"netdevice","vfRange":"2-3","policyName":"policy-ens1f0-bh0c","mtu":9000}]},{"pciAddress":"0000:11:00.3","numVfs":16,"mtu":9000,"name":"ens1f3","vfGroups":[{"resourceName":"pci_sriov_net_bh0u_1","deviceType":"vfio-pci","vfRange":"0-1","policyName":"policy-ens1f3-bh0u-1","mtu":9000},{"resourceName":"pci_sriov_net_bh0c_1","deviceType":"netdevice","vfRange":"2-3","policyName":"policy-ens1f3-bh0c-1","mtu":9000}]},{"pciAddress":"0000:84:00.0","numVfs":16,"mtu":9000,"name":"ens6f0","vfGroups":[{"resourceName":"pci_sriov_net_bh0u_3","deviceType":"vfio-pci","vfRange":"2-3","policyName":"policy-ens6f0-bh0u-3","mtu":9000},{"resourceName":"pci_sriov_net_bh0u_2","deviceType":"vfio-pci","vfRange":"0-1","policyName":"policy-ens6f0-bh0u-2","mtu":9000}]},{"pciAddress":"0000:84:00.3","numVfs":16,"mtu":9000,"name":"ens6f3","vfGroups":[{"resourceName":"pci_sriov_net_bh0u_3_1","deviceType":"vfio-pci","vfRange":"2-3","policyName":"policy-ens6f3-bh0u-3-1","mtu":9000},{"resourceName":"pci_sriov_net_bh0u_2_1","deviceType":"vfio-pci","vfRange":"0-1","policyName":"policy-ens6f3-bh0u-2-1","mtu":9000}]}],"bridges":{},"system":{}}}
-2026-07-29T09:48:42.998810017Z  LEVEL(-2)       generic/generic_plugin.go:361   generic plugin needToUpdateVFs(): no need drain, for PCI address, current NumVfs is 0   {"address": "0000:11:00.0"}
-2026-07-29T09:48:42.998816207Z  LEVEL(-2)       generic/generic_plugin.go:361   generic plugin needToUpdateVFs(): no need drain, for PCI address, current NumVfs is 0   {"address": "0000:11:00.3"}
-2026-07-29T09:48:42.998820025Z  LEVEL(-2)       generic/generic_plugin.go:361   generic plugin needToUpdateVFs(): no need drain, for PCI address, current NumVfs is 0   {"address": "0000:84:00.0"}
-2026-07-29T09:48:42.998827057Z  LEVEL(-2)       generic/generic_plugin.go:361   generic plugin needToUpdateVFs(): no need drain, for PCI address, current NumVfs is 0   {"address": "0000:84:00.3"}
-2026-07-29T09:48:43.005490345Z  INFO    generic/generic_plugin.go:434   generic plugin enableDesiredKernelArgs(): enable kernel arg     {"karg": "intel_iommu=on"}
-2026-07-29T09:48:43.005503728Z  INFO    generic/generic_plugin.go:435   generic plugin enableDesiredKernelArgs(): enable kernel arg     {"karg": "iommu=pt"}
-2026-07-29T09:48:43.005508998Z  INFO    generic/generic_plugin.go:458   generic plugin disableDesiredKernelArgs(): disable kernel arg   {"karg": "ib_core.netns_mode=0"}
-2026-07-29T09:48:43.005514728Z  INFO    generic/generic_plugin.go:459   generic plugin disableDesiredKernelArgs(): disable kernel arg   {"karg": "ib_core.netns_mode=1"}
-2026-07-29T09:48:43.005519591Z  INFO    generic/generic_plugin.go:472   SetRDMASubsystem(): Updating RDMA subsystem mode        {"mode": ""}
-2026-07-29T09:48:43.005554352Z  INFO    generic/generic_plugin.go:344   generic plugin editKernelArg()  {"mode": "remove", "karg": "pci=realloc"}
-2026-07-29T09:48:43.005561087Z  INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "remove", "pci=realloc"]}
-2026-07-29T09:48:43.010017327Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "0\n", "error": null}
-2026-07-29T09:48:43.010040941Z  INFO    generic/generic_plugin.go:334   generic plugin editKernelArg()  {"mode": "add", "karg": "intel_iommu=on"}
-2026-07-29T09:48:43.01004731Z   INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "add", "intel_iommu=on"]}
-2026-07-29T09:48:43.043356925Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "1\n", "error": null}
-2026-07-29T09:48:43.043383991Z  INFO    generic/generic_plugin.go:334   generic plugin editKernelArg()  {"mode": "add", "karg": "iommu=pt"}
-2026-07-29T09:48:43.043391689Z  INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "add", "iommu=pt"]}
-2026-07-29T09:48:43.075382624Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "1\n", "error": null}
-2026-07-29T09:48:43.07540929Z   INFO    generic/generic_plugin.go:344   generic plugin editKernelArg()  {"mode": "remove", "karg": "ib_core.netns_mode=1"}
-2026-07-29T09:48:43.075415388Z  INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "remove", "ib_core.netns_mode=1"]}
-2026-07-29T09:48:43.079694447Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "0\n", "error": null}
-2026-07-29T09:48:43.079745554Z  INFO    generic/generic_plugin.go:344   generic plugin editKernelArg()  {"mode": "remove", "karg": "ib_core.netns_mode=0"}
-2026-07-29T09:48:43.079751411Z  INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "remove", "ib_core.netns_mode=0"]}
-2026-07-29T09:48:43.083747424Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "0\n", "error": null}
-2026-07-29T09:48:43.083768469Z  LEVEL(-2)       generic/generic_plugin.go:156   generic-plugin needRebootNode(): need reboot for updating kernel arguments
-2026-07-29T09:48:43.083775361Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): OnNodeStateChange result        {"plugin": "generic", "drain-required": true, "reboot-required": true}
-2026-07-29T09:48:43.083783925Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): aggregated daemon       {"drain-required": true, "reboot-required": true, "disable-drain": false}
-2026-07-29T09:48:43.083789977Z  INFO    daemon/daemon.go:468    handleDrain(): the node is still draining
+sno1@haproxy1:~/ocp-helm$ oc logs -n openshift-sriov-network-operator -l app=sriov-network-config-daemon --tail=200
 2026-07-29T09:48:43.083797667Z  INFO    daemon/daemon.go:278    Successfully synced
 2026-07-29T09:48:43.083808801Z  LEVEL(-2)       daemon/daemon.go:223    processNextWorkItem     {"worker-queue-size": 0}
 2026-07-29T09:48:57.869218485Z  LEVEL(-2)       daemon/daemon.go:223    get item from queue     {"item": 9}
@@ -199,3 +100,112 @@ sno1@haproxy1:~/ocp-helm$ oc logs -n openshift-sriov-network-operator sriov-netw
 2026-07-29T09:48:58.08538188Z   INFO    daemon/daemon.go:468    handleDrain(): the node is still draining
 2026-07-29T09:48:58.085389301Z  INFO    daemon/daemon.go:278    Successfully synced
 2026-07-29T09:48:58.085398731Z  LEVEL(-2)       daemon/daemon.go:223    processNextWorkItem     {"worker-queue-size": 0}
+2026-07-29T09:49:12.869975031Z  LEVEL(-2)       daemon/daemon.go:223    get item from queue     {"item": 9}
+2026-07-29T09:49:12.873816727Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): new generation  {"generation": 9}
+2026-07-29T09:49:12.873847631Z  INFO    daemon/daemon.go:378    shouldSkipReconciliation()
+2026-07-29T09:49:12.87385884Z   INFO    runtime/asm_amd64.s:1695        Run(): refresh trigger
+2026-07-29T09:49:12.873865393Z  LEVEL(-2)       daemon/writer.go:99     pollNicStatus()
+2026-07-29T09:49:12.873873692Z  LEVEL(-2)       daemon/writer.go:130    DiscoverSriovDevices
+2026-07-29T09:49:12.950288736Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f0"}
+2026-07-29T09:49:12.95068918Z   LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f0"}
+2026-07-29T09:49:12.950779648Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:0f:00.0"}
+2026-07-29T09:49:12.95095064Z   LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f1"}
+2026-07-29T09:49:12.951306714Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f1"}
+2026-07-29T09:49:12.951372051Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:0f:00.1"}
+2026-07-29T09:49:12.95152529Z   LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f2"}
+2026-07-29T09:49:12.951879072Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f2"}
+2026-07-29T09:49:12.951941794Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:0f:00.2"}
+2026-07-29T09:49:12.952100597Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens3f3"}
+2026-07-29T09:49:12.952461177Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens3f3"}
+2026-07-29T09:49:12.952534285Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:0f:00.3"}
+2026-07-29T09:49:12.952681543Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens1f0"}
+2026-07-29T09:49:12.978778646Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens1f0"}
+2026-07-29T09:49:12.978916022Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:11:00.0"}
+2026-07-29T09:49:12.979079481Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens1f1"}
+2026-07-29T09:49:13.005165082Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens1f1"}
+2026-07-29T09:49:13.005280161Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:11:00.1"}
+2026-07-29T09:49:13.005462693Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens1f2"}
+2026-07-29T09:49:13.007073071Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens1f2"}
+2026-07-29T09:49:13.007185367Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:11:00.2"}
+2026-07-29T09:49:13.007352437Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens1f3"}
+2026-07-29T09:49:13.007707538Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens1f3"}
+2026-07-29T09:49:13.007795596Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:11:00.3"}
+2026-07-29T09:49:13.007882384Z  INFO    sriovnetwork    sriov/sriov.go:244      IsSupportedModel(): found unsupported model     {"vendorId:": "8086", "deviceId:": "1521"}
+2026-07-29T09:49:13.007889725Z  INFO    daemon/writer.go:130    DiscoverSriovDevices(): unsupported device      {"device": "0000:48:00.0 -> driver: 'igb' class: 'Network controller' vendor: 'Intel Corporation' product: 'I350 Gigabit Network Connection'"}
+2026-07-29T09:49:13.007907042Z  INFO    sriovnetwork    sriov/sriov.go:244      IsSupportedModel(): found unsupported model     {"vendorId:": "8086", "deviceId:": "1521"}
+2026-07-29T09:49:13.007911497Z  INFO    daemon/writer.go:130    DiscoverSriovDevices(): unsupported device      {"device": "0000:48:00.1 -> driver: 'igb' class: 'Network controller' vendor: 'Intel Corporation' product: 'I350 Gigabit Network Connection'"}
+2026-07-29T09:49:13.007923596Z  INFO    sriovnetwork    sriov/sriov.go:244      IsSupportedModel(): found unsupported model     {"vendorId:": "8086", "deviceId:": "1521"}
+2026-07-29T09:49:13.007927902Z  INFO    daemon/writer.go:130    DiscoverSriovDevices(): unsupported device      {"device": "0000:48:00.2 -> driver: 'igb' class: 'Network controller' vendor: 'Intel Corporation' product: 'I350 Gigabit Network Connection'"}
+2026-07-29T09:49:13.007939967Z  INFO    sriovnetwork    sriov/sriov.go:244      IsSupportedModel(): found unsupported model     {"vendorId:": "8086", "deviceId:": "1521"}
+2026-07-29T09:49:13.00794388Z   INFO    daemon/writer.go:130    DiscoverSriovDevices(): unsupported device      {"device": "0000:48:00.3 -> driver: 'igb' class: 'Network controller' vendor: 'Intel Corporation' product: 'I350 Gigabit Network Connection'"}
+2026-07-29T09:49:13.008035539Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens6f0"}
+2026-07-29T09:49:13.00839132Z   LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens6f0"}
+2026-07-29T09:49:13.008480504Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:84:00.0"}
+2026-07-29T09:49:13.008633662Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens6f1"}
+2026-07-29T09:49:13.008986942Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens6f1"}
+2026-07-29T09:49:13.009049174Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:84:00.1"}
+2026-07-29T09:49:13.009194624Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens6f2"}
+2026-07-29T09:49:13.009549409Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens6f2"}
+2026-07-29T09:49:13.009612061Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:84:00.2"}
+2026-07-29T09:49:13.009761137Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens6f3"}
+2026-07-29T09:49:13.010114201Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens6f3"}
+2026-07-29T09:49:13.010193923Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:84:00.3"}
+2026-07-29T09:49:13.010340965Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens4f0"}
+2026-07-29T09:49:13.010693924Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens4f0"}
+2026-07-29T09:49:13.010763099Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:86:00.0"}
+2026-07-29T09:49:13.010915301Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens4f1"}
+2026-07-29T09:49:13.011269904Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens4f1"}
+2026-07-29T09:49:13.011334445Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:86:00.1"}
+2026-07-29T09:49:13.011487211Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens4f2"}
+2026-07-29T09:49:13.011843364Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens4f2"}
+2026-07-29T09:49:13.011925039Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:86:00.2"}
+2026-07-29T09:49:13.012074938Z  LEVEL(-2)       sriov/sriov.go:278      GetNetDevLinkSpeed(): get LinkSpeed     {"device": "ens4f3"}
+2026-07-29T09:49:13.012429715Z  LEVEL(-2)       sriov/sriov.go:279      GetNetDevLinkAdminState(): get LinkAdminState   {"device": "ens4f3"}
+2026-07-29T09:49:13.012497562Z  LEVEL(-2)       sriov/sriov.go:294      GetNicSriovMode()       {"device": "0000:86:00.3"}
+2026-07-29T09:49:13.016339295Z  INFO    daemon/writer.go:166    setNodeStateStatus(): status    {"sync-status": "InProgress", "last-sync-error": ""}
+2026-07-29T09:49:13.025406573Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): calling OnNodeStateChange for a new node state
+2026-07-29T09:49:13.025432945Z  INFO    daemon/daemon.go:419    intel-plugin OnNodeStateChange()
+2026-07-29T09:49:13.025439264Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): OnNodeStateChange result        {"plugin": "intel", "drain-required": false, "reboot-required": false}
+2026-07-29T09:49:13.025453157Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): calling OnNodeStateChange for a new node state
+2026-07-29T09:49:13.02545713Z   INFO    daemon/daemon.go:419    generic plugin OnNodeStateChange()
+2026-07-29T09:49:13.025462112Z  LEVEL(-2)       generic/generic_plugin.go:155   generic plugin needDrainNode()  {"current": {"interfaces":[{"name":"ens3f0","mac":"6c:fe:54:62:d5:38","driver":"ice","pciAddress":"0000:0f:00.0","vendor":"8086","deviceID":"1593","mtu":8500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens3f1","mac":"6c:fe:54:62:d5:39","driver":"ice","pciAddress":"0000:0f:00.1","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens3f2","mac":"6c:fe:54:62:d5:3a","driver":"ice","pciAddress":"0000:0f:00.2","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens3f3","mac":"6c:fe:54:62:d5:3b","driver":"ice","pciAddress":"0000:0f:00.3","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens1f0","mac":"50:7c:6f:4b:9d:9c","driver":"ice","pciAddress":"0000:11:00.0","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens1f1","mac":"50:7c:6f:4b:9d:9d","driver":"ice","pciAddress":"0000:11:00.1","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens1f2","mac":"50:7c:6f:4b:9d:9e","driver":"ice","pciAddress":"0000:11:00.2","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens1f3","mac":"50:7c:6f:4b:9d:9f","driver":"ice","pciAddress":"0000:11:00.3","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens6f0","mac":"6c:fe:54:63:5f:44","driver":"ice","pciAddress":"0000:84:00.0","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens6f1","mac":"6c:fe:54:63:5f:45","driver":"ice","pciAddress":"0000:84:00.1","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens6f2","mac":"6c:fe:54:63:5f:46","driver":"ice","pciAddress":"0000:84:00.2","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens6f3","mac":"6c:fe:54:63:5f:47","driver":"ice","pciAddress":"0000:84:00.3","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens4f0","mac":"6c:fe:54:63:04:ac","driver":"ice","pciAddress":"0000:86:00.0","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"25000 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens4f1","mac":"6c:fe:54:63:04:ad","driver":"ice","pciAddress":"0000:86:00.1","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens4f2","mac":"6c:fe:54:63:04:ae","driver":"ice","pciAddress":"0000:86:00.2","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64},{"name":"ens4f3","mac":"6c:fe:54:63:04:af","driver":"ice","pciAddress":"0000:86:00.3","vendor":"8086","deviceID":"1593","mtu":1500,"linkSpeed":"-1 Mb/s","linkType":"ETH","linkAdminState":"up","eSwitchMode":"legacy","totalvfs":64}],"bridges":{},"system":{"rdmaMode":"shared"},"syncStatus":"InProgress"}, "desired": {"interfaces":[{"pciAddress":"0000:11:00.0","numVfs":16,"mtu":9000,"name":"ens1f0","vfGroups":[{"resourceName":"pci_sriov_net_bh0u","deviceType":"vfio-pci","vfRange":"0-1","policyName":"policy-ens1f0-bh0u","mtu":9000},{"resourceName":"pci_sriov_net_bh0c","deviceType":"netdevice","vfRange":"2-3","policyName":"policy-ens1f0-bh0c","mtu":9000}]},{"pciAddress":"0000:11:00.3","numVfs":16,"mtu":9000,"name":"ens1f3","vfGroups":[{"resourceName":"pci_sriov_net_bh0u_1","deviceType":"vfio-pci","vfRange":"0-1","policyName":"policy-ens1f3-bh0u-1","mtu":9000},{"resourceName":"pci_sriov_net_bh0c_1","deviceType":"netdevice","vfRange":"2-3","policyName":"policy-ens1f3-bh0c-1","mtu":9000}]},{"pciAddress":"0000:84:00.0","numVfs":16,"mtu":9000,"name":"ens6f0","vfGroups":[{"resourceName":"pci_sriov_net_bh0u_3","deviceType":"vfio-pci","vfRange":"2-3","policyName":"policy-ens6f0-bh0u-3","mtu":9000},{"resourceName":"pci_sriov_net_bh0u_2","deviceType":"vfio-pci","vfRange":"0-1","policyName":"policy-ens6f0-bh0u-2","mtu":9000}]},{"pciAddress":"0000:84:00.3","numVfs":16,"mtu":9000,"name":"ens6f3","vfGroups":[{"resourceName":"pci_sriov_net_bh0u_3_1","deviceType":"vfio-pci","vfRange":"2-3","policyName":"policy-ens6f3-bh0u-3-1","mtu":9000},{"resourceName":"pci_sriov_net_bh0u_2_1","deviceType":"vfio-pci","vfRange":"0-1","policyName":"policy-ens6f3-bh0u-2-1","mtu":9000}]}],"bridges":{},"system":{}}}
+2026-07-29T09:49:13.025500541Z  LEVEL(-2)       generic/generic_plugin.go:361   generic plugin needToUpdateVFs(): no need drain, for PCI address, current NumVfs is 0   {"address": "0000:11:00.0"}
+2026-07-29T09:49:13.025505713Z  LEVEL(-2)       generic/generic_plugin.go:361   generic plugin needToUpdateVFs(): no need drain, for PCI address, current NumVfs is 0   {"address": "0000:11:00.3"}
+2026-07-29T09:49:13.025509718Z  LEVEL(-2)       generic/generic_plugin.go:361   generic plugin needToUpdateVFs(): no need drain, for PCI address, current NumVfs is 0   {"address": "0000:84:00.0"}
+2026-07-29T09:49:13.025513613Z  LEVEL(-2)       generic/generic_plugin.go:361   generic plugin needToUpdateVFs(): no need drain, for PCI address, current NumVfs is 0   {"address": "0000:84:00.3"}
+2026-07-29T09:49:13.032376423Z  INFO    generic/generic_plugin.go:434   generic plugin enableDesiredKernelArgs(): enable kernel arg     {"karg": "intel_iommu=on"}
+2026-07-29T09:49:13.032388658Z  INFO    generic/generic_plugin.go:435   generic plugin enableDesiredKernelArgs(): enable kernel arg     {"karg": "iommu=pt"}
+2026-07-29T09:49:13.032393461Z  INFO    generic/generic_plugin.go:458   generic plugin disableDesiredKernelArgs(): disable kernel arg   {"karg": "ib_core.netns_mode=0"}
+2026-07-29T09:49:13.032398279Z  INFO    generic/generic_plugin.go:459   generic plugin disableDesiredKernelArgs(): disable kernel arg   {"karg": "ib_core.netns_mode=1"}
+2026-07-29T09:49:13.032402568Z  INFO    generic/generic_plugin.go:472   SetRDMASubsystem(): Updating RDMA subsystem mode        {"mode": ""}
+2026-07-29T09:49:13.032432734Z  INFO    generic/generic_plugin.go:334   generic plugin editKernelArg()  {"mode": "add", "karg": "iommu=pt"}
+2026-07-29T09:49:13.032439022Z  INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "add", "iommu=pt"]}
+2026-07-29T09:49:13.064945021Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "1\n", "error": null}
+2026-07-29T09:49:13.064976008Z  INFO    generic/generic_plugin.go:344   generic plugin editKernelArg()  {"mode": "remove", "karg": "ib_core.netns_mode=1"}
+2026-07-29T09:49:13.064983127Z  INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "remove", "ib_core.netns_mode=1"]}
+2026-07-29T09:49:13.069008828Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "0\n", "error": null}
+2026-07-29T09:49:13.069029402Z  INFO    generic/generic_plugin.go:344   generic plugin editKernelArg()  {"mode": "remove", "karg": "ib_core.netns_mode=0"}
+2026-07-29T09:49:13.06903648Z   INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "remove", "ib_core.netns_mode=0"]}
+2026-07-29T09:49:13.072877662Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "0\n", "error": null}
+2026-07-29T09:49:13.072897779Z  INFO    generic/generic_plugin.go:344   generic plugin editKernelArg()  {"mode": "remove", "karg": "pci=realloc"}
+2026-07-29T09:49:13.072903626Z  INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "remove", "pci=realloc"]}
+2026-07-29T09:49:13.076879872Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "0\n", "error": null}
+2026-07-29T09:49:13.07691144Z   INFO    generic/generic_plugin.go:334   generic plugin editKernelArg()  {"mode": "add", "karg": "intel_iommu=on"}
+2026-07-29T09:49:13.076917235Z  INFO    generic/generic_plugin.go:279   RunCommand()    {"command": "/bin/sh", "args": ["bindata/scripts/kargs.sh", "add", "intel_iommu=on"]}
+2026-07-29T09:49:13.108504113Z  LEVEL(-2)       generic/generic_plugin.go:279   RunCommand()    {"output": "1\n", "error": null}
+2026-07-29T09:49:13.10856249Z   LEVEL(-2)       generic/generic_plugin.go:156   generic-plugin needRebootNode(): need reboot for updating kernel arguments
+2026-07-29T09:49:13.108569604Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): OnNodeStateChange result        {"plugin": "generic", "drain-required": true, "reboot-required": true}
+2026-07-29T09:49:13.108578591Z  INFO    daemon/daemon.go:262    nodeStateSyncHandler(): aggregated daemon       {"drain-required": true, "reboot-required": true, "disable-drain": false}
+2026-07-29T09:49:13.108584255Z  INFO    daemon/daemon.go:468    handleDrain(): the node is still draining
+2026-07-29T09:49:13.108591279Z  INFO    daemon/daemon.go:278    Successfully synced
+2026-07-29T09:49:13.108598676Z  LEVEL(-2)       daemon/daemon.go:223    processNextWorkItem     {"worker-queue-size": 0}
+sno1@haproxy1:~/ocp-helm$ oc get ds -n openshift-sriov-network-operator
+NAME                          DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                                            AGE
+network-resources-injector    1         1         1       1            1           kubernetes.io/os=linux                                                   7d23h
+operator-webhook              1         1         1       1            1           kubernetes.io/os=linux                                                   7d23h
+sriov-device-plugin           1         1         1       1            1           kubernetes.io/os=linux,sriovnetwork.openshift.io/device-plugin=Enabled   7d23h
+sriov-network-config-daemon   1         1         1       1            1           kubernetes.io/os=linux,node-role.kubernetes.io/worker=                   7d23h
+sno1@haproxy1:~/ocp-helm$ oc get deploy -n openshift-sriov-network-operator
+NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+sriov-network-operator   0/1     1            0           7d23h
+sno1@haproxy1:~/ocp-helm$
