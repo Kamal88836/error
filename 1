@@ -1,171 +1,110 @@
-sno1@haproxy1:~/ocp-helm$ oc logs -n openshift-sriov-network-operator deploy/sriov-network-operator --tail=200
-sno1@haproxy1:~/ocp-helm$ oc events -n openshift-sriov-network-operator deploy/sriov-network-operator --tail=200
-error: unknown flag: --tail
-See 'oc events --help' for usage.
-sno1@haproxy1:~/ocp-helm$ oc events -n openshift-sriov-network-operator deploy/sriov-network-operator
-LAST SEEN               TYPE      REASON               OBJECT                                                              MESSAGE
-3h41m (x289 over 27h)   Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-z5vhk                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-3h40m                   Normal    Scheduled            Pod/sriov-network-operator-6f5d74ccbc-z5vhk                         Successfully assigned openshift-sriov-network-operator/sriov-network-operator-6f5d74ccbc-z5vhk to sno1.lab1.ocp.lan
-3h40m                   Normal    AddedInterface       Pod/sriov-network-operator-6f5d74ccbc-z5vhk                         Add eth0 [10.128.0.82/23 fd01:0:0:1::52/64] from ovn-kubernetes
-3h40m                   Normal    Pulled               Pod/sriov-network-operator-6f5d74ccbc-z5vhk                         Container image "registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b" already present on machine
-3h40m                   Normal    Started              Pod/sriov-network-operator-6f5d74ccbc-z5vhk                         Started container sriov-network-operator
-3h40m                   Normal    LeaderElection       Lease/a56def2a.openshift.io                                         sriov-network-operator-6f5d74ccbc-z5vhk_c65b7b60-b936-48c1-abb8-a692db866d87 became leader
-3h40m                   Normal    Created              Pod/sriov-network-operator-6f5d74ccbc-z5vhk                         Created container: sriov-network-operator
-3h40m                   Normal    SuccessfulCreate     ReplicaSet/sriov-network-operator-6f5d74ccbc                        Created pod: sriov-network-operator-6f5d74ccbc-7ftdv
-3h40m                   Warning   InstallCheckFailed   ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   install timeout
-3h40m                   Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-3h40m                   Normal    NeedsReinstall       ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   installing: waiting for deployment sriov-network-operator to become ready: deployment "sriov-network-operator" not available: Deployment does not have minimum availability.
-3h40m                   Normal    Killing              Pod/sriov-network-operator-6f5d74ccbc-z5vhk                         Stopping container sriov-network-operator
-3h29m (x2 over 3h35m)   Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-3h3m                    Warning   Failed               Pod/sriov-device-plugin-gsv7c                                       Failed to pull image "registry.redhat.io/openshift4/ose-sriov-network-device-plugin-rhel9@sha256:192e211916e559cd62ba2368cbe1940ff742b5df45344acf66270895680a5c5f": pull QPS exceeded
-3h3m                    Warning   Failed               Pod/sriov-network-config-daemon-d2cwh                               Error: ErrImagePull
-3h3m                    Warning   Failed               Pod/sriov-network-config-daemon-d2cwh                               Failed to pull image "registry.redhat.io/openshift4/sriov-cni-rhel9@sha256:7e0f884c32af6b2e45cba142296e1ed08205c9ef4db9d5b5dc25805d63c134a0": pull QPS exceeded
-3h3m                    Warning   Failed               Pod/sriov-device-plugin-gsv7c                                       Error: ErrImagePull
-3h3m                    Warning   Failed               Pod/sriov-network-config-daemon-d2cwh                               Error: ImagePullBackOff
-3h3m                    Normal    BackOff              Pod/sriov-device-plugin-gsv7c                                       Back-off pulling image "registry.redhat.io/openshift4/ose-sriov-network-device-plugin-rhel9@sha256:192e211916e559cd62ba2368cbe1940ff742b5df45344acf66270895680a5c5f"
-3h3m                    Normal    BackOff              Pod/sriov-network-config-daemon-d2cwh                               Back-off pulling image "registry.redhat.io/openshift4/sriov-cni-rhel9@sha256:7e0f884c32af6b2e45cba142296e1ed08205c9ef4db9d5b5dc25805d63c134a0"
-3h3m                    Warning   Failed               Pod/sriov-device-plugin-gsv7c                                       Error: ImagePullBackOff
-3h2m (x2 over 3h3m)     Normal    Pulling              Pod/sriov-network-config-daemon-d2cwh                               Pulling image "registry.redhat.io/openshift4/sriov-cni-rhel9@sha256:7e0f884c32af6b2e45cba142296e1ed08205c9ef4db9d5b5dc25805d63c134a0"
-3h2m (x2 over 3h3m)     Normal    Pulling              Pod/sriov-device-plugin-gsv7c                                       Pulling image "registry.redhat.io/openshift4/ose-sriov-network-device-plugin-rhel9@sha256:192e211916e559cd62ba2368cbe1940ff742b5df45344acf66270895680a5c5f"
-3h2m                    Normal    Created              Pod/sriov-device-plugin-gsv7c                                       Created container: sriov-device-plugin
-3h2m                    Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-cni
-3h2m                    Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-cni
-3h2m                    Normal    Started              Pod/sriov-device-plugin-gsv7c                                       Started container sriov-device-plugin
-3h2m                    Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Successfully pulled image "registry.redhat.io/openshift4/sriov-cni-rhel9@sha256:7e0f884c32af6b2e45cba142296e1ed08205c9ef4db9d5b5dc25805d63c134a0" in 17.442s (17.442s including waiting). Image size: 411094289 bytes.
-3h2m                    Normal    Pulled               Pod/sriov-device-plugin-gsv7c                                       Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-network-device-plugin-rhel9@sha256:192e211916e559cd62ba2368cbe1940ff742b5df45344acf66270895680a5c5f" in 15.472s (15.472s including waiting). Image size: 481862917 bytes.
-3h2m                    Normal    Pulling              Pod/sriov-network-config-daemon-d2cwh                               Pulling image "registry.redhat.io/openshift4/ose-sriov-infiniband-cni-rhel9@sha256:7bf02998c9d17acc9a913552000bc870ef27865e902f373c0324798a0aa7c185"
-3h2m                    Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-infiniband-cni
-3h2m                    Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-infiniband-cni
-3h2m                    Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-infiniband-cni-rhel9@sha256:7bf02998c9d17acc9a913552000bc870ef27865e902f373c0324798a0aa7c185" in 1.069s (1.069s including waiting). Image size: 414675823 bytes.
-3h2m (x7 over 3h3m)     Warning   FailedMount          Pod/operator-webhook-92w6q                                          MountVolume.SetUp failed for volume "tls" : object "openshift-sriov-network-operator"/"operator-webhook-service" not registered
-3h2m (x7 over 3h3m)     Warning   FailedMount          Pod/network-resources-injector-ggp6q                                MountVolume.SetUp failed for volume "tls" : object "openshift-sriov-network-operator"/"network-resources-injector-secret" not registered
-3h2m                    Normal    Pulling              Pod/sriov-network-config-daemon-d2cwh                               Pulling image "registry.redhat.io/openshift4/ose-sriov-rdma-cni-rhel9@sha256:d4f0a749413038beb8916c3ea075e8ea1826ca4e01cd3ecf021e7e8f8435a426"
-3h2m (x18 over 3h3m)    Warning   NetworkNotReady      Pod/operator-webhook-92w6q                                          network is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: no CNI configuration file in /etc/kubernetes/cni/net.d/. Has your network provider started?
-3h2m (x18 over 3h3m)    Warning   NetworkNotReady      Pod/network-resources-injector-ggp6q                                network is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: no CNI configuration file in /etc/kubernetes/cni/net.d/. Has your network provider started?
-3h2m                    Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: rdma-cni
-3h2m                    Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container rdma-cni
-3h2m                    Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-rdma-cni-rhel9@sha256:d4f0a749413038beb8916c3ea075e8ea1826ca4e01cd3ecf021e7e8f8435a426" in 1.118s (1.118s including waiting). Image size: 413508429 bytes.
-3h2m                    Normal    Pulling              Pod/sriov-network-config-daemon-d2cwh                               Pulling image "registry.redhat.io/openshift4/ose-sriov-network-config-daemon-rhel9@sha256:a55b2c3e4c2bee60b2393d9e44053399b9ac0aac73c700a0154aa7c72ebaa08f"
-3h2m                    Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-network-config-daemon-rhel9@sha256:a55b2c3e4c2bee60b2393d9e44053399b9ac0aac73c700a0154aa7c72ebaa08f" in 2.357s (2.357s including waiting). Image size: 507655870 bytes.
-3h2m                    Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-network-config-daemon
-3h2m                    Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-network-config-daemon
-3h2m                    Normal    ConfigDaemonStart    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Config Daemon starting
-3h2m                    Normal    SyncStatusChanged    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Status changed from: InProgress to: Unknown
-3h2m                    Normal    SyncStatusChanged    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Status changed from: Unknown to: InProgress
-3h2m                    Normal    AddedInterface       Pod/network-resources-injector-ggp6q                                Add eth0 [10.128.0.157/23 fd01:0:0:1::9d/64] from ovn-kubernetes
-3h2m                    Normal    AddedInterface       Pod/operator-webhook-92w6q                                          Add eth0 [10.128.0.158/23 fd01:0:0:1::9e/64] from ovn-kubernetes
-175m (x2 over 3h1m)     Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-143m                    Normal    Pulling              Pod/sriov-device-plugin-gsv7c                                       Pulling image "registry.redhat.io/openshift4/ose-sriov-network-device-plugin-rhel9@sha256:192e211916e559cd62ba2368cbe1940ff742b5df45344acf66270895680a5c5f"
-143m                    Normal    Pulling              Pod/sriov-network-config-daemon-d2cwh                               Pulling image "registry.redhat.io/openshift4/sriov-cni-rhel9@sha256:7e0f884c32af6b2e45cba142296e1ed08205c9ef4db9d5b5dc25805d63c134a0"
-142m                    Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Successfully pulled image "registry.redhat.io/openshift4/sriov-cni-rhel9@sha256:7e0f884c32af6b2e45cba142296e1ed08205c9ef4db9d5b5dc25805d63c134a0" in 28.928s (28.928s including waiting). Image size: 411094289 bytes.
-142m                    Normal    Started              Pod/sriov-device-plugin-gsv7c                                       Started container sriov-device-plugin
-142m                    Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-cni
-142m                    Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-cni
-142m                    Normal    Created              Pod/sriov-device-plugin-gsv7c                                       Created container: sriov-device-plugin
-142m                    Normal    Pulled               Pod/sriov-device-plugin-gsv7c                                       Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-network-device-plugin-rhel9@sha256:192e211916e559cd62ba2368cbe1940ff742b5df45344acf66270895680a5c5f" in 29.832s (29.832s including waiting). Image size: 481862917 bytes.
-142m                    Normal    Pulling              Pod/sriov-network-config-daemon-d2cwh                               Pulling image "registry.redhat.io/openshift4/ose-sriov-infiniband-cni-rhel9@sha256:7bf02998c9d17acc9a913552000bc870ef27865e902f373c0324798a0aa7c185"
-142m (x7 over 143m)     Warning   FailedMount          Pod/operator-webhook-92w6q                                          MountVolume.SetUp failed for volume "tls" : object "openshift-sriov-network-operator"/"operator-webhook-service" not registered
-142m (x7 over 143m)     Warning   FailedMount          Pod/network-resources-injector-ggp6q                                MountVolume.SetUp failed for volume "tls" : object "openshift-sriov-network-operator"/"network-resources-injector-secret" not registered
-142m                    Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-infiniband-cni-rhel9@sha256:7bf02998c9d17acc9a913552000bc870ef27865e902f373c0324798a0aa7c185" in 1.093s (1.093s including waiting). Image size: 414675823 bytes.
-142m                    Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-infiniband-cni
-142m                    Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-infiniband-cni
-142m                    Normal    Pulling              Pod/sriov-network-config-daemon-d2cwh                               Pulling image "registry.redhat.io/openshift4/ose-sriov-rdma-cni-rhel9@sha256:d4f0a749413038beb8916c3ea075e8ea1826ca4e01cd3ecf021e7e8f8435a426"
-142m                    Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: rdma-cni
-142m (x18 over 143m)    Warning   NetworkNotReady      Pod/network-resources-injector-ggp6q                                network is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: no CNI configuration file in /etc/kubernetes/cni/net.d/. Has your network provider started?
-142m (x18 over 143m)    Warning   NetworkNotReady      Pod/operator-webhook-92w6q                                          network is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: no CNI configuration file in /etc/kubernetes/cni/net.d/. Has your network provider started?
-142m                    Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container rdma-cni
-142m                    Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-rdma-cni-rhel9@sha256:d4f0a749413038beb8916c3ea075e8ea1826ca4e01cd3ecf021e7e8f8435a426" in 981ms (981ms including waiting). Image size: 413508429 bytes.
-142m                    Normal    Pulling              Pod/sriov-network-config-daemon-d2cwh                               Pulling image "registry.redhat.io/openshift4/ose-sriov-network-config-daemon-rhel9@sha256:a55b2c3e4c2bee60b2393d9e44053399b9ac0aac73c700a0154aa7c72ebaa08f"
-142m                    Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-network-config-daemon
-142m                    Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-network-config-daemon-rhel9@sha256:a55b2c3e4c2bee60b2393d9e44053399b9ac0aac73c700a0154aa7c72ebaa08f" in 2.365s (2.365s including waiting). Image size: 507655870 bytes.
-142m                    Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-network-config-daemon
-142m                    Normal    ConfigDaemonStart    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Config Daemon starting
-142m                    Normal    SyncStatusChanged    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Status changed from: InProgress to: Unknown
-142m                    Normal    SyncStatusChanged    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Status changed from: Unknown to: InProgress
-142m                    Normal    AddedInterface       Pod/network-resources-injector-ggp6q                                Add eth0 [10.128.0.157/23 fd01:0:0:1::9d/64] from ovn-kubernetes
-142m                    Normal    AddedInterface       Pod/operator-webhook-92w6q                                          Add eth0 [10.128.0.158/23 fd01:0:0:1::9e/64] from ovn-kubernetes
-115m (x6 over 141m)     Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-88m                     Normal    Scheduled            Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Successfully assigned openshift-sriov-network-operator/sriov-network-operator-6f5d74ccbc-7ftdv to sno1.lab1.ocp.lan
-88m                     Normal    AddedInterface       Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Add eth0 [10.128.0.64/23 fd01:0:0:1::40/64] from ovn-kubernetes
-88m                     Normal    Pulling              Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Pulling image "registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b"
-87m                     Normal    Pulled               Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Successfully pulled image "registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b" in 1m15.085s (1m15.085s including waiting). Image size: 475357329 bytes.
-87m                     Normal    AllRequirementsMet   ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   all requirements found, attempting install
-87m                     Normal    InstallSucceeded     ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   waiting for install components to report healthy
-87m (x2 over 87m)       Normal    InstallWaiting       ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   installing: waiting for deployment sriov-network-operator to become ready: deployment "sriov-network-operator" not available: Deployment does not have minimum availability.
-87m                     Normal    Created              Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Created container: sriov-network-operator
-87m                     Normal    Started              Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Started container sriov-network-operator
-87m                     Normal    InstallSucceeded     ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   install strategy completed with no errors
-38m                     Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-cni
-38m                     Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-infiniband-cni
-38m                     Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Container image "registry.redhat.io/openshift4/sriov-cni-rhel9@sha256:7e0f884c32af6b2e45cba142296e1ed08205c9ef4db9d5b5dc25805d63c134a0" already present on machine
-38m                     Normal    Pulled               Pod/sriov-device-plugin-gsv7c                                       Container image "registry.redhat.io/openshift4/ose-sriov-network-device-plugin-rhel9@sha256:192e211916e559cd62ba2368cbe1940ff742b5df45344acf66270895680a5c5f" already present on machine
-38m                     Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-cni
-38m                     Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-infiniband-cni
-38m                     Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Container image "registry.redhat.io/openshift4/ose-sriov-infiniband-cni-rhel9@sha256:7bf02998c9d17acc9a913552000bc870ef27865e902f373c0324798a0aa7c185" already present on machine
-37m                     Normal    Created              Pod/sriov-device-plugin-gsv7c                                       Created container: sriov-device-plugin
-37m                     Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Container image "registry.redhat.io/openshift4/ose-sriov-rdma-cni-rhel9@sha256:d4f0a749413038beb8916c3ea075e8ea1826ca4e01cd3ecf021e7e8f8435a426" already present on machine
-37m                     Normal    Started              Pod/sriov-device-plugin-gsv7c                                       Started container sriov-device-plugin
-37m                     Normal    Pulled               Pod/sriov-network-config-daemon-d2cwh                               Container image "registry.redhat.io/openshift4/ose-sriov-network-config-daemon-rhel9@sha256:a55b2c3e4c2bee60b2393d9e44053399b9ac0aac73c700a0154aa7c72ebaa08f" already present on machine
-37m (x3 over 38m)       Warning   NetworkNotReady      Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         network is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: no CNI configuration file in /etc/kubernetes/cni/net.d/. Has your network provider started?
-37m                     Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: rdma-cni
-37m                     Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container sriov-network-config-daemon
-37m                     Normal    Created              Pod/sriov-network-config-daemon-d2cwh                               Created container: sriov-network-config-daemon
-37m                     Normal    Started              Pod/sriov-network-config-daemon-d2cwh                               Started container rdma-cni
-37m (x4 over 38m)       Warning   FailedMount          Pod/network-resources-injector-ggp6q                                MountVolume.SetUp failed for volume "tls" : object "openshift-sriov-network-operator"/"network-resources-injector-secret" not registered
-37m                     Normal    ConfigDaemonStart    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Config Daemon starting
-37m                     Normal    SyncStatusChanged    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Status changed from: InProgress to: Unknown
-37m (x5 over 38m)       Warning   NetworkNotReady      Pod/network-resources-injector-ggp6q                                network is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: no CNI configuration file in /etc/kubernetes/cni/net.d/. Has your network provider started?
-37m (x5 over 38m)       Warning   FailedMount          Pod/operator-webhook-92w6q                                          MountVolume.SetUp failed for volume "tls" : object "openshift-sriov-network-operator"/"operator-webhook-service" not registered
-37m (x7 over 38m)       Warning   NetworkNotReady      Pod/operator-webhook-92w6q                                          network is not ready: container runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:Network plugin returns error: no CNI configuration file in /etc/kubernetes/cni/net.d/. Has your network provider started?
-37m                     Normal    SyncStatusChanged    SriovNetworkNodeState/sno1.lab1.ocp.lan                             Status changed from: Unknown to: InProgress
-37m                     Normal    AddedInterface       Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Add eth0 [10.128.0.64/23 fd01:0:0:1::40/64] from ovn-kubernetes
-37m                     Normal    Pulled               Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Container image "registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b" already present on machine
-37m                     Normal    Created              Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Created container: sriov-network-operator
-37m                     Normal    Started              Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Started container sriov-network-operator
-37m                     Normal    AddedInterface       Pod/operator-webhook-92w6q                                          Add eth0 [10.128.0.158/23 fd01:0:0:1::9e/64] from ovn-kubernetes
-37m                     Normal    Pulled               Pod/operator-webhook-92w6q                                          Container image "registry.redhat.io/openshift4/ose-sriov-network-webhook-rhel9@sha256:422b72d9ebd9baa27df9124a473674aceb7b41ac7f468f5917e10a3b49c0be1f" already present on machine
-37m                     Normal    Created              Pod/operator-webhook-92w6q                                          Created container: webhook-server
-37m                     Normal    Started              Pod/operator-webhook-92w6q                                          Started container webhook-server
-37m                     Normal    Pulled               Pod/network-resources-injector-ggp6q                                Container image "registry.redhat.io/openshift4/ose-sriov-dp-admission-controller-rhel9@sha256:ff02c0f85447592a122f1e39646f4b50b3287f99db09217451482b0201741564" already present on machine
-37m                     Normal    AddedInterface       Pod/network-resources-injector-ggp6q                                Add eth0 [10.128.0.157/23 fd01:0:0:1::9d/64] from ovn-kubernetes
-37m                     Normal    Started              Pod/network-resources-injector-ggp6q                                Started container webhook-server
-37m                     Normal    Created              Pod/network-resources-injector-ggp6q                                Created container: webhook-server
-32m                     Normal    LeaderElection       Lease/a56def2a.openshift.io                                         sriov-network-operator-6f5d74ccbc-7ftdv_b18199ee-5df0-4db0-9ea8-2f2a36472157 became leader
-31m (x12 over 32m)      Warning   DrainController      SriovNetworkNodeState/sno1.lab1.ocp.lan                             node drain operation was not completed
-31m                     Normal    SuccessfulCreate     ReplicaSet/sriov-network-operator-6f5d74ccbc                        Created pod: sriov-network-operator-6f5d74ccbc-xhf7k
-31m                     Normal    Killing              Pod/sriov-network-operator-6f5d74ccbc-7ftdv                         Stopping container sriov-network-operator
-31m                     Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-xhf7k                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-10m (x4 over 26m)       Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-xhf7k                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-9m38s                   Normal    Scheduled            Pod/sriov-network-operator-6f5d74ccbc-xhf7k                         Successfully assigned openshift-sriov-network-operator/sriov-network-operator-6f5d74ccbc-xhf7k to sno1.lab1.ocp.lan
-9m32s                   Normal    Created              Pod/sriov-network-operator-6f5d74ccbc-xhf7k                         Created container: sriov-network-operator
-9m32s                   Normal    Pulled               Pod/sriov-network-operator-6f5d74ccbc-xhf7k                         Container image "registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b" already present on machine
-9m32s                   Normal    LeaderElection       Lease/a56def2a.openshift.io                                         sriov-network-operator-6f5d74ccbc-xhf7k_0804e316-576b-4fa5-ad78-06913059a66d became leader
-9m32s                   Normal    AddedInterface       Pod/sriov-network-operator-6f5d74ccbc-xhf7k                         Add eth0 [10.128.0.99/23 fd01:0:0:1::63/64] from ovn-kubernetes
-9m32s                   Warning   ComponentUnhealthy   ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   installing: waiting for deployment sriov-network-operator to become ready: deployment "sriov-network-operator" not available: Deployment does not have minimum availability.
-9m32s                   Normal    Started              Pod/sriov-network-operator-6f5d74ccbc-xhf7k                         Started container sriov-network-operator
-9m31s                   Normal    NeedsReinstall       ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   installing: waiting for deployment sriov-network-operator to become ready: deployment "sriov-network-operator" not available: Deployment does not have minimum availability.
-9m30s                   Normal    AllRequirementsMet   ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   all requirements found, attempting install
-9m29s                   Normal    InstallSucceeded     ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   waiting for install components to report healthy
-9m29s                   Normal    InstallWaiting       ClusterServiceVersion/sriov-network-operator.v4.18.0-202604141055   installing: waiting for deployment sriov-network-operator to become ready: deployment "sriov-network-operator" not available: Deployment does not have minimum availability.
-9m28s                   Normal    SuccessfulCreate     ReplicaSet/sriov-network-operator-6f5d74ccbc                        Created pod: sriov-network-operator-6f5d74ccbc-c9gxm
-9m28s                   Normal    Killing              Pod/sriov-network-operator-6f5d74ccbc-xhf7k                         Stopping container sriov-network-operator
-9m28s                   Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-c9gxm                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-7m43s                   Normal    Scheduled            Pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Successfully assigned openshift-sriov-network-operator/sriov-network-operator-6f5d74ccbc-c9gxm to sno1.lab1.ocp.lan
-7m36s                   Normal    Started              Pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Started container sriov-network-operator
-7m36s                   Normal    Created              Pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Created container: sriov-network-operator
-7m36s                   Normal    Pulled               Pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Container image "registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b" already present on machine
-7m36s                   Normal    LeaderElection       Lease/a56def2a.openshift.io                                         sriov-network-operator-6f5d74ccbc-c9gxm_6710b8c3-6864-46d5-bbd1-cc16e724afa7 became leader
-7m36s                   Normal    AddedInterface       Pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Add eth0 [10.128.0.174/23 fd01:0:0:1::ae/64] from ovn-kubernetes
-7m34s                   Normal    SuccessfulCreate     ReplicaSet/sriov-network-operator-6f5d74ccbc                        Created pod: sriov-network-operator-6f5d74ccbc-xql2h
-7m33s                   Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-xql2h                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-7m33s                   Normal    Killing              Pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Stopping container sriov-network-operator
-2m10s                   Warning   FailedScheduling     Pod/sriov-network-operator-6f5d74ccbc-xql2h                         0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
-sno1@haproxy1:~/ocp-helm$ oc logs -n openshift-sriov-network-operator deploy/sriov-network-operator
-sno1@haproxy1:~/ocp-helm$ oc get pods -A -o wide | grep Terminating
-sno1@haproxy1:~/ocp-helm$ oc adm drain sno1.lab1.ocp.lan --ignore-daemonsets --delete-emptydir-data --dry-run=client
-node/sno1.lab1.ocp.lan already cordoned (dry run)
-Warning: ignoring DaemonSet-managed Pods: openshift-cluster-node-tuning-operator/tuned-knz9b, openshift-dns/dns-default-lw7sk, openshift-dns/node-resolver-njzz5, openshift-image-registry/node-ca-7trpz, openshift-ingress-canary/ingress-canary-vfqnk, openshift-machine-config-operator/machine-config-daemon-qz495, openshift-machine-config-operator/machine-config-server-6ts47, openshift-monitoring/node-exporter-w5xh8, openshift-multus/multus-7q7sb, openshift-multus/multus-additional-cni-plugins-prtkg, openshift-multus/network-metrics-daemon-frzb2, openshift-network-diagnostics/network-check-target-bm9rk, openshift-network-node-identity/network-node-identity-mcxkp, openshift-network-operator/iptables-alerter-8dm76, openshift-ovn-kubernetes/ovnkube-node-qbgqv, openshift-ptp/linuxptp-daemon-lcj4r, openshift-sriov-network-operator/network-resources-injector-ggp6q, openshift-sriov-network-operator/operator-webhook-92w6q, openshift-sriov-network-operator/sriov-device-plugin-gsv7c, openshift-sriov-network-operator/sriov-network-config-daemon-d2cwh, openshift-storage/vg-manager-m8jlm
-evicting pod openshift-console/console-7cb56cb76-kfhtd (dry run)
-evicting pod openshift-console/downloads-d67945594-m9xjw (dry run)
+This is the missing piece. The evidence is now very clear.
+
+What we know
+
+Your manual drain succeeds (dry run):
+
 node/sno1.lab1.ocp.lan drained (dry run)
-sno1@haproxy1:~/ocp-helm$
+
+There are:
+
+✅ No terminating pods
+
+✅ No pods blocking eviction
+
+✅ Node is healthy
+
+✅ MCP is updated
+
+❌ SR-IOV still reports:
+
+Sync Status: InProgress
+Current State: Draining
+Desired State: Reboot_Required
+
+❌ Events repeatedly show:
+
+DrainController
+node drain operation was not completed
+
+
+The strange part
+
+The SR-IOV operator deployment logs are empty:
+
+oc logs -n openshift-sriov-network-operator deploy/sriov-network-operator
+
+returned nothing.
+
+That usually means the deployment isn't emitting logs, or the operator is restarting before logging anything useful.
+
+I think this is an SR-IOV operator state issue
+
+The operator is stuck in this loop:
+
+Pause MCP
+      ↓
+Cordon node
+      ↓
+Try drain
+      ↓
+Never marks drain complete
+      ↓
+Keeps node cordoned
+      ↓
+Starts over
+
+Since your manual drain succeeds, the operator's internal state appears to be stuck rather than the node actually being undrainable.
+
+Next check
+
+Let's inspect the config daemon, because it's the component updating the SriovNetworkNodeState.
+
+Run:
+
+oc logs -n openshift-sriov-network-operator sriov-network-config-daemon-d2cwh --tail=200
+
+or, more generally:
+
+oc logs -n openshift-sriov-network-operator -l app=sriov-network-config-daemon --tail=200
+
+I'm looking for messages around:
+
+Draining
+
+DrainController
+
+Reboot_Required
+
+SyncStatus
+
+
+One more thing to verify
+
+Please also run:
+
+oc get ds -n openshift-sriov-network-operator
+
+and
+
+oc get deploy -n openshift-sriov-network-operator
+
+to confirm all SR-IOV components are fully available.
+
+
+---
+
+My assessment
+
+At this stage:
+
+The original CRI-O IPv6 bind issue is resolved.
+
+The cluster networking is healthy.
+
+The remaining problem is entirely within the SR-IOV operator workflow.
+
+Specifically, the DrainController never transitions the node from Draining to Reboot_Required (or Succeeded), so it continuously pauses the MCP and re-cordons the node.
+
+
+This looks much more like an SR-IOV operator state machine issue than a networking or Machine Config issue. The config daemon logs should tell us why it refuses to complete the drain.
