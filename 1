@@ -1,160 +1,111 @@
-sno1@haproxy1:~/ocp-helm$ oc describe mcp master
-Name:         master
-Namespace:
-Labels:       machineconfiguration.openshift.io/mco-built-in=
-              operator.machineconfiguration.openshift.io/required-for-upgrade=
-              pools.operator.machineconfiguration.openshift.io/master=
-Annotations:  sriovnetwork.openshift.io/state: Paused
-API Version:  machineconfiguration.openshift.io/v1
-Kind:         MachineConfigPool
-Metadata:
-  Creation Timestamp:  2026-07-03T06:37:58Z
-  Generation:          16
-  Resource Version:    3381137
-  UID:                 72d97bf6-949f-4446-85c4-d29509b50ddf
+From the oc describe mcp master output, the key points are:
+
+1. The MachineConfigPool is Paused
+
 Spec:
-  Configuration:
-    Name:  rendered-master-b45e8d1765e899e360eff85f3349861b
-    Source:
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         00-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-container-runtime
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-nto-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         50-performance-performance-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         97-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-load-sctp-module-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-registries
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-ssh
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-set-core-master-password
-  Machine Config Selector:
-    Match Labels:
-      machineconfiguration.openshift.io/role:  master
-  Node Selector:
-    Match Labels:
-      node-role.kubernetes.io/master:
-  Paused:                              true
+  Paused: true
+
+and
+
 Status:
-  Cert Expirys:
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-06-29T11:36:54Z
-    Subject:  CN=admin-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-08-02T10:37:25Z
-    Subject:  CN=kube-csr-signer_@1783075045
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-09-01T06:49:25Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1783061365
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-08-17T10:37:27Z
-    Subject:  CN=kube-csr-signer_@1784371046
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-02T11:36:59Z
-    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-02T11:36:58Z
-    Subject:  CN=kube-control-plane-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-06-29T11:36:56Z
-    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-03T06:34:52Z
-    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1783060492
-  Conditions:
-    Last Transition Time:  2026-07-03T06:38:30Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  RenderDegraded
-    Last Transition Time:  2026-07-03T06:38:35Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  NodeDegraded
-    Last Transition Time:  2026-07-03T06:38:35Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Degraded
-    Last Transition Time:  2026-07-29T06:05:32Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Updated
-    Last Transition Time:  2026-07-28T05:58:25Z
-    Message:               Pool is paused; will not update to MachineConfig rendered-master-b45e8d1765e899e360eff85f3349861b
-    Reason:
-    Status:                False
-    Type:                  Updating
-  Configuration:
-    Name:  rendered-master-b45e8d1765e899e360eff85f3349861b
-    Source:
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   00-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-container-runtime
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   50-nto-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   50-performance-performance-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   97-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   98-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-load-sctp-module-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-generated-registries
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-ssh
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-set-core-master-password
-  Degraded Machine Count:     0
-  Machine Count:              1
-  Observed Generation:        16
-  Ready Machine Count:        0
-  Unavailable Machine Count:  1
-  Updated Machine Count:      1
-Events:                       <none>
-sno1@haproxy1:~/ocp-helm$
+  Updating: False
+  Message: Pool is paused; will not update to MachineConfig rendered-master-b45e8d1765e899e360eff85f3349861b
+
+This means the Machine Config Operator (MCO) is not allowed to apply any new MachineConfig changes.
+
+
+---
+
+2. The node is currently unavailable
+
+Machine Count:              1
+Ready Machine Count:        0
+Unavailable Machine Count:  1
+Updated Machine Count:      1
+
+Since this is an SNO cluster (only one master node):
+
+Ready Machine Count = 0 ❌
+
+Unavailable Machine Count = 1 ❌
+
+
+This means the only control-plane node is currently not Ready.
+
+
+---
+
+3. There is no MachineConfig degradation
+
+These are good:
+
+RenderDegraded: False
+NodeDegraded:   False
+Degraded:       False
+
+So MCO itself is healthy.
+
+
+---
+
+4. Why CRI-O may still not start
+
+In your previous messages, CRI-O was failing.
+
+Since the MCP is paused, even if you fix or create a new MachineConfig, it will never be applied until the pool is unpaused.
+
+However, pausing the MCP does not itself stop CRI-O. A CRI-O startup failure is usually due to an invalid configuration (for example, a bad CRI-O drop-in, runtime configuration, or network setting).
+
+
+---
+
+I would check these next
+
+Check the node status
+
+oc get nodes
+
+Check the current MachineConfig state
+
+oc describe node <node-name> | grep -A10 MachineConfig
+
+Check why CRI-O is failing
+
+journalctl -u crio -b -n 100
+
+or
+
+systemctl status crio -l
+
+
+---
+
+If you actually want MCO to apply changes
+
+Unpause the MCP:
+
+oc patch mcp master --type=merge -p '{"spec":{"paused":false}}'
+
+Then watch:
+
+oc get mcp master -w
+
+
+---
+
+One thing caught my attention
+
+Your MCP has the annotation:
+
+sriovnetwork.openshift.io/state: Paused
+
+This suggests that the SR-IOV Operator may have intentionally paused the MachineConfigPool while applying configuration. If that operation never completed, the pool can remain paused.
+
+Could you also share the outputs of these commands?
+
+oc get nodes
+oc get mcp
+oc describe node sno1
+journalctl -xeu crio.service
+
+These will help determine whether the problem is the node becoming NotReady, the paused MCP, or the underlying CRI-O configuration error.
