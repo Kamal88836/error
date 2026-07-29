@@ -1,126 +1,38 @@
-The key information is this:
-
-SriovNetworkNodeState
-SYNC STATUS          InProgress
-DESIRED SYNC STATE   Reboot_Required
-CURRENT SYNC STATE   Draining
-
-and
-
-Events:
-0/1 nodes are available: 1 node(s) were unschedulable.
-
-The SR-IOV operator pod is not failing—it has never been scheduled because your only node is marked unschedulable.
-
-What this tells us
-
-Your cluster is an SNO (Single Node OpenShift) cluster.
-
-Normally, the SR-IOV operator does the following:
-
-1. Drain the node.
-
-
-2. Apply SR-IOV configuration.
-
-
-3. Reboot the node if required.
-
-
-4. Uncordon the node.
-
-
-5. Complete installation.
-
-
-
-In your case, the process is stuck at:
-
-CURRENT SYNC STATE = Draining
-
-As a result:
-
-Node is cordoned (SchedulingDisabled)
-
-New operator pod cannot schedule
-
-CSV remains Installing
-
-NodeState remains InProgress
-
-
-This is a circular dependency.
-
-First, verify the node status
-
-Please run:
-
-oc get nodes
-
-I'm expecting something similar to:
-
-NAME                 STATUS                     ROLES                  AGE
-sno1.lab1.ocp.lan    Ready,SchedulingDisabled   control-plane,master,worker
-
-or
-
-Ready,SchedulingDisabled
-
-Also check if the node is cordoned
-
-oc describe node sno1.lab1.ocp.lan | grep Unschedulable
-
-or
-
-oc get node sno1.lab1.ocp.lan -o jsonpath='{.spec.unschedulable}'
+sno1@haproxy1:~/ocp-helm$ oc get nodes
+NAME                STATUS                     ROLES                         AGE   VERSION
+sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11
+sno1@haproxy1:~/ocp-helm$ oc describe node sno1.lab1.ocp.lan | grep Unschedulable
+Unschedulable:      true
+sno1@haproxy1:~/ocp-helm$ oc get sriovoperatorconfig -n openshift-sriov-network-operator -o yaml
+apiVersion: v1
+items:
+- apiVersion: sriovnetwork.openshift.io/v1
+  kind: SriovOperatorConfig
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"sriovnetwork.openshift.io/v1","kind":"SriovOperatorConfig","metadata":{"annotations":{},"name":"default","namespace":"openshift-sriov-network-operator"},"spec":{"disableDrain":false,"enableInjector":true,"enableOperatorWebhook":true,"logLevel":2}}
+    creationTimestamp: "2026-07-21T10:26:10Z"
+    finalizers:
+    - operatorconfig.finalizers.sriovnetwork.openshift.io
+    generation: 1
+    name: default
+    namespace: openshift-sriov-network-operator
+    resourceVersion: "2330229"
+    uid: 471fb668-f3c6-48fd-8da3-6df8607032ce
+  spec:
+    disableDrain: false
+    enableInjector: true
+    enableOperatorWebhook: true
+    logLevel: 2
+kind: List
+metadata:
+  resourceVersion: ""
+sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o yaml | grep -i paused
+    sriovnetwork.openshift.io/state: Paused
+  paused: true
+sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o jsonpath='{.spec.paused}'
+sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o jsonpath='{.spec.paused}'ed}'
 echo
-
-If it returns:
-
 true
-
-then we've found the reason.
-
-Another important check
-
-Please run:
-
-oc get sriovoperatorconfig -n openshift-sriov-network-operator -o yaml
-
-I want to verify:
-
-disableDrain
-
-configurationMode
-
-
-One more check
-
-Please provide:
-
-oc get machineconfigpool master -o yaml | grep -i paused
-
-and
-
-oc get machineconfigpool master -o jsonpath='{.spec.paused}'
-echo
-
-My current assessment
-
-At this point, I do not think the issue is related to the earlier CRI-O IPv6 problem. That appears to have been resolved.
-
-The evidence now points to the SR-IOV operator workflow being stuck after initiating a drain/reboot sequence. The node is likely still cordoned, preventing the new operator pod from scheduling and leaving the CSV in the Installing phase.
-
-Please share the output of these five commands:
-
-oc get nodes
-
-oc describe node sno1.lab1.ocp.lan | grep Unschedulable
-
-oc get node sno1.lab1.ocp.lan -o jsonpath='{.spec.unschedulable}'; echo
-
-oc get sriovoperatorconfig -n openshift-sriov-network-operator -o yaml
-
-oc get mcp master -o jsonpath='{.spec.paused}'; echo
-
-Those outputs should pinpoint why the SR-IOV operator installation is stuck.
+sno1@haproxy1:~/ocp-helm$
