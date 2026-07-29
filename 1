@@ -1,126 +1,210 @@
-This identifies the root cause.
-
-You have two independent conditions that together are blocking SR-IOV configuration.
-
-1. Master MCP is paused
-
-You confirmed:
-
-oc get machineconfigpool master -o jsonpath='{.spec.paused}'
+sno1@haproxy1:~/ocp-helm$ oc get nodes
+NAME                STATUS                     ROLES                         AGE   VERSION
+sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11
+sno1@haproxy1:~/ocp-helm$ oc describe node sno1.lab1.ocp.lan | grep Unschedulable
+Unschedulable:      true
+sno1@haproxy1:~/ocp-helm$ oc get sriovoperatorconfig -n openshift-sriov-network-operator -o yaml
+apiVersion: v1
+items:
+- apiVersion: sriovnetwork.openshift.io/v1
+  kind: SriovOperatorConfig
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"sriovnetwork.openshift.io/v1","kind":"SriovOperatorConfig","metadata":{"annotations":{},"name":"default","namespace":"openshift-sriov-network-operator"},"spec":{"disableDrain":false,"enableInjector":true,"enableOperatorWebhook":true,"logLevel":2}}
+    creationTimestamp: "2026-07-21T10:26:10Z"
+    finalizers:
+    - operatorconfig.finalizers.sriovnetwork.openshift.io
+    generation: 1
+    name: default
+    namespace: openshift-sriov-network-operator
+    resourceVersion: "2330229"
+    uid: 471fb668-f3c6-48fd-8da3-6df8607032ce
+  spec:
+    disableDrain: false
+    enableInjector: true
+    enableOperatorWebhook: true
+    logLevel: 2
+kind: List
+metadata:
+  resourceVersion: ""
+sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o yaml | grep -i paused
+    sriovnetwork.openshift.io/state: Paused
+  paused: true
+sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o jsonpath='{.spec.paused}'
+sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o jsonpath='{.spec.paused}'ed}'
+echo
 true
-
-This is the first problem.
-
-When the SR-IOV operator adds kernel arguments:
-
-intel_iommu=on
-
-iommu=pt
-
-
-it creates a MachineConfig and expects the Machine Config Operator (MCO) to apply it.
-
-Because the master MCP is paused, the MachineConfig cannot be applied.
-
-
----
-
-2. Node is permanently cordoned
-
-Your node is:
-
-Ready,SchedulingDisabled
-Unschedulable: true
-
-Since this is an SNO cluster, there is only one node. The SR-IOV operator has drained and cordoned the node and is waiting for the reboot/update to finish.
-
-That's why you see:
-
-SriovNetworkNodeState
-
-Desired Sync State : Reboot_Required
-Current Sync State : Draining
-
-and
-
-CSV: Installing
-
-The new operator pod stays Pending because the only node is unschedulable.
-
-
----
-
-Fix
-
-Step 1: Unpause the master MCP
-
-oc patch mcp master --type=merge -p '{"spec":{"paused":false}}'
-
-Verify:
-
-oc get mcp master
-
-Paused should become false.
-
-
----
-
-Step 2: Wait a few minutes
-
-Watch:
-
-oc get mcp -w
-
-and
-
-oc get co machine-config
-
-The MachineConfig Operator should begin reconciling.
-
-
----
-
-Step 3: If the node is still cordoned after MCO finishes
-
-Uncordon it:
-
-oc adm uncordon sno1.lab1.ocp.lan
-
-
----
-
-Step 4: Watch SR-IOV recover
-
-oc get sriovnetworknodestate -w
-
-You should eventually see:
-
-SYNC STATUS            Succeeded
-CURRENT SYNC STATE     Succeeded
-
-Then check:
-
-oc get csv -n openshift-sriov-network-operator
-
-The phase should change from:
-
-Installing
-
-to
-
-Succeeded
-
-
----
-
-One thing I want to verify
-
-Before you unpause the MCP, please run these two commands:
-
-oc get machineconfig | grep -i sriov
-
-and
-
-oc get machineconfigpool master
-
-If there is a pending SR-IOV MachineConfig waiting to be applied, unpausing the MCP should allow the update to complete and resolve the SR-IOV operator installation.
+sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o jsonpath='{.spec.paused}'
+truesno1@haproxy1:~/ocp-heoc patch mcp master --type=merge -p '{"spec":{"paused":false}}'e}}'
+machineconfigpool.machineconfiguration.openshift.io/master patched
+sno1@haproxy1:~/ocp-helm$ oc patch mcp master --type=merge -p '{"spec":{"paused":false}}'
+machineconfigpool.machineconfiguration.openshift.io/master patched (no change)
+sno1@haproxy1:~/ocp-helm$
+sno1@haproxy1:~/ocp-helm$
+sno1@haproxy1:~/ocp-helm$ oc describe  mcp master
+Name:         master
+Namespace:
+Labels:       machineconfiguration.openshift.io/mco-built-in=
+              operator.machineconfiguration.openshift.io/required-for-upgrade=
+              pools.operator.machineconfiguration.openshift.io/master=
+Annotations:  sriovnetwork.openshift.io/state: Paused
+API Version:  machineconfiguration.openshift.io/v1
+Kind:         MachineConfigPool
+Metadata:
+  Creation Timestamp:  2026-07-03T06:37:58Z
+  Generation:          22
+  Resource Version:    3405055
+  UID:                 72d97bf6-949f-4446-85c4-d29509b50ddf
+Spec:
+  Configuration:
+    Name:  rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
+    Source:
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         00-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-container-runtime
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         97-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         98-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-load-sctp-module-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-registries
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-set-core-master-password
+  Machine Config Selector:
+    Match Labels:
+      machineconfiguration.openshift.io/role:  master
+  Node Selector:
+    Match Labels:
+      node-role.kubernetes.io/master:
+  Paused:                              false
+Status:
+  Cert Expirys:
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-06-29T11:36:54Z
+    Subject:  CN=admin-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-08-02T10:37:25Z
+    Subject:  CN=kube-csr-signer_@1783075045
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-09-01T06:49:25Z
+    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1783061365
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-08-17T10:37:27Z
+    Subject:  CN=kube-csr-signer_@1784371046
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-02T11:36:59Z
+    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-02T11:36:58Z
+    Subject:  CN=kube-control-plane-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-06-29T11:36:56Z
+    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-03T06:34:52Z
+    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1783060492
+  Conditions:
+    Last Transition Time:  2026-07-03T06:38:30Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  RenderDegraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  NodeDegraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Degraded
+    Last Transition Time:  2026-07-29T09:14:30Z
+    Message:               All nodes are updated with MachineConfig rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
+    Reason:
+    Status:                True
+    Type:                  Updated
+    Last Transition Time:  2026-07-29T09:14:30Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Updating
+  Configuration:
+    Name:  rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
+    Source:
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   00-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   01-master-container-runtime
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   01-master-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   97-master-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   98-master-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-load-sctp-module-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-master-generated-registries
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-master-ssh
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-set-core-master-password
+  Degraded Machine Count:     0
+  Machine Count:              1
+  Observed Generation:        18
+  Ready Machine Count:        1
+  Unavailable Machine Count:  0
+  Updated Machine Count:      1
+Events:                       <none>
+sno1@haproxy1:~/ocp-helm$ oc get mcp master
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21   True      False      False      1              1                   1                     0                      26d
+sno1@haproxy1:~/ocp-helm$ oc get co machine-config
+NAME             VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+machine-config   4.18.23   True        False         True       26d     Failed to resync 4.18.23 because: the required MachineConfigPool master was paused with no pending updates; no further syncing will occur until it is unpaused
+sno1@haproxy1:~/ocp-helm$ oc get sriovnetworknodestate
+No resources found in bscf namespace.
+sno1@haproxy1:~/ocp-helm$ oc get sriovnetworknodestate -A
+NAMESPACE                          NAME                SYNC STATUS   DESIRED SYNC STATE   CURRENT SYNC STATE   AGE
+openshift-sriov-network-operator   sno1.lab1.ocp.lan   InProgress    Reboot_Required      Draining             7d23h
+sno1@haproxy1:~/ocp-helm$ oc get csv -n openshift-sriov-network-operator
+NAME                                          DISPLAY                   VERSION               REPLACES   PHASE
+sriov-network-operator.v4.18.0-202604141055   SR-IOV Network Operator   4.18.0-202604141055              Installing
+sno1@haproxy1:~/ocp-helm$ oc get csv -A
+NAMESPACE                              NAME                                          DISPLAY                   VERSION               REPLACES   PHASE
+openshift-operator-lifecycle-manager   packageserver                                 Package Server            0.0.1-snapshot                   Failed
+openshift-ptp                          ptp-operator.v4.18.0-202604141055             PTP Operator              4.18.0-202604141055              Succeeded
+openshift-sriov-network-operator       sriov-network-operator.v4.18.0-202604141055   SR-IOV Network Operator   4.18.0-202604141055              Installing
+openshift-storage                      lvms-operator.v4.18.4                         LVM Storage               4.18.4                           Installing
+sno1@haproxy1:~/ocp-helm$ oc get machineconfig | grep -i sriov
+sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21   True      False      False      1              1                   1                     0                      26d
+sno1@haproxy1:~/ocp-helm$
