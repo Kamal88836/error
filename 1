@@ -1,98 +1,7 @@
-[systemd]
-Failed Units: 2
-  chrony-wait.service
-  NetworkManager-wait-online.service
-[root@sno1 ~]# journalctl -u crio -b -n 100
-Jul 29 07:24:04 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:04.687443438Z" level=info msg="Pulled image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d96ca6ca34d38debb586165c04ca6aa3735d0>
-Jul 29 07:24:04 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:04.687946907Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d96ca6ca34d38debb586165c04ca>
-Jul 29 07:24:04 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:04.698878221Z" level=info msg="Pulled image: registry.redhat.io/lvms4/lvms-rhel9-operator@sha256:5c86b3ccb785517fcf41405087e03ca9933223e>
-Jul 29 07:24:04 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:04.699324474Z" level=info msg="Checking image status: registry.redhat.io/lvms4/lvms-rhel9-operator@sha256:be49109ec5be53a783b2de9bc6529d>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.865633182Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:061863004728c3de7888c362eddcabdb53b458d450361b15c4f987>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.866631946Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:7db77843a6a9c27b476c645492bdfe4da6634a9381bdeb5d114f56>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.867534087Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d7d4fc9f62d3e868cdf203ecbd59>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.867706196Z" level=info msg="Checking image status: registry.redhat.io/openshift4/ose-sriov-network-webhook-rhel9@sha256:422b72d9ebd9b>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.874864307Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:a3caf3b0e5ff7f0855ba18e36b03daee49ba96c560a27f6ab986f7>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.875759193Z" level=info msg="Checking image status: registry.redhat.io/openshift4/ose-sriov-dp-admission-controller-rhel9@sha256:ff02c>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.876514687Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:7122711efa7a2e72018d0c240c07d24fd9597e569331da019de8e2>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.876791330Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:443990ae768e33edf045eb5e84ffa2b7bb0237b2a342853bc9f571>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.877975112Z" level=info msg="Checking image status: registry.redhat.io/lvms4/lvms-rhel9-operator@sha256:be49109ec5be53a783b2de9bc6529d>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.878896035Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d96ca6ca34d38debb586165c04ca>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.879484912Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:443990ae768e33edf045eb5e84ffa2b7bb0237b2a342853bc9f571>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.881166371Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:061863004728c3de7888c362eddcabdb53b458d450361b15c4f987>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.881621090Z" level=info msg="Creating container: openshift-storage/vg-manager-m8jlm/vg-manager" id=1ecd69e1-d15d-4403-b97c-349f2005342>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.882694562Z" level=info msg="Creating container: openshift-multus/network-metrics-daemon-frzb2/network-metrics-daemon" id=627c4e64-375>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.883881643Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:7db77843a6a9c27b476c645492bdfe4da6634a9381bdeb5d114f56>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.884399349Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:a3caf3b0e5ff7f0855ba18e36b03daee49ba96c560a27f6ab986f7>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.884646881Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.884687041Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:7122711efa7a2e72018d0c240c07d24fd9597e569331da019de8e2>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.885098828Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.885533053Z" level=info msg="Creating container: openshift-dns/dns-default-lw7sk/dns" id=4283dfea-fe92-4e62-8ecf-d63e5f2ca4eb name=/ru>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.886334883Z" level=info msg="Creating container: openshift-sriov-network-operator/network-resources-injector-ggp6q/webhook-server" id=>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.886903967Z" level=info msg="Creating container: openshift-sriov-network-operator/operator-webhook-92w6q/webhook-server" id=307d63df-f>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.888136973Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.889455965Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.889875028Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.893933490Z" level=info msg="Pulled image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f8899e7b479006d8d6c14e127b1f9f65c388c>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.894358769Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f8899e7b479006d8d6c14e127b1f>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.904341643Z" level=info msg="Pulled image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f04189a8062571085ebc72b8e838d36b64bb9>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.904875229Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f04189a8062571085ebc72b8e838>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.905874852Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:4addb757fd463b7a7723aee982bfc4f639036c59b8610b640e601e>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.906092355Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.907740920Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f8899e7b479006d8d6c14e127b1f>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.909529851Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.911789574Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.913051200Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:2e548036315ac6ba58660c50aeb1dfd7f724ca4a57bc5c10c873f3>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.913352443Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:4addb757fd463b7a7723aee982bfc4f639036c59b8610b640e601e>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.921750040Z" level=info msg="Creating container: openshift-ingress-canary/ingress-canary-vfqnk/serve-healthcheck-canary" id=e9e666d2-3>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.923469931Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f04189a8062571085ebc72b8e838>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.930753042Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.932110759Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.934488757Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.935424737Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.944861495Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.947645972Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.963959427Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:2e548036315ac6ba58660c50aeb1dfd7f724ca4a57bc5c10c873f3>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.965721051Z" level=info msg="Creating container: openshift-network-diagnostics/network-check-target-bm9rk/network-check-target-contain>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.966512183Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.967670985Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.978088579Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.992697492Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.996054018Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.052101984Z" level=info msg="Created container 6666255fc1f6d9335c30bc62290072040a029df5d4440249165a13a217ed1377: openshift-sriov-netwo>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.053138203Z" level=info msg="Starting container: 6666255fc1f6d9335c30bc62290072040a029df5d4440249165a13a217ed1377" id=2f2e2dae-170b-42>
-
-[root@sno1 ~]# systemctl status crio -l
-● crio.service - Container Runtime Interface for OCI (CRI-O)
-     Loaded: loaded (/usr/lib/systemd/system/crio.service; disabled; preset: disabled)
-    Drop-In: /etc/systemd/system/crio.service.d
-             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
-     Active: active (running) since Wed 2026-07-29 07:21:45 UTC; 7min ago
-       Docs: https://github.com/cri-o/cri-o
-   Main PID: 9135 (crio)
-      Tasks: 35
-     Memory: 6.4G
-        CPU: 3min 27.784s
-     CGroup: /system.slice/crio.service
-             └─9135 /usr/bin/crio
-
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.204160917Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.213439384Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.318261129Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.323936669Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.394399201Z" level=info msg="Created container 6f9d33df46db89ee898d6a28075e9e2fbec9f237f6aaf54ffaff3f8eaa1b42b6: openshift-dns/dns-def>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.394913603Z" level=info msg="Starting container: 6f9d33df46db89ee898d6a28075e9e2fbec9f237f6aaf54ffaff3f8eaa1b42b6" id=abe1a7d2-edc3-4e>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.398007137Z" level=info msg="Started container" PID=14006 containerID=6f9d33df46db89ee898d6a28075e9e2fbec9f237f6aaf54ffaff3f8eaa1b42b6>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.405302321Z" level=info msg="Created container 90da9bc03e0e894c9b2f65863060418aa109a358454dd78384cdcc31f3c430d6: openshift-multus/netw>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.405661121Z" level=info msg="Starting container: 90da9bc03e0e894c9b2f65863060418aa109a358454dd78384cdcc31f3c430d6" id=b1d0c057-5e06-40>
-Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.408258660Z" level=info msg="Started container" PID=14007 containerID=90da9bc03e0e894c9b2f65863060418aa109a358454dd78384cdcc31f3c430d6>
-
-[root@sno1 ~]#
-logout
-[core@sno1 ~]$
-logout
-Connection to sno1.lab1.ocp.lan closed.
-sno1@haproxy1:~/ocp-helm$ oc patch mcp master --type=merge -p '{"spec":{"paused":false}}'
-machineconfigpool.machineconfiguration.openshift.io/master patched
+sno1@haproxy1:~/ocp-helm$ oc get mcp
+NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
+master   rendered-master-b45e8d1765e899e360eff85f3349861b   False     False      False      1              0                   1                     0                      26d
+worker   rendered-worker-ee996864827422f1f23516eeb46f0de2   True      False      False      0              0                   0                     0                      26d
 sno1@haproxy1:~/ocp-helm$ oc describe mcp master
 Name:         master
 Namespace:
@@ -252,4 +161,169 @@ Status:
   Unavailable Machine Count:  1
   Updated Machine Count:      1
 Events:                       <none>
-sno1@haproxy1:~/ocp-helm$
+sno1@haproxy1:~/ocp-helm$ oc get no -o wide
+NAME                STATUS                     ROLES                         AGE   VERSION    INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                                                KERNEL-VERSION                    CONTAINER-RUNTIME
+sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11   72.1.1.25     <none>        Red Hat Enterprise Linux CoreOS 418.94.202508261658-0   5.14.0-427.85.1.el9_4.x86_64+rt   cri-o://1.31.11-2.rhaos4.18.git65ec77a.el9
+sno1@haproxy1:~/ocp-helm$ oc get pod -n openshift-machine-config-operator
+NAME                                         READY   STATUS    RESTARTS   AGE
+kube-rbac-proxy-crio-sno1.lab1.ocp.lan       1/1     Running   11         26d
+machine-config-controller-784d59cf85-cjfmf   0/2     Pending   0          88m
+machine-config-daemon-qz495                  2/2     Running   21         26d
+machine-config-operator-659c6fb5db-lfw27     0/2     Pending   0          88m
+machine-config-server-6ts47                  1/1     Running   7          26d
+sno1@haproxy1:~/ocp-helm$ oc logs -n openshift-machine-config-operator machine-config-daemon-qz495
+Defaulted container "machine-config-daemon" out of: machine-config-daemon, kube-rbac-proxy
+I0729 07:23:19.623515   10418 start.go:68] Version: 6b5bd215 (6cabdc1467e3bcc9961544e148530a9c88789856)
+I0729 07:23:19.623563   10418 update.go:2725] Running: mount --rbind /run/secrets /rootfs/run/secrets
+I0729 07:23:19.625186   10418 update.go:2725] Running: mount --rbind /usr/bin /rootfs/run/machine-config-daemon-bin
+I0729 07:23:19.626972   10418 daemon.go:521] using appropriate binary for source=rhel-9 target=rhel-9
+I0729 07:23:19.666039   10418 daemon.go:574] Invoking re-exec /run/bin/machine-config-daemon
+I0729 07:23:19.732718   10418 start.go:68] Version: 6b5bd215 (6cabdc1467e3bcc9961544e148530a9c88789856)
+I0729 07:23:19.732912   10418 update.go:2725] Running: systemctl daemon-reload
+I0729 07:23:20.370185   10418 rpm-ostree.go:56] Enabled workaround for bug 2111817
+I0729 07:23:20.370533   10418 image_manager_helper.go:194] Linking rpm-ostree authfile to /etc/mco/internal-registry-pull-secret.json
+I0729 07:23:20.743310   10418 daemon.go:324] Booted osImageURL: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b91753ec7ab0ecb55a4fa86d5c1c0ebe34a0343109879347f0a9a0884552a34c (418.94.202508261658-0) 0a9dfbd69dd46d5c142512feca9bb60719e8c360fce8b11486607a9dfa018f30
+I0729 07:23:20.744354   10418 start.go:134] overriding kubernetes api to https://api-int.lab1.ocp.lan:6443
+I0729 07:23:20.745331   10418 metrics.go:92] Registering Prometheus metrics
+I0729 07:23:20.745462   10418 metrics.go:99] Starting metrics listener on 127.0.0.1:8797
+I0729 07:23:21.058267   10418 simple_featuregate_reader.go:171] Starting feature-gate-detector
+I0729 07:23:21.059070   10418 writer.go:87] NodeWriter initialized with credentials from /var/lib/kubelet/kubeconfig
+I0729 07:23:21.061576   10418 event.go:377] Event(v1.ObjectReference{Kind:"Node", Namespace:"openshift-machine-config-operator", Name:"sno1.lab1.ocp.lan", UID:"00f16411-7c8d-4422-ab9b-c2fba9169317", APIVersion:"v1", ResourceVersion:"", FieldPath:""}): type: 'Normal' reason: 'FeatureGatesInitialized' FeatureGates updated to featuregates.Features{Enabled:[]v1.FeatureGateName{"AWSEFSDriverVolumeMetrics", "AdminNetworkPolicy", "AlibabaPlatform", "AzureWorkloadIdentity", "BareMetalLoadBalancer", "BuildCSIVolumes", "ChunkSizeMiB", "CloudDualStackNodeIPs", "DisableKubeletCloudCredentialProviders", "GCPLabelsTags", "HardwareSpeed", "IngressControllerLBSubnetsAWS", "KMSv1", "ManagedBootImages", "ManagedBootImagesAWS", "MultiArchInstallAWS", "MultiArchInstallGCP", "NetworkDiagnosticsConfig", "NetworkLiveMigration", "NetworkSegmentation", "NewOLM", "NodeDisruptionPolicy", "OnClusterBuild", "PersistentIPsForVirtualization", "PrivateHostedZoneAWS", "SetEIPForNLBIngressController", "VSphereControlPlaneMachineSet", "VSphereDriverConfiguration", "VSphereMultiVCenters", "VSphereStaticIPs", "ValidatingAdmissionPolicy"}, Disabled:[]v1.FeatureGateName{"AWSClusterHostedDNS", "AdditionalRoutingCapabilities", "AutomatedEtcdBackup", "BootcNodeManagement", "CSIDriverSharedResource", "ClusterAPIInstall", "ClusterAPIInstallIBMCloud", "ClusterMonitoringConfig", "ConsolePluginContentSecurityPolicy", "DNSNameResolver", "DynamicResourceAllocation", "EtcdBackendQuota", "EventedPLEG", "Example", "ExternalOIDC", "ExternalOIDCWithUIDAndExtraClaimMappings", "GCPClusterHostedDNS", "GatewayAPI", "ImageStreamImportMode", "IngressControllerDynamicConfigurationManager", "InsightsConfig", "InsightsConfigAPI", "InsightsOnDemandDataGather", "InsightsRuntimeExtractor", "MachineAPIMigration", "MachineAPIOperatorDisableMachineHealthCheckController", "MachineAPIProviderOpenStack", "MachineConfigNodes", "MaxUnavailableStatefulSet", "MetricsCollectionProfiles", "MinimumKubeletVersion", "MixedCPUsAllocation", "MultiArchInstallAzure", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PinnedImages", "PlatformOperators", "ProcMountType", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SignatureStores", "SigstoreImageVerification", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
+I0729 07:23:21.061563   10418 start.go:219] FeatureGates initialized: knownFeatureGates=[AWSEFSDriverVolumeMetrics AdminNetworkPolicy AlibabaPlatform AzureWorkloadIdentity BareMetalLoadBalancer BuildCSIVolumes ChunkSizeMiB CloudDualStackNodeIPs DisableKubeletCloudCredentialProviders GCPLabelsTags HardwareSpeed IngressControllerLBSubnetsAWS KMSv1 ManagedBootImages ManagedBootImagesAWS MultiArchInstallAWS MultiArchInstallGCP NetworkDiagnosticsConfig NetworkLiveMigration NetworkSegmentation NewOLM NodeDisruptionPolicy OnClusterBuild PersistentIPsForVirtualization PrivateHostedZoneAWS SetEIPForNLBIngressController VSphereControlPlaneMachineSet VSphereDriverConfiguration VSphereMultiVCenters VSphereStaticIPs ValidatingAdmissionPolicy AWSClusterHostedDNS AdditionalRoutingCapabilities AutomatedEtcdBackup BootcNodeManagement CSIDriverSharedResource ClusterAPIInstall ClusterAPIInstallIBMCloud ClusterMonitoringConfig ConsolePluginContentSecurityPolicy DNSNameResolver DynamicResourceAllocation EtcdBackendQuota EventedPLEG Example ExternalOIDC ExternalOIDCWithUIDAndExtraClaimMappings GCPClusterHostedDNS GatewayAPI ImageStreamImportMode IngressControllerDynamicConfigurationManager InsightsConfig InsightsConfigAPI InsightsOnDemandDataGather InsightsRuntimeExtractor MachineAPIMigration MachineAPIOperatorDisableMachineHealthCheckController MachineAPIProviderOpenStack MachineConfigNodes MaxUnavailableStatefulSet MetricsCollectionProfiles MinimumKubeletVersion MixedCPUsAllocation MultiArchInstallAzure NodeSwap NutanixMultiSubnets OVNObservability OpenShiftPodSecurityAdmission PinnedImages PlatformOperators ProcMountType RouteAdvertisements RouteExternalCertificate ServiceAccountTokenNodeBinding SignatureStores SigstoreImageVerification TranslateStreamCloseWebsocketRequests UpgradeStatus UserNamespacesPodSecurityStandards UserNamespacesSupport VSphereMultiNetworks VolumeAttributesClass VolumeGroupSnapshot]
+I0729 07:23:21.061630   10418 update.go:2770] "Starting to manage node: sno1.lab1.ocp.lan"
+I0729 07:23:21.064700   10418 image_manager_helper.go:92] Running captured: rpm-ostree status
+I0729 07:23:21.111135   10418 daemon.go:1764] State: idle
+Deployments:
+* ostree-unverified-registry:quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b91753ec7ab0ecb55a4fa86d5c1c0ebe34a0343109879347f0a9a0884552a34c
+                   Digest: sha256:b91753ec7ab0ecb55a4fa86d5c1c0ebe34a0343109879347f0a9a0884552a34c
+                  Version: 418.94.202508261658-0 (2025-08-26T17:03:09Z)
+      RemovedBasePackages: kernel-modules-core kernel-modules-extra kernel-core kernel kernel-modules 5.14.0-427.85.1.el9_4
+          LayeredPackages: kernel-rt-core kernel-rt-kvm kernel-rt-modules
+                           kernel-rt-modules-extra
+I0729 07:23:21.111773   10418 coreos.go:53] CoreOS aleph version: mtime=2022-08-01 23:42:11 +0000 UTC
+{
+   "container-image": {
+      "image-digest": "sha256:a7e12974e664046023ddfba2f861ead846bbf5e3c17fb625fc2e2dd1b4713c23",
+      "image-labels": {
+         "containers.bootc": "1",
+         "coreos-assembler.image-config-checksum": "b444a32e2801642f1e41777fd51fa53304496c58a3a6b15e5964a1f86f866507",
+         "coreos-assembler.image-input-checksum": "c8631940e11a7a61d793271d4fe1c3fc2e1dbb70b7233f7b5766b22d13ec1b4a",
+         "io.openshift.build.version-display-names": "machine-os=Red Hat Enterprise Linux CoreOS",
+         "io.openshift.build.versions": "machine-os=418.94.202508060022-0",
+         "org.opencontainers.image.revision": "96f1c70f3498be6011a9c7135ad4de9ff6cc3fee",
+         "org.opencontainers.image.source": "https://github.com/openshift/os",
+         "org.opencontainers.image.version": "418.94.202508060022-0",
+         "ostree.bootable": "true",
+         "ostree.commit": "9e057f59da83359b6151f70b7c2ef2a0f0e9f9dd927898d18249ac789c42d7ae",
+         "ostree.final-diffid": "sha256:12787d84fa137cd5649a9005efe98ec9d05ea46245fdc50aecb7dd007f2035b1",
+         "ostree.linux": "5.14.0-427.81.1.el9_4.x86_64",
+         "rpmostree.inputhash": "754102d802c1f7d1619dd922c6484b6bdce447f2096cfdbe6c88edc233abf46b"
+      },
+      "image-name": "oci-archive:/rhcos-418.94.202508060022-0-ostree.x86_64.ociarchive"
+   },
+   "osbuild-version": "147",
+   "ostree-commit": "9e057f59da83359b6151f70b7c2ef2a0f0e9f9dd927898d18249ac789c42d7ae",
+   "ref": "docker://ostree-image-signed:oci-archive:/rhcos-418.94.202508060022-0-ostree.x86_64.ociarchive",
+   "version": "418.94.202508060022-0"
+}
+I0729 07:23:21.111837   10418 coreos.go:70] Ignition provisioning: time=2026-07-03T06:19:54Z
+I0729 07:23:21.111843   10418 image_manager_helper.go:92] Running captured: journalctl --list-boots
+I0729 07:23:21.148698   10418 daemon.go:1773] journalctl --list-boots:
+IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY
+-14 99dabf972f3a4af194148f5b2ab08707 Sun 2026-07-19 14:03:45 UTC Mon 2026-07-20 10:45:53 UTC
+-13 b0c7735bd7e446e58fcf7c09a71d0871 Mon 2026-07-20 10:49:06 UTC Mon 2026-07-20 10:55:31 UTC
+-12 3daf43db1b6644baa6bd6128421863c6 Mon 2026-07-20 10:58:43 UTC Tue 2026-07-21 11:50:49 UTC
+-11 a1cd6e2862ed4d6eb8be0ce950a8fae1 Tue 2026-07-21 11:54:17 UTC Tue 2026-07-21 12:13:52 UTC
+-10 80323c8f038a4e7d90d2d211734b4a16 Tue 2026-07-21 12:17:08 UTC Fri 2026-07-24 05:57:14 UTC
+ -9 0a54674aba0540d1aa669f60d6c3e32d Fri 2026-07-24 06:00:48 UTC Fri 2026-07-24 09:22:37 UTC
+ -8 e6e1e14672d5419fa98019e026e0ec58 Fri 2026-07-24 09:25:56 UTC Mon 2026-07-27 08:00:47 UTC
+ -7 db62d56bd5bd49b98326a37e62a33a51 Mon 2026-07-27 08:04:36 UTC Mon 2026-07-27 09:26:08 UTC
+ -6 c9396558c0054a1e96daf07c841721bc Mon 2026-07-27 09:29:07 UTC Mon 2026-07-27 09:44:49 UTC
+ -5 ce85ba59e076428aa75684cb3c6323e2 Mon 2026-07-27 09:47:23 UTC Tue 2026-07-28 05:42:14 UTC
+ -4 ae39a788bea8471ba170b9e8f4f65b01 Tue 2026-07-28 05:45:23 UTC Wed 2026-07-29 06:22:41 UTC
+ -3 1428dc4ea55c421991b9ccbe734c5a4a Wed 2026-07-29 06:25:55 UTC Wed 2026-07-29 06:35:22 UTC
+ -2 a957018ab44942d2818c91380fb9ecc5 Wed 2026-07-29 06:38:31 UTC Wed 2026-07-29 07:04:54 UTC
+ -1 8430723d69b94138a1ef2399e1a22689 Wed 2026-07-29 07:08:07 UTC Wed 2026-07-29 07:15:21 UTC
+  0 6a64f1bdadc04d3a897aaee142ce7e8b Wed 2026-07-29 07:18:24 UTC Wed 2026-07-29 07:23:21 UTC
+I0729 07:23:21.148723   10418 image_manager_helper.go:92] Running captured: systemctl list-units --state=failed --no-legend
+I0729 07:23:21.173122   10418 daemon.go:1787] systemctl --failed:
+● chrony-wait.service                loaded failed failed Wait for chrony to synchronize system clock
+● NetworkManager-wait-online.service loaded failed failed Network Manager Wait Online
+I0729 07:23:21.173143   10418 daemon.go:1361] Starting MachineConfigDaemon
+I0729 07:23:21.173197   10418 daemon.go:1368] Enabling Kubelet Healthz Monitor
+I0729 07:23:21.204217   10418 daemon.go:2873] Found 9 requested local packages in the booted deployment
+I0729 07:23:21.204240   10418 daemon.go:2882] Unsupported package kernel-rt-core
+I0729 07:23:21.204244   10418 daemon.go:2882] Unsupported package kernel-rt-kvm
+I0729 07:23:21.204246   10418 daemon.go:2882] Unsupported package kernel-rt-modules
+I0729 07:23:21.204248   10418 daemon.go:2882] Unsupported package kernel-rt-modules-extra
+I0729 07:23:21.204251   10418 daemon.go:2882] Unsupported package kernel
+I0729 07:23:21.204252   10418 daemon.go:2882] Unsupported package kernel-core
+I0729 07:23:21.204254   10418 daemon.go:2882] Unsupported package kernel-modules
+I0729 07:23:21.204255   10418 daemon.go:2882] Unsupported package kernel-modules-core
+I0729 07:23:21.204257   10418 daemon.go:2882] Unsupported package kernel-modules-extra
+I0729 07:23:22.065350   10418 daemon.go:655] Node sno1.lab1.ocp.lan is part of the control plane
+I0729 07:23:22.133678   10418 daemon.go:1938] Running: /run/machine-config-daemon-bin/nmstatectl persist-nic-names --root / --kargs-out /tmp/nmstate-kargs4125856996 --cleanup
+[2026-07-29T07:23:22Z INFO  nmstatectl] Nmstate version: 2.2.48
+[2026-07-29T07:23:22Z INFO  nmstatectl::persist_nic] /etc/systemd/network does not exist, no need to clean up
+
+I0729 07:23:23.005736   10418 daemon.go:1600] Previous boot ostree-finalize-staged.service appears successful
+I0729 07:23:23.005763   10418 daemon.go:1717] Current+desired config: rendered-master-b45e8d1765e899e360eff85f3349861b
+I0729 07:23:23.005770   10418 daemon.go:1732] state: Done
+I0729 07:23:23.005798   10418 update.go:2725] Running: rpm-ostree cleanup -r
+Deployments unchanged.
+I0729 07:23:23.054026   10418 daemon.go:2136] Validating against current config rendered-master-b45e8d1765e899e360eff85f3349861b
+I0729 07:23:23.054292   10418 daemon.go:2048] SSH key location ("/home/core/.ssh/authorized_keys.d/ignition") up-to-date!
+I0729 07:23:23.054303   10418 image_manager_helper.go:92] Running captured: rpm-ostree kargs
+I0729 07:23:23.102891   10418 update.go:2770] "Validated on-disk state"
+I0729 07:23:23.105654   10418 daemon.go:2238] Completing update to target MachineConfig: rendered-master-b45e8d1765e899e360eff85f3349861b
+I0729 07:23:33.109475   10418 update.go:2770] "Update completed for config rendered-master-b45e8d1765e899e360eff85f3349861b and node has been successfully uncordoned"
+I0729 07:23:33.111349   10418 daemon.go:2263] In desired state MachineConfig: rendered-master-b45e8d1765e899e360eff85f3349861b
+I0729 07:23:33.124633   10418 config_drift_monitor.go:246] Config Drift Monitor started
+I0729 07:23:33.124701   10418 daemon.go:743] Transitioned from state:  -> Done
+I0729 07:24:21.205178   10418 certificate_writer.go:294] Certificate was synced from controllerconfig resourceVersion 1873296
+I0729 07:24:33.126535   10418 daemon.go:875] Starting health listener on 127.0.0.1:8798
+sno1@haproxy1:~/ocp-helm$ ssh core@sno1.lab1.ocp.lan
+Red Hat Enterprise Linux CoreOS 418.94.202508261658-0
+  Part of OpenShift 4.18, RHCOS is a Kubernetes-native operating system
+  managed by the Machine Config Operator (`clusteroperator/machine-config`).
+
+WARNING: Direct SSH access to machines is not recommended; instead,
+make configuration changes via `machineconfig` objects:
+  https://docs.openshift.com/container-platform/4.18/architecture/architecture-rhcos.html
+
+---
+Last login: Wed Jul 29 07:29:00 2026 from 72.1.1.18
+[systemd]
+Failed Units: 2
+  chrony-wait.service
+  NetworkManager-wait-online.service
+[core@sno1 ~]$ sudo -i
+[systemd]
+Failed Units: 2
+  chrony-wait.service
+  NetworkManager-wait-online.service
+[root@sno1 ~]# systemctl status kubelet
+● kubelet.service - Kubernetes Kubelet
+     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/kubelet.service.d
+             └─01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
+     Active: active (running) since Wed 2026-07-29 07:21:56 UTC; 13min ago
+   Main PID: 9216 (kubelet)
+      Tasks: 21 (limit: 3299467)
+     Memory: 87.1M
+        CPU: 36.197s
+     CGroup: /system.slice/kubelet.service
+             └─9216 /usr/bin/kubelet --config=/etc/kubernetes/kubelet.conf --bootstrap-kubeconfig=/etc/kubernetes/kubeconfig --kubeconfig=/var/lib/kubelet/kubeconfig --container-runtime-endpoint=/var/run/c>
+
+Jul 29 07:24:11 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:24:11.508398    9216 state_mem.go:80] "Updated desired CPUSet" podUID="5e5654bd-eae0-41bd-99d4-5e074c3cadea" containerName="kube-rbac-proxy" >
+Jul 29 07:24:11 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:24:11.513469    9216 state_mem.go:80] "Updated desired CPUSet" podUID="7972e830-6c0d-437d-9fa2-3632cad0f1cc" containerName="webhook-server" c>
+Jul 29 07:24:13 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:24:13.278487    9216 kubelet.go:2542] "SyncLoop (probe)" probe="startup" status="unhealthy" pod="openshift-storage/vg-manager-m8jlm"
+Jul 29 07:24:13 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:24:13.280453    9216 kubelet.go:2542] "SyncLoop (probe)" probe="startup" status="started" pod="openshift-storage/vg-manager-m8jlm"
+Jul 29 07:24:14 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:24:14.009312    9216 kubelet.go:2542] "SyncLoop (probe)" probe="readiness" status="" pod="openshift-storage/vg-manager-m8jlm"
+Jul 29 07:24:14 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:24:14.009959    9216 kubelet.go:2542] "SyncLoop (probe)" probe="readiness" status="ready" pod="openshift-storage/vg-manager-m8jlm"
+Jul 29 07:24:17 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:24:17.005461    9216 kubelet.go:2542] "SyncLoop (probe)" probe="readiness" status="ready" pod="openshift-dns/dns-default-lw7sk"
+Jul 29 07:24:43 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:24:43.299190    9216 kubelet.go:2542] "SyncLoop (probe)" probe="readiness" status="ready" pod="openshift-network-diagnostics/network-check-ta>
+Jul 29 07:26:19 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:26:19.063491    9216 kubelet.go:1505] "Image garbage collection succeeded"
+Jul 29 07:34:07 sno1.lab1.ocp.lan kubenswrapper[9216]: I0729 07:34:07.082647    9216 log.go:25] "Finished parsing log file" path="/var/log/pods/openshift-machine-config-operator_machine-config-daemon-qz495>
+
+[root@sno1 ~]#
