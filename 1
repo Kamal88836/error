@@ -1,122 +1,69 @@
-[root@sno1 ~]# cat  /etc/systemd/system/kubelet.service.d/20-nodenet.conf
-[Service]
-Environment="KUBELET_NODE_IP=2405:100:200:72:881e:df7b:f42e:9621" "KUBELET_NODE_IPS=2405:100:200:72:881e:df7b:f42e:9621,72.1.1.25"
-[root@sno1 ~]# systemctl cat kubelet
-# /etc/systemd/system/kubelet.service
-[Unit]
-Description=Kubernetes Kubelet
-Requires=crio.service kubelet-dependencies.target
-After=kubelet-dependencies.target
-After=ostree-finalize-staged.service
+This confirms the issue is not with the CRI-O service itself. The problem is that the generated node networking configuration (20-nodenet.conf) contains a stale IPv6 address.
 
-[Service]
-Type=notify
-ExecStartPre=/bin/mkdir --parents /etc/kubernetes/manifests
-ExecStartPre=-/usr/sbin/restorecon -ri /var/lib/kubelet/pod-resources /usr/local/bin/kubenswrapper /usr/bin/kubensenter
-Environment="KUBELET_NODE_IP=0.0.0.0"
-EnvironmentFile=/etc/os-release
-EnvironmentFile=-/etc/kubernetes/kubelet-workaround
-EnvironmentFile=-/etc/kubernetes/kubelet-env
-EnvironmentFile=/etc/node-sizing.env
+From your outputs:
 
-ExecStart=/usr/local/bin/kubenswrapper \
-    /usr/bin/kubelet \
-      --config=/etc/kubernetes/kubelet.conf \
-      --bootstrap-kubeconfig=/etc/kubernetes/kubeconfig \
-      --kubeconfig=/var/lib/kubelet/kubeconfig \
-      --container-runtime-endpoint=/var/run/crio/crio.sock \
-      --runtime-cgroups=/system.slice/crio.service \
-      --node-labels=node-role.kubernetes.io/control-plane,node-role.kubernetes.io/master,node.openshift.io/os_id=${ID} \
-      --node-ip=${KUBELET_NODE_IPS} \
-      --minimum-container-ttl-duration=6m0s \
-      --cloud-provider= \
-      --volume-plugin-dir=/etc/kubernetes/kubelet-plugins/volume/exec \
-       \
-      --hostname-override=${KUBELET_NODE_NAME} \
-      --provider-id=${KUBELET_PROVIDERID} \
-      --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-      --pod-infra-container-image=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:01dfbfa63c6a054c432b329ef61b460f97e35f9536a325ea6c79acad49775eb9 \
-      --system-reserved=cpu=${SYSTEM_RESERVED_CPU},memory=${SYSTEM_RESERVED_MEMORY},ephemeral-storage=${SYSTEM_RESERVED_ES} \
-      --v=${KUBELET_LOG_LEVEL}
+ip -6 addr:
 
-Restart=always
-RestartSec=10
+ens3f0: 2405:100:200:72::1:25
 
-[Install]
-WantedBy=multi-user.target
-
-# /etc/systemd/system/kubelet.service.d/01-kubens.conf
-# vim:set ft=systemd :
-#
-# This drop-in will enable any service built with this
-# github.com/containers/kubemntns library to properly join the mount namespace
-# managed by kubens.service
-#
-
-[Unit]
-After=kubens.service
-
-[Service]
-EnvironmentFile=-/run/kubens/env
+br-ex: 2405:100:200:72:50ed:ffbc:eea5:3135
 
 
-[root@sno1 ~]# systemctl cat crio
-# /usr/lib/systemd/system/crio.service
-[Unit]
-Description=Container Runtime Interface for OCI (CRI-O)
-Documentation=https://github.com/cri-o/cri-o
-Wants=network-online.target
-Before=kubelet.service
-After=network-online.target
+But 20-nodenet.conf contains:
 
-[Service]
-Type=notify
-EnvironmentFile=-/etc/sysconfig/crio
-Environment=GOTRACEBACK=crash
-ExecStart=/usr/bin/crio \
-          $CRIO_CONFIG_OPTIONS \
-          $CRIO_RUNTIME_OPTIONS \
-          $CRIO_STORAGE_OPTIONS \
-          $CRIO_NETWORK_OPTIONS \
-          $CRIO_METRICS_OPTIONS
-ExecReload=/bin/kill -s HUP $MAINPID
-TasksMax=infinity
-LimitNOFILE=1048576
-LimitNPROC=1048576
-LimitCORE=infinity
-OOMScoreAdjust=-999
-TimeoutStartSec=0
-Restart=on-failure
-RestartSec=10
+KUBELET_NODE_IP=2405:100:200:72:881e:df7b:f42e:9621
+CONTAINER_STREAM_ADDRESS=2405:100:200:72:881e:df7b:f42e:9621
 
-[Install]
-WantedBy=multi-user.target
-Alias=cri-o.service
 
-# /etc/systemd/system/crio.service.d/01-kubens.conf
-# vim:set ft=systemd :
-#
-# This drop-in will enable any service built with this
-# github.com/containers/kubemntns library to properly join the mount namespace
-# managed by kubens.service
-#
+That address does not exist anymore.
 
-[Unit]
-After=kubens.service
 
-[Service]
-EnvironmentFile=-/run/kubens/env
+---
 
-# /etc/systemd/system/crio.service.d/05-mco-ordering.conf
-[Unit]
-After=kubelet-dependencies.target
-Requires=kubelet-dependencies.target
+This is most likely an OpenShift node IP detection problem
 
-# /etc/systemd/system/crio.service.d/10-mco-default-madv.conf
-[Service]
-Environment="GODEBUG=x509ignoreCN=0,madvdontneed=1"
+The file 20-nodenet.conf is generated automatically by OpenShift. It should never contain an address that is no longer assigned to the node.
 
-# /etc/systemd/system/crio.service.d/10-mco-profile-unix-socket.conf
-[Service]
+Please run these commands next.
 
-[root@sno1 ~]#
+1. Check the current node IP annotations
+
+cat /etc/kubernetes/kubelet-env
+
+2. Check NetworkManager connection details
+
+nmcli connection show
+nmcli device show ens3f0
+
+3. Check the node IPs known by the kernel
+
+hostname -I
+ip -4 addr
+ip -6 route
+
+4. From the bastion (or once the API is reachable)
+
+oc get node sno1.lab1.ocp.lan -o yaml | grep -A20 addresses
+
+and
+
+oc get machineconfig 99-master-generated-kubelet -o yaml
+
+
+---
+
+Temporary recovery
+
+If you need to get the SNO cluster back online immediately, you can temporarily update both generated files to use the actual IPv6 address (2405:100:200:72::1:25), then:
+
+systemctl daemon-reload
+systemctl restart crio
+systemctl restart kubelet
+
+This should allow CRI-O and kubelet to start, but remember that this is only a temporary workaround because these files are managed by the Machine Config Operator and will be regenerated.
+
+What I suspect
+
+Based on all the evidence, the reboot triggered by the MachineConfig update caused the host to come up with a different IPv6 address (likely because of SLAAC/DHCPv6), while the generated node configuration still references the old IPv6 address. That mismatch is preventing both CRI-O and kubelet from starting normally.
+
+The outputs of kubelet-env, nmcli, and the Node object will tell us whether the stale IP came from Kubernetes, NetworkManager, or the generated MachineConfig.
