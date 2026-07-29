@@ -1,100 +1,60 @@
-This confirms the problem.
+[root@sno1 ~]# journalctl -u kubelet   -b -n 100
+Jul 29 08:42:45 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:45.693117   13133 event.go:368] "Unable to write event (may retry after sleeping)" err="Post \"https://api-int.lab1.ocp.lan:6443/api/v1/n>
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.104393   13133 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.104447   13133 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:46.104893   13133 kubelet_node_status.go:756] "Failed to set some node status fields" err="failed to validate nodeIP: node IP: \"2405:100>
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:46.105001   13133 kubelet_node_status.go:756] "Failed to set some node status fields" err="failed to validate nodeIP: node IP: \"2405:100>
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.105240   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientMemory"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.105264   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasNoDiskPressure"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.105270   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientPID"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.105273   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientMemory"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.105284   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasNoDiskPressure"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.105292   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientPID"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.105535   13133 scope.go:117] "RemoveContainer" containerID="209b1d280fcc2e6cd7afecfa79decaae06308de10ce9f649c68f3ef90fbd5a0c"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.106151   13133 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:46.106544   13133 kubelet_node_status.go:756] "Failed to set some node status fields" err="failed to validate nodeIP: node IP: \"2405:100>
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.107022   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientMemory"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.107039   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasNoDiskPressure"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:46.107046   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientPID"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:46.107130   13133 kuberuntime_manager.go:1274] "Unhandled Error" err=<
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:         container &Container{Name:kube-apiserver,Image:quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:e55c4a7a3adf49163efea992ab8d48b7c0513dfb>
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:         # We should be able to acquire the lock immediatelly. If not, it means the init container has not released it yet and kubelet or CRI-O starte>
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:         exec {LOCK_FD}>${LOCK} && flock --verbose -w 30 "${LOCK_FD}" || {
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:           echo "Failed to acquire lock for kube-apiserver. Please check setup container for details. This is likely kubelet or CRI-O bug."
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:           exit 1
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:         }
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:         if [ -f /etc/kubernetes/static-pod-certs/configmaps/trusted-ca-bundle/ca-bundle.crt ]; then
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:           echo "Copying system trust bundle ..."
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:           cp -f /etc/kubernetes/static-pod-certs/configmaps/trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:         fi
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:         exec watch-termination --termination-touch-file=/var/log/kube-apiserver/.terminating --termination-log-file=/var/log/kube-apiserver/terminati>
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:         ],WorkingDir:,Ports:[]ContainerPort{ContainerPort{Name:,HostPort:6443,ContainerPort:6443,Protocol:TCP,HostIP:,},},Env:[]EnvVar{EnvVar{Name:PO>
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]:  > logger="UnhandledError"
+Jul 29 08:42:46 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:46.183646   13133 pod_workers.go:1301] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"kube-apiserver\" with Create>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.107726   13133 log.go:25] "Finished parsing log file" path="/var/log/pods/openshift-kube-apiserver_kube-apiserver-sno1.lab1.ocp.lan_d5>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.108071   13133 log.go:25] "Finished parsing log file" path="/var/log/pods/openshift-kube-apiserver_kube-apiserver-sno1.lab1.ocp.lan_d5>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.109201   13133 generic.go:334] "Generic (PLEG): container finished" podID="d54b726d173b81e7b67a865fe7e3c97d" containerID="a0dc544dea74>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.109222   13133 kubelet.go:2453] "SyncLoop (PLEG): event for pod" pod="openshift-kube-apiserver/kube-apiserver-sno1.lab1.ocp.lan" event>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.109251   13133 scope.go:117] "RemoveContainer" containerID="209b1d280fcc2e6cd7afecfa79decaae06308de10ce9f649c68f3ef90fbd5a0c"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.109356   13133 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:47.110043   13133 kubelet_node_status.go:756] "Failed to set some node status fields" err="failed to validate nodeIP: node IP: \"2405:100>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.110528   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientMemory"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.110548   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasNoDiskPressure"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.110554   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientPID"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.110830   13133 scope.go:117] "RemoveContainer" containerID="a0dc544dea74e95ef476a61328b18eb6c0baa1b81c189612da6234986f9810bb"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.112418   13133 kubelet_node_status.go:401] "Setting node annotation to enable volume controller attach/detach"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:47.112814   13133 kubelet_node_status.go:756] "Failed to set some node status fields" err="failed to validate nodeIP: node IP: \"2405:100>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.113072   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientMemory"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.113091   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasNoDiskPressure"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: I0729 08:42:47.113098   13133 kubelet_node_status.go:724] "Recording event message for node" node="sno1.lab1.ocp.lan" event="NodeHasSufficientPID"
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]: E0729 08:42:47.113196   13133 kuberuntime_manager.go:1274] "Unhandled Error" err=<
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]:         container &Container{Name:kube-apiserver,Image:quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:e55c4a7a3adf49163efea992ab8d48b7c0513dfb>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]:         # We should be able to acquire the lock immediatelly. If not, it means the init container has not released it yet and kubelet or CRI-O starte>
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]:         exec {LOCK_FD}>${LOCK} && flock --verbose -w 30 "${LOCK_FD}" || {
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]:           echo "Failed to acquire lock for kube-apiserver. Please check setup container for details. This is likely kubelet or CRI-O bug."
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]:           exit 1
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]:         }
+Jul 29 08:42:47 sno1.lab1.ocp.lan kubenswrapper[13133]:         if [ -f /etc/kubernetes/static-pod-certs/configmaps/trusted-ca-bundle/ca-bundle.crt ]; then
 
-Root cause
-
-Your configured IPv6 address and the actual IPv6 address do not match.
-
-Configured by MachineConfig (20-nodenet.conf)
-
-CONTAINER_STREAM_ADDRESS=2405:100:200:72:881e:df7b:f42e:9621
-KUBELET_NODE_IP=2405:100:200:72:881e:df7b:f42e:9621
-
-Actual IPv6 addresses on the node
-
-ens3f0:
-2405:100:200:72::1:25
-
-br-ex:
-2405:100:200:72:50ed:ffbc:eea5:3135
-
-The address:
-
-2405:100:200:72:881e:df7b:f42e:9621
-
-does not exist on the node, so CRI-O fails with:
-
-bind: cannot assign requested address
-
-
----
-
-Why did this happen?
-
-The file:
-
-/etc/systemd/system/crio.service.d/20-nodenet.conf
-
-was generated by the Machine Config Operator. It should contain the node's current IP address.
-
-Instead, it contains a stale IPv6 address that existed previously.
-
-This is typically caused by one of the following:
-
-the node's IPv6 address changed after reboot (SLAAC/DHCPv6),
-
-a NetworkManager configuration changed,
-
-or the Node Networking Operator (nodenet) generated the MachineConfig using an outdated address.
-
-
-
----
-
-Let's find who generated it
-
-Please run these commands from your bastion (using oc, since the API should be available once it comes back):
-
-oc get machineconfig 99-master-generated-kubelet -o yaml
-
-oc get machineconfig 01-master-kubelet -o yaml
-
-oc get machineconfig rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21 -o yaml
-
-Also check:
-
-oc get node sno1.lab1.ocp.lan -o yaml | grep -A5 addresses
-
-I'm interested in what IPv6 address Kubernetes believes the node should have.
-
-
----
-
-Temporary recovery (only if you need to bring the cluster up)
-
-Since this is a MachineConfig-managed file, do not permanently edit it because the MCO will overwrite it.
-
-However, to recover the cluster for troubleshooting, you can temporarily change:
-
-vi /etc/systemd/system/crio.service.d/20-nodenet.conf
-
-Replace:
-
-CONTAINER_STREAM_ADDRESS=2405:100:200:72:881e:df7b:f42e:9621
-
-with the actual interface address, for example:
-
-CONTAINER_STREAM_ADDRESS=2405:100:200:72::1:25
-
-Then reload and start CRI-O:
-
-systemctl daemon-reload
-systemctl restart crio
-systemctl restart kubelet
-
-This is only a temporary workaround to restore the node. The real fix is to identify why the MachineConfig generated the wrong 20-nodenet.conf.
-
-One question
-
-Before this reboot, was 2405:100:200:72:881e:df7b:f42e:9621 the node's IPv6 address?
-
-If yes, then the reboot caused the host to obtain a new IPv6 address (2405:100:200:72::1:25), but the MachineConfig still references the old one. That would explain the behavior exactly.
+[root@sno1 ~]#
