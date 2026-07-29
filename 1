@@ -37,3 +37,300 @@ sno1@haproxy1:~/ocp-helm$ oc get sriovnetworknodestate -A
 NAMESPACE                          NAME                SYNC STATUS   DESIRED SYNC STATE   CURRENT SYNC STATE   AGE
 openshift-sriov-network-operator   sno1.lab1.ocp.lan   InProgress    Reboot_Required      Draining             7d23h
 sno1@haproxy1:~/ocp-helm$
+sno1@haproxy1:~/ocp-helm$ oc describe sriovnetworknodestate -n openshift-sriov-network-operator
+Name:         sno1.lab1.ocp.lan
+Namespace:    openshift-sriov-network-operator
+Labels:       <none>
+Annotations:  sriovnetwork.openshift.io/current-state: Draining
+              sriovnetwork.openshift.io/desired-state: Reboot_Required
+API Version:  sriovnetwork.openshift.io/v1
+Kind:         SriovNetworkNodeState
+Metadata:
+  Creation Timestamp:  2026-07-21T10:26:13Z
+  Generation:          9
+  Owner References:
+    API Version:           sriovnetwork.openshift.io/v1
+    Block Owner Deletion:  true
+    Controller:            true
+    Kind:                  SriovOperatorConfig
+    Name:                  default
+    UID:                   471fb668-f3c6-48fd-8da3-6df8607032ce
+  Resource Version:        3392438
+  UID:                     0a3fd183-47da-4eeb-848a-09c8429ab130
+Spec:
+  Bridges:
+  Interfaces:
+    Mtu:          9000
+    Name:         ens1f0
+    Num Vfs:      16
+    Pci Address:  0000:11:00.0
+    Vf Groups:
+      Device Type:    vfio-pci
+      Mtu:            9000
+      Policy Name:    policy-ens1f0-bh0u
+      Resource Name:  pci_sriov_net_bh0u
+      Vf Range:       0-1
+      Device Type:    netdevice
+      Mtu:            9000
+      Policy Name:    policy-ens1f0-bh0c
+      Resource Name:  pci_sriov_net_bh0c
+      Vf Range:       2-3
+    Mtu:              9000
+    Name:             ens1f3
+    Num Vfs:          16
+    Pci Address:      0000:11:00.3
+    Vf Groups:
+      Device Type:    vfio-pci
+      Mtu:            9000
+      Policy Name:    policy-ens1f3-bh0u-1
+      Resource Name:  pci_sriov_net_bh0u_1
+      Vf Range:       0-1
+      Device Type:    netdevice
+      Mtu:            9000
+      Policy Name:    policy-ens1f3-bh0c-1
+      Resource Name:  pci_sriov_net_bh0c_1
+      Vf Range:       2-3
+    Mtu:              9000
+    Name:             ens6f0
+    Num Vfs:          16
+    Pci Address:      0000:84:00.0
+    Vf Groups:
+      Device Type:    vfio-pci
+      Mtu:            9000
+      Policy Name:    policy-ens6f0-bh0u-3
+      Resource Name:  pci_sriov_net_bh0u_3
+      Vf Range:       2-3
+      Device Type:    vfio-pci
+      Mtu:            9000
+      Policy Name:    policy-ens6f0-bh0u-2
+      Resource Name:  pci_sriov_net_bh0u_2
+      Vf Range:       0-1
+    Mtu:              9000
+    Name:             ens6f3
+    Num Vfs:          16
+    Pci Address:      0000:84:00.3
+    Vf Groups:
+      Device Type:    vfio-pci
+      Mtu:            9000
+      Policy Name:    policy-ens6f3-bh0u-3-1
+      Resource Name:  pci_sriov_net_bh0u_3_1
+      Vf Range:       2-3
+      Device Type:    vfio-pci
+      Mtu:            9000
+      Policy Name:    policy-ens6f3-bh0u-2-1
+      Resource Name:  pci_sriov_net_bh0u_2_1
+      Vf Range:       0-1
+  System:
+Status:
+  Bridges:
+  Interfaces:
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        25000 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:62:d5:38
+    Mtu:               8500
+    Name:              ens3f0
+    Pci Address:       0000:0f:00.0
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:62:d5:39
+    Mtu:               1500
+    Name:              ens3f1
+    Pci Address:       0000:0f:00.1
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:62:d5:3a
+    Mtu:               1500
+    Name:              ens3f2
+    Pci Address:       0000:0f:00.2
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        25000 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:62:d5:3b
+    Mtu:               1500
+    Name:              ens3f3
+    Pci Address:       0000:0f:00.3
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        25000 Mb/s
+    Link Type:         ETH
+    Mac:               50:7c:6f:4b:9d:9c
+    Mtu:               1500
+    Name:              ens1f0
+    Pci Address:       0000:11:00.0
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               50:7c:6f:4b:9d:9d
+    Mtu:               1500
+    Name:              ens1f1
+    Pci Address:       0000:11:00.1
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               50:7c:6f:4b:9d:9e
+    Mtu:               1500
+    Name:              ens1f2
+    Pci Address:       0000:11:00.2
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               50:7c:6f:4b:9d:9f
+    Mtu:               1500
+    Name:              ens1f3
+    Pci Address:       0000:11:00.3
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        25000 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:63:5f:44
+    Mtu:               1500
+    Name:              ens6f0
+    Pci Address:       0000:84:00.0
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:63:5f:45
+    Mtu:               1500
+    Name:              ens6f1
+    Pci Address:       0000:84:00.1
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:63:5f:46
+    Mtu:               1500
+    Name:              ens6f2
+    Pci Address:       0000:84:00.2
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        25000 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:63:5f:47
+    Mtu:               1500
+    Name:              ens6f3
+    Pci Address:       0000:84:00.3
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        25000 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:63:04:ac
+    Mtu:               1500
+    Name:              ens4f0
+    Pci Address:       0000:86:00.0
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:63:04:ad
+    Mtu:               1500
+    Name:              ens4f1
+    Pci Address:       0000:86:00.1
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:63:04:ae
+    Mtu:               1500
+    Name:              ens4f2
+    Pci Address:       0000:86:00.2
+    Totalvfs:          64
+    Vendor:            8086
+    Device ID:         1593
+    Driver:            ice
+    E Switch Mode:     legacy
+    Link Admin State:  up
+    Link Speed:        -1 Mb/s
+    Link Type:         ETH
+    Mac:               6c:fe:54:63:04:af
+    Mtu:               1500
+    Name:              ens4f3
+    Pci Address:       0000:86:00.3
+    Totalvfs:          64
+    Vendor:            8086
+  Sync Status:         InProgress
+  System:
+    Rdma Mode:  shared
+Events:
+  Type     Reason             Age                 From             Message
+  ----     ------             ----                ----             -------
+  Normal   ConfigDaemonStart  179m                config-daemon    Config Daemon starting
+  Normal   SyncStatusChanged  179m                config-daemon    Status changed from: InProgress to: Unknown
+  Normal   SyncStatusChanged  179m                config-daemon    Status changed from: Unknown to: InProgress
+  Normal   ConfigDaemonStart  139m                config-daemon    Config Daemon starting
+  Normal   SyncStatusChanged  139m                config-daemon    Status changed from: InProgress to: Unknown
+  Normal   SyncStatusChanged  139m                config-daemon    Status changed from: Unknown to: InProgress
+  Normal   ConfigDaemonStart  34m                 config-daemon    Config Daemon starting
+  Normal   SyncStatusChanged  34m                 config-daemon    Status changed from: InProgress to: Unknown
+  Normal   SyncStatusChanged  34m                 config-daemon    Status changed from: Unknown to: InProgress
+  Warning  DrainController    28m (x12 over 29m)  SR-IOV operator  node drain operation was not completed
+sno1@haproxy1:~/ocp-helm$
+
