@@ -1,69 +1,69 @@
-Thanks. These outputs are very helpful.
-
-What they tell us
-
-Your node configuration looks correct:
-
-ipv6.method: manual ✅
-
-ipv6.addresses: 2405:100:200:72::1:25/64 ✅
-
-use_tempaddr = 0 ✅ (temporary/privacy IPv6 addresses are disabled)
-
-ipv6.addr-gen-mode: default-or-eui64 ✅
-
-
-So NetworkManager is not randomly generating a new IPv6 address.
-
-The OpenShift cluster configuration is also normal:
-
-Dual-stack OVNKubernetes
-
-Platform: None (bare metal)
-
-Nothing unusual in the cluster network configuration.
-
-
-The interesting part
-
-Earlier, the generated files contained:
-
-KUBELET_NODE_IP=2405:100:200:72:881e:df7b:f42e:9621
-CONTAINER_STREAM_ADDRESS=2405:100:200:72:881e:df7b:f42e:9621
-
-After a manual reboot, they became:
-
-KUBELET_NODE_IP=72.1.1.25
-KUBELET_NODE_IPS=72.1.1.25,2405:100:200:72::1:25
-CONTAINER_STREAM_ADDRESS=72.1.1.25
-
-That means something regenerated 20-nodenet.conf between the two boots.
-
-This is not expected if the node configuration is stable.
-
-I suspect the first reboot happened before networking was fully initialized
-
-The first boot likely generated the node networking drop-ins using an incorrect detected IPv6 address. After the second reboot, when networking came up cleanly, the Machine Config Daemon regenerated the files with the correct addresses.
-
-The next thing to verify
-
-Please check whether the problem recurs and whether the drop-in is regenerated.
-
-After the next reboot, if the issue happens again, before changing anything manually, collect these:
-
-cat /etc/systemd/system/kubelet.service.d/20-nodenet.conf
-cat /etc/systemd/system/crio.service.d/20-nodenet.conf
-journalctl -b -u machine-config-daemon
-journalctl -b -u NetworkManager
-
-The Machine Config Daemon and NetworkManager logs from the failed boot are the key to understanding why the stale address was written.
-
-One more question
-
-Did this problem start only after applying the latest MachineConfig/PerformanceProfile update, or has this SNO always shown this behavior on every reboot?
-
-That distinction will tell us whether we're looking at:
-
-a regression introduced by the recent MachineConfig update, or
-
-an underlying node networking issue that has existed since installation.
+[root@sno1 ~]# cat /etc/systemd/system/kubelet.service.d/20-nodenet.conf
+[Service]
+Environment="KUBELET_NODE_IP=72.1.1.25" "KUBELET_NODE_IPS=72.1.1.25,2405:100:200:72::1:25"
+[root@sno1 ~]# cat /etc/systemd/system/crio.service.d/20-nodenet.conf
+[Service]
+Environment="CONTAINER_STREAM_ADDRESS=72.1.1.25"
+[root@sno1 ~]# journalctl -b -u machine-config-daemon
+-- No entries --
+[root@sno1 ~]# .journalctl -b -u NetworkManager
+-bash: .journalctl: command not found
+[root@sno1 ~]# journalctl -b -u NetworkManager
+Jul 29 09:04:18 sno1.lab1.ocp.lan systemd[1]: Starting Network Manager...
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.6617] NetworkManager (version 1.46.0-33.el9_4) is starting... (boot:f7a76a52-804b-4ba0-8148-ab1630c962bd)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.6621] Read config: /etc/NetworkManager/NetworkManager.conf (lib: 10-disable-default-plugins.conf, 20-client-id-from-mac.conf) (ru>
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.6770] manager[0x563449956080]: monitoring kernel firmware directory '/lib/firmware'.
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7413] hostname: hostname: using hostnamed
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7414] hostname: static hostname changed from (none) to "sno1.lab1.ocp.lan"
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7427] dns-mgr: init: dns=default,systemd-resolved rc-manager=symlink (auto)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7503] manager[0x563449956080]: rfkill: Wi-Fi hardware radio set enabled
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7503] manager[0x563449956080]: rfkill: WWAN hardware radio set enabled
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7546] Loaded device plugin: NMOvsFactory (/usr/lib64/NetworkManager/1.46.0-33.el9_4/libnm-device-plugin-ovs.so)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7579] Loaded device plugin: NMTeamFactory (/usr/lib64/NetworkManager/1.46.0-33.el9_4/libnm-device-plugin-team.so)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7579] manager: rfkill: Wi-Fi enabled by radio killswitch; enabled by state file
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7586] manager: rfkill: WWAN enabled by radio killswitch; enabled by state file
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7587] manager: Networking is enabled by state file
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7603] settings: Loaded settings plugin: keyfile (internal)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7632] settings: Loaded settings plugin: ifcfg-rh ("/usr/lib64/NetworkManager/1.46.0-33.el9_4/libnm-settings-plugin-ifcfg-rh.so")
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <warn>  [1785315858.7637] keyfile: ipv6.dns: ignoring invalid DNS server IPv6 address '22405:100:200:72::1:17'
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7651] dhcp: init: Using DHCP client 'internal'
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7653] manager: (lo): new Loopback device (/org/freedesktop/NetworkManager/Devices/1)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7659] device (lo): state change: unmanaged -> unavailable (reason 'connection-assumed', sys-iface-state: 'external')
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7661] device (lo): state change: unavailable -> disconnected (reason 'connection-assumed', sys-iface-state: 'external')
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7665] device (lo): Activation: starting connection 'lo' (4000ab0e-e67b-47ce-b2bd-87fc8f0027c2)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7668] manager: (br-int): new Open vSwitch Interface device (/org/freedesktop/NetworkManager/Devices/2)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7673] manager: (ens10f0): new Ethernet device (/org/freedesktop/NetworkManager/Devices/3)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7679] settings: (ens10f0): created default wired connection 'Wired connection 1'
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.7679] device (ens10f0): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.8199] manager: (ens10f1): new Ethernet device (/org/freedesktop/NetworkManager/Devices/4)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.8205] settings: (ens10f1): created default wired connection 'Wired connection 2'
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.8206] device (ens10f1): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.8737] manager: (ens10f2): new Ethernet device (/org/freedesktop/NetworkManager/Devices/5)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.8743] settings: (ens10f2): created default wired connection 'Wired connection 3'
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.8744] device (ens10f2): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.9281] manager: (ens10f3): new Ethernet device (/org/freedesktop/NetworkManager/Devices/6)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.9286] settings: (ens10f3): created default wired connection 'Wired connection 4'
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.9287] device (ens10f3): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.9815] manager: (ens1f0): new Ethernet device (/org/freedesktop/NetworkManager/Devices/7)
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.9820] settings: (ens1f0): created default wired connection 'Wired connection 5'
+Jul 29 09:04:18 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315858.9820] device (ens1f0): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.0830] manager: (ens1f1): new Ethernet device (/org/freedesktop/NetworkManager/Devices/8)
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.0836] settings: (ens1f1): created default wired connection 'Wired connection 6'
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.0836] device (ens1f1): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.1811] manager: (ens1f2): new Ethernet device (/org/freedesktop/NetworkManager/Devices/9)
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.1817] settings: (ens1f2): created default wired connection 'Wired connection 7'
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.1817] device (ens1f2): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.3820] manager: (ens1f3): new Ethernet device (/org/freedesktop/NetworkManager/Devices/10)
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.3826] settings: (ens1f3): created default wired connection 'Wired connection 8'
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.3826] device (ens1f3): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.4949] manager: (ens3f0): new Ethernet device (/org/freedesktop/NetworkManager/Devices/11)
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.4951] device (ens3f0): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.5965] manager: (ens3f1): new Ethernet device (/org/freedesktop/NetworkManager/Devices/12)
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.5971] settings: (ens3f1): created default wired connection 'Wired connection 9'
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.5972] device (ens3f1): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.6925] manager: (ens3f2): new Ethernet device (/org/freedesktop/NetworkManager/Devices/13)
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.6931] settings: (ens3f2): created default wired connection 'Wired connection 10'
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.6931] device (ens3f2): state change: unmanaged -> unavailable (reason 'managed', sys-iface-state: 'external')
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.7963] manager: (ens4f0): new Ethernet device (/org/freedesktop/NetworkManager/Devices/14)
+Jul 29 09:04:19 sno1.lab1.ocp.lan NetworkManager[3148]: <info>  [1785315859.7969] settings: (ens4f0): created default wired connection 'Wired connection 11'
+lines 1-57
