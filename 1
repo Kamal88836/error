@@ -1,149 +1,91 @@
-Thanks. These logs make the issue much clearer.
-
-What looks healthy
-
-✅ CRI-O is running.
-
-✅ Kubelet is running.
-
-✅ The node is Ready:
-
-Ready,SchedulingDisabled
-
-✅ Machine Config Daemon is healthy.
-
-✅ MCD reports:
-
-Current+desired config: rendered-master-b45e8d1765e899e360eff85f3349861b
-state: Done
-Update completed...
-In desired state MachineConfig...
-
-✅ No MachineConfig drift or degradation.
-
-
-So the node itself has successfully applied the MachineConfig.
-
-
----
-
-What is still wrong
-
-Your MCP shows:
-
-Generation: 17
-Observed Generation: 16
-
-and
-
-Updated=False
-ReadyMachineCount=0
-
-This is inconsistent with the actual node state (Ready).
-
-Also notice:
-
-machine-config-controller   0/2 Pending
-machine-config-operator     0/2 Pending
-
-These are the real problem.
-
-Without the machine-config-operator and machine-config-controller pods running, nobody updates the MCP status.
-
-That's why:
-
-ObservedGeneration never changes
-
-MCP still contains the old "Pool is paused" message
-
-ReadyMachineCount remains 0
-
-
-
----
-
-First check why they're Pending
-
-Run:
-
-oc describe pod -n openshift-machine-config-operator machine-config-controller-784d59cf85-cjfmf
-
-and
-
-oc describe pod -n openshift-machine-config-operator machine-config-operator-659c6fb5db-lfw27
-
-Pay attention to the Events section at the bottom.
-
-Common reasons are:
-
-PVC issues
-
-Insufficient CPU
-
-Taints
-
-Node affinity
-
-Image pull errors
-
-
-
----
-
-Also check the ClusterOperators
-
-Please run:
-
-oc get co
-
-Especially the status of:
-
-machine-config
-
-authentication
-
-console
-
-monitoring
-
-ingress
-
-dns
-
-
-
----
-
-Check scheduling
-
-Since the node shows:
-
-Ready,SchedulingDisabled
-
-verify whether it is still cordoned:
-
-oc get node
-oc adm manage-node sno1.lab1.ocp.lan --list-pods
-
-If it is unintentionally cordoned, uncordon it:
-
-oc adm uncordon sno1.lab1.ocp.lan
-
-
----
-
-I suspect one additional issue
-
-Your node is Ready, but the Machine Config Operator Deployment is Pending.
-
-On an SNO cluster, those deployments normally schedule on the master node.
-
-A very common cause is that the node has insufficient allocatable resources after enabling the RT kernel or PerformanceProfile, or there are strict CPU pinning/topology constraints preventing the pods from scheduling.
-
-The output of:
-
-oc describe pod -n openshift-machine-config-operator machine-config-operator-659c6fb5db-lfw27
-
-will confirm the exact reason within a few lines, usually under Events (for example, "Insufficient cpu", "node(s) didn't match PodTopologySpread", "untolerated taint", etc.).
-
-From everything you've shared so far, the MCP itself is not broken anymore—the remaining problem is almost certainly that the machine-config-operator and machine-config-controller pods are stuck in Pending, preventing the MCP status from being reconciled.
+sno1@haproxy1:~/ocp-helm$ oc describe pod -n openshift-machine-config-operator machine-config-operator-659c6fb5db-lfw27
+Name:                 machine-config-operator-659c6fb5db-lfw27
+Namespace:            openshift-machine-config-operator
+Priority:             2000000000
+Priority Class Name:  system-cluster-critical
+Service Account:      machine-config-operator
+Node:                 <none>
+Labels:               k8s-app=machine-config-operator
+                      pod-template-hash=659c6fb5db
+Annotations:          openshift.io/required-scc: anyuid
+                      openshift.io/scc: anyuid
+Status:               Pending
+IP:
+IPs:                  <none>
+Controlled By:        ReplicaSet/machine-config-operator-659c6fb5db
+Containers:
+  machine-config-operator:
+    Image:      quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:267c08aad5267e9d15e5f91788600b87ce134fa937458c874f732ac5dc3c1c41
+    Port:       <none>
+    Host Port:  <none>
+    Args:
+      start
+      --images-json=/etc/mco/images/images.json
+      --payload-version=4.18.23
+      --operator-image=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:267c08aad5267e9d15e5f91788600b87ce134fa937458c874f732ac5dc3c1c41
+    Requests:
+      cpu:     20m
+      memory:  50Mi
+    Environment:
+      RELEASE_VERSION:  4.18.23
+    Mounts:
+      /etc/mco/images from images (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-nxp5s (ro)
+  kube-rbac-proxy:
+    Image:      quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:05ea4625eec55253f86b454dec2742638bd4f4993d2ba0d5422e8d7beaef864b
+    Port:       9001/TCP
+    Host Port:  0/TCP
+    Args:
+      --secure-listen-address=0.0.0.0:9001
+      --config-file=/etc/kube-rbac-proxy/config-file.yaml
+      --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+      --upstream=http://127.0.0.1:8797
+      --logtostderr=true
+      --tls-cert-file=/etc/tls/private/tls.crt
+      --tls-private-key-file=/etc/tls/private/tls.key
+    Requests:
+      cpu:        20m
+      memory:     50Mi
+    Environment:  <none>
+    Mounts:
+      /etc/kube-rbac-proxy from auth-proxy-config (rw)
+      /etc/tls/private from proxy-tls (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-nxp5s (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False
+Volumes:
+  images:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      machine-config-operator-images
+    Optional:  false
+  proxy-tls:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  mco-proxy-tls
+    Optional:    false
+  auth-proxy-config:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      kube-rbac-proxy
+    Optional:  false
+  kube-api-access-nxp5s:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+    ConfigMapName:           openshift-service-ca.crt
+    ConfigMapOptional:       <nil>
+QoS Class:                   Burstable
+Node-Selectors:              node-role.kubernetes.io/master=
+Tolerations:                 node-role.kubernetes.io/master:NoSchedule op=Exists
+                             node.kubernetes.io/memory-pressure:NoSchedule op=Exists
+                             node.kubernetes.io/not-ready:NoExecute op=Exists for 120s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 120s
+Events:
+  Type     Reason            Age                  From               Message
+  ----     ------            ----                 ----               -------
+  Warning  FailedScheduling  129m                 default-scheduler  0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling  119m (x2 over 124m)  default-scheduler  0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling  85m (x2 over 90m)    default-scheduler  0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+  Warning  FailedScheduling  25m (x6 over 50m)    default-scheduler  0/1 nodes are available: 1 node(s) were unschedulable. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+sno1@haproxy1:~/ocp-helm$
