@@ -1,84 +1,86 @@
-Thanks, this output changes the diagnosis.
+no1@haproxy1:~/ocp-helm$ oc get machineconfig | grep -i sriov
+sno1@haproxy1:~/ocp-helm$ oc describe node sno1.lab1.ocp.lan | tail -50
+  openshift-sriov-network-operator        operator-webhook-92w6q                        10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         7d23h
+  openshift-sriov-network-operator        sriov-device-plugin-gsv7c                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         3d9h
+  openshift-sriov-network-operator        sriov-network-config-daemon-d2cwh             100m (0%)     0 (0%)      100Mi (0%)       0 (0%)         7d23h
+  openshift-storage                       vg-manager-m8jlm                              5m (0%)       0 (0%)      45Mi (0%)        0 (0%)         7d23h
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource                             Requests     Limits
+  --------                             --------     ------
+  cpu                                  1294m (1%)   10m (0%)
+  memory                               5812Mi (1%)  0 (0%)
+  ephemeral-storage                    0 (0%)       0 (0%)
+  hugepages-1Gi                        0 (0%)       0 (0%)
+  hugepages-2Mi                        0 (0%)       0 (0%)
+  openshift.io/pci_sriov_net_bh0c      0            0
+  openshift.io/pci_sriov_net_bh0c_1    0            0
+  openshift.io/pci_sriov_net_bh0c_2    0            0
+  openshift.io/pci_sriov_net_bh0c_2_1  0            0
+  openshift.io/pci_sriov_net_bh0u      0            0
+  openshift.io/pci_sriov_net_bh0u_1    0            0
+  openshift.io/pci_sriov_net_bh0u_2    0            0
+  openshift.io/pci_sriov_net_bh0u_2_1  0            0
+  openshift.io/pci_sriov_net_bh0u_3    0            0
+  openshift.io/pci_sriov_net_bh0u_3_1  0            0
+Events:
+  Type    Reason                   Age                    From                 Message
+  ----    ------                   ----                   ----                 -------
+  Normal  NodeSchedulable          4h1m                   kubelet              Node sno1.lab1.ocp.lan status is now: NodeSchedulable
+  Normal  NodeNotSchedulable       4h1m (x2 over 28h)     kubelet              Node sno1.lab1.ocp.lan status is now: NodeNotSchedulable
+  Normal  NodeAllocatableEnforced  3h24m                  kubelet              Updated Node Allocatable limit across pods
+  Normal  Starting                 3h24m                  kubelet              Starting kubelet.
+  Normal  NodeHasNoDiskPressure    3h24m (x8 over 3h24m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     3h24m (x7 over 3h24m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientPID
+  Normal  NodeHasSufficientMemory  3h24m (x8 over 3h24m)  kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientMemory
+  Normal  RegisteredNode           3h23m                  node-controller      Node sno1.lab1.ocp.lan event: Registered Node sno1.lab1.ocp.lan in Controller
+  Normal  NodeHasSufficientMemory  164m (x8 over 164m)    kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    164m (x8 over 164m)    kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasNoDiskPressure
+  Normal  NodeAllocatableEnforced  164m                   kubelet              Updated Node Allocatable limit across pods
+  Normal  Starting                 164m                   kubelet              Starting kubelet.
+  Normal  NodeHasSufficientPID     164m (x7 over 164m)    kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientPID
+  Normal  RegisteredNode           163m                   node-controller      Node sno1.lab1.ocp.lan event: Registered Node sno1.lab1.ocp.lan in Controller
+  Normal  NodeSchedulable          109m                   kubelet              Node sno1.lab1.ocp.lan status is now: NodeSchedulable
+  Normal  OSUpdateStaged           107m                   machineconfigdaemon  Changes to OS staged
+  Normal  Starting                 59m                    kubelet              Starting kubelet.
+  Normal  NodeHasSufficientMemory  59m (x8 over 59m)      kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    59m (x8 over 59m)      kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     59m (x7 over 59m)      kubelet              Node sno1.lab1.ocp.lan status is now: NodeHasSufficientPID
+  Normal  NodeAllocatableEnforced  59m                    kubelet              Updated Node Allocatable limit across pods
+  Normal  RegisteredNode           58m                    node-controller      Node sno1.lab1.ocp.lan event: Registered Node sno1.lab1.ocp.lan in Controller
+  Normal  NodeSchedulable          28m (x2 over 30m)      kubelet              Node sno1.lab1.ocp.lan status is now: NodeSchedulable
+  Normal  NodeNotSchedulable       28m (x3 over 52m)      kubelet              Node sno1.lab1.ocp.lan status is now: NodeNotSchedulable
 
-What we now know
-
-1. Master MCP is no longer paused
-
-Spec:
-  Paused: false
-
-So the oc patch worked.
 
 
-2. The MCO status is stale
-
-machine-config ... Failed to resync ... master was paused
-
-Since the MCP is already unpaused, this message should clear after the Machine Config Operator reconciles. It is not the primary blocker anymore.
-
-
-3. There is no pending SR-IOV MachineConfig
-
-oc get machineconfig | grep -i sriov
-
-returned nothing.
-
-
-4. The node is still cordoned
-
-Ready,SchedulingDisabled
-Unschedulable: true
-
-
-5. The SR-IOV NodeState is still stuck
-
-SYNC STATUS          InProgress
-DESIRED STATE        Reboot_Required
-CURRENT STATE        Draining
+  ", "MixedCPUsAllocation", "MultiArchInstallAzure", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PinnedImages", "PlatformOperators", "ProcMountType", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SignatureStores", "SigstoreImageVerification", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
+openshift-sriov-network-operator                   28m         Normal    Started                                      pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Started container sriov-network-operator
+openshift-sriov-network-operator                   28m         Normal    Created                                      pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Created container: sriov-network-operator
+openshift-sriov-network-operator                   28m         Normal    Pulled                                       pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Container image "registry.redhat.io/openshift4/ose-sriov-network-rhel9-operator@sha256:619c3e6fb81ff53367e6dd446c546bcb6babd45b688b6c7df00550e41c5b925b" already present on machine
+openshift-sriov-network-operator                   28m         Normal    AddedInterface                               pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Add eth0 [10.128.0.174/23 fd01:0:0:1::ae/64] from ovn-kubernetes
+openshift-machine-config-operator                  28m         Normal    FeatureGatesInitialized                      node/sno1.lab1.ocp.lan                                              FeatureGates updated to featuregates.Features{Enabled:[]v1.FeatureGateName{"AWSEFSDriverVolumeMetrics", "AdminNetworkPolicy", "AlibabaPlatform", "AzureWorkloadIdentity", "BareMetalLoadBalancer", "BuildCSIVolumes", "ChunkSizeMiB", "CloudDualStackNodeIPs", "DisableKubeletCloudCredentialProviders", "GCPLabelsTags", "HardwareSpeed", "IngressControllerLBSubnetsAWS", "KMSv1", "ManagedBootImages", "ManagedBootImagesAWS", "MultiArchInstallAWS", "MultiArchInstallGCP", "NetworkDiagnosticsConfig", "NetworkLiveMigration", "NetworkSegmentation", "NewOLM", "NodeDisruptionPolicy", "OnClusterBuild", "PersistentIPsForVirtualization", "PrivateHostedZoneAWS", "SetEIPForNLBIngressController", "VSphereControlPlaneMachineSet", "VSphereDriverConfiguration", "VSphereMultiVCenters", "VSphereStaticIPs", "ValidatingAdmissionPolicy"}, Disabled:[]v1.FeatureGateName{"AWSClusterHostedDNS", "AdditionalRoutingCapabilities", "AutomatedEtcdBackup", "BootcNodeManagement", "CSIDriverSharedResource", "ClusterAPIInstall", "ClusterAPIInstallIBMCloud", "ClusterMonitoringConfig", "ConsolePluginContentSecurityPolicy", "DNSNameResolver", "DynamicResourceAllocation", "EtcdBackendQuota", "EventedPLEG", "Example", "ExternalOIDC", "ExternalOIDCWithUIDAndExtraClaimMappings", "GCPClusterHostedDNS", "GatewayAPI", "ImageStreamImportMode", "IngressControllerDynamicConfigurationManager", "InsightsConfig", "InsightsConfigAPI", "InsightsOnDemandDataGather", "InsightsRuntimeExtractor", "MachineAPIMigration", "MachineAPIOperatorDisableMachineHealthCheckController", "MachineAPIProviderOpenStack", "MachineConfigNodes", "MaxUnavailableStatefulSet", "MetricsCollectionProfiles", "MinimumKubeletVersion", "MixedCPUsAllocation", "MultiArchInstallAzure", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PinnedImages", "PlatformOperators", "ProcMountType", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SignatureStores", "SigstoreImageVerification", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
+openshift-machine-config-operator                  28m         Normal    FeatureGatesInitialized                      node/sno1.lab1.ocp.lan                                              FeatureGates updated to featuregates.Features{Enabled:[]v1.FeatureGateName{"AWSEFSDriverVolumeMetrics", "AdminNetworkPolicy", "AlibabaPlatform", "AzureWorkloadIdentity", "BareMetalLoadBalancer", "BuildCSIVolumes", "ChunkSizeMiB", "CloudDualStackNodeIPs", "DisableKubeletCloudCredentialProviders", "GCPLabelsTags", "HardwareSpeed", "IngressControllerLBSubnetsAWS", "KMSv1", "ManagedBootImages", "ManagedBootImagesAWS", "MultiArchInstallAWS", "MultiArchInstallGCP", "NetworkDiagnosticsConfig", "NetworkLiveMigration", "NetworkSegmentation", "NewOLM", "NodeDisruptionPolicy", "OnClusterBuild", "PersistentIPsForVirtualization", "PrivateHostedZoneAWS", "SetEIPForNLBIngressController", "VSphereControlPlaneMachineSet", "VSphereDriverConfiguration", "VSphereMultiVCenters", "VSphereStaticIPs", "ValidatingAdmissionPolicy"}, Disabled:[]v1.FeatureGateName{"AWSClusterHostedDNS", "AdditionalRoutingCapabilities", "AutomatedEtcdBackup", "BootcNodeManagement", "CSIDriverSharedResource", "ClusterAPIInstall", "ClusterAPIInstallIBMCloud", "ClusterMonitoringConfig", "ConsolePluginContentSecurityPolicy", "DNSNameResolver", "DynamicResourceAllocation", "EtcdBackendQuota", "EventedPLEG", "Example", "ExternalOIDC", "ExternalOIDCWithUIDAndExtraClaimMappings", "GCPClusterHostedDNS", "GatewayAPI", "ImageStreamImportMode", "IngressControllerDynamicConfigurationManager", "InsightsConfig", "InsightsConfigAPI", "InsightsOnDemandDataGather", "InsightsRuntimeExtractor", "MachineAPIMigration", "MachineAPIOperatorDisableMachineHealthCheckController", "MachineAPIProviderOpenStack", "MachineConfigNodes", "MaxUnavailableStatefulSet", "MetricsCollectionProfiles", "MinimumKubeletVersion", "MixedCPUsAllocation", "MultiArchInstallAzure", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PinnedImages", "PlatformOperators", "ProcMountType", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SignatureStores", "SigstoreImageVerification", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
+openshift-cluster-storage-operator                 28m         Normal    FeatureGatesInitialized                      deployment/csi-snapshot-controller-operator                         FeatureGates updated to featuregates.Features{Enabled:[]v1.FeatureGateName{"AWSEFSDriverVolumeMetrics", "AdminNetworkPolicy", "AlibabaPlatform", "AzureWorkloadIdentity", "BareMetalLoadBalancer", "BuildCSIVolumes", "ChunkSizeMiB", "CloudDualStackNodeIPs", "DisableKubeletCloudCredentialProviders", "GCPLabelsTags", "HardwareSpeed", "IngressControllerLBSubnetsAWS", "KMSv1", "ManagedBootImages", "ManagedBootImagesAWS", "MultiArchInstallAWS", "MultiArchInstallGCP", "NetworkDiagnosticsConfig", "NetworkLiveMigration", "NetworkSegmentation", "NewOLM", "NodeDisruptionPolicy", "OnClusterBuild", "PersistentIPsForVirtualization", "PrivateHostedZoneAWS", "SetEIPForNLBIngressController", "VSphereControlPlaneMachineSet", "VSphereDriverConfiguration", "VSphereMultiVCenters", "VSphereStaticIPs", "ValidatingAdmissionPolicy"}, Disabled:[]v1.FeatureGateName{"AWSClusterHostedDNS", "AdditionalRoutingCapabilities", "AutomatedEtcdBackup", "BootcNodeManagement", "CSIDriverSharedResource", "ClusterAPIInstall", "ClusterAPIInstallIBMCloud", "ClusterMonitoringConfig", "ConsolePluginContentSecurityPolicy", "DNSNameResolver", "DynamicResourceAllocation", "EtcdBackendQuota", "EventedPLEG", "Example", "ExternalOIDC", "ExternalOIDCWithUIDAndExtraClaimMappings", "GCPClusterHostedDNS", "GatewayAPI", "ImageStreamImportMode", "IngressControllerDynamicConfigurationManager", "InsightsConfig", "InsightsConfigAPI", "InsightsOnDemandDataGather", "InsightsRuntimeExtractor", "MachineAPIMigration", "MachineAPIOperatorDisableMachineHealthCheckController", "MachineAPIProviderOpenStack", "MachineConfigNodes", "MaxUnavailableStatefulSet", "MetricsCollectionProfiles", "MinimumKubeletVersion", "MixedCPUsAllocation", "MultiArchInstallAzure", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PinnedImages", "PlatformOperators", "ProcMountType", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SignatureStores", "SigstoreImageVerification", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
+openshift-etcd-operator                            28m         Normal    FeatureGatesInitialized                      deployment/etcd-operator                                            FeatureGates updated to featuregates.Features{Enabled:[]v1.FeatureGateName{"AWSEFSDriverVolumeMetrics", "AdminNetworkPolicy", "AlibabaPlatform", "AzureWorkloadIdentity", "BareMetalLoadBalancer", "BuildCSIVolumes", "ChunkSizeMiB", "CloudDualStackNodeIPs", "DisableKubeletCloudCredentialProviders", "GCPLabelsTags", "HardwareSpeed", "IngressControllerLBSubnetsAWS", "KMSv1", "ManagedBootImages", "ManagedBootImagesAWS", "MultiArchInstallAWS", "MultiArchInstallGCP", "NetworkDiagnosticsConfig", "NetworkLiveMigration", "NetworkSegmentation", "NewOLM", "NodeDisruptionPolicy", "OnClusterBuild", "PersistentIPsForVirtualization", "PrivateHostedZoneAWS", "SetEIPForNLBIngressController", "VSphereControlPlaneMachineSet", "VSphereDriverConfiguration", "VSphereMultiVCenters", "VSphereStaticIPs", "ValidatingAdmissionPolicy"}, Disabled:[]v1.FeatureGateName{"AWSClusterHostedDNS", "AdditionalRoutingCapabilities", "AutomatedEtcdBackup", "BootcNodeManagement", "CSIDriverSharedResource", "ClusterAPIInstall", "ClusterAPIInstallIBMCloud", "ClusterMonitoringConfig", "ConsolePluginContentSecurityPolicy", "DNSNameResolver", "DynamicResourceAllocation", "EtcdBackendQuota", "EventedPLEG", "Example", "ExternalOIDC", "ExternalOIDCWithUIDAndExtraClaimMappings", "GCPClusterHostedDNS", "GatewayAPI", "ImageStreamImportMode", "IngressControllerDynamicConfigurationManager", "InsightsConfig", "InsightsConfigAPI", "InsightsOnDemandDataGather", "InsightsRuntimeExtractor", "MachineAPIMigration", "MachineAPIOperatorDisableMachineHealthCheckController", "MachineAPIProviderOpenStack", "MachineConfigNodes", "MaxUnavailableStatefulSet", "MetricsCollectionProfiles", "MinimumKubeletVersion", "MixedCPUsAllocation", "MultiArchInstallAzure", "NodeSwap", "NutanixMultiSubnets", "OVNObservability", "OpenShiftPodSecurityAdmission", "PinnedImages", "PlatformOperators", "ProcMountType", "RouteAdvertisements", "RouteExternalCertificate", "ServiceAccountTokenNodeBinding", "SignatureStores", "SigstoreImageVerification", "TranslateStreamCloseWebsocketRequests", "UpgradeStatus", "UserNamespacesPodSecurityStandards", "UserNamespacesSupport", "VSphereMultiNetworks", "VolumeAttributesClass", "VolumeGroupSnapshot"}}
+openshift-sriov-network-operator                   28m         Normal    LeaderElection                               lease/a56def2a.openshift.io                                         sriov-network-operator-6f5d74ccbc-c9gxm_6710b8c3-6864-46d5-bbd1-cc16e724afa7 became leader
+openshift-sriov-network-operator                   28m         Normal    SuccessfulCreate                             replicaset/sriov-network-operator-6f5d74ccbc                        Created pod: sriov-network-operator-6f5d74ccbc-xql2h
+openshift-sriov-network-operator                   28m         Normal    Killing                                      pod/sriov-network-operator-6f5d74ccbc-c9gxm                         Stopping container sriov-network-operator
 
 
 
-This indicates the SR-IOV operator workflow got stuck and never completed the drain/reboot cycle.
+    Rdma Mode:  shared
+Events:
+  Type     Reason             Age                 From             Message
+  ----     ------             ----                ----             -------
+  Normal   ConfigDaemonStart  3h23m               config-daemon    Config Daemon starting
+  Normal   SyncStatusChanged  3h23m               config-daemon    Status changed from: InProgress to: Unknown
+  Normal   SyncStatusChanged  3h23m               config-daemon    Status changed from: Unknown to: InProgress
+  Normal   ConfigDaemonStart  163m                config-daemon    Config Daemon starting
+  Normal   SyncStatusChanged  163m                config-daemon    Status changed from: InProgress to: Unknown
+  Normal   SyncStatusChanged  163m                config-daemon    Status changed from: Unknown to: InProgress
+  Normal   ConfigDaemonStart  59m                 config-daemon    Config Daemon starting
+  Normal   SyncStatusChanged  59m                 config-daemon    Status changed from: InProgress to: Unknown
+  Normal   SyncStatusChanged  58m                 config-daemon    Status changed from: Unknown to: InProgress
+  Warning  DrainController    52m (x12 over 53m)  SR-IOV operator  node drain operation was not completed
+sno1@haproxy1:~/ocp-helm$
 
-The next thing to verify
-
-We need to determine who is keeping the node cordoned. Please run:
-
-oc describe node sno1.lab1.ocp.lan | tail -50
-
-and
-
-oc get events -A --sort-by=.lastTimestamp | grep -Ei "cordon|drain|unsched|sriov|machineconfig"
-
-Also, inspect the detailed SR-IOV node state:
-
-oc describe sriovnetworknodestate sno1.lab1.ocp.lan \
--n openshift-sriov-network-operator
-
-Pay particular attention to the Status, Conditions, and Events sections.
-
-If nothing is actively draining the node
-
-If the outputs show there is no active drain in progress, you can try:
-
-oc adm uncordon sno1.lab1.ocp.lan
-
-Then immediately watch:
-
-watch oc get nodes
-
-or
-
-oc get nodes -w
-
-If the node becomes SchedulingDisabled again within a few seconds, then some controller (most likely the SR-IOV config daemon) is re-cordoning it, and the describe sriovnetworknodestate output should reveal why.
-
-One more thing I noticed
-
-Your operator pod is Pending because the node is unschedulable:
-
-0/1 nodes are available: 1 node(s) were unschedulable
-
-Until the node is successfully uncordoned, the SR-IOV operator Deployment cannot run, which also prevents the CSV from progressing from Installing to Succeeded.
-
-The outputs of the three commands above should identify the controller or condition that is keeping the node in the Draining state.
