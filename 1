@@ -1,84 +1,132 @@
-Your cluster looks healthy again from the outputs you've shared.
-
-What I see
-
-✅ Node is Ready
-
-STATUS: Ready
-ROLES: control-plane,master,worker
-
-✅ Master MCP is healthy
-
-Updated: True
-Updating: False
-Degraded: False
-MachineCount: 1
-ReadyMachineCount: 1
-
-✅ The node has the correct labels:
-
-node-role.kubernetes.io/master=
-node-role.kubernetes.io/control-plane=
-node-role.kubernetes.io/worker=
-
-✅ PTP Operator is healthy.
-
-✅ LVM Storage Operator is healthy.
-
-✅ Package Server is healthy.
-
-
-About this annotation
-
-You noticed:
-
-Annotations:
-  sriovnetwork.openshift.io/state: Paused
-
-This is only an annotation, not the MCP pause state.
-
-The important field is:
-
+sno1@haproxy1:~/ocp-config$ oc get crd | grep sriov
+ovsnetworks.sriovnetwork.openshift.io                             2026-07-21T10:06:49Z
+sriovibnetworks.sriovnetwork.openshift.io                         2026-07-21T10:06:49Z
+sriovnetworknodepolicies.sriovnetwork.openshift.io                2026-07-21T10:06:49Z
+sriovnetworknodestates.sriovnetwork.openshift.io                  2026-07-21T10:06:49Z
+sriovnetworkpoolconfigs.sriovnetwork.openshift.io                 2026-07-21T10:06:49Z
+sriovnetworks.sriovnetwork.openshift.io                           2026-07-21T10:06:49Z
+sriovoperatorconfigs.sriovnetwork.openshift.io                    2026-07-21T10:06:49Z
+sno1@haproxy1:~/ocp-config$ oc get sriovnetworknodestate -A
+No resources found
+sno1@haproxy1:~/ocp-config$ oc get sriovnetworknodepolicy -A
+NAMESPACE                          NAME                     AGE
+openshift-sriov-network-operator   policy-ens1f0-bh0c       6d3h
+openshift-sriov-network-operator   policy-ens1f0-bh0u       6d3h
+openshift-sriov-network-operator   policy-ens1f3-bh0c-1     6d3h
+openshift-sriov-network-operator   policy-ens1f3-bh0u-1     6d3h
+openshift-sriov-network-operator   policy-ens6f0-bh0u-2     5d6h
+openshift-sriov-network-operator   policy-ens6f0-bh0u-3     5d6h
+openshift-sriov-network-operator   policy-ens6f3-bh0u-2-1   5d6h
+openshift-sriov-network-operator   policy-ens6f3-bh0u-3-1   5d6h
+sno1@haproxy1:~/ocp-config$ oc get sriovoperatorconfig -A
+NAMESPACE                          NAME      AGE
+openshift-sriov-network-operator   default   8d
+sno1@haproxy1:~/ocp-config$
+sno1@haproxy1:~/ocp-config$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.18.23   True        False         26d     Error while reconciling 4.18.23: the cluster operator image-registry is degraded
+sno1@haproxy1:~/ocp-config$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.18.23   True        False         False      23m
+baremetal                                  4.18.23   True        False         False      26d
+cloud-controller-manager                   4.18.23   True        False         False      26d
+cloud-credential                           4.18.23   True        False         False      26d
+cluster-autoscaler                         4.18.23   True        False         False      26d
+config-operator                            4.18.23   True        False         False      26d
+console                                    4.18.23   True        False         False      9d
+control-plane-machine-set                  4.18.23   True        False         False      26d
+csi-snapshot-controller                    4.18.23   True        False         False      23m
+dns                                        4.18.23   True        False         False      125m
+etcd                                       4.18.23   True        False         False      26d
+image-registry                             4.18.23   True        False         True       26d     Degraded: The registry is removed...
+ingress                                    4.18.23   True        False         False      26d
+insights                                   4.18.23   True        False         False      2d1h
+kube-apiserver                             4.18.23   True        False         False      26d
+kube-controller-manager                    4.18.23   True        False         False      26d
+kube-scheduler                             4.18.23   True        False         False      26d
+kube-storage-version-migrator              4.18.23   True        False         False      23m
+machine-api                                4.18.23   True        False         False      26d
+machine-approver                           4.18.23   True        False         False      26d
+machine-config                             4.18.23   True        False         False      26d
+marketplace                                4.18.23   True        False         False      26d
+monitoring                                 4.18.23   True        False         False      11d
+network                                    4.18.23   True        False         False      26d
+node-tuning                                4.18.23   True        False         False      26d
+olm                                        4.18.23   True        False         False      23m
+openshift-apiserver                        4.18.23   True        False         False      23m
+openshift-controller-manager               4.18.23   True        False         False      120m
+openshift-samples                          4.18.23   True        False         False      26d
+operator-lifecycle-manager                 4.18.23   True        False         False      26d
+operator-lifecycle-manager-catalog         4.18.23   True        False         False      26d
+operator-lifecycle-manager-packageserver   4.18.23   True        False         False      23m
+service-ca                                 4.18.23   True        False         False      26d
+storage                                    4.18.23   True        False         False      26d
+sno1@haproxy1:~/ocp-config$ oc describe co image-registry
+Name:         image-registry
+Namespace:
+Labels:       <none>
+Annotations:  capability.openshift.io/name: ImageRegistry
+              include.release.openshift.io/hypershift: true
+              include.release.openshift.io/ibm-cloud-managed: true
+              include.release.openshift.io/self-managed-high-availability: true
+              include.release.openshift.io/single-node-developer: true
+API Version:  config.openshift.io/v1
+Kind:         ClusterOperator
+Metadata:
+  Creation Timestamp:  2026-07-03T05:39:03Z
+  Generation:          1
+  Owner References:
+    API Version:     config.openshift.io/v1
+    Controller:      true
+    Kind:            ClusterVersion
+    Name:            version
+    UID:             0834c737-5495-4caf-806f-d3d75dbfc924
+  Resource Version:  3390740
+  UID:               fe3ef9f9-25c1-4f04-ac00-eef3022ce1ab
 Spec:
-  Paused: false
-
-Since Paused: false, your MCP is not paused. The annotation is a leftover from the previous SR-IOV operation and can safely be ignored. It will typically be updated or removed the next time the SR-IOV operator reconciles.
-
-Why SR-IOV is missing
-
-You removed the SR-IOV Operator, so now:
-
-There is no SR-IOV CSV.
-
-There is no SR-IOV Subscription.
-
-
-Your oc get sub -A confirms this:
-
-openshift-ptp       ptp-operator-subscription
-openshift-storage   lvms
-
-No SR-IOV subscription exists.
-
-Before reinstalling SR-IOV
-
-First, verify there are no leftover SR-IOV resources:
-
-oc get crd | grep sriov
-
-oc get sriovnetworknodestate -A
-
-oc get sriovnetworknodepolicy -A
-
-oc get sriovoperatorconfig -A
-
-If those are clean (or if you intentionally remove any leftovers), you can reinstall the SR-IOV Operator.
-
-Since the previous installation became stuck during the drain process, I'd also recommend checking the cluster version before reinstalling:
-
-oc get clusterversion
-oc get co
-
-If all ClusterOperators are Available=True and Degraded=False, the cluster is in a good state for another SR-IOV installation attempt.
-
-From what you've shared, you've successfully recovered the SNO node from the stuck SchedulingDisabled state, which was the major issue. The next focus is ensuring the cluster is fully healthy before reinstalling the SR-IOV Operator.
+Status:
+  Conditions:
+    Last Transition Time:  2026-07-03T06:54:31Z
+    Message:               Available: The registry is removed
+NodeCADaemonAvailable: The daemon set node-ca has available replicas
+ImagePrunerAvailable: Pruner CronJob has been created
+    Reason:                Removed
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  2026-07-03T06:54:31Z
+    Message:               Progressing: All registry resources are removed
+NodeCADaemonProgressing: The daemon set node-ca is deployed
+    Reason:                Removed
+    Status:                False
+    Type:                  Progressing
+    Last Transition Time:  2026-07-29T08:18:47Z
+    Message:               Degraded: The registry is removed
+ImagePrunerDegraded: Job has reached the specified backoff limit
+    Reason:   ImagePrunerJobFailed::Removed
+    Status:   True
+    Type:     Degraded
+  Extension:  <nil>
+  Related Objects:
+    Group:     imageregistry.operator.openshift.io
+    Name:      cluster
+    Resource:  configs
+    Group:     imageregistry.operator.openshift.io
+    Name:      cluster
+    Resource:  imagepruners
+    Group:     rbac.authorization.k8s.io
+    Name:      system:registry
+    Resource:  clusterroles
+    Group:     rbac.authorization.k8s.io
+    Name:      registry-registry-role
+    Resource:  clusterrolebindings
+    Group:     rbac.authorization.k8s.io
+    Name:      openshift-image-registry-pruner
+    Resource:  clusterrolebindings
+    Group:
+    Name:      openshift-image-registry
+    Resource:  namespaces
+  Versions:
+    Name:     operator
+    Version:  4.18.23
+Events:       <none>
+sno1@haproxy1:~/ocp-config$
