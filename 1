@@ -1,46 +1,84 @@
-Yes. That is not normal. If the IP changes on every reboot, you'll continue to have this problem.
-
-From your outputs, it looks like the node is getting a different IPv6 address after each reboot. OpenShift expects the node IP to remain stable.
-
-The most likely causes are:
-
-1. IPv6 is configured using SLAAC/privacy addresses instead of a stable address.
-
-
-2. NetworkManager is regenerating the IPv6 address on each boot.
-
-
-3. Your environment expects a static IPv6, but the network is assigning a new one after every reboot.
-
-
-
-Verify whether IPv6 uses temporary addresses
-
-Run:
-
-sysctl net.ipv6.conf.all.use_tempaddr
-sysctl net.ipv6.conf.ens3f0.use_tempaddr
-
-and
-
-nmcli connection show ens3f0 | egrep "ipv6.method|ipv6.addr|ipv6.token|ipv6.ip6-privacy"
-
-Also check how the node IP is detected
-
-From the bastion, run:
-
-oc get network.config.openshift.io cluster -o yaml
-oc get infrastructure cluster -o yaml
-
-If this is a production SNO
-
-The node should use a stable IP address. If IPv6 changes after every reboot, OpenShift can regenerate kubelet/CRI-O configuration with stale values, exactly as you observed.
-
-Can you also tell me:
-
-Is this a dual-stack (IPv4 + IPv6) cluster?
-
-Is the IPv6 address configured statically, by DHCPv6, or by SLAAC/router advertisements?
-
-
-That will determine the permanent fix.
+[root@sno1 ~]# sysctl net.ipv6.conf.all.use_tempaddr
+net.ipv6.conf.all.use_tempaddr = 0
+[root@sno1 ~]# sysctl net.ipv6.conf.ens3f0.use_tempaddr
+net.ipv6.conf.ens3f0.use_tempaddr = 0
+[root@sno1 ~]# nmcli connection show ens3f0 | egrep "ipv6.method|ipv6.addr|ipv6.token|ipv6.ip6-privacy"
+ipv6.method:                            manual
+ipv6.addresses:                         2405:100:200:72::1:25/64
+ipv6.ip6-privacy:                       -1 (unknown)
+ipv6.addr-gen-mode:                     default-or-eui64
+ipv6.token:                             --
+[root@sno1 ~]#
+logout
+[core@sno1 ~]$
+logout
+Connection to sno1.lab1.ocp.lan closed.
+sno1@haproxy1:~/ocp-helm$ oc get network.config.openshift.io cluster -o yaml
+apiVersion: config.openshift.io/v1
+kind: Network
+metadata:
+  creationTimestamp: "2026-07-03T05:38:36Z"
+  generation: 290
+  name: cluster
+  resourceVersion: "3395011"
+  uid: 661b5ae7-6daa-4233-be91-8458e0ea9778
+spec:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  - cidr: fd01::/48
+    hostPrefix: 64
+  externalIP:
+    policy: {}
+  networkDiagnostics:
+    mode: ""
+    sourcePlacement: {}
+    targetPlacement: {}
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+  - fd02::/112
+status:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  - cidr: fd01::/48
+    hostPrefix: 64
+  clusterNetworkMTU: 1400
+  conditions:
+  - lastTransitionTime: "2026-07-29T09:12:51Z"
+    message: ""
+    observedGeneration: 0
+    reason: AsExpected
+    status: "True"
+    type: NetworkDiagnosticsAvailable
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+  - fd02::/112
+sno1@haproxy1:~/ocp-helm$ oc get infrastructure cluster -o yaml
+apiVersion: config.openshift.io/v1
+kind: Infrastructure
+metadata:
+  creationTimestamp: "2026-07-03T05:38:34Z"
+  generation: 1
+  name: cluster
+  resourceVersion: "420"
+  uid: ccdb3324-9e0b-4b83-808d-3947babbf206
+spec:
+  cloudConfig:
+    name: ""
+  platformSpec:
+    type: None
+status:
+  apiServerInternalURI: https://api-int.lab1.ocp.lan:6443
+  apiServerURL: https://api.lab1.ocp.lan:6443
+  controlPlaneTopology: SingleReplica
+  cpuPartitioning: None
+  etcdDiscoveryDomain: ""
+  infrastructureName: lab1-mgggq
+  infrastructureTopology: SingleReplica
+  platform: None
+  platformStatus:
+    type: None
+sno1@haproxy1:~/ocp-helm$
