@@ -1,75 +1,31 @@
-Your cluster is now in a much better state. Here's what I recommend before reinstalling the SR-IOV Operator.
-
-1. Cluster health
-
-Your ClusterOperators are healthy except for image-registry:
-
-image-registry
-Available:   True
-Progressing: False
-Degraded:    True
-Message: Degraded: The registry is removed
-
-This is not related to the SR-IOV issue. On many SNO/disconnected/lab environments, the internal image registry is intentionally removed or disabled. The degraded message is coming from the image pruner job and is separate from SR-IOV.
-
-2. Clean up leftover SR-IOV resources
-
-Although the operator is removed, you still have:
-
-✅ CRDs
-
-✅ SriovNetworkNodePolicy objects
-
-✅ SriovOperatorConfig
-
-
-You do not have any SriovNetworkNodeState, which is good.
-
-Before reinstalling, I recommend deleting the old policies and operator config so the new operator starts from a clean state.
-
-oc delete sriovnetworknodepolicy --all -n openshift-sriov-network-operator
-
-oc delete sriovoperatorconfig default -n openshift-sriov-network-operator
-
-Verify:
-
-oc get sriovnetworknodepolicy -A
+sno1@haproxy1:~/ocp-config$ oc delete sriovnetworknodepolicy --all -n openshift-sriov-network-operator
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+sno1@haproxy1:~/ocp-config$ oc delete sriovoperatorconfig default -n openshift-sriov-network-operator
+Error from server (InternalError): Internal error occurred: failed calling webhook "operator-webhook.sriovnetwork.openshift.io": failed to call webhook: Post "https://operator-webhook-service.openshift-sriov-network-operator.svc:443/validating-custom-resource?timeout=10s": service "operator-webhook-service" not found
+sno1@haproxy1:~/ocp-config$ oc get sriovnetworknodepolicy -A
 oc get sriovoperatorconfig -A
-
-Both should return No resources found.
-
-3. Reinstall the SR-IOV Operator
-
-After reinstalling:
-
-Wait until the CSV reaches Succeeded.
-
-Do not create any SriovNetworkNodePolicy immediately.
-
-First verify that the operator and all its pods are healthy.
-
-
-Use:
-
-oc get csv -n openshift-sriov-network-operator
+NAMESPACE                          NAME                     AGE
+openshift-sriov-network-operator   policy-ens1f0-bh0c       6d3h
+openshift-sriov-network-operator   policy-ens1f0-bh0u       6d3h
+openshift-sriov-network-operator   policy-ens1f3-bh0c-1     6d3h
+openshift-sriov-network-operator   policy-ens1f3-bh0u-1     6d3h
+openshift-sriov-network-operator   policy-ens6f0-bh0u-2     5d6h
+openshift-sriov-network-operator   policy-ens6f0-bh0u-3     5d6h
+openshift-sriov-network-operator   policy-ens6f3-bh0u-2-1   5d6h
+openshift-sriov-network-operator   policy-ens6f3-bh0u-3-1   5d6h
+NAMESPACE                          NAME      AGE
+openshift-sriov-network-operator   default   8d
+sno1@haproxy1:~/ocp-config$ oc get csv -n openshift-sriov-network-operator
 oc get pods -n openshift-sriov-network-operator
-
-4. Apply policies gradually
-
-Instead of applying all 8 policies at once, create one policy first and verify:
-
-oc get sriovnetworknodestate -A -w
-
-It should progress like:
-
-InProgress
-↓
-Succeeded
-
-Only after the first policy succeeds should you apply the remaining policies.
-
-Why this is important
-
-From the earlier troubleshooting, the node got stuck during the drain/reboot workflow while multiple SR-IOV policies were being reconciled. Starting with a single policy makes it much easier to identify the exact step that causes a problem if it recurs.
-
-If you're reinstalling from OperatorHub or using a Subscription YAML, I can also review the Subscription, OperatorGroup, and CatalogSource manifests before you install to help avoid the previous issue.
+No resources found in openshift-sriov-network-operator namespace.
+No resources found in openshift-sriov-network-operator namespace.
+sno1@haproxy1:~/ocp-config$ oc get sriovnetworknodestate -A
+No resources found
+sno1@haproxy1:~/ocp-config$
