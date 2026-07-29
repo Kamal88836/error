@@ -1,132 +1,75 @@
-sno1@haproxy1:~/ocp-config$ oc get crd | grep sriov
-ovsnetworks.sriovnetwork.openshift.io                             2026-07-21T10:06:49Z
-sriovibnetworks.sriovnetwork.openshift.io                         2026-07-21T10:06:49Z
-sriovnetworknodepolicies.sriovnetwork.openshift.io                2026-07-21T10:06:49Z
-sriovnetworknodestates.sriovnetwork.openshift.io                  2026-07-21T10:06:49Z
-sriovnetworkpoolconfigs.sriovnetwork.openshift.io                 2026-07-21T10:06:49Z
-sriovnetworks.sriovnetwork.openshift.io                           2026-07-21T10:06:49Z
-sriovoperatorconfigs.sriovnetwork.openshift.io                    2026-07-21T10:06:49Z
-sno1@haproxy1:~/ocp-config$ oc get sriovnetworknodestate -A
-No resources found
-sno1@haproxy1:~/ocp-config$ oc get sriovnetworknodepolicy -A
-NAMESPACE                          NAME                     AGE
-openshift-sriov-network-operator   policy-ens1f0-bh0c       6d3h
-openshift-sriov-network-operator   policy-ens1f0-bh0u       6d3h
-openshift-sriov-network-operator   policy-ens1f3-bh0c-1     6d3h
-openshift-sriov-network-operator   policy-ens1f3-bh0u-1     6d3h
-openshift-sriov-network-operator   policy-ens6f0-bh0u-2     5d6h
-openshift-sriov-network-operator   policy-ens6f0-bh0u-3     5d6h
-openshift-sriov-network-operator   policy-ens6f3-bh0u-2-1   5d6h
-openshift-sriov-network-operator   policy-ens6f3-bh0u-3-1   5d6h
-sno1@haproxy1:~/ocp-config$ oc get sriovoperatorconfig -A
-NAMESPACE                          NAME      AGE
-openshift-sriov-network-operator   default   8d
-sno1@haproxy1:~/ocp-config$
-sno1@haproxy1:~/ocp-config$ oc get clusterversion
-NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
-version   4.18.23   True        False         26d     Error while reconciling 4.18.23: the cluster operator image-registry is degraded
-sno1@haproxy1:~/ocp-config$ oc get co
-NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
-authentication                             4.18.23   True        False         False      23m
-baremetal                                  4.18.23   True        False         False      26d
-cloud-controller-manager                   4.18.23   True        False         False      26d
-cloud-credential                           4.18.23   True        False         False      26d
-cluster-autoscaler                         4.18.23   True        False         False      26d
-config-operator                            4.18.23   True        False         False      26d
-console                                    4.18.23   True        False         False      9d
-control-plane-machine-set                  4.18.23   True        False         False      26d
-csi-snapshot-controller                    4.18.23   True        False         False      23m
-dns                                        4.18.23   True        False         False      125m
-etcd                                       4.18.23   True        False         False      26d
-image-registry                             4.18.23   True        False         True       26d     Degraded: The registry is removed...
-ingress                                    4.18.23   True        False         False      26d
-insights                                   4.18.23   True        False         False      2d1h
-kube-apiserver                             4.18.23   True        False         False      26d
-kube-controller-manager                    4.18.23   True        False         False      26d
-kube-scheduler                             4.18.23   True        False         False      26d
-kube-storage-version-migrator              4.18.23   True        False         False      23m
-machine-api                                4.18.23   True        False         False      26d
-machine-approver                           4.18.23   True        False         False      26d
-machine-config                             4.18.23   True        False         False      26d
-marketplace                                4.18.23   True        False         False      26d
-monitoring                                 4.18.23   True        False         False      11d
-network                                    4.18.23   True        False         False      26d
-node-tuning                                4.18.23   True        False         False      26d
-olm                                        4.18.23   True        False         False      23m
-openshift-apiserver                        4.18.23   True        False         False      23m
-openshift-controller-manager               4.18.23   True        False         False      120m
-openshift-samples                          4.18.23   True        False         False      26d
-operator-lifecycle-manager                 4.18.23   True        False         False      26d
-operator-lifecycle-manager-catalog         4.18.23   True        False         False      26d
-operator-lifecycle-manager-packageserver   4.18.23   True        False         False      23m
-service-ca                                 4.18.23   True        False         False      26d
-storage                                    4.18.23   True        False         False      26d
-sno1@haproxy1:~/ocp-config$ oc describe co image-registry
-Name:         image-registry
-Namespace:
-Labels:       <none>
-Annotations:  capability.openshift.io/name: ImageRegistry
-              include.release.openshift.io/hypershift: true
-              include.release.openshift.io/ibm-cloud-managed: true
-              include.release.openshift.io/self-managed-high-availability: true
-              include.release.openshift.io/single-node-developer: true
-API Version:  config.openshift.io/v1
-Kind:         ClusterOperator
-Metadata:
-  Creation Timestamp:  2026-07-03T05:39:03Z
-  Generation:          1
-  Owner References:
-    API Version:     config.openshift.io/v1
-    Controller:      true
-    Kind:            ClusterVersion
-    Name:            version
-    UID:             0834c737-5495-4caf-806f-d3d75dbfc924
-  Resource Version:  3390740
-  UID:               fe3ef9f9-25c1-4f04-ac00-eef3022ce1ab
-Spec:
-Status:
-  Conditions:
-    Last Transition Time:  2026-07-03T06:54:31Z
-    Message:               Available: The registry is removed
-NodeCADaemonAvailable: The daemon set node-ca has available replicas
-ImagePrunerAvailable: Pruner CronJob has been created
-    Reason:                Removed
-    Status:                True
-    Type:                  Available
-    Last Transition Time:  2026-07-03T06:54:31Z
-    Message:               Progressing: All registry resources are removed
-NodeCADaemonProgressing: The daemon set node-ca is deployed
-    Reason:                Removed
-    Status:                False
-    Type:                  Progressing
-    Last Transition Time:  2026-07-29T08:18:47Z
-    Message:               Degraded: The registry is removed
-ImagePrunerDegraded: Job has reached the specified backoff limit
-    Reason:   ImagePrunerJobFailed::Removed
-    Status:   True
-    Type:     Degraded
-  Extension:  <nil>
-  Related Objects:
-    Group:     imageregistry.operator.openshift.io
-    Name:      cluster
-    Resource:  configs
-    Group:     imageregistry.operator.openshift.io
-    Name:      cluster
-    Resource:  imagepruners
-    Group:     rbac.authorization.k8s.io
-    Name:      system:registry
-    Resource:  clusterroles
-    Group:     rbac.authorization.k8s.io
-    Name:      registry-registry-role
-    Resource:  clusterrolebindings
-    Group:     rbac.authorization.k8s.io
-    Name:      openshift-image-registry-pruner
-    Resource:  clusterrolebindings
-    Group:
-    Name:      openshift-image-registry
-    Resource:  namespaces
-  Versions:
-    Name:     operator
-    Version:  4.18.23
-Events:       <none>
-sno1@haproxy1:~/ocp-config$
+Your cluster is now in a much better state. Here's what I recommend before reinstalling the SR-IOV Operator.
+
+1. Cluster health
+
+Your ClusterOperators are healthy except for image-registry:
+
+image-registry
+Available:   True
+Progressing: False
+Degraded:    True
+Message: Degraded: The registry is removed
+
+This is not related to the SR-IOV issue. On many SNO/disconnected/lab environments, the internal image registry is intentionally removed or disabled. The degraded message is coming from the image pruner job and is separate from SR-IOV.
+
+2. Clean up leftover SR-IOV resources
+
+Although the operator is removed, you still have:
+
+✅ CRDs
+
+✅ SriovNetworkNodePolicy objects
+
+✅ SriovOperatorConfig
+
+
+You do not have any SriovNetworkNodeState, which is good.
+
+Before reinstalling, I recommend deleting the old policies and operator config so the new operator starts from a clean state.
+
+oc delete sriovnetworknodepolicy --all -n openshift-sriov-network-operator
+
+oc delete sriovoperatorconfig default -n openshift-sriov-network-operator
+
+Verify:
+
+oc get sriovnetworknodepolicy -A
+oc get sriovoperatorconfig -A
+
+Both should return No resources found.
+
+3. Reinstall the SR-IOV Operator
+
+After reinstalling:
+
+Wait until the CSV reaches Succeeded.
+
+Do not create any SriovNetworkNodePolicy immediately.
+
+First verify that the operator and all its pods are healthy.
+
+
+Use:
+
+oc get csv -n openshift-sriov-network-operator
+oc get pods -n openshift-sriov-network-operator
+
+4. Apply policies gradually
+
+Instead of applying all 8 policies at once, create one policy first and verify:
+
+oc get sriovnetworknodestate -A -w
+
+It should progress like:
+
+InProgress
+↓
+Succeeded
+
+Only after the first policy succeeds should you apply the remaining policies.
+
+Why this is important
+
+From the earlier troubleshooting, the node got stuck during the drain/reboot workflow while multiple SR-IOV policies were being reconciled. Starting with a single policy makes it much easier to identify the exact step that causes a problem if it recurs.
+
+If you're reinstalling from OperatorHub or using a Subscription YAML, I can also review the Subscription, OperatorGroup, and CatalogSource manifests before you install to help avoid the previous issue.
