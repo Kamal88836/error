@@ -1,38 +1,126 @@
-sno1@haproxy1:~/ocp-helm$ oc get nodes
-NAME                STATUS                     ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready,SchedulingDisabled   control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$ oc describe node sno1.lab1.ocp.lan | grep Unschedulable
-Unschedulable:      true
-sno1@haproxy1:~/ocp-helm$ oc get sriovoperatorconfig -n openshift-sriov-network-operator -o yaml
-apiVersion: v1
-items:
-- apiVersion: sriovnetwork.openshift.io/v1
-  kind: SriovOperatorConfig
-  metadata:
-    annotations:
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"sriovnetwork.openshift.io/v1","kind":"SriovOperatorConfig","metadata":{"annotations":{},"name":"default","namespace":"openshift-sriov-network-operator"},"spec":{"disableDrain":false,"enableInjector":true,"enableOperatorWebhook":true,"logLevel":2}}
-    creationTimestamp: "2026-07-21T10:26:10Z"
-    finalizers:
-    - operatorconfig.finalizers.sriovnetwork.openshift.io
-    generation: 1
-    name: default
-    namespace: openshift-sriov-network-operator
-    resourceVersion: "2330229"
-    uid: 471fb668-f3c6-48fd-8da3-6df8607032ce
-  spec:
-    disableDrain: false
-    enableInjector: true
-    enableOperatorWebhook: true
-    logLevel: 2
-kind: List
-metadata:
-  resourceVersion: ""
-sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o yaml | grep -i paused
-    sriovnetwork.openshift.io/state: Paused
-  paused: true
-sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o jsonpath='{.spec.paused}'
-sno1@haproxy1:~/ocp-helm$ oc get machineconfigpool master -o jsonpath='{.spec.paused}'ed}'
-echo
+This identifies the root cause.
+
+You have two independent conditions that together are blocking SR-IOV configuration.
+
+1. Master MCP is paused
+
+You confirmed:
+
+oc get machineconfigpool master -o jsonpath='{.spec.paused}'
 true
-sno1@haproxy1:~/ocp-helm$
+
+This is the first problem.
+
+When the SR-IOV operator adds kernel arguments:
+
+intel_iommu=on
+
+iommu=pt
+
+
+it creates a MachineConfig and expects the Machine Config Operator (MCO) to apply it.
+
+Because the master MCP is paused, the MachineConfig cannot be applied.
+
+
+---
+
+2. Node is permanently cordoned
+
+Your node is:
+
+Ready,SchedulingDisabled
+Unschedulable: true
+
+Since this is an SNO cluster, there is only one node. The SR-IOV operator has drained and cordoned the node and is waiting for the reboot/update to finish.
+
+That's why you see:
+
+SriovNetworkNodeState
+
+Desired Sync State : Reboot_Required
+Current Sync State : Draining
+
+and
+
+CSV: Installing
+
+The new operator pod stays Pending because the only node is unschedulable.
+
+
+---
+
+Fix
+
+Step 1: Unpause the master MCP
+
+oc patch mcp master --type=merge -p '{"spec":{"paused":false}}'
+
+Verify:
+
+oc get mcp master
+
+Paused should become false.
+
+
+---
+
+Step 2: Wait a few minutes
+
+Watch:
+
+oc get mcp -w
+
+and
+
+oc get co machine-config
+
+The MachineConfig Operator should begin reconciling.
+
+
+---
+
+Step 3: If the node is still cordoned after MCO finishes
+
+Uncordon it:
+
+oc adm uncordon sno1.lab1.ocp.lan
+
+
+---
+
+Step 4: Watch SR-IOV recover
+
+oc get sriovnetworknodestate -w
+
+You should eventually see:
+
+SYNC STATUS            Succeeded
+CURRENT SYNC STATE     Succeeded
+
+Then check:
+
+oc get csv -n openshift-sriov-network-operator
+
+The phase should change from:
+
+Installing
+
+to
+
+Succeeded
+
+
+---
+
+One thing I want to verify
+
+Before you unpause the MCP, please run these two commands:
+
+oc get machineconfig | grep -i sriov
+
+and
+
+oc get machineconfigpool master
+
+If there is a pending SR-IOV MachineConfig waiting to be applied, unpausing the MCP should allow the update to complete and resolve the SR-IOV operator installation.
