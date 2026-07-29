@@ -1,94 +1,39 @@
-This output reveals the remaining issue.
-
-Root cause is no longer CRI-O
-
-Your node is healthy:
-
-✅ Node = Ready
-
-✅ MCP = Updated=True
-
-✅ Kubelet and CRI-O are running
-
-✅ MachineConfig applied successfully
-
-
-The remaining problem is this:
-
-machine-config:
-Failed to resync because:
-the required MachineConfigPool master was paused
-
-And your MCP shows:
-
-Spec:
-  Paused: true
-
-Something is automatically pausing the MCP
-
-Notice this annotation:
-
-Annotations:
-  sriovnetwork.openshift.io/state: Paused
-
-This is not a standard MCO annotation.
-
-Because you are using the SR-IOV Network Operator, it is likely managing the MCP and setting it back to Paused. That explains why:
-
-You uncordoned the node.
-
-A few seconds later it became SchedulingDisabled again.
-
-The MCP remains Paused.
-
-
-This is usually done by the SR-IOV operator during policy application or reboot-required workflows.
-
-Verify this
-
-Run:
-
-oc get sriovoperatorconfig -A -o yaml
-
-and
-
-oc get sriovnetworknodepolicy -A
-
-Also check:
-
-oc get sriovnetworknodestate -A
-
-I especially want to see whether the node state reports RebootRequired or SyncStatus.
-
-From your node description I already noticed:
-
-sriovnetwork.openshift.io/state: Reboot_Required
-
-That is another clue that the SR-IOV Operator still thinks the node requires a reboot or is in a paused state.
-
-Why the node gets cordoned again
-
-The SR-IOV Operator can:
-
-cordon the node,
-
-pause the MCP,
-
-wait for configuration to complete,
-
-uncordon the node when finished.
-
-
-If it never reaches the final step, the node stays cordoned and the MCP stays paused.
-
-Next commands
-
-Please run:
-
-oc get sriovnetworknodestate -A
-
-and
-
-oc describe sriovnetworknodestate sno1.lab1.ocp.lan -n openshift-sriov-network-operator
-
-I suspect we'll find the SR-IOV operator is what's reapplying the pause and cordon, rather than a Machine Config or CRI-O issue. That will tell us why it is not completing its workflow.
+sno1@haproxy1:~/ocp-helm$ oc get sriovoperatorconfig -A -o yaml
+apiVersion: v1
+items:
+- apiVersion: sriovnetwork.openshift.io/v1
+  kind: SriovOperatorConfig
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"sriovnetwork.openshift.io/v1","kind":"SriovOperatorConfig","metadata":{"annotations":{},"name":"default","namespace":"openshift-sriov-network-operator"},"spec":{"disableDrain":false,"enableInjector":true,"enableOperatorWebhook":true,"logLevel":2}}
+    creationTimestamp: "2026-07-21T10:26:10Z"
+    finalizers:
+    - operatorconfig.finalizers.sriovnetwork.openshift.io
+    generation: 1
+    name: default
+    namespace: openshift-sriov-network-operator
+    resourceVersion: "2330229"
+    uid: 471fb668-f3c6-48fd-8da3-6df8607032ce
+  spec:
+    disableDrain: false
+    enableInjector: true
+    enableOperatorWebhook: true
+    logLevel: 2
+kind: List
+metadata:
+  resourceVersion: ""
+sno1@haproxy1:~/ocp-helm$ oc get sriovnetworknodepolicy -A
+NAMESPACE                          NAME                     AGE
+openshift-sriov-network-operator   policy-ens1f0-bh0c       6d1h
+openshift-sriov-network-operator   policy-ens1f0-bh0u       6d1h
+openshift-sriov-network-operator   policy-ens1f3-bh0c-1     6d1h
+openshift-sriov-network-operator   policy-ens1f3-bh0u-1     6d1h
+openshift-sriov-network-operator   policy-ens6f0-bh0u-2     5d4h
+openshift-sriov-network-operator   policy-ens6f0-bh0u-3     5d4h
+openshift-sriov-network-operator   policy-ens6f3-bh0u-2-1   5d4h
+openshift-sriov-network-operator   policy-ens6f3-bh0u-3-1   5d4h
+sno1@haproxy1:~/ocp-helm$ oc get sriovnetworknodestate -A
+NAMESPACE                          NAME                SYNC STATUS   DESIRED SYNC STATE   CURRENT SYNC STATE   AGE
+openshift-sriov-network-operator   sno1.lab1.ocp.lan   InProgress    Reboot_Required      Draining             7d23h
+sno1@haproxy1:~/ocp-helm$
