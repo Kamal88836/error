@@ -1,64 +1,94 @@
-This is the key evidence:
-
-Warning  DrainController
-node drain operation was not completed
-
-This confirms the SR-IOV operator is repeatedly trying to drain the SNO node and is failing. Because the drain never completes:
-
-The node stays SchedulingDisabled.
-
-SriovNetworkNodeState remains:
-
-SYNC STATUS          InProgress
-DESIRED STATE        Reboot_Required
-CURRENT STATE        Draining
-
-The SR-IOV operator CSV never reaches Succeeded.
-
-
-I also noticed something important:
-
-The sriov-network-operator pod did start successfully (Started, LeaderElection events), so the previous Pending state has already recovered.
-
-The remaining blocker is only the failed drain.
-
-
-Next step: identify what is blocking the drain
-
-Please run these commands:
-
-oc adm drain sno1.lab1.ocp.lan \
+sno1@haproxy1:~/ocp-helm$ oc adm drain sno1.lab1.ocp.lan \
   --ignore-daemonsets \
   --delete-emptydir-data \
   --dry-run=server
-
-If your version doesn't support --dry-run=server, run:
-
-oc adm drain sno1.lab1.ocp.lan \
-  --ignore-daemonsets \
-  --delete-emptydir-data
-
-and copy only the error messages (do not let it continue if it starts evicting pods unexpectedly).
-
-Also run:
-
-oc get pdb -A
-
-and
-
-oc get pods -A | grep -E 'Terminating|Pending'
-
-Why I want these
-
-On a Single Node OpenShift cluster, the SR-IOV operator drains the node before applying NIC changes. The drain usually fails because of one of these reasons:
-
-A PodDisruptionBudget (PDB) prevents eviction.
-
-A pod cannot be evicted.
-
-A static/control-plane pod is blocking the drain.
-
-Another workload is preventing the node from being drained.
-
-
-Once we see the drain error or the PDBs, we'll know exactly which resource is preventing the SR-IOV operator from completing the Reboot_Required state.
+node/sno1.lab1.ocp.lan already cordoned (server dry run)
+Warning: ignoring DaemonSet-managed Pods: openshift-cluster-node-tuning-operator/tuned-knz9b, openshift-dns/dns-default-lw7sk, openshift-dns/node-resolver-njzz5, openshift-image-registry/node-ca-7trpz, openshift-ingress-canary/ingress-canary-vfqnk, openshift-machine-config-operator/machine-config-daemon-qz495, openshift-machine-config-operator/machine-config-server-6ts47, openshift-monitoring/node-exporter-w5xh8, openshift-multus/multus-7q7sb, openshift-multus/multus-additional-cni-plugins-prtkg, openshift-multus/network-metrics-daemon-frzb2, openshift-network-diagnostics/network-check-target-bm9rk, openshift-network-node-identity/network-node-identity-mcxkp, openshift-network-operator/iptables-alerter-8dm76, openshift-ovn-kubernetes/ovnkube-node-qbgqv, openshift-ptp/linuxptp-daemon-lcj4r, openshift-sriov-network-operator/network-resources-injector-ggp6q, openshift-sriov-network-operator/operator-webhook-92w6q, openshift-sriov-network-operator/sriov-device-plugin-gsv7c, openshift-sriov-network-operator/sriov-network-config-daemon-d2cwh, openshift-storage/vg-manager-m8jlm
+evicting pod openshift-console/downloads-d67945594-m9xjw (server dry run)
+evicting pod openshift-console/console-7cb56cb76-kfhtd (server dry run)
+node/sno1.lab1.ocp.lan drained (server dry run)
+sno1@haproxy1:~/ocp-helm$ oc get pdb -A
+NAMESPACE                              NAME                MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+bscf                                   bscf18-bip-pdb      N/A             1                 0                     2d3h
+bscf                                   bscf18-bpp-pdb      N/A             2                 0                     2d3h
+bscf                                   bscf307-bip-pdb     N/A             1                 0                     2d4h
+bscf                                   bscf307-bpp-pdb     N/A             2                 0                     2d4h
+openshift-console                      console             N/A             1                 1                     26d
+openshift-console                      downloads           N/A             1                 1                     26d
+openshift-operator-lifecycle-manager   packageserver-pdb   N/A             1                 0                     26d
+sno1@haproxy1:~/ocp-helm$ oc get pods -A | grep -E 'Terminating|Pending'
+bscf                                               bscf18-bip0-857c765b6d-5n4t2                                 0/1     Pending   0                2d
+bscf                                               bscf18-bip1-57754c6c-xtkdc                                   0/1     Pending   0                28h
+bscf                                               bscf18-bpp0-784ff7559d-zqkh9                                 0/1     Pending   0                2d
+bscf                                               bscf18-bpp1-6458c78df5-shcq6                                 0/1     Pending   0                2d
+bscf                                               bscf18-cmp0-749478b545-bnfrv                                 0/1     Pending   0                33m
+bscf                                               bscf18-cmp1-5c98d8c5f7-lglsm                                 0/1     Pending   0                33m
+bscf                                               bscf18-dmp0-7d9d9466fb-fkl49                                 0/1     Pending   0                33m
+bscf                                               bscf18-pmp0-7745c587c6-9zqb7                                 0/1     Pending   0                33m
+openshift-apiserver-operator                       openshift-apiserver-operator-8b47496bb-6sq9q                 0/1     Pending   0                33m
+openshift-apiserver                                apiserver-8587d6d845-tpshh                                   0/2     Pending   0                33m
+openshift-authentication-operator                  authentication-operator-5db94dcd4c-htv86                     0/1     Pending   0                33m
+openshift-authentication                           oauth-openshift-84564778cc-s5lxd                             0/1     Pending   0                33m
+openshift-catalogd                                 catalogd-controller-manager-fdd7f4cf6-76slc                  0/2     Pending   0                33m
+openshift-cloud-controller-manager-operator        cluster-cloud-controller-manager-operator-78b6fc648c-n4k6t   0/3     Pending   0                33m
+openshift-cloud-credential-operator                cloud-credential-operator-86994b5f5-2xjft                    0/2     Pending   0                33m
+openshift-cluster-machine-approver                 machine-approver-779c9c5477-n6nrr                            0/2     Pending   0                33m
+openshift-cluster-node-tuning-operator             cluster-node-tuning-operator-6bf4447dc4-p4xln                0/1     Pending   0                33m
+openshift-cluster-olm-operator                     cluster-olm-operator-99fc9bb88-zhh6x                         0/1     Pending   0                33m
+openshift-cluster-samples-operator                 cluster-samples-operator-5d58cd96bf-c7fbc                    0/2     Pending   0                33m
+openshift-cluster-storage-operator                 cluster-storage-operator-558fb56f77-v4csg                    0/1     Pending   0                33m
+openshift-cluster-storage-operator                 csi-snapshot-controller-8bcffc844-j4vrb                      0/1     Pending   0                33m
+openshift-cluster-storage-operator                 csi-snapshot-controller-operator-7d98c7c976-wm8rm            0/1     Pending   0                33m
+openshift-cluster-version                          cluster-version-operator-6d9c996c57-6k89h                    0/1     Pending   0                33m
+openshift-config-operator                          openshift-config-operator-685f69769f-4vbb8                   0/1     Pending   0                33m
+openshift-console-operator                         console-operator-664c94c995-hvphh                            0/1     Pending   0                33m
+openshift-controller-manager-operator              openshift-controller-manager-operator-d78dc649b-mkzr4        0/1     Pending   0                33m
+openshift-controller-manager                       controller-manager-86989fd8f-8dvmt                           0/1     Pending   0                33m
+openshift-dns-operator                             dns-operator-779468654f-s5s97                                0/2     Pending   0                33m
+openshift-etcd-operator                            etcd-operator-65484c69b-lchxh                                0/1     Pending   0                33m
+openshift-image-registry                           cluster-image-registry-operator-8647d5b7f4-wgwq9             0/1     Pending   0                33m
+openshift-ingress-operator                         ingress-operator-68f48d6574-z7b98                            0/2     Pending   0                33m
+openshift-ingress                                  router-default-5d9bc99847-57w95                              0/1     Pending   0                33m
+openshift-insights                                 insights-operator-75bfdcdb99-8glbc                           0/1     Pending   0                33m
+openshift-kube-apiserver-operator                  kube-apiserver-operator-77fb645684-xffdv                     0/1     Pending   0                33m
+openshift-kube-controller-manager-operator         kube-controller-manager-operator-7c86bd65c-brfx8             0/1     Pending   0                33m
+openshift-kube-scheduler-operator                  openshift-kube-scheduler-operator-7fd6964986-k9qj4           0/1     Pending   0                33m
+openshift-kube-storage-version-migrator-operator   kube-storage-version-migrator-operator-85fd6679d4-9f6ng      0/1     Pending   0                33m
+openshift-kube-storage-version-migrator            migrator-d8868b89c-f7qfd                                     0/2     Pending   0                33m
+openshift-machine-api                              cluster-autoscaler-operator-bff565675-xxx9d                  0/2     Pending   0                33m
+openshift-machine-api                              cluster-baremetal-operator-7959fc785f-gvlmn                  0/2     Pending   0                33m
+openshift-machine-api                              control-plane-machine-set-operator-575b757c4-p26ql           0/1     Pending   0                33m
+openshift-machine-api                              machine-api-operator-8557c549fc-cv4xm                        0/2     Pending   0                33m
+openshift-machine-config-operator                  machine-config-controller-784d59cf85-fwdqz                   0/2     Pending   0                33m
+openshift-machine-config-operator                  machine-config-operator-659c6fb5db-89p48                     0/2     Pending   0                33m
+openshift-marketplace                              marketplace-operator-75976b75dd-zdx4b                        0/1     Pending   0                33m
+openshift-monitoring                               alertmanager-main-0                                          0/6     Pending   0                33m
+openshift-monitoring                               cluster-monitoring-operator-86d48cf768-ncfl7                 0/1     Pending   0                33m
+openshift-monitoring                               kube-state-metrics-77bd57f77d-2vgn7                          0/3     Pending   0                33m
+openshift-monitoring                               metrics-server-55567c9569-vkrkj                              0/1     Pending   0                33m
+openshift-monitoring                               monitoring-plugin-5fbc9fdbd5-9w4lp                           0/1     Pending   0                33m
+openshift-monitoring                               openshift-state-metrics-54cf8d66d7-5tqxg                     0/3     Pending   0                33m
+openshift-monitoring                               prometheus-k8s-0                                             0/6     Pending   0                33m
+openshift-monitoring                               prometheus-operator-5d9694b69d-dkqb2                         0/2     Pending   0                33m
+openshift-monitoring                               prometheus-operator-admission-webhook-58cd6df765-grstz       0/1     Pending   0                33m
+openshift-monitoring                               telemeter-client-6668fb9976-gdwzk                            0/3     Pending   0                33m
+openshift-monitoring                               thanos-querier-85cf76bfc6-57rkp                              0/6     Pending   0                33m
+openshift-multus                                   multus-admission-controller-5666df886c-f4rv8                 0/2     Pending   0                33m
+openshift-network-console                          networking-console-plugin-7bfcbdd9d4-dghgc                   0/1     Pending   0                33m
+openshift-network-diagnostics                      network-check-source-69b7cb684c-bgv69                        0/1     Pending   0                33m
+openshift-network-operator                         network-operator-595f7fb96d-mlzxw                            0/1     Pending   0                33m
+openshift-oauth-apiserver                          apiserver-85b7cb7994-cf5zq                                   0/1     Pending   0                33m
+openshift-operator-controller                      operator-controller-controller-manager-7959c57bb8-bvnrg      0/2     Pending   0                33m
+openshift-operator-lifecycle-manager               catalog-operator-54d4bc5bc8-6kcgp                            0/1     Pending   0                33m
+openshift-operator-lifecycle-manager               collect-profiles-29755320-j5c9b                              0/1     Pending   0                12m
+openshift-operator-lifecycle-manager               olm-operator-66c676c4f6-59bgm                                0/1     Pending   0                33m
+openshift-operator-lifecycle-manager               package-server-manager-67f88755c5-w4vbm                      0/2     Pending   0                33m
+openshift-operator-lifecycle-manager               packageserver-84b95c8c49-4w9ss                               0/1     Pending   0                33m
+openshift-ovn-kubernetes                           ovnkube-control-plane-789f5b6f98-5htdj                       0/2     Pending   0                33m
+openshift-ptp                                      ptp-operator-77cfc9ddbb-25vbv                                0/1     Pending   0                33m
+openshift-route-controller-manager                 route-controller-manager-d4854dfcc-6m92c                     0/1     Pending   0                33m
+openshift-service-ca-operator                      service-ca-operator-68785bc7d8-m2kjn                         0/1     Pending   0                33m
+openshift-service-ca                               service-ca-857bcd89dd-pqw7m                                  0/1     Pending   0                33m
+openshift-sriov-network-operator                   sriov-network-operator-6f5d74ccbc-xql2h                      0/1     Pending   0                33m
+openshift-storage                                  lvms-operator-7749948dd-7nmd4                                0/1     Pending   0                33m
+sno1@haproxy1:~/ocp-helm$ 
