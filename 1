@@ -1,171 +1,80 @@
-sno1@haproxy1:~/ocp-helm$ oc get pods -n openshift-machine-config-operator
-NAME                                         READY   STATUS              RESTARTS   AGE
-kube-rbac-proxy-crio-sno1.lab1.ocp.lan       1/1     Running             11         26d
-machine-config-controller-784d59cf85-cjfmf   0/2     ContainerCreating   0          133m
-machine-config-daemon-qz495                  2/2     Running             21         26d
-machine-config-operator-659c6fb5db-lfw27     2/2     Running             0          133m
-machine-config-server-6ts47                  1/1     Running             7          26d
-sno1@haproxy1:~/ocp-helm$ oc get no
-NAME                STATUS   ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready    control-plane,master,worker   26d   v1.31.11
-sno1@haproxy1:~/ocp-helm$ oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-b45e8d1765e899e360eff85f3349861b   False     True       False      1              0                   0                     0                      26d
-worker   rendered-worker-ee996864827422f1f23516eeb46f0de2   True      False      False      0              0                   0                     0                      26d
-sno1@haproxy1:~/ocp-helm$ oc describe  mcp master
-Name:         master
-Namespace:
-Labels:       machineconfiguration.openshift.io/mco-built-in=
-              operator.machineconfiguration.openshift.io/required-for-upgrade=
-              pools.operator.machineconfiguration.openshift.io/master=
-Annotations:  sriovnetwork.openshift.io/state: Paused
-API Version:  machineconfiguration.openshift.io/v1
-Kind:         MachineConfigPool
-Metadata:
-  Creation Timestamp:  2026-07-03T06:37:58Z
-  Generation:          18
-  Resource Version:    3390495
-  UID:                 72d97bf6-949f-4446-85c4-d29509b50ddf
-Spec:
-  Configuration:
-    Name:  rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-    Source:
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         00-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-container-runtime
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         01-master-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         97-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         98-master-generated-kubelet
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-load-sctp-module-master
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-generated-registries
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-master-ssh
-      API Version:  machineconfiguration.openshift.io/v1
-      Kind:         MachineConfig
-      Name:         99-set-core-master-password
-  Machine Config Selector:
-    Match Labels:
-      machineconfiguration.openshift.io/role:  master
-  Node Selector:
-    Match Labels:
-      node-role.kubernetes.io/master:
-  Paused:                              false
-Status:
-  Cert Expirys:
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-06-29T11:36:54Z
-    Subject:  CN=admin-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-08-02T10:37:25Z
-    Subject:  CN=kube-csr-signer_@1783075045
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-09-01T06:49:25Z
-    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1783061365
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2026-08-17T10:37:27Z
-    Subject:  CN=kube-csr-signer_@1784371046
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-02T11:36:59Z
-    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-02T11:36:58Z
-    Subject:  CN=kube-control-plane-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2036-06-29T11:36:56Z
-    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
-    Bundle:   KubeAPIServerServingCAData
-    Expiry:   2027-07-03T06:34:52Z
-    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1783060492
-  Conditions:
-    Last Transition Time:  2026-07-03T06:38:30Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  RenderDegraded
-    Last Transition Time:  2026-07-03T06:38:35Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  NodeDegraded
-    Last Transition Time:  2026-07-03T06:38:35Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Degraded
-    Last Transition Time:  2026-07-29T08:17:50Z
-    Message:
-    Reason:
-    Status:                False
-    Type:                  Updated
-    Last Transition Time:  2026-07-29T08:17:50Z
-    Message:               All nodes are updating to MachineConfig rendered-master-ed7b2a32b2ffc9acc3a20f1cd1a1ad21
-    Reason:
-    Status:                True
-    Type:                  Updating
-  Configuration:
-    Name:  rendered-master-b45e8d1765e899e360eff85f3349861b
-    Source:
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   00-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-container-runtime
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   01-master-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   50-nto-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   50-performance-performance-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   97-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   98-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-load-sctp-module-master
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-generated-kubelet
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-generated-registries
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-master-ssh
-      API Version:            machineconfiguration.openshift.io/v1
-      Kind:                   MachineConfig
-      Name:                   99-set-core-master-password
-  Degraded Machine Count:     0
-  Machine Count:              1
-  Observed Generation:        18
-  Ready Machine Count:        0
-  Unavailable Machine Count:  1
-  Updated Machine Count:      0
-Events:                       <none>
-sno1@haproxy1:~/ocp-helm$ oc get mcp
-NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
-master   rendered-master-b45e8d1765e899e360eff85f3349861b   False     True       False      1              0                   0                     0                      26d
-worker   rendered-worker-ee996864827422f1f23516eeb46f0de2   True      False      False      0              0                   0                     0                      26d
-sno1@haproxy1:~/ocp-helm$ oc get no
-NAME                STATUS   ROLES                         AGE   VERSION
-sno1.lab1.ocp.lan   Ready    control-plane,master,worker   26d   v1.31.11
+[root@sno1 ~]# systemctl status crio -l
+● crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; disabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: activating (auto-restart) (Result: exit-code) since Wed 2026-07-29 08:29:59 UTC; 8s ago
+       Docs: https://github.com/cri-o/cri-o
+    Process: 5418 ExecStart=/usr/bin/crio $CRIO_CONFIG_OPTIONS $CRIO_RUNTIME_OPTIONS $CRIO_STORAGE_OPTIONS $CRIO_NETWORK_OPTIONS $CRIO_METRICS_OPTIONS (code=exited, status=1/FAILURE)
+   Main PID: 5418 (code=exited, status=1/FAILURE)
+        CPU: 74ms
+
+Jul 29 08:29:59 sno1.lab1.ocp.lan systemd[1]: Failed to start Container Runtime Interface for OCI (CRI-O).
+[root@sno1 ~]# systemctl status kubelet
+○ kubelet.service - Kubernetes Kubelet
+     Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; preset: disabled)
+    Drop-In: /etc/systemd/system/kubelet.service.d
+             └─01-kubens.conf, 10-mco-default-madv.conf, 20-logging.conf, 20-nodenet.conf
+     Active: inactive (dead)
+
+Jul 29 08:28:57 sno1.lab1.ocp.lan systemd[1]: Dependency failed for Kubernetes Kubelet.
+Jul 29 08:28:57 sno1.lab1.ocp.lan systemd[1]: kubelet.service: Job kubelet.service/start failed with result 'dependency'.
+[root@sno1 ~]# journalctl -u crio -b -n 100
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.023075136Z" level=info msg="Using the internal default seccomp profile"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.023080230Z" level=info msg="AppArmor is disabled by the system or at CRI-O build-time"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.023084185Z" level=info msg="No blockio config file specified, blockio not configured"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.023087899Z" level=info msg="RDT not available in the host system"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.024344941Z" level=info msg="Conmon does support the --sync option"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.024398913Z" level=info msg="Conmon does support the --log-global-size-max option"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.026369566Z" level=info msg="Conmon does support the --sync option"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.026413052Z" level=info msg="Conmon does support the --log-global-size-max option"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.026673999Z" level=info msg="Updated default CNI network name to "
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.027008192Z" level=info msg="FLAG: --enable-profile-unix-socket=\"true\"\n"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.027035322Z" level=info msg="FLAG: --stream-address=\"2405:100:200:72:881e:df7b:f42e:9621\"\n"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.027432170Z" level=info msg="Current CRI-O configuration:\n[crio]\n  root = \"/var/lib/containers/storage\"\n  runroot = \"/run/contai>
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.027707709Z" level=info msg="Attempting to restore irqbalance config from /etc/sysconfig/orig_irq_banned_cpus"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.027768208Z" level=info msg="Restore irqbalance config: nothing to do"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.030550796Z" level=warning msg="Error encountered when checking whether cri-o should wipe containers: open /var/run/crio/version: no s>
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.030706708Z" level=info msg="Registered SIGHUP reload watcher"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.031072196Z" level=info msg="Starting seccomp notifier watcher"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.031105132Z" level=info msg="Create NRI interface"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.031134203Z" level=info msg="runtime interface created"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.031146863Z" level=info msg="Registered domain \"k8s.io\" with NRI"
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.031152446Z" level=info msg="runtime interface starting up..."
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.031157399Z" level=info msg="starting plugins..."
+Jul 29 08:29:59 sno1.lab1.ocp.lan crio[5418]: time="2026-07-29 08:29:59.031280702Z" level=fatal msg="Failed to start streaming server: listen tcp [2405:100:200:72:881e:df7b:f42e:9621]:0: bind: cannot assig>
+Jul 29 08:29:59 sno1.lab1.ocp.lan systemd[1]: crio.service: Main process exited, code=exited, status=1/FAILURE
+Jul 29 08:29:59 sno1.lab1.ocp.lan systemd[1]: crio.service: Failed with result 'exit-code'.
+Jul 29 08:29:59 sno1.lab1.ocp.lan systemd[1]: Failed to start Container Runtime Interface for OCI (CRI-O).
+Jul 29 08:30:09 sno1.lab1.ocp.lan systemd[1]: crio.service: Scheduled restart job, restart counter is at 7.
+Jul 29 08:30:09 sno1.lab1.ocp.lan systemd[1]: Stopped Container Runtime Interface for OCI (CRI-O).
+Jul 29 08:30:09 sno1.lab1.ocp.lan systemd[1]: Starting Container Runtime Interface for OCI (CRI-O)...
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.241339148Z" level=info msg="Updating config from single file: /etc/crio/crio.conf"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.241357595Z" level=info msg="Updating config from drop-in file: /etc/crio/crio.conf"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.241945475Z" level=info msg="Updating config from path: /etc/crio/crio.conf.d"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.241974433Z" level=info msg="Updating config from drop-in file: /etc/crio/crio.conf.d/00-default"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.251119938Z" level=info msg="Starting CRI-O, version: 1.31.11-2.rhaos4.18.git65ec77a.el9, git: unknown(clean)"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.251167788Z" level=info msg="Node configuration value for hugetlb cgroup is true"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.251173302Z" level=info msg="Node configuration value for pid cgroup is true"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.251201997Z" level=info msg="Node configuration value for memoryswap cgroup is true"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.251206678Z" level=info msg="Node configuration value for cgroup v2 is true"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.256508957Z" level=info msg="Node configuration value for systemd AllowedCPUs is true"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.258955650Z" level=info msg="Using default capabilities: CAP_CHOWN, CAP_DAC_OVERRIDE, CAP_FSETID, CAP_FOWNER, CAP_SETGID, CAP_SETUID, >
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.262282270Z" level=info msg="Using runtime handler runc version 1.1.14, spec: 1.0.2-dev, go: go1.22.12 (Red Hat 1.22.12-2.el9_5), libs>
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.266904674Z" level=info msg="Using runtime handler crun version 1.23.1, commit: d20b23dba05e822b93b82f2f34fd5dada433e0c2, rundir: /run>
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.269737541Z" level=info msg="Checkpoint/restore support enabled"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.269749558Z" level=info msg="Using the internal default seccomp profile"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.269754009Z" level=info msg="AppArmor is disabled by the system or at CRI-O build-time"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.269757961Z" level=info msg="No blockio config file specified, blockio not configured"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.269761598Z" level=info msg="RDT not available in the host system"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.270983333Z" level=info msg="Conmon does support the --sync option"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.270998462Z" level=info msg="Conmon does support the --log-global-size-max option"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.272214604Z" level=info msg="Conmon does support the --sync option"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.272228601Z" level=info msg="Conmon does support the --log-global-size-max option"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.272303302Z" level=info msg="Updated default CNI network name to "
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.272409671Z" level=info msg="FLAG: --enable-profile-unix-socket=\"true\"\n"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.272416702Z" level=info msg="FLAG: --stream-address=\"2405:100:200:72:881e:df7b:f42e:9621\"\n"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.272729643Z" level=info msg="Current CRI-O configuration:\n[crio]\n  root = \"/var/lib/containers/storage\"\n  runroot = \"/run/contai>
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.272968483Z" level=info msg="Attempting to restore irqbalance config from /etc/sysconfig/orig_irq_banned_cpus"
+Jul 29 08:30:09 sno1.lab1.ocp.lan crio[5459]: time="2026-07-29 08:30:09.273010043Z" level=info msg="Restore irqbalance config: nothing to do"
+lines 1-57
