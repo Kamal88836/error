@@ -1,111 +1,255 @@
-From the oc describe mcp master output, the key points are:
+[systemd]
+Failed Units: 2
+  chrony-wait.service
+  NetworkManager-wait-online.service
+[root@sno1 ~]# journalctl -u crio -b -n 100
+Jul 29 07:24:04 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:04.687443438Z" level=info msg="Pulled image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d96ca6ca34d38debb586165c04ca6aa3735d0>
+Jul 29 07:24:04 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:04.687946907Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d96ca6ca34d38debb586165c04ca>
+Jul 29 07:24:04 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:04.698878221Z" level=info msg="Pulled image: registry.redhat.io/lvms4/lvms-rhel9-operator@sha256:5c86b3ccb785517fcf41405087e03ca9933223e>
+Jul 29 07:24:04 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:04.699324474Z" level=info msg="Checking image status: registry.redhat.io/lvms4/lvms-rhel9-operator@sha256:be49109ec5be53a783b2de9bc6529d>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.865633182Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:061863004728c3de7888c362eddcabdb53b458d450361b15c4f987>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.866631946Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:7db77843a6a9c27b476c645492bdfe4da6634a9381bdeb5d114f56>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.867534087Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d7d4fc9f62d3e868cdf203ecbd59>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.867706196Z" level=info msg="Checking image status: registry.redhat.io/openshift4/ose-sriov-network-webhook-rhel9@sha256:422b72d9ebd9b>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.874864307Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:a3caf3b0e5ff7f0855ba18e36b03daee49ba96c560a27f6ab986f7>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.875759193Z" level=info msg="Checking image status: registry.redhat.io/openshift4/ose-sriov-dp-admission-controller-rhel9@sha256:ff02c>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.876514687Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:7122711efa7a2e72018d0c240c07d24fd9597e569331da019de8e2>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.876791330Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:443990ae768e33edf045eb5e84ffa2b7bb0237b2a342853bc9f571>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.877975112Z" level=info msg="Checking image status: registry.redhat.io/lvms4/lvms-rhel9-operator@sha256:be49109ec5be53a783b2de9bc6529d>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.878896035Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d96ca6ca34d38debb586165c04ca>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.879484912Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:443990ae768e33edf045eb5e84ffa2b7bb0237b2a342853bc9f571>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.881166371Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:061863004728c3de7888c362eddcabdb53b458d450361b15c4f987>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.881621090Z" level=info msg="Creating container: openshift-storage/vg-manager-m8jlm/vg-manager" id=1ecd69e1-d15d-4403-b97c-349f2005342>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.882694562Z" level=info msg="Creating container: openshift-multus/network-metrics-daemon-frzb2/network-metrics-daemon" id=627c4e64-375>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.883881643Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:7db77843a6a9c27b476c645492bdfe4da6634a9381bdeb5d114f56>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.884399349Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:a3caf3b0e5ff7f0855ba18e36b03daee49ba96c560a27f6ab986f7>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.884646881Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.884687041Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:7122711efa7a2e72018d0c240c07d24fd9597e569331da019de8e2>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.885098828Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.885533053Z" level=info msg="Creating container: openshift-dns/dns-default-lw7sk/dns" id=4283dfea-fe92-4e62-8ecf-d63e5f2ca4eb name=/ru>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.886334883Z" level=info msg="Creating container: openshift-sriov-network-operator/network-resources-injector-ggp6q/webhook-server" id=>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.886903967Z" level=info msg="Creating container: openshift-sriov-network-operator/operator-webhook-92w6q/webhook-server" id=307d63df-f>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.888136973Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.889455965Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.889875028Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.893933490Z" level=info msg="Pulled image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f8899e7b479006d8d6c14e127b1f9f65c388c>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.894358769Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f8899e7b479006d8d6c14e127b1f>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.904341643Z" level=info msg="Pulled image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f04189a8062571085ebc72b8e838d36b64bb9>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.904875229Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f04189a8062571085ebc72b8e838>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.905874852Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:4addb757fd463b7a7723aee982bfc4f639036c59b8610b640e601e>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.906092355Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.907740920Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f8899e7b479006d8d6c14e127b1f>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.909529851Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.911789574Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.913051200Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:2e548036315ac6ba58660c50aeb1dfd7f724ca4a57bc5c10c873f3>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.913352443Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:4addb757fd463b7a7723aee982bfc4f639036c59b8610b640e601e>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.921750040Z" level=info msg="Creating container: openshift-ingress-canary/ingress-canary-vfqnk/serve-healthcheck-canary" id=e9e666d2-3>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.923469931Z" level=info msg="Checking image status: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f04189a8062571085ebc72b8e838>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.930753042Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.932110759Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.934488757Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.935424737Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.944861495Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.947645972Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.963959427Z" level=info msg="Image status: &ImageStatusResponse{Image:&Image{Id:2e548036315ac6ba58660c50aeb1dfd7f724ca4a57bc5c10c873f3>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.965721051Z" level=info msg="Creating container: openshift-network-diagnostics/network-check-target-bm9rk/network-check-target-contain>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.966512183Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.967670985Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.978088579Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.992697492Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:05 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:05.996054018Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.052101984Z" level=info msg="Created container 6666255fc1f6d9335c30bc62290072040a029df5d4440249165a13a217ed1377: openshift-sriov-netwo>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.053138203Z" level=info msg="Starting container: 6666255fc1f6d9335c30bc62290072040a029df5d4440249165a13a217ed1377" id=2f2e2dae-170b-42>
 
-1. The MachineConfigPool is Paused
+[root@sno1 ~]# systemctl status crio -l
+● crio.service - Container Runtime Interface for OCI (CRI-O)
+     Loaded: loaded (/usr/lib/systemd/system/crio.service; disabled; preset: disabled)
+    Drop-In: /etc/systemd/system/crio.service.d
+             └─01-kubens.conf, 05-mco-ordering.conf, 10-mco-default-madv.conf, 10-mco-profile-unix-socket.conf, 20-nodenet.conf
+     Active: active (running) since Wed 2026-07-29 07:21:45 UTC; 7min ago
+       Docs: https://github.com/cri-o/cri-o
+   Main PID: 9135 (crio)
+      Tasks: 35
+     Memory: 6.4G
+        CPU: 3min 27.784s
+     CGroup: /system.slice/crio.service
+             └─9135 /usr/bin/crio
 
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.204160917Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.213439384Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.318261129Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.323936669Z" level=info msg="Allowed annotations are specified for workload [io.containers.trace-syscall io.kubernetes.cri-o.Devices i>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.394399201Z" level=info msg="Created container 6f9d33df46db89ee898d6a28075e9e2fbec9f237f6aaf54ffaff3f8eaa1b42b6: openshift-dns/dns-def>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.394913603Z" level=info msg="Starting container: 6f9d33df46db89ee898d6a28075e9e2fbec9f237f6aaf54ffaff3f8eaa1b42b6" id=abe1a7d2-edc3-4e>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.398007137Z" level=info msg="Started container" PID=14006 containerID=6f9d33df46db89ee898d6a28075e9e2fbec9f237f6aaf54ffaff3f8eaa1b42b6>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.405302321Z" level=info msg="Created container 90da9bc03e0e894c9b2f65863060418aa109a358454dd78384cdcc31f3c430d6: openshift-multus/netw>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.405661121Z" level=info msg="Starting container: 90da9bc03e0e894c9b2f65863060418aa109a358454dd78384cdcc31f3c430d6" id=b1d0c057-5e06-40>
+Jul 29 07:24:06 sno1.lab1.ocp.lan crio[9135]: time="2026-07-29 07:24:06.408258660Z" level=info msg="Started container" PID=14007 containerID=90da9bc03e0e894c9b2f65863060418aa109a358454dd78384cdcc31f3c430d6>
+
+[root@sno1 ~]#
+logout
+[core@sno1 ~]$
+logout
+Connection to sno1.lab1.ocp.lan closed.
+sno1@haproxy1:~/ocp-helm$ oc patch mcp master --type=merge -p '{"spec":{"paused":false}}'
+machineconfigpool.machineconfiguration.openshift.io/master patched
+sno1@haproxy1:~/ocp-helm$ oc describe mcp master
+Name:         master
+Namespace:
+Labels:       machineconfiguration.openshift.io/mco-built-in=
+              operator.machineconfiguration.openshift.io/required-for-upgrade=
+              pools.operator.machineconfiguration.openshift.io/master=
+Annotations:  sriovnetwork.openshift.io/state: Paused
+API Version:  machineconfiguration.openshift.io/v1
+Kind:         MachineConfigPool
+Metadata:
+  Creation Timestamp:  2026-07-03T06:37:58Z
+  Generation:          17
+  Resource Version:    3386790
+  UID:                 72d97bf6-949f-4446-85c4-d29509b50ddf
 Spec:
-  Paused: true
-
-and
-
+  Configuration:
+    Name:  rendered-master-b45e8d1765e899e360eff85f3349861b
+    Source:
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         00-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-container-runtime
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         01-master-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-nto-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         50-performance-performance-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         97-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         98-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-load-sctp-module-master
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-kubelet
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-generated-registries
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-master-ssh
+      API Version:  machineconfiguration.openshift.io/v1
+      Kind:         MachineConfig
+      Name:         99-set-core-master-password
+  Machine Config Selector:
+    Match Labels:
+      machineconfiguration.openshift.io/role:  master
+  Node Selector:
+    Match Labels:
+      node-role.kubernetes.io/master:
+  Paused:                              false
 Status:
-  Updating: False
-  Message: Pool is paused; will not update to MachineConfig rendered-master-b45e8d1765e899e360eff85f3349861b
-
-This means the Machine Config Operator (MCO) is not allowed to apply any new MachineConfig changes.
-
-
----
-
-2. The node is currently unavailable
-
-Machine Count:              1
-Ready Machine Count:        0
-Unavailable Machine Count:  1
-Updated Machine Count:      1
-
-Since this is an SNO cluster (only one master node):
-
-Ready Machine Count = 0 ❌
-
-Unavailable Machine Count = 1 ❌
-
-
-This means the only control-plane node is currently not Ready.
-
-
----
-
-3. There is no MachineConfig degradation
-
-These are good:
-
-RenderDegraded: False
-NodeDegraded:   False
-Degraded:       False
-
-So MCO itself is healthy.
-
-
----
-
-4. Why CRI-O may still not start
-
-In your previous messages, CRI-O was failing.
-
-Since the MCP is paused, even if you fix or create a new MachineConfig, it will never be applied until the pool is unpaused.
-
-However, pausing the MCP does not itself stop CRI-O. A CRI-O startup failure is usually due to an invalid configuration (for example, a bad CRI-O drop-in, runtime configuration, or network setting).
-
-
----
-
-I would check these next
-
-Check the node status
-
-oc get nodes
-
-Check the current MachineConfig state
-
-oc describe node <node-name> | grep -A10 MachineConfig
-
-Check why CRI-O is failing
-
-journalctl -u crio -b -n 100
-
-or
-
-systemctl status crio -l
-
-
----
-
-If you actually want MCO to apply changes
-
-Unpause the MCP:
-
-oc patch mcp master --type=merge -p '{"spec":{"paused":false}}'
-
-Then watch:
-
-oc get mcp master -w
-
-
----
-
-One thing caught my attention
-
-Your MCP has the annotation:
-
-sriovnetwork.openshift.io/state: Paused
-
-This suggests that the SR-IOV Operator may have intentionally paused the MachineConfigPool while applying configuration. If that operation never completed, the pool can remain paused.
-
-Could you also share the outputs of these commands?
-
-oc get nodes
-oc get mcp
-oc describe node sno1
-journalctl -xeu crio.service
-
-These will help determine whether the problem is the node becoming NotReady, the paused MCP, or the underlying CRI-O configuration error.
+  Cert Expirys:
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-06-29T11:36:54Z
+    Subject:  CN=admin-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-08-02T10:37:25Z
+    Subject:  CN=kube-csr-signer_@1783075045
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-09-01T06:49:25Z
+    Subject:  CN=openshift-kube-controller-manager-operator_csr-signer-signer@1783061365
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2026-08-17T10:37:27Z
+    Subject:  CN=kube-csr-signer_@1784371046
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-02T11:36:59Z
+    Subject:  CN=kube-apiserver-to-kubelet-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-02T11:36:58Z
+    Subject:  CN=kube-control-plane-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2036-06-29T11:36:56Z
+    Subject:  CN=kubelet-bootstrap-kubeconfig-signer,OU=openshift
+    Bundle:   KubeAPIServerServingCAData
+    Expiry:   2027-07-03T06:34:52Z
+    Subject:  CN=openshift-kube-apiserver-operator_node-system-admin-signer@1783060492
+  Conditions:
+    Last Transition Time:  2026-07-03T06:38:30Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  RenderDegraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  NodeDegraded
+    Last Transition Time:  2026-07-03T06:38:35Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Degraded
+    Last Transition Time:  2026-07-29T06:05:32Z
+    Message:
+    Reason:
+    Status:                False
+    Type:                  Updated
+    Last Transition Time:  2026-07-28T05:58:25Z
+    Message:               Pool is paused; will not update to MachineConfig rendered-master-b45e8d1765e899e360eff85f3349861b
+    Reason:
+    Status:                False
+    Type:                  Updating
+  Configuration:
+    Name:  rendered-master-b45e8d1765e899e360eff85f3349861b
+    Source:
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   00-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   01-master-container-runtime
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   01-master-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   50-nto-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   50-performance-performance-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   97-master-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   98-master-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-load-sctp-module-master
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-master-generated-kubelet
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-master-generated-registries
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-master-ssh
+      API Version:            machineconfiguration.openshift.io/v1
+      Kind:                   MachineConfig
+      Name:                   99-set-core-master-password
+  Degraded Machine Count:     0
+  Machine Count:              1
+  Observed Generation:        16
+  Ready Machine Count:        0
+  Unavailable Machine Count:  1
+  Updated Machine Count:      1
+Events:                       <none>
+sno1@haproxy1:~/ocp-helm$
