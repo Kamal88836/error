@@ -1,84 +1,69 @@
-[root@sno1 ~]# sysctl net.ipv6.conf.all.use_tempaddr
-net.ipv6.conf.all.use_tempaddr = 0
-[root@sno1 ~]# sysctl net.ipv6.conf.ens3f0.use_tempaddr
-net.ipv6.conf.ens3f0.use_tempaddr = 0
-[root@sno1 ~]# nmcli connection show ens3f0 | egrep "ipv6.method|ipv6.addr|ipv6.token|ipv6.ip6-privacy"
-ipv6.method:                            manual
-ipv6.addresses:                         2405:100:200:72::1:25/64
-ipv6.ip6-privacy:                       -1 (unknown)
-ipv6.addr-gen-mode:                     default-or-eui64
-ipv6.token:                             --
-[root@sno1 ~]#
-logout
-[core@sno1 ~]$
-logout
-Connection to sno1.lab1.ocp.lan closed.
-sno1@haproxy1:~/ocp-helm$ oc get network.config.openshift.io cluster -o yaml
-apiVersion: config.openshift.io/v1
-kind: Network
-metadata:
-  creationTimestamp: "2026-07-03T05:38:36Z"
-  generation: 290
-  name: cluster
-  resourceVersion: "3395011"
-  uid: 661b5ae7-6daa-4233-be91-8458e0ea9778
-spec:
-  clusterNetwork:
-  - cidr: 10.128.0.0/14
-    hostPrefix: 23
-  - cidr: fd01::/48
-    hostPrefix: 64
-  externalIP:
-    policy: {}
-  networkDiagnostics:
-    mode: ""
-    sourcePlacement: {}
-    targetPlacement: {}
-  networkType: OVNKubernetes
-  serviceNetwork:
-  - 172.30.0.0/16
-  - fd02::/112
-status:
-  clusterNetwork:
-  - cidr: 10.128.0.0/14
-    hostPrefix: 23
-  - cidr: fd01::/48
-    hostPrefix: 64
-  clusterNetworkMTU: 1400
-  conditions:
-  - lastTransitionTime: "2026-07-29T09:12:51Z"
-    message: ""
-    observedGeneration: 0
-    reason: AsExpected
-    status: "True"
-    type: NetworkDiagnosticsAvailable
-  networkType: OVNKubernetes
-  serviceNetwork:
-  - 172.30.0.0/16
-  - fd02::/112
-sno1@haproxy1:~/ocp-helm$ oc get infrastructure cluster -o yaml
-apiVersion: config.openshift.io/v1
-kind: Infrastructure
-metadata:
-  creationTimestamp: "2026-07-03T05:38:34Z"
-  generation: 1
-  name: cluster
-  resourceVersion: "420"
-  uid: ccdb3324-9e0b-4b83-808d-3947babbf206
-spec:
-  cloudConfig:
-    name: ""
-  platformSpec:
-    type: None
-status:
-  apiServerInternalURI: https://api-int.lab1.ocp.lan:6443
-  apiServerURL: https://api.lab1.ocp.lan:6443
-  controlPlaneTopology: SingleReplica
-  cpuPartitioning: None
-  etcdDiscoveryDomain: ""
-  infrastructureName: lab1-mgggq
-  infrastructureTopology: SingleReplica
-  platform: None
-  platformStatus:
-    type: None
-sno1@haproxy1:~/ocp-helm$
+Thanks. These outputs are very helpful.
+
+What they tell us
+
+Your node configuration looks correct:
+
+ipv6.method: manual ✅
+
+ipv6.addresses: 2405:100:200:72::1:25/64 ✅
+
+use_tempaddr = 0 ✅ (temporary/privacy IPv6 addresses are disabled)
+
+ipv6.addr-gen-mode: default-or-eui64 ✅
+
+
+So NetworkManager is not randomly generating a new IPv6 address.
+
+The OpenShift cluster configuration is also normal:
+
+Dual-stack OVNKubernetes
+
+Platform: None (bare metal)
+
+Nothing unusual in the cluster network configuration.
+
+
+The interesting part
+
+Earlier, the generated files contained:
+
+KUBELET_NODE_IP=2405:100:200:72:881e:df7b:f42e:9621
+CONTAINER_STREAM_ADDRESS=2405:100:200:72:881e:df7b:f42e:9621
+
+After a manual reboot, they became:
+
+KUBELET_NODE_IP=72.1.1.25
+KUBELET_NODE_IPS=72.1.1.25,2405:100:200:72::1:25
+CONTAINER_STREAM_ADDRESS=72.1.1.25
+
+That means something regenerated 20-nodenet.conf between the two boots.
+
+This is not expected if the node configuration is stable.
+
+I suspect the first reboot happened before networking was fully initialized
+
+The first boot likely generated the node networking drop-ins using an incorrect detected IPv6 address. After the second reboot, when networking came up cleanly, the Machine Config Daemon regenerated the files with the correct addresses.
+
+The next thing to verify
+
+Please check whether the problem recurs and whether the drop-in is regenerated.
+
+After the next reboot, if the issue happens again, before changing anything manually, collect these:
+
+cat /etc/systemd/system/kubelet.service.d/20-nodenet.conf
+cat /etc/systemd/system/crio.service.d/20-nodenet.conf
+journalctl -b -u machine-config-daemon
+journalctl -b -u NetworkManager
+
+The Machine Config Daemon and NetworkManager logs from the failed boot are the key to understanding why the stale address was written.
+
+One more question
+
+Did this problem start only after applying the latest MachineConfig/PerformanceProfile update, or has this SNO always shown this behavior on every reboot?
+
+That distinction will tell us whether we're looking at:
+
+a regression introduced by the recent MachineConfig update, or
+
+an underlying node networking issue that has existed since installation.
