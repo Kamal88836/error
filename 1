@@ -1,156 +1,25 @@
-sno1@haproxy1:~/ocp-config$ oc describe ns openshift-sriov-network-operator
-Name:         openshift-sriov-network-operator
-Labels:       kubernetes.io/metadata.name=openshift-sriov-network-operator
-              pod-security.kubernetes.io/audit=privileged
-              pod-security.kubernetes.io/audit-version=latest
-              pod-security.kubernetes.io/warn=privileged
-              pod-security.kubernetes.io/warn-version=latest
-              security.openshift.io/scc.podSecurityLabelSync=true
-Annotations:  openshift.io/sa.scc.mcs: s0:c27,c24
-              openshift.io/sa.scc.supplemental-groups: 1000750000/10000
-              openshift.io/sa.scc.uid-range: 1000750000/10000
-              workload.openshift.io/allowed: management
-Status:       Terminating
-Conditions:
-  Type                                         Status  LastTransitionTime               Reason                Message
-  ----                                         ------  ------------------               ------                -------
-  NamespaceDeletionDiscoveryFailure            False   Wed, 29 Jul 2026 11:47:32 +0000  ResourcesDiscovered   All resources successfully discovered
-  NamespaceDeletionGroupVersionParsingFailure  False   Wed, 29 Jul 2026 10:16:50 +0000  ParsedGroupVersions   All legacy kube types successfully parsed
-  NamespaceDeletionContentFailure              False   Wed, 29 Jul 2026 11:22:02 +0000  ContentDeleted        All content successfully deleted, may be waiting on finalization
-  NamespaceContentRemaining                    True    Wed, 29 Jul 2026 10:16:50 +0000  SomeResourcesRemain   Some resources are remaining: sriovnetworks.sriovnetwork.openshift.io has 8 resource instances, sriovoperatorconfigs.sriovnetwork.openshift.io has 1 resource instances
-  NamespaceFinalizersRemaining                 True    Wed, 29 Jul 2026 10:16:50 +0000  SomeFinalizersRemain  Some content in the namespace has finalizers remaining: netattdef.finalizers.sriovnetwork.openshift.io in 8 resource instances, operatorconfig.finalizers.sriovnetwork.openshift.io in 1 resource instances
+[root@bastion ~]# oc rsh rook-ceph-tools-7bbc97d855-9hpnk
+sh-5.1$
+sh-5.1$ ceph -s
+  cluster:
+    id:     9fe96968-f307-494a-b4c0-0838141f6172
+    health: HEALTH_WARN
+            1 MDSs report slow metadata IOs
+            Reduced data availability: 61 pgs inactive
+            OSD count 0 < osd_pool_default_size 3
 
-No resource quota.
+  services:
+    mon: 3 daemons, quorum a,b,c (age 5d)
+    mgr: a(active, since 2h), standbys: b
+    mds: 1/1 daemons up, 1 standby
+    osd: 0 osds: 0 up, 0 in
 
-No LimitRange resource.
-sno1@haproxy1:~/ocp-config$ oc get ns openshift-sriov-network-operator
-NAME                               STATUS        AGE
-openshift-sriov-network-operator   Terminating   8d
-sno1@haproxy1:~/ocp-config$ oc api-resources --verbs=list --namespaced -o name | \
-xargs -n1 oc get -n openshift-sriov-network-operator --ignore-not-found
+  data:
+    volumes: 1/1 healthy
+    pools:   12 pools, 61 pgs
+    objects: 0 objects, 0 B
+    usage:   0 B used, 0 B / 0 B avail
+    pgs:     100.000% pgs unknown
+             61 unknown
 
-
-Warning: apps.openshift.io/v1 DeploymentConfig is deprecated in v4.14+, unavailable in v4.10000+
-NAME                          CATALOG   AGE
-kubernetes-nmstate-operator             9d
-mcg-operator                            9d
-cluster-logging                         9d
-ptp-operator                            9d
-lvms-operator                           9d
-ocs-operator                            9d
-local-storage-operator                  9d
-odf-csi-addons-operator                 9d
-sriov-network-operator                  9d
-odf-operator                            9d
-NAME                AGE
-bscf-bh0c-1-nad     8d
-bscf-bh0c-nad       8d
-bscf-bh0u-1-nad     8d
-bscf-bh0u-2-1-nad   8d
-bscf-bh0u-2-nad     8d
-bscf-bh0u-3-1-nad   8d
-bscf-bh0u-3-nad     8d
-bscf-bh0u-nad       8d
-NAME      AGE
-default   8d
-sno1@haproxy1:~/ocp-config$
-sno1@haproxy1:~/ocp-config$
-sno1@haproxy1:~/ocp-config$ oc get ns openshift-sriov-network-operator -o json | jq '.spec.finalizers'
-[
-  "kubernetes"
-]
-sno1@haproxy1:~/ocp-config$ oc get ns openshift-sriov-network-operator -o json | jq '.spec.finalizers'
-[
-  "kubernetes"
-]
-sno1@haproxy1:~/ocp-config$ oc get ns openshift-sriov-network-operator -o json > ns.json
-sno1@haproxy1:~/ocp-config$ vi
-sno1@haproxy1:~/ocp-config$ vi ns.json
-sno1@haproxy1:~/ocp-config$ oc replace --raw "/api/v1/namespaces/openshift-sriov-network-operator/finalize" -f ns.json
-{"kind":"Namespace","apiVersion":"v1","metadata":{"name":"openshift-sriov-network-operator","uid":"50ed75ce-f652-4305-91bd-258b933ec1dd","resourceVersion":"3417388","creationTimestamp":"2026-07-21T10:06:38Z","deletionTimestamp":"2026-07-29T10:16:44Z","labels":{"kubernetes.io/metadata.name":"openshift-sriov-network-operator","pod-security.kubernetes.io/audit":"privileged","pod-security.kubernetes.io/audit-version":"latest","pod-security.kubernetes.io/warn":"privileged","pod-security.kubernetes.io/warn-version":"latest","security.openshift.io/scc.podSecurityLabelSync":"true"},"annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"annotations\":{\"workload.openshift.io/allowed\":\"management\"},\"name\":\"openshift-sriov-network-operator\"}}\n","openshift.io/sa.scc.mcs":"s0:c27,c24","openshift.io/sa.scc.supplemental-groups":"1000750000/10000","openshift.io/sa.scc.uid-range":"1000750000/10000","workload.openshift.io/allowed":"management"},"managedFields":[{"manager":"pod-security-admission-label-synchronization-controller","operation":"Apply","apiVersion":"v1","time":"2026-07-21T10:06:51Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:labels":{"f:pod-security.kubernetes.io/audit":{},"f:pod-security.kubernetes.io/audit-version":{},"f:pod-security.kubernetes.io/warn":{},"f:pod-security.kubernetes.io/warn-version":{}}}}},{"manager":"cluster-policy-controller","operation":"Update","apiVersion":"v1","time":"2026-07-21T10:06:38Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{"f:openshift.io/sa.scc.mcs":{},"f:openshift.io/sa.scc.supplemental-groups":{},"f:openshift.io/sa.scc.uid-range":{}}}}},{"manager":"kubectl-client-side-apply","operation":"Update","apiVersion":"v1","time":"2026-07-21T10:06:38Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{".":{},"f:kubectl.kubernetes.io/last-applied-configuration":{},"f:workload.openshift.io/allowed":{}},"f:labels":{".":{},"f:kubernetes.io/metadata.name":{}}}}},{"manager":"olm","operation":"Update","apiVersion":"v1","time":"2026-07-21T10:06:49Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:labels":{"f:security.openshift.io/scc.podSecurityLabelSync":{}}}}},{"manager":"kube-controller-manager","operation":"Update","apiVersion":"v1","time":"2026-07-29T11:47:32Z","fieldsType":"FieldsV1","fieldsV1":{"f:status":{"f:conditions":{".":{},"k:{\"type\":\"NamespaceContentRemaining\"}":{".":{},"f:lastTransitionTime":{},"f:message":{},"f:reason":{},"f:status":{},"f:type":{}},"k:{\"type\":\"NamespaceDeletionContentFailure\"}":{".":{},"f:lastTransitionTime":{},"f:message":{},"f:reason":{},"f:status":{},"f:type":{}},"k:{\"type\":\"NamespaceDeletionDiscoveryFailure\"}":{".":{},"f:lastTransitionTime":{},"f:message":{},"f:reason":{},"f:status":{},"f:type":{}},"k:{\"type\":\"NamespaceDeletionGroupVersionParsingFailure\"}":{".":{},"f:lastTransitionTime":{},"f:message":{},"f:reason":{},"f:status":{},"f:type":{}},"k:{\"type\":\"NamespaceFinalizersRemaining\"}":{".":{},"f:lastTransitionTime":{},"f:message":{},"f:reason":{},"f:status":{},"f:type":{}}}}},"subresource":"status"}]},"spec":{},"status":{"phase":"Terminating","conditions":[{"type":"NamespaceDeletionDiscoveryFailure","status":"False","lastTransitionTime":"2026-07-29T11:47:32Z","reason":"ResourcesDiscovered","message":"All resources successfully discovered"},{"type":"NamespaceDeletionGroupVersionParsingFailure","status":"False","lastTransitionTime":"2026-07-29T10:16:50Z","reason":"ParsedGroupVersions","message":"All legacy kube types successfully parsed"},{"type":"NamespaceDeletionContentFailure","status":"False","lastTransitionTime":"2026-07-29T11:22:02Z","reason":"ContentDeleted","message":"All content successfully deleted, may be waiting on finalization"},{"type":"NamespaceContentRemaining","status":"True","lastTransitionTime":"2026-07-29T10:16:50Z","reason":"SomeResourcesRemain","message":"Some resources are remaining: sriovnetworks.sriovnetwork.openshift.io has 8 resource instances, sriovoperatorconfigs.sriovnetwork.openshift.io has 1 resource instances"},{"type":"NamespaceFinalizersRemaining","status":"True","lastTransitionTime":"2026-07-29T10:16:50Z","reason":"SomeFinalizersRemain","message":"Some content in the namespace has finalizers remaining: netattdef.finalizers.sriovnetwork.openshift.io in 8 resource instances, operatorconfig.finalizers.sriovnetwork.openshift.io in 1 resource instances"}]}}
-sno1@haproxy1:~/ocp-config$ oc get ns
-NAME                                               STATUS   AGE
-bscf                                               Active   8d
-default                                            Active   26d
-kube-node-lease                                    Active   26d
-kube-public                                        Active   26d
-kube-system                                        Active   26d
-openshift                                          Active   26d
-openshift-apiserver                                Active   26d
-openshift-apiserver-operator                       Active   26d
-openshift-authentication                           Active   26d
-openshift-authentication-operator                  Active   26d
-openshift-catalogd                                 Active   26d
-openshift-cloud-controller-manager                 Active   26d
-openshift-cloud-controller-manager-operator        Active   26d
-openshift-cloud-credential-operator                Active   26d
-openshift-cloud-network-config-controller          Active   26d
-openshift-cloud-platform-infra                     Active   26d
-openshift-cluster-csi-drivers                      Active   26d
-openshift-cluster-machine-approver                 Active   26d
-openshift-cluster-node-tuning-operator             Active   26d
-openshift-cluster-olm-operator                     Active   26d
-openshift-cluster-samples-operator                 Active   26d
-openshift-cluster-storage-operator                 Active   26d
-openshift-cluster-version                          Active   26d
-openshift-config                                   Active   26d
-openshift-config-managed                           Active   26d
-openshift-config-operator                          Active   26d
-openshift-console                                  Active   26d
-openshift-console-operator                         Active   26d
-openshift-console-user-settings                    Active   26d
-openshift-controller-manager                       Active   26d
-openshift-controller-manager-operator              Active   26d
-openshift-dns                                      Active   26d
-openshift-dns-operator                             Active   26d
-openshift-etcd                                     Active   26d
-openshift-etcd-operator                            Active   26d
-openshift-host-network                             Active   26d
-openshift-image-registry                           Active   26d
-openshift-infra                                    Active   26d
-openshift-ingress                                  Active   26d
-openshift-ingress-canary                           Active   26d
-openshift-ingress-operator                         Active   26d
-openshift-insights                                 Active   26d
-openshift-kni-infra                                Active   26d
-openshift-kube-apiserver                           Active   26d
-openshift-kube-apiserver-operator                  Active   26d
-openshift-kube-controller-manager                  Active   26d
-openshift-kube-controller-manager-operator         Active   26d
-openshift-kube-scheduler                           Active   26d
-openshift-kube-scheduler-operator                  Active   26d
-openshift-kube-storage-version-migrator            Active   26d
-openshift-kube-storage-version-migrator-operator   Active   26d
-openshift-machine-api                              Active   26d
-openshift-machine-config-operator                  Active   26d
-openshift-marketplace                              Active   26d
-openshift-monitoring                               Active   26d
-openshift-multus                                   Active   26d
-openshift-network-console                          Active   26d
-openshift-network-diagnostics                      Active   26d
-openshift-network-node-identity                    Active   26d
-openshift-network-operator                         Active   26d
-openshift-node                                     Active   26d
-openshift-nutanix-infra                            Active   26d
-openshift-oauth-apiserver                          Active   26d
-openshift-openstack-infra                          Active   26d
-openshift-operator-controller                      Active   26d
-openshift-operator-lifecycle-manager               Active   26d
-openshift-operators                                Active   26d
-openshift-ovirt-infra                              Active   26d
-openshift-ovn-kubernetes                           Active   26d
-openshift-ptp                                      Active   8d
-openshift-route-controller-manager                 Active   26d
-openshift-service-ca                               Active   26d
-openshift-service-ca-operator                      Active   26d
-openshift-storage                                  Active   8d
-openshift-user-workload-monitoring                 Active   26d
-openshift-vsphere-infra                            Active   26d
-sno1@haproxy1:~/ocp-config$ oc get ns openshift-sriov-network-operator -o yaml
-Error from server (NotFound): namespaces "openshift-sriov-network-operator" not found
-sno1@haproxy1:~/ocp-config$ oc describe ns openshift-sriov-network-operator
-Error from server (NotFound): namespaces "openshift-sriov-network-operator" not found
-sno1@haproxy1:~/ocp-config$ oc get all -n openshift-sriov-network-operator
-Warning: apps.openshift.io/v1 DeploymentConfig is deprecated in v4.14+, unavailable in v4.10000+
-No resources found in openshift-sriov-network-operator namespace.
-sno1@haproxy1:~/ocp-config$
+sh-5.1$
