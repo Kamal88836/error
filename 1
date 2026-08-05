@@ -1,63 +1,75 @@
-sh-5.1$ ceph orch device ls
-Error ENOENT: No orchestrator configured (try `ceph orch set backend`)
-sh-5.1$
-sh-5.1$ ceph orch host ls
-Error ENOENT: No orchestrator configured (try `ceph orch set backend`)
-sh-5.1$ exit
-exit
-command terminated with exit code 2
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]# oc get po
-NAME                                                              READY   STATUS    RESTARTS     AGE
-ceph-csi-controller-manager-6586f5bb45-gcs9c                      2/2     Running   0            5d
-csi-addons-controller-manager-75dbbbb78d-s6btp                    2/2     Running   0            5d
-csi-rbdplugin-b4hf5                                               4/4     Running   4            5d1h
-csi-rbdplugin-kt2j2                                               4/4     Running   4            5d1h
-csi-rbdplugin-provisioner-6bffff8b84-2lgdh                        7/7     Running   0            5d
-csi-rbdplugin-provisioner-6bffff8b84-6c44m                        7/7     Running   1 (5d ago)   5d
-csi-rbdplugin-stk9k                                               4/4     Running   4            5d1h
-noobaa-operator-854566d479-kng4g                                  1/1     Running   0            5d
-ocs-operator-78f6855846-jzl6c                                     1/1     Running   0            5d
-odf-console-5f4669899b-2vx2s                                      1/1     Running   0            5d
-odf-operator-controller-manager-75864c9659-tdg79                  2/2     Running   0            5d
-rook-ceph-crashcollector-master1.vt.ss.samsung.local-55f84mp24c   1/1     Running   0            5d
-rook-ceph-crashcollector-master2.vt.ss.samsung.local-6856dgv7qh   1/1     Running   0            5d
-rook-ceph-crashcollector-master3.vt.ss.samsung.local-58985d82tr   1/1     Running   0            5d
-rook-ceph-exporter-master1.vt.ss.samsung.local-74bff49b4f-jgfhv   1/1     Running   0            5d
-rook-ceph-exporter-master2.vt.ss.samsung.local-d9c6658bd-4cvrb    1/1     Running   0            5d
-rook-ceph-exporter-master3.vt.ss.samsung.local-6f4665f465-9jz8h   1/1     Running   0            5d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-9657f974hr4kd   2/2     Running   0            5d
-rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-64d4574cdqnzq   2/2     Running   0            5d
-rook-ceph-mgr-a-5f45478778-jk9m8                                  3/3     Running   0            5d
-rook-ceph-mgr-b-66c5866579-qmh68                                  3/3     Running   0            5d
-rook-ceph-mon-a-5595dfc4fd-9vb25                                  2/2     Running   0            5d1h
-rook-ceph-mon-b-6dc55c464d-ffl2g                                  2/2     Running   0            5d
-rook-ceph-mon-c-cf45f9ff5-5tmfg                                   2/2     Running   0            5d
-rook-ceph-operator-7786f7694-zmx25                                1/1     Running   0            143m
-rook-ceph-tools-7bbc97d855-9hpnk                                  1/1     Running   0            6m47s
-ux-backend-server-7c4f7945f6-x7db7                                2/2     Running   0            5d
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
+The output clearly shows you're using Rook-Ceph managed by ODF, not cephadm. That's why these commands fail:
 
-[root@bastion ~]# oc get localvolumediscoveryresult -A
-NAMESPACE                 NAME                                           AGE
-openshift-local-storage   discovery-result-master1.vt.ss.samsung.local   5d1h
-openshift-local-storage   discovery-result-master2.vt.ss.samsung.local   5d1h
-openshift-local-storage   discovery-result-master3.vt.ss.samsung.local   5d1h
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]#
-[root@bastion ~]# oc get localvolume -A
+ceph orch device ls
+ceph orch host ls
 
-No resources found
-[root@bastion ~]#
-[root@bastion ~]# oc get localvolumeset -A
-NAMESPACE                 NAME           AGE
-openshift-local-storage   local-volume   5d1h
-[root@bastion ~]#
+ceph orch is only available with cephadm, not with Rook.
+
+The important issue is still:
+
+✅ MONs are running
+
+✅ MGR is running
+
+✅ MDS is running
+
+❌ No OSD pods
+
+❌ 0 OSDs in the cluster
+
+
+Since there are no rook-ceph-osd-* pods, ODF never created any OSDs.
+
+Next step: Verify why ODF didn't create OSDs
+
+Please run these commands:
+
+oc get storagecluster -n openshift-storage
+
+oc describe storagecluster ocs-storagecluster -n openshift-storage
+
+oc get cephcluster -n openshift-storage -o yaml
+
+oc describe localvolumeset local-volume -n openshift-local-storage
+
+Most importantly, inspect what disks the Local Storage Operator discovered:
+
+oc get localvolumediscoveryresult discovery-result-master1.vt.ss.samsung.local \
+-n openshift-local-storage -o yaml
+
+Do the same for master2 and master3.
+
+Also check the Rook operator logs
+
+Run:
+
+oc logs -n openshift-storage deploy/rook-ceph-operator | grep -Ei "osd|device|error|fail"
+
+or, to capture more context:
+
+oc logs -n openshift-storage deploy/rook-ceph-operator --tail=300
+
+Likely causes
+
+From your previous ODF setup work, the most likely reasons are:
+
+1. The discovered disks are not marked as available (they may still have partitions, LVM, or old Ceph metadata).
+
+
+2. The LocalVolumeSet is not matching any devices.
+
+
+3. The StorageCluster cannot provision OSDs because no eligible local PVs exist.
+
+
+
+Once you provide the outputs of:
+
+oc describe storagecluster ocs-storagecluster -n openshift-storage
+
+oc describe localvolumeset local-volume -n openshift-local-storage
+
+oc get localvolumediscoveryresult ... -o yaml (at least one node)
+
+
+we can identify exactly why OSD creation is being blocked.
