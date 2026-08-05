@@ -1,40 +1,815 @@
-The condition you're seeing:
-
-Message:
-Error while reconciling: some StorageClasses were skipped while waiting for pre-requisites to be met:
-[ocs-storagecluster-cephfs, ocs-storagecluster-ceph-rbd]
-
-does not indicate the root problem. It simply means the ODF operator is waiting because the Ceph cluster is not ready.
-
-From the information you've already shared:
-
-✅ MONs are running
-
-✅ MGR is running
-
-✅ MDS is running
-
-❌ OSDs = 0
-
-❌ No rook-ceph-osd pods exist
-
-❌ Ceph reports OSD count 0 < osd_pool_default_size 3
-
-
-Because there are no OSDs, the Ceph pools cannot become active, so the ODF operator skips creating the ocs-storagecluster-ceph-rbd and ocs-storagecluster-cephfs StorageClasses until the prerequisites are met.
-
-The real issue is still: Why weren't any OSDs created?
-
-To answer that, we need the outputs of these commands:
-
-oc describe localvolumeset local-volume -n openshift-local-storage
-
-oc get localvolumediscoveryresult -n openshift-local-storage -o yaml
-
-oc get pv
-
-oc logs deploy/rook-ceph-operator -n openshift-storage --tail=300
-
-The LocalVolumeSet and LocalVolumeDiscoveryResult will tell us whether suitable disks were discovered, and the Rook operator logs will usually contain the exact reason OSD creation failed (for example, disks already contain partitions/LVM, no eligible devices match the filter, or another provisioning error).
-
-At this point, the StorageClass message is expected behavior—the investigation should focus on why OSD creation failed.
+[root@bastion odf]# oc describe localvolumeset local-volume -n openshift-local-storage
+Name:         local-volume
+Namespace:    openshift-local-storage
+Labels:       <none>
+Annotations:  <none>
+API Version:  local.storage.openshift.io/v1alpha1
+Kind:         LocalVolumeSet
+Metadata:
+  Creation Timestamp:  2026-07-31T03:47:14Z
+  Finalizers:
+    storage.openshift.com/local-volume-protection
+  Generation:        1
+  Resource Version:  119334
+  UID:               6cc02346-b236-4fdd-aee7-5c1a2c56d261
+Spec:
+  Device Inclusion Spec:
+    Device Mechanical Properties:
+      NonRotational
+    Device Types:
+      disk
+  Max Device Count:  1
+  Node Selector:
+    Node Selector Terms:
+      Match Expressions:
+        Key:       cluster.ocs.openshift.io/openshift-storage
+        Operator:  In
+        Values:
+ 
+  Storage Class Name:  local-volume
+  Volume Mode:         Block
+Status:
+  Conditions:
+    Last Transition Time:          2026-07-31T03:47:14Z
+    Message:                       DiskMaker: Available
+    Status:                        True
+    Type:                          DaemonSetsAvailable
+    Last Transition Time:          2026-07-31T03:47:14Z
+    Message:                       Operator reconciled successfully.
+    Status:                        True
+    Type:                          Available
+  Observed Generation:             1
+  Total Provisioned Device Count:  3
+Events:                            <none>
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get localvolumediscoveryresult -n openshift-local-storage -o yaml
+apiVersion: v1
+items:
+- apiVersion: local.storage.openshift.io/v1alpha1
+  kind: LocalVolumeDiscoveryResult
+  metadata:
+    creationTimestamp: "2026-07-31T03:46:40Z"
+    generation: 1
+    labels:
+      discovery-result-node: master1.vt.ss.samsung.local
+    name: discovery-result-master1.vt.ss.samsung.local
+    namespace: openshift-local-storage
+    ownerReferences:
+    - apiVersion: local.storage.openshift.io/v1alpha1
+      kind: LocalVolumeDiscovery
+      name: auto-discover-devices
+      uid: c6ccf6e4-65e1-4204-b1df-217418db9066
+    resourceVersion: "2792502"
+    uid: 9a948449-4bfe-4ac4-8616-03834a5421f8
+  spec:
+    nodeName: master1.vt.ss.samsung.local
+  status:
+    discoveredDevices:
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812db90031fed4cd60c009a4
+      fstype: ""
+      model: PERC H755 Front
+      path: /dev/sda
+      property: NonRotational
+      serial: 00a409c060cdd4fe3100b92d8180e04e
+      size: 1919716163584
+      status:
+        state: Available
+      type: disk
+      vendor: DELL
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812db90031d50f0cf3dd218f-part1
+      fstype: ""
+      model: ""
+      path: /dev/sdc1
+      property: NonRotational
+      serial: ""
+      size: 1048576
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812db90031d50f0cf3dd218f-part2
+      fstype: vfat
+      model: ""
+      path: /dev/sdc2
+      property: NonRotational
+      serial: ""
+      size: 133169152
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812db90031d50f0cf3dd218f-part3
+      fstype: ext4
+      model: ""
+      path: /dev/sdc3
+      property: NonRotational
+      serial: ""
+      size: 402653184
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812db90031d50f0cf3dd218f-part4
+      fstype: xfs
+      model: ""
+      path: /dev/sdc4
+      property: NonRotational
+      serial: ""
+      size: 1919178227200
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd0
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd1
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd2
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd3
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd4
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd5
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd6
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd7
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd8
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd9
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd10
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd11
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd12
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd13
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd14
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd15
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    discoveredTimeStamp: "2026-08-05T03:26:56Z"
+- apiVersion: local.storage.openshift.io/v1alpha1
+  kind: LocalVolumeDiscoveryResult
+  metadata:
+    creationTimestamp: "2026-07-31T03:46:40Z"
+    generation: 1
+    labels:
+      discovery-result-node: master2.vt.ss.samsung.local
+    name: discovery-result-master2.vt.ss.samsung.local
+    namespace: openshift-local-storage
+    ownerReferences:
+    - apiVersion: local.storage.openshift.io/v1alpha1
+      kind: LocalVolumeDiscovery
+      name: auto-discover-devices
+      uid: c6ccf6e4-65e1-4204-b1df-217418db9066
+    resourceVersion: "2792557"
+    uid: e12d2bf4-18cf-4bce-913a-ea3c36a0f5ae
+  spec:
+    nodeName: master2.vt.ss.samsung.local
+  status:
+    discoveredDevices:
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812daf0031d50e5998f1cca8-part1
+      fstype: ""
+      model: ""
+      path: /dev/sdb1
+      property: NonRotational
+      serial: ""
+      size: 1048576
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812daf0031d50e5998f1cca8-part2
+      fstype: vfat
+      model: ""
+      path: /dev/sdb2
+      property: NonRotational
+      serial: ""
+      size: 133169152
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812daf0031d50e5998f1cca8-part3
+      fstype: ext4
+      model: ""
+      path: /dev/sdb3
+      property: NonRotational
+      serial: ""
+      size: 402653184
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812daf0031d50e5998f1cca8-part4
+      fstype: xfs
+      model: ""
+      path: /dev/sdb4
+      property: NonRotational
+      serial: ""
+      size: 1919178227200
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812daf0031fed4b45ac148b7
+      fstype: ""
+      model: PERC H755 Front
+      path: /dev/sdc
+      property: NonRotational
+      serial: 00b748c15ab4d4fe3100af2d8180e04e
+      size: 1919716163584
+      status:
+        state: Available
+      type: disk
+      vendor: DELL
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd0
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd1
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd2
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd3
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd4
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd5
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd6
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd7
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd8
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd9
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd10
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd11
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd12
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd13
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd14
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd15
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    discoveredTimeStamp: "2026-08-05T03:27:07Z"
+- apiVersion: local.storage.openshift.io/v1alpha1
+  kind: LocalVolumeDiscoveryResult
+  metadata:
+    creationTimestamp: "2026-07-31T03:46:40Z"
+    generation: 1
+    labels:
+      discovery-result-node: master3.vt.ss.samsung.local
+    name: discovery-result-master3.vt.ss.samsung.local
+    namespace: openshift-local-storage
+    ownerReferences:
+    - apiVersion: local.storage.openshift.io/v1alpha1
+      kind: LocalVolumeDiscovery
+      name: auto-discover-devices
+      uid: c6ccf6e4-65e1-4204-b1df-217418db9066
+    resourceVersion: "2791695"
+    uid: f92fbe82-2240-452b-9c01-da90ad5306b9
+  spec:
+    nodeName: master3.vt.ss.samsung.local
+  status:
+    discoveredDevices:
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812da30031fed4995a5d64e6
+      fstype: ""
+      model: PERC H755 Front
+      path: /dev/sda
+      property: NonRotational
+      serial: 00e6645d5a99d4fe3100a32d8180e04e
+      size: 1919716163584
+      status:
+        state: Available
+      type: disk
+      vendor: DELL
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812da30031fe644533b55cdf-part1
+      fstype: ""
+      model: ""
+      path: /dev/sdb1
+      property: NonRotational
+      serial: ""
+      size: 1048576
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812da30031fe644533b55cdf-part2
+      fstype: vfat
+      model: ""
+      path: /dev/sdb2
+      property: NonRotational
+      serial: ""
+      size: 133169152
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812da30031fe644533b55cdf-part3
+      fstype: ext4
+      model: ""
+      path: /dev/sdb3
+      property: NonRotational
+      serial: ""
+      size: 402653184
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: /dev/disk/by-id/wwn-0x6f4ee080812da30031fe644533b55cdf-part4
+      fstype: xfs
+      model: ""
+      path: /dev/sdb4
+      property: NonRotational
+      serial: ""
+      size: 1919178227200
+      status:
+        state: NotAvailable
+      type: part
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd0
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd1
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd2
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd3
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd4
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd5
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd6
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd7
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd8
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd9
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd10
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd11
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd12
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd13
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd14
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    - deviceID: ""
+      fstype: ""
+      model: ""
+      path: /dev/nbd15
+      property: NonRotational
+      serial: ""
+      size: 0
+      status:
+        state: Available
+      type: disk
+      vendor: ""
+    discoveredTimeStamp: "2026-08-05T03:24:40Z"
+kind: List
+metadata:
+  resourceVersion: ""
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                           STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+local-pv-638ae151   1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-2-data-0fkv2q   local-volume   <unset>                          5d2h
+local-pv-a153456b   1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-1-data-0v9kzz   local-volume   <unset>                          5d2h
+local-pv-e38767c4   1787Gi     RWO            Delete           Bound    openshift-storage/ocs-deviceset-0-data-05l5nv   local-volume   <unset>                          5d2h
+[root@bastion odf]#
