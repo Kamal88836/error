@@ -1,25 +1,63 @@
-[root@bastion ~]# oc rsh rook-ceph-tools-7bbc97d855-9hpnk
+sh-5.1$ ceph orch device ls
+Error ENOENT: No orchestrator configured (try `ceph orch set backend`)
 sh-5.1$
-sh-5.1$ ceph -s
-  cluster:
-    id:     9fe96968-f307-494a-b4c0-0838141f6172
-    health: HEALTH_WARN
-            1 MDSs report slow metadata IOs
-            Reduced data availability: 61 pgs inactive
-            OSD count 0 < osd_pool_default_size 3
+sh-5.1$ ceph orch host ls
+Error ENOENT: No orchestrator configured (try `ceph orch set backend`)
+sh-5.1$ exit
+exit
+command terminated with exit code 2
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# oc get po
+NAME                                                              READY   STATUS    RESTARTS     AGE
+ceph-csi-controller-manager-6586f5bb45-gcs9c                      2/2     Running   0            5d
+csi-addons-controller-manager-75dbbbb78d-s6btp                    2/2     Running   0            5d
+csi-rbdplugin-b4hf5                                               4/4     Running   4            5d1h
+csi-rbdplugin-kt2j2                                               4/4     Running   4            5d1h
+csi-rbdplugin-provisioner-6bffff8b84-2lgdh                        7/7     Running   0            5d
+csi-rbdplugin-provisioner-6bffff8b84-6c44m                        7/7     Running   1 (5d ago)   5d
+csi-rbdplugin-stk9k                                               4/4     Running   4            5d1h
+noobaa-operator-854566d479-kng4g                                  1/1     Running   0            5d
+ocs-operator-78f6855846-jzl6c                                     1/1     Running   0            5d
+odf-console-5f4669899b-2vx2s                                      1/1     Running   0            5d
+odf-operator-controller-manager-75864c9659-tdg79                  2/2     Running   0            5d
+rook-ceph-crashcollector-master1.vt.ss.samsung.local-55f84mp24c   1/1     Running   0            5d
+rook-ceph-crashcollector-master2.vt.ss.samsung.local-6856dgv7qh   1/1     Running   0            5d
+rook-ceph-crashcollector-master3.vt.ss.samsung.local-58985d82tr   1/1     Running   0            5d
+rook-ceph-exporter-master1.vt.ss.samsung.local-74bff49b4f-jgfhv   1/1     Running   0            5d
+rook-ceph-exporter-master2.vt.ss.samsung.local-d9c6658bd-4cvrb    1/1     Running   0            5d
+rook-ceph-exporter-master3.vt.ss.samsung.local-6f4665f465-9jz8h   1/1     Running   0            5d
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-9657f974hr4kd   2/2     Running   0            5d
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-64d4574cdqnzq   2/2     Running   0            5d
+rook-ceph-mgr-a-5f45478778-jk9m8                                  3/3     Running   0            5d
+rook-ceph-mgr-b-66c5866579-qmh68                                  3/3     Running   0            5d
+rook-ceph-mon-a-5595dfc4fd-9vb25                                  2/2     Running   0            5d1h
+rook-ceph-mon-b-6dc55c464d-ffl2g                                  2/2     Running   0            5d
+rook-ceph-mon-c-cf45f9ff5-5tmfg                                   2/2     Running   0            5d
+rook-ceph-operator-7786f7694-zmx25                                1/1     Running   0            143m
+rook-ceph-tools-7bbc97d855-9hpnk                                  1/1     Running   0            6m47s
+ux-backend-server-7c4f7945f6-x7db7                                2/2     Running   0            5d
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
 
-  services:
-    mon: 3 daemons, quorum a,b,c (age 5d)
-    mgr: a(active, since 2h), standbys: b
-    mds: 1/1 daemons up, 1 standby
-    osd: 0 osds: 0 up, 0 in
+[root@bastion ~]# oc get localvolumediscoveryresult -A
+NAMESPACE                 NAME                                           AGE
+openshift-local-storage   discovery-result-master1.vt.ss.samsung.local   5d1h
+openshift-local-storage   discovery-result-master2.vt.ss.samsung.local   5d1h
+openshift-local-storage   discovery-result-master3.vt.ss.samsung.local   5d1h
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]#
+[root@bastion ~]# oc get localvolume -A
 
-  data:
-    volumes: 1/1 healthy
-    pools:   12 pools, 61 pgs
-    objects: 0 objects, 0 B
-    usage:   0 B used, 0 B / 0 B avail
-    pgs:     100.000% pgs unknown
-             61 unknown
-
-sh-5.1$
+No resources found
+[root@bastion ~]#
+[root@bastion ~]# oc get localvolumeset -A
+NAMESPACE                 NAME           AGE
+openshift-local-storage   local-volume   5d1h
+[root@bastion ~]#
