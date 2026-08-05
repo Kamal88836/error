@@ -1,25 +1,58 @@
-root@bastion odf]# oc apply -f 1-local-storage-operator.yaml
-Warning: Detected changes to resource openshift-local-storage which is currently being deleted.
-namespace/openshift-local-storage unchanged
-Error from server (Forbidden): error when creating "1-local-storage-operator.yaml": operatorgroups.operators.coreos.com "local-operator-group" is forbidden: unable to create new content in namespace openshift-local-storage because it is being terminated
-Error from server (Forbidden): error when creating "1-local-storage-operator.yaml": subscriptions.operators.coreos.com "local-storage-operator" is forbidden: unable to create new content in namespace openshift-local-storage because it is being terminated
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]# oc get scv -A
-error: the server doesn't have a resource type "scv"
-[root@bastion odf]#
-[root@bastion odf]# oc get csv -A
-NAMESPACE                              NAME                                          DISPLAY                   VERSION               REPLACES   PHASE
-openshift-operator-lifecycle-manager   packageserver                                 Package Server            0.0.1-snapshot                   Succeeded
-openshift-sriov-network-operator       sriov-network-operator.v4.18.0-202507081733   SR-IOV Network Operator   4.18.0-202507081733              Succeeded
-[root@bastion odf]#
-[root@bastion odf]# oc get sub -A
-NAMESPACE                          NAME                                  PACKAGE                  SOURCE                  CHANNEL
-openshift-sriov-network-operator   sriov-network-operator-subscription   sriov-network-operator   redhat-operator-index   stable
-[root@bastion odf]#
-[root@bastion odf]# oc get installplan -A
-NAMESPACE                          NAME            CSV                                           APPROVAL    APPROVED
-openshift-sriov-network-operator   install-vb7ks   sriov-network-operator.v4.18.0-202507081733   Automatic   true
-[root@bastion odf]#
+[root@bastion odf]# cat local.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Namespace","metadata":{"annotations":{"openshift.io/sa.scc.mcs":"s0:c27,c24","openshift.io/sa.scc.supplemental-groups":"1000750000/10000","openshift.io/sa.scc.uid-range":"1000750000/10000","workload.openshift.io/allowed":"management"},"creationTimestamp":"2026-07-31T03:43:52Z","deletionTimestamp":"2026-08-05T06:20:06Z","labels":{"kubernetes.io/metadata.name":"openshift-local-storage","pod-security.kubernetes.io/audit":"privileged","pod-security.kubernetes.io/audit-version":"latest","pod-security.kubernetes.io/warn":"privileged","pod-security.kubernetes.io/warn-version":"latest","security.openshift.io/scc.podSecurityLabelSync":"true"},"name":"openshift-local-storage","resourceVersion":"2867167","uid":"1ad0d6e2-0a40-48c6-af46-f8b63dfd1e8b"},"spec":{"finalizers":null},"status":{"conditions":[{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"All resources successfully discovered","reason":"ResourcesDiscovered","status":"False","type":"NamespaceDeletionDiscoveryFailure"},{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"All legacy kube types successfully parsed","reason":"ParsedGroupVersions","status":"False","type":"NamespaceDeletionGroupVersionParsingFailure"},{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"All content successfully deleted, may be waiting on finalization","reason":"ContentDeleted","status":"False","type":"NamespaceDeletionContentFailure"},{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"Some resources are remaining: localvolumesets.local.storage.openshift.io has 1 resource instances","reason":"SomeResourcesRemain","status":"True","type":"NamespaceContentRemaining"},{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"Some content in the namespace has finalizers remaining: storage.openshift.com/local-volume-protection in 1 resource instances","reason":"SomeFinalizersRemain","status":"True","type":"NamespaceFinalizersRemaining"}],"phase":"Terminating"}}
+    openshift.io/sa.scc.mcs: s0:c27,c24
+    openshift.io/sa.scc.supplemental-groups: 1000750000/10000
+    openshift.io/sa.scc.uid-range: 1000750000/10000
+    workload.openshift.io/allowed: management
+  creationTimestamp: "2026-07-31T03:43:52Z"
+  deletionTimestamp: "2026-08-05T06:20:06Z"
+  labels:
+    kubernetes.io/metadata.name: openshift-local-storage
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: privileged
+    pod-security.kubernetes.io/warn-version: latest
+    security.openshift.io/scc.podSecurityLabelSync: "true"
+  name: openshift-local-storage
+  resourceVersion: "2868193"
+  uid: 1ad0d6e2-0a40-48c6-af46-f8b63dfd1e8b
+spec:
+  finalizers:
+  - kubernetes
+status:
+  conditions:
+  - lastTransitionTime: "2026-08-05T06:20:14Z"
+    message: All resources successfully discovered
+    reason: ResourcesDiscovered
+    status: "False"
+    type: NamespaceDeletionDiscoveryFailure
+  - lastTransitionTime: "2026-08-05T06:20:14Z"
+    message: All legacy kube types successfully parsed
+    reason: ParsedGroupVersions
+    status: "False"
+    type: NamespaceDeletionGroupVersionParsingFailure
+  - lastTransitionTime: "2026-08-05T06:20:14Z"
+    message: All content successfully deleted, may be waiting on finalization
+    reason: ContentDeleted
+    status: "False"
+    type: NamespaceDeletionContentFailure
+  - lastTransitionTime: "2026-08-05T06:20:14Z"
+    message: 'Some resources are remaining: localvolumesets.local.storage.openshift.io
+      has 1 resource instances'
+    reason: SomeResourcesRemain
+    status: "True"
+    type: NamespaceContentRemaining
+  - lastTransitionTime: "2026-08-05T06:20:14Z"
+    message: 'Some content in the namespace has finalizers remaining: storage.openshift.com/local-volume-protection
+      in 1 resource instances'
+    reason: SomeFinalizersRemain
+    status: "True"
+    type: NamespaceFinalizersRemaining
+  phase: Terminating
 [root@bastion odf]#
  
