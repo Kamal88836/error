@@ -1,75 +1,11 @@
-The output clearly shows you're using Rook-Ceph managed by ODF, not cephadm. That's why these commands fail:
-
-ceph orch device ls
-ceph orch host ls
-
-ceph orch is only available with cephadm, not with Rook.
-
-The important issue is still:
-
-✅ MONs are running
-
-✅ MGR is running
-
-✅ MDS is running
-
-❌ No OSD pods
-
-❌ 0 OSDs in the cluster
-
-
-Since there are no rook-ceph-osd-* pods, ODF never created any OSDs.
-
-Next step: Verify why ODF didn't create OSDs
-
-Please run these commands:
-
-oc get storagecluster -n openshift-storage
-
-oc describe storagecluster ocs-storagecluster -n openshift-storage
-
-oc get cephcluster -n openshift-storage -o yaml
-
-oc describe localvolumeset local-volume -n openshift-local-storage
-
-Most importantly, inspect what disks the Local Storage Operator discovered:
-
-oc get localvolumediscoveryresult discovery-result-master1.vt.ss.samsung.local \
--n openshift-local-storage -o yaml
-
-Do the same for master2 and master3.
-
-Also check the Rook operator logs
-
-Run:
-
-oc logs -n openshift-storage deploy/rook-ceph-operator | grep -Ei "osd|device|error|fail"
-
-or, to capture more context:
-
-oc logs -n openshift-storage deploy/rook-ceph-operator --tail=300
-
-Likely causes
-
-From your previous ODF setup work, the most likely reasons are:
-
-1. The discovered disks are not marked as available (they may still have partitions, LVM, or old Ceph metadata).
-
-
-2. The LocalVolumeSet is not matching any devices.
-
-
-3. The StorageCluster cannot provision OSDs because no eligible local PVs exist.
-
-
-
-Once you provide the outputs of:
-
-oc describe storagecluster ocs-storagecluster -n openshift-storage
-
-oc describe localvolumeset local-volume -n openshift-local-storage
-
-oc get localvolumediscoveryresult ... -o yaml (at least one node)
-
-
-we can identify exactly why OSD creation is being blocked.
+Status:
+  Conditions:
+    Last Heartbeat Time:   2026-07-31T03:52:20Z
+    Last Transition Time:  2026-07-31T03:52:20Z
+    Message:               Version check successful
+    Reason:                VersionMatched
+    Status:                False
+    Type:                  VersionMismatch
+    Last Heartbeat Time:   2026-08-05T05:43:20Z
+    Last Transition Time:  2026-07-31T03:52:21Z
+    Message:               Error while reconciling: some StorageClasses were skipped while waiting for pre-requisites to be met: [ocs-storagecluster-cephfs,ocs-storagecluster-ceph-rbd]
