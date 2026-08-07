@@ -1,63 +1,130 @@
-[root@bastion odf]# cat storage.yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"v1","kind":"Namespace","metadata":{"annotations":{"openshift.io/sa.scc.mcs":"s0:c28,c2","openshift.io/sa.scc.supplemental-groups":"1000760000/10000","openshift.io/sa.scc.uid-range":"1000760000/10000","workload.openshift.io/allowed":"management"},"creationTimestamp":"2026-07-31T03:48:02Z","deletionTimestamp":"2026-08-05T06:20:06Z","labels":{"kubernetes.io/metadata.name":"openshift-storage","olm.operatorgroup.uid/3dbe5567-1daf-4120-84eb-a48e82feb6a9":"","openshift.io/cluster-monitoring":"true","pod-security.kubernetes.io/audit":"privileged","pod-security.kubernetes.io/audit-version":"latest","pod-security.kubernetes.io/warn":"privileged","pod-security.kubernetes.io/warn-version":"latest","security.openshift.io/scc.podSecurityLabelSync":"true"},"name":"openshift-storage","resourceVersion":"2859762","uid":"cb74c580-482f-4f6c-8d4a-bbbc4fb587ec"},"spec":{"finalizers":null},"status":{"conditions":[{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"All resources successfully discovered","reason":"ResourcesDiscovered","status":"False","type":"NamespaceDeletionDiscoveryFailure"},{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"All legacy kube types successfully parsed","reason":"ParsedGroupVersions","status":"False","type":"NamespaceDeletionGroupVersionParsingFailure"},{"lastTransitionTime":"2026-08-05T06:20:44Z","message":"All content successfully deleted, may be waiting on finalization","reason":"ContentDeleted","status":"False","type":"NamespaceDeletionContentFailure"},{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"Some resources are remaining: cephclusters.ceph.rook.io has 1 resource instances, configmaps. has 1 resource instances, csiaddonsnodes.csiaddons.openshift.io has 5 resource instances, secrets. has 1 resource instances, storagesystems.odf.openshift.io has 1 resource instances","reason":"SomeResourcesRemain","status":"True","type":"NamespaceContentRemaining"},{"lastTransitionTime":"2026-08-05T06:20:14Z","message":"Some content in the namespace has finalizers remaining: ceph.rook.io/disaster-protection in 2 resource instances, cephcluster.ceph.rook.io in 1 resource instances, csiaddons.openshift.io/csiaddonsnode in 5 resource instances, storagesystem.odf.openshift.io in 1 resource instances","reason":"SomeFinalizersRemain","status":"True","type":"NamespaceFinalizersRemaining"}],"phase":"Terminating"}}
-    openshift.io/sa.scc.mcs: s0:c28,c2
-    openshift.io/sa.scc.supplemental-groups: 1000760000/10000
-    openshift.io/sa.scc.uid-range: 1000760000/10000
-    workload.openshift.io/allowed: management
-  creationTimestamp: "2026-07-31T03:48:02Z"
-  deletionTimestamp: "2026-08-05T06:20:06Z"
-  labels:
-    kubernetes.io/metadata.name: openshift-storage
-    olm.operatorgroup.uid/3dbe5567-1daf-4120-84eb-a48e82feb6a9: ""
-    openshift.io/cluster-monitoring: "true"
-    pod-security.kubernetes.io/audit: privileged
-    pod-security.kubernetes.io/audit-version: latest
-    pod-security.kubernetes.io/warn: privileged
-    pod-security.kubernetes.io/warn-version: latest
-    security.openshift.io/scc.podSecurityLabelSync: "true"
-  name: openshift-storage
-  resourceVersion: "2871214"
-  uid: cb74c580-482f-4f6c-8d4a-bbbc4fb587ec
-spec:
-  finalizers:
-  - kubernetes
-status:
-  conditions:
-  - lastTransitionTime: "2026-08-05T06:20:14Z"
-    message: All resources successfully discovered
-    reason: ResourcesDiscovered
-    status: "False"
-    type: NamespaceDeletionDiscoveryFailure
-  - lastTransitionTime: "2026-08-05T06:20:14Z"
-    message: All legacy kube types successfully parsed
-    reason: ParsedGroupVersions
-    status: "False"
-    type: NamespaceDeletionGroupVersionParsingFailure
-  - lastTransitionTime: "2026-08-05T06:20:44Z"
-    message: All content successfully deleted, may be waiting on finalization
-    reason: ContentDeleted
-    status: "False"
-    type: NamespaceDeletionContentFailure
-  - lastTransitionTime: "2026-08-05T06:20:14Z"
-    message: 'Some resources are remaining: configmaps. has 1 resource instances,
-      csiaddonsnodes.csiaddons.openshift.io has 5 resource instances, secrets. has
-      1 resource instances, storagesystems.odf.openshift.io has 1 resource instances'
-    reason: SomeResourcesRemain
-    status: "True"
-    type: NamespaceContentRemaining
-  - lastTransitionTime: "2026-08-05T06:20:14Z"
-    message: 'Some content in the namespace has finalizers remaining: ceph.rook.io/disaster-protection
-      in 2 resource instances, csiaddons.openshift.io/csiaddonsnode in 5 resource
-      instances, storagesystem.odf.openshift.io in 1 resource instances'
-    reason: SomeFinalizersRemain
-    status: "True"
-    type: NamespaceFinalizersRemaining
-  phase: Terminating
+[root@bastion odf]# oc get pods -n openshift-storage
+NAME                                                      READY   STATUS     RESTARTS   AGE
+ceph-csi-controller-manager-6586f5bb45-br6vx              2/2     Running    0          3m48s
+csi-addons-controller-manager-75dbbbb78d-8qwwg            2/2     Running    0          3m22s
+noobaa-operator-69597c779c-nrngr                          1/1     Running    0          3m29s
+ocs-client-operator-console-5c6c9fd857-mzkg7              0/1     Init:0/1   0          3m35s
+ocs-client-operator-controller-manager-565b64f99b-jg8cm   0/2     Init:0/1   0          3m35s
+ocs-operator-78f6855846-25ftw                             1/1     Running    0          3m41s
+odf-console-5f4669899b-bcbzj                              1/1     Running    0          4m40s
+odf-operator-controller-manager-75864c9659-h7j5s          2/2     Running    0          4m40s
+rook-ceph-operator-85585c8c4d-9vqxh                       1/1     Running    0          3m30s
+ux-backend-server-7c4f7945f6-l9vmm                        2/2     Running    0          3m41s
 [root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get csv -n openshift-storage
+NAME                                    DISPLAY                            VERSION        REPLACES                                PHASE
+cephcsi-operator.v4.18.6-rhodf          CephCSI operator                   4.18.6-rhodf   cephcsi-operator.v4.18.5-rhodf          Succeeded
+mcg-operator.v4.18.6-rhodf              NooBaa Operator                    4.18.6-rhodf   mcg-operator.v4.18.5-rhodf              Succeeded
+ocs-client-operator.v4.18.6-rhodf       OpenShift Data Foundation Client   4.18.6-rhodf   ocs-client-operator.v4.18.5-rhodf       Installing
+ocs-operator.v4.18.6-rhodf              OpenShift Container Storage        4.18.6-rhodf   ocs-operator.v4.18.5-rhodf              Succeeded
+odf-csi-addons-operator.v4.18.6-rhodf   CSI Addons                         4.18.6-rhodf   odf-csi-addons-operator.v4.18.5-rhodf   Succeeded
+odf-dependencies.v4.18.6-rhodf          Data Foundation Dependencies       4.18.6-rhodf   odf-dependencies.v4.18.5-rhodf          Succeeded
+odf-operator.v4.18.6-rhodf              OpenShift Data Foundation          4.18.6-rhodf   odf-operator.v4.18.5-rhodf              Succeeded
+odf-prometheus-operator.v4.18.6-rhodf   Prometheus Operator                4.18.6-rhodf   odf-prometheus-operator.v4.18.5-rhodf   Succeeded
+recipe.v4.18.6-rhodf                    Recipe                             4.18.6-rhodf   recipe.v4.18.5-rhodf                    Succeeded
+rook-ceph-operator.v4.18.6-rhodf        Rook-Ceph                          4.18.6-rhodf   rook-ceph-operator.v4.18.5-rhodf        Succeeded
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# !watch
+watch 'oc get csv -n openshift-storage'
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# watch 'oc get csv -n openshift-storage'
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get pods -n openshift-storage
+NAME                                               READY   STATUS    RESTARTS   AGE
+ceph-csi-controller-manager-6586f5bb45-br6vx       2/2     Running   0          6m10s
+csi-addons-controller-manager-75dbbbb78d-8qwwg     2/2     Running   0          5m44s
+noobaa-operator-69597c779c-nrngr                   1/1     Running   0          5m51s
+ocs-operator-78f6855846-25ftw                      1/1     Running   0          6m3s
+odf-console-5f4669899b-bcbzj                       1/1     Running   0          7m2s
+odf-operator-controller-manager-75864c9659-h7j5s   2/2     Running   0          7m2s
+rook-ceph-operator-85585c8c4d-9vqxh                1/1     Running   0          5m52s
+ux-backend-server-7c4f7945f6-l9vmm                 2/2     Running   0          6m3s
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get csv -n openshift-storage
+NAME                                    DISPLAY                            VERSION        REPLACES                                PHASE
+cephcsi-operator.v4.18.6-rhodf          CephCSI operator                   4.18.6-rhodf   cephcsi-operator.v4.18.5-rhodf          Succeeded
+mcg-operator.v4.18.6-rhodf              NooBaa Operator                    4.18.6-rhodf   mcg-operator.v4.18.5-rhodf              Succeeded
+ocs-client-operator.v4.18.6-rhodf       OpenShift Data Foundation Client   4.18.6-rhodf   ocs-client-operator.v4.18.5-rhodf       Succeeded
+ocs-operator.v4.18.6-rhodf              OpenShift Container Storage        4.18.6-rhodf   ocs-operator.v4.18.5-rhodf              Succeeded
+odf-csi-addons-operator.v4.18.6-rhodf   CSI Addons                         4.18.6-rhodf   odf-csi-addons-operator.v4.18.5-rhodf   Succeeded
+odf-dependencies.v4.18.6-rhodf          Data Foundation Dependencies       4.18.6-rhodf   odf-dependencies.v4.18.5-rhodf          Succeeded
+odf-operator.v4.18.6-rhodf              OpenShift Data Foundation          4.18.6-rhodf   odf-operator.v4.18.5-rhodf              Succeeded
+odf-prometheus-operator.v4.18.6-rhodf   Prometheus Operator                4.18.6-rhodf   odf-prometheus-operator.v4.18.5-rhodf   Succeeded
+recipe.v4.18.6-rhodf                    Recipe                             4.18.6-rhodf   recipe.v4.18.5-rhodf                    Succeeded
+rook-ceph-operator.v4.18.6-rhodf        Rook-Ceph                          4.18.6-rhodf   rook-ceph-operator.v4.18.5-rhodf        Succeeded
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get pods -n openshift-storage
+NAME                                               READY   STATUS    RESTARTS   AGE
+ceph-csi-controller-manager-6586f5bb45-br6vx       2/2     Running   0          7m21s
+csi-addons-controller-manager-75dbbbb78d-8qwwg     2/2     Running   0          6m55s
+noobaa-operator-69597c779c-nrngr                   1/1     Running   0          7m2s
+ocs-operator-78f6855846-25ftw                      1/1     Running   0          7m14s
+odf-console-5f4669899b-bcbzj                       1/1     Running   0          8m13s
+odf-operator-controller-manager-75864c9659-h7j5s   2/2     Running   0          8m13s
+rook-ceph-operator-85585c8c4d-9vqxh                1/1     Running   0          7m3s
+ux-backend-server-7c4f7945f6-l9vmm                 2/2     Running   0          7m14s
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get cm -n openshift-storage
+NAME                                       DATA   AGE
+csi-addons-manager-config                  1      7m27s
+csi-images-v4.16                           7      7m40s
+csi-images-v4.17                           7      7m39s
+csi-images-v4.18                           7      7m38s
+kube-root-ca.crt                           1      8m44s
+noobaa-operator-lock                       0      7m28s
+ocp-injected-ca-bundle                     1      7m35s
+ocs-client-operator-config                 1      7m40s
+ocs-client-operator-manager-config         1      7m39s
+ocs-metrics-exporter-ceph-conf             2      7m46s
+ocs-operator-config                        8      7m30s
+odf-console-nginx-conf                     1      8m28s
+odf-operator-manager-config                61     8m42s
+openshift-service-ca.crt                   1      8m44s
+rook-ceph-csi-config                       1      7m29s
+rook-ceph-external-cluster-script-config   1      8m20s
+rook-ceph-operator-config                  0      7m30s
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# og get deploy -n openshift-storage
+-bash: og: command not found
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get deploy -n openshift-storage
+NAME                                     READY   UP-TO-DATE   AVAILABLE   AGE
+ceph-csi-controller-manager              1/1     1            1           9m48s
+csi-addons-controller-manager            1/1     1            1           9m22s
+noobaa-operator                          1/1     1            1           9m29s
+ocs-client-operator-console              0/0     0            0           9m35s
+ocs-client-operator-controller-manager   0/0     0            0           9m35s
+ocs-operator                             1/1     1            1           9m41s
+odf-console                              1/1     1            1           10m
+odf-operator-controller-manager          1/1     1            1           10m
+prometheus-operator                      0/0     0            0           9m59s
+rook-ceph-operator                       1/1     1            1           9m58s
+ux-backend-server                        1/1     1            1           9m41s
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get secret -n openshift-storage
+NAME                           TYPE                DATA   AGE
+noobaa-operator-service-cert   kubernetes.io/tls   3      10m
+odf-console-serving-cert       kubernetes.io/tls   2      11m
+ux-backend-proxy               Opaque              1      10m
+ux-cert-secret                 kubernetes.io/tls   2      10m
+webhook-cert-secret            kubernetes.io/tls   2      10m
 [root@bastion odf]#
 [root@bastion odf]#
