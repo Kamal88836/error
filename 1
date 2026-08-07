@@ -1,130 +1,616 @@
-[root@bastion odf]# oc get pods -n openshift-storage
-NAME                                                      READY   STATUS     RESTARTS   AGE
-ceph-csi-controller-manager-6586f5bb45-br6vx              2/2     Running    0          3m48s
-csi-addons-controller-manager-75dbbbb78d-8qwwg            2/2     Running    0          3m22s
-noobaa-operator-69597c779c-nrngr                          1/1     Running    0          3m29s
-ocs-client-operator-console-5c6c9fd857-mzkg7              0/1     Init:0/1   0          3m35s
-ocs-client-operator-controller-manager-565b64f99b-jg8cm   0/2     Init:0/1   0          3m35s
-ocs-operator-78f6855846-25ftw                             1/1     Running    0          3m41s
-odf-console-5f4669899b-bcbzj                              1/1     Running    0          4m40s
-odf-operator-controller-manager-75864c9659-h7j5s          2/2     Running    0          4m40s
-rook-ceph-operator-85585c8c4d-9vqxh                       1/1     Running    0          3m30s
-ux-backend-server-7c4f7945f6-l9vmm                        2/2     Running    0          3m41s
+[root@bastion odf]# oc get storagesystem ocs-storagecluster-storagesystem -A
+error: a resource cannot be retrieved by name across all namespaces
 [root@bastion odf]#
 [root@bastion odf]#
-[root@bastion odf]# oc get csv -n openshift-storage
-NAME                                    DISPLAY                            VERSION        REPLACES                                PHASE
-cephcsi-operator.v4.18.6-rhodf          CephCSI operator                   4.18.6-rhodf   cephcsi-operator.v4.18.5-rhodf          Succeeded
-mcg-operator.v4.18.6-rhodf              NooBaa Operator                    4.18.6-rhodf   mcg-operator.v4.18.5-rhodf              Succeeded
-ocs-client-operator.v4.18.6-rhodf       OpenShift Data Foundation Client   4.18.6-rhodf   ocs-client-operator.v4.18.5-rhodf       Installing
-ocs-operator.v4.18.6-rhodf              OpenShift Container Storage        4.18.6-rhodf   ocs-operator.v4.18.5-rhodf              Succeeded
-odf-csi-addons-operator.v4.18.6-rhodf   CSI Addons                         4.18.6-rhodf   odf-csi-addons-operator.v4.18.5-rhodf   Succeeded
-odf-dependencies.v4.18.6-rhodf          Data Foundation Dependencies       4.18.6-rhodf   odf-dependencies.v4.18.5-rhodf          Succeeded
-odf-operator.v4.18.6-rhodf              OpenShift Data Foundation          4.18.6-rhodf   odf-operator.v4.18.5-rhodf              Succeeded
-odf-prometheus-operator.v4.18.6-rhodf   Prometheus Operator                4.18.6-rhodf   odf-prometheus-operator.v4.18.5-rhodf   Succeeded
-recipe.v4.18.6-rhodf                    Recipe                             4.18.6-rhodf   recipe.v4.18.5-rhodf                    Succeeded
-rook-ceph-operator.v4.18.6-rhodf        Rook-Ceph                          4.18.6-rhodf   rook-ceph-operator.v4.18.5-rhodf        Succeeded
+[root@bastion odf]#
+[root@bastion odf]# oc get storagesystem -A
+NAMESPACE           NAME                               STORAGE-SYSTEM-KIND                  STORAGE-SYSTEM-NAME
+openshift-storage   ocs-storagecluster-storagesystem   storagecluster.ocs.openshift.io/v1   ocs-storagecluster
 [root@bastion odf]#
 [root@bastion odf]#
-[root@bastion odf]# !watch
-watch 'oc get csv -n openshift-storage'
 [root@bastion odf]#
 [root@bastion odf]#
-[root@bastion odf]# watch 'oc get csv -n openshift-storage'
 [root@bastion odf]#
 [root@bastion odf]#
-[root@bastion odf]# oc get pods -n openshift-storage
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# of get storagecluster
+-bash: of: command not found
+[root@bastion odf]#
+[root@bastion odf]# oc get storagecluster -A
+NAMESPACE           NAME                 AGE     PHASE         EXTERNAL   CREATED AT             VERSION
+openshift-storage   ocs-storagecluster   5m34s   Progressing              2026-08-07T05:51:11Z   4.18.6
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get cephcluster -A
+NAMESPACE           NAME                             DATADIRHOSTPATH   MONCOUNT   AGE     PHASE         MESSAGE                 HEALTH   EXTERNAL   FSID
+openshift-storage   ocs-storagecluster-cephcluster   /var/lib/rook     3          5m52s   Progressing   Configuring Ceph Mons
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get po -n openshift-storage
 NAME                                               READY   STATUS    RESTARTS   AGE
-ceph-csi-controller-manager-6586f5bb45-br6vx       2/2     Running   0          6m10s
-csi-addons-controller-manager-75dbbbb78d-8qwwg     2/2     Running   0          5m44s
-noobaa-operator-69597c779c-nrngr                   1/1     Running   0          5m51s
-ocs-operator-78f6855846-25ftw                      1/1     Running   0          6m3s
-odf-console-5f4669899b-bcbzj                       1/1     Running   0          7m2s
-odf-operator-controller-manager-75864c9659-h7j5s   2/2     Running   0          7m2s
-rook-ceph-operator-85585c8c4d-9vqxh                1/1     Running   0          5m52s
-ux-backend-server-7c4f7945f6-l9vmm                 2/2     Running   0          6m3s
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]# oc get csv -n openshift-storage
-NAME                                    DISPLAY                            VERSION        REPLACES                                PHASE
-cephcsi-operator.v4.18.6-rhodf          CephCSI operator                   4.18.6-rhodf   cephcsi-operator.v4.18.5-rhodf          Succeeded
-mcg-operator.v4.18.6-rhodf              NooBaa Operator                    4.18.6-rhodf   mcg-operator.v4.18.5-rhodf              Succeeded
-ocs-client-operator.v4.18.6-rhodf       OpenShift Data Foundation Client   4.18.6-rhodf   ocs-client-operator.v4.18.5-rhodf       Succeeded
-ocs-operator.v4.18.6-rhodf              OpenShift Container Storage        4.18.6-rhodf   ocs-operator.v4.18.5-rhodf              Succeeded
-odf-csi-addons-operator.v4.18.6-rhodf   CSI Addons                         4.18.6-rhodf   odf-csi-addons-operator.v4.18.5-rhodf   Succeeded
-odf-dependencies.v4.18.6-rhodf          Data Foundation Dependencies       4.18.6-rhodf   odf-dependencies.v4.18.5-rhodf          Succeeded
-odf-operator.v4.18.6-rhodf              OpenShift Data Foundation          4.18.6-rhodf   odf-operator.v4.18.5-rhodf              Succeeded
-odf-prometheus-operator.v4.18.6-rhodf   Prometheus Operator                4.18.6-rhodf   odf-prometheus-operator.v4.18.5-rhodf   Succeeded
-recipe.v4.18.6-rhodf                    Recipe                             4.18.6-rhodf   recipe.v4.18.5-rhodf                    Succeeded
-rook-ceph-operator.v4.18.6-rhodf        Rook-Ceph                          4.18.6-rhodf   rook-ceph-operator.v4.18.5-rhodf        Succeeded
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]# oc get pods -n openshift-storage
-NAME                                               READY   STATUS    RESTARTS   AGE
-ceph-csi-controller-manager-6586f5bb45-br6vx       2/2     Running   0          7m21s
-csi-addons-controller-manager-75dbbbb78d-8qwwg     2/2     Running   0          6m55s
-noobaa-operator-69597c779c-nrngr                   1/1     Running   0          7m2s
-ocs-operator-78f6855846-25ftw                      1/1     Running   0          7m14s
-odf-console-5f4669899b-bcbzj                       1/1     Running   0          8m13s
-odf-operator-controller-manager-75864c9659-h7j5s   2/2     Running   0          8m13s
-rook-ceph-operator-85585c8c4d-9vqxh                1/1     Running   0          7m3s
-ux-backend-server-7c4f7945f6-l9vmm                 2/2     Running   0          7m14s
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]# oc get cm -n openshift-storage
-NAME                                       DATA   AGE
-csi-addons-manager-config                  1      7m27s
-csi-images-v4.16                           7      7m40s
-csi-images-v4.17                           7      7m39s
-csi-images-v4.18                           7      7m38s
-kube-root-ca.crt                           1      8m44s
-noobaa-operator-lock                       0      7m28s
-ocp-injected-ca-bundle                     1      7m35s
-ocs-client-operator-config                 1      7m40s
-ocs-client-operator-manager-config         1      7m39s
-ocs-metrics-exporter-ceph-conf             2      7m46s
-ocs-operator-config                        8      7m30s
-odf-console-nginx-conf                     1      8m28s
-odf-operator-manager-config                61     8m42s
-openshift-service-ca.crt                   1      8m44s
-rook-ceph-csi-config                       1      7m29s
-rook-ceph-external-cluster-script-config   1      8m20s
-rook-ceph-operator-config                  0      7m30s
-[root@bastion odf]#
-[root@bastion odf]#
-[root@bastion odf]# og get deploy -n openshift-storage
--bash: og: command not found
+ceph-csi-controller-manager-6586f5bb45-br6vx       2/2     Running   0          23m
+csi-addons-controller-manager-75dbbbb78d-8qwwg     2/2     Running   0          23m
+csi-rbdplugin-9r8dh                                4/4     Running   0          6m22s
+csi-rbdplugin-fdmw4                                4/4     Running   0          6m22s
+csi-rbdplugin-lp6lw                                4/4     Running   0          6m22s
+csi-rbdplugin-provisioner-6bffff8b84-7kxlz         7/7     Running   0          6m22s
+csi-rbdplugin-provisioner-6bffff8b84-bq79d         7/7     Running   0          6m22s
+noobaa-operator-69597c779c-nrngr                   1/1     Running   0          23m
+ocs-operator-78f6855846-25ftw                      1/1     Running   0          23m
+odf-console-5f4669899b-bcbzj                       1/1     Running   0          24m
+odf-operator-controller-manager-75864c9659-h7j5s   2/2     Running   0          24m
+rook-ceph-mon-a-7f496d8555-fgdvn                   2/2     Running   0          6m14s
+rook-ceph-mon-b-74bd4877cb-v9p7x                   2/2     Running   0          5m50s
+rook-ceph-mon-c-796fc9cbb8-g8vqk                   2/2     Running   0          38s
+rook-ceph-operator-85585c8c4d-9vqxh                1/1     Running   0          23m
+ux-backend-server-7c4f7945f6-l9vmm                 2/2     Running   0          23m
 [root@bastion odf]#
 [root@bastion odf]#
 [root@bastion odf]# oc get deploy -n openshift-storage
 NAME                                     READY   UP-TO-DATE   AVAILABLE   AGE
-ceph-csi-controller-manager              1/1     1            1           9m48s
-csi-addons-controller-manager            1/1     1            1           9m22s
-noobaa-operator                          1/1     1            1           9m29s
-ocs-client-operator-console              0/0     0            0           9m35s
-ocs-client-operator-controller-manager   0/0     0            0           9m35s
-ocs-operator                             1/1     1            1           9m41s
-odf-console                              1/1     1            1           10m
-odf-operator-controller-manager          1/1     1            1           10m
-prometheus-operator                      0/0     0            0           9m59s
-rook-ceph-operator                       1/1     1            1           9m58s
-ux-backend-server                        1/1     1            1           9m41s
+ceph-csi-controller-manager              1/1     1            1           23m
+csi-addons-controller-manager            1/1     1            1           23m
+csi-rbdplugin-provisioner                2/2     2            2           6m46s
+noobaa-operator                          1/1     1            1           23m
+ocs-client-operator-console              0/0     0            0           23m
+ocs-client-operator-controller-manager   0/0     0            0           23m
+ocs-operator                             1/1     1            1           23m
+odf-console                              1/1     1            1           24m
+odf-operator-controller-manager          1/1     1            1           24m
+prometheus-operator                      0/0     0            0           24m
+rook-ceph-mon-a                          1/1     1            1           6m38s
+rook-ceph-mon-b                          1/1     1            1           6m14s
+rook-ceph-mon-c                          1/1     1            1           62s
+rook-ceph-operator                       1/1     1            1           24m
+ux-backend-server                        1/1     1            1           23m
 [root@bastion odf]#
 [root@bastion odf]#
 [root@bastion odf]#
-[root@bastion odf]# oc get secret -n openshift-storage
-NAME                           TYPE                DATA   AGE
-noobaa-operator-service-cert   kubernetes.io/tls   3      10m
-odf-console-serving-cert       kubernetes.io/tls   2      11m
-ux-backend-proxy               Opaque              1      10m
-ux-cert-secret                 kubernetes.io/tls   2      10m
-webhook-cert-secret            kubernetes.io/tls   2      10m
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc describe storagecluster
+Name:         ocs-storagecluster
+Namespace:    openshift-storage
+Labels:       <none>
+Annotations:  uninstall.ocs.openshift.io/cleanup-policy: delete
+              uninstall.ocs.openshift.io/mode: graceful
+API Version:  ocs.openshift.io/v1
+Kind:         StorageCluster
+Metadata:
+  Creation Timestamp:  2026-08-07T05:51:11Z
+  Finalizers:
+    storagecluster.ocs.openshift.io
+  Generation:  2
+  Owner References:
+    API Version:     odf.openshift.io/v1alpha1
+    Kind:            StorageSystem
+    Name:            ocs-storagecluster-storagesystem
+    UID:             022ace99-dd2e-4d5f-95a5-8bdb4d21a82f
+  Resource Version:  3508562
+  UID:               3953b0b2-d52f-4d84-b412-3f15d4512ea7
+Spec:
+  Arbiter:
+  Encryption:
+    Key Rotation:
+      Schedule:  @weekly
+    Kms:
+  External Storage:
+  Managed Resources:
+    Ceph Block Pools:
+    Ceph Cluster:
+    Ceph Config:
+    Ceph Dashboard:
+    Ceph Filesystems:
+      Data Pool Spec:
+        Application:
+        Erasure Coded:
+          Coding Chunks:  0
+          Data Chunks:    0
+        Mirroring:
+        Quotas:
+        Replicated:
+          Size:  0
+        Status Check:
+          Mirror:
+    Ceph Non Resilient Pools:
+      Count:  1
+      Resources:
+      Volume Claim Template:
+        Metadata:
+        Spec:
+          Resources:
+        Status:
+    Ceph Object Store Users:
+    Ceph Object Stores:
+    Ceph RBD Mirror:
+      Daemon Count:  1
+    Ceph Toolbox:
+  Mon Data Dir Host Path:  /var/lib/rook
+  Resources:
+    Mds:
+      Limits:
+        Cpu:     3
+        Memory:  8Gi
+      Requests:
+        Cpu:     3
+        Memory:  8Gi
+  Storage Device Sets:
+    Config:
+    Count:  1
+    Data PVC Template:
+      Metadata:
+      Spec:
+        Access Modes:
+          ReadWriteOnce
+        Resources:
+          Requests:
+            Storage:         850Gi
+        Storage Class Name:  local-volume
+        Volume Mode:         Block
+      Status:
+    Name:  ocs-deviceset
+    Placement:
+    Prepare Placement:
+    Replica:  3
+    Resources:
+      Limits:
+        Cpu:     2
+        Memory:  5Gi
+      Requests:
+        Cpu:     2
+        Memory:  5Gi
+Status:
+  Conditions:
+    Last Heartbeat Time:   2026-08-07T05:51:11Z
+    Last Transition Time:  2026-08-07T05:51:11Z
+    Message:               Version check successful
+    Reason:                VersionMatched
+    Status:                False
+    Type:                  VersionMismatch
+    Last Heartbeat Time:   2026-08-07T05:56:49Z
+    Last Transition Time:  2026-08-07T05:51:11Z
+    Message:               Error while reconciling: some StorageClasses were skipped while waiting for pre-requisites to be met: [ocs-storagecluster-cephfs,ocs-storagecluster-ceph-rbd]
+    Reason:                ReconcileFailed
+    Status:                False
+    Type:                  ReconcileComplete
+    Last Heartbeat Time:   2026-08-07T05:51:11Z
+    Last Transition Time:  2026-08-07T05:51:11Z
+    Message:               Initializing StorageCluster
+    Reason:                Init
+    Status:                False
+    Type:                  Available
+    Last Heartbeat Time:   2026-08-07T05:51:11Z
+    Last Transition Time:  2026-08-07T05:51:11Z
+    Message:               Initializing StorageCluster
+    Reason:                Init
+    Status:                True
+    Type:                  Progressing
+    Last Heartbeat Time:   2026-08-07T05:51:11Z
+    Last Transition Time:  2026-08-07T05:51:11Z
+    Message:               Initializing StorageCluster
+    Reason:                Init
+    Status:                False
+    Type:                  Degraded
+    Last Heartbeat Time:   2026-08-07T05:51:11Z
+    Last Transition Time:  2026-08-07T05:51:11Z
+    Message:               Initializing StorageCluster
+    Reason:                Init
+    Status:                Unknown
+    Type:                  Upgradeable
+  Current Mon Count:       3
+  Failure Domain:          rack
+  Failure Domain Key:      topology.rook.io/rack
+  Failure Domain Values:
+    rack0
+    rack1
+    rack2
+  Images:
+    Ceph:
+      Actual Image:   registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:8efe3636c40c493bfa8bf916cb82b10f2bb71dbd18e6fcc41d24ac2c743e7129
+      Desired Image:  registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:8efe3636c40c493bfa8bf916cb82b10f2bb71dbd18e6fcc41d24ac2c743e7129
+    Noobaa Core:
+      Desired Image:  registry.redhat.io/odf4/mcg-core-rhel9@sha256:99e9a04bde2f67a11a21d94e9357fe06eb93f510cc4f275b0e263673ce30949b
+    Noobaa DB:
+      Desired Image:  registry.redhat.io/rhel9/postgresql-15@sha256:13afc0c65af0ff1c1362ed9fbc3112a71edd76a54e6811883f44ef4927905e46
+  Kms Server Connection:
+  Node Topologies:
+    Labels:
+      kubernetes.io/hostname:
+        master1.vt.ss.samsung.local
+        master2.vt.ss.samsung.local
+        master3.vt.ss.samsung.local
+      topology.rook.io/rack:
+        rack0
+        rack1
+        rack2
+  Phase:  Progressing
+  Related Objects:
+    API Version:       ceph.rook.io/v1
+    Kind:              CephCluster
+    Name:              ocs-storagecluster-cephcluster
+    Namespace:         openshift-storage
+    Resource Version:  3508561
+    UID:               bf47fda8-a070-436f-ae93-f8368d782779
+  Version:             4.18.6
+Events:
+  Type    Reason             Age    From                       Message
+  ----    ------             ----   ----                       -------
+  Normal  CreationSucceeded  7m21s  StorageCluster controller  StorageSystem ocs-storagecluster-storagesystem created for the StorageCluster ocs-storagecluster.
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc describe cephcluster
+Name:         ocs-storagecluster-cephcluster
+Namespace:    openshift-storage
+Labels:       app=ocs-storagecluster
+Annotations:  <none>
+API Version:  ceph.rook.io/v1
+Kind:         CephCluster
+Metadata:
+  Creation Timestamp:  2026-08-07T05:51:11Z
+  Finalizers:
+    cephcluster.ceph.rook.io
+  Generation:  1
+  Owner References:
+    API Version:           ocs.openshift.io/v1
+    Block Owner Deletion:  true
+    Controller:            true
+    Kind:                  StorageCluster
+    Name:                  ocs-storagecluster
+    UID:                   3953b0b2-d52f-4d84-b412-3f15d4512ea7
+  Resource Version:        3508561
+  UID:                     bf47fda8-a070-436f-ae93-f8368d782779
+Spec:
+  Ceph Version:
+    Image:  registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:8efe3636c40c493bfa8bf916cb82b10f2bb71dbd18e6fcc41d24ac2c743e7129
+  Cleanup Policy:
+    Sanitize Disks:
+  Continue Upgrade After Checks Even If Not Healthy:  true
+  Crash Collector:
+  Csi:
+    Cephfs:
+      Kernel Mount Options:  ms_mode=prefer-crc
+    Read Affinity:
+      Enabled:  true
+  Dashboard:
+  Data Dir Host Path:  /var/lib/rook
+  Disruption Management:
+    Machine Disruption Budget Namespace:  openshift-machine-api
+    Manage Pod Budgets:                   true
+  External:
+  Health Check:
+    Daemon Health:
+      Mon:
+      Osd:
+      Status:
+    Liveness Probe:
+      Mgr:
+        Disabled:  true
+    Startup Probe:
+      Mgr:
+        Disabled:  true
+  Labels:
+    Exporter:
+      rook.io/managedBy:  ocs-storagecluster
+    Mgr:
+      Odf - Resource - Profile:
+    Mon:
+      Odf - Resource - Profile:
+    Monitoring:
+      rook.io/managedBy:  ocs-storagecluster
+    Osd:
+      Odf - Resource - Profile:
+  Log Collector:
+    Enabled:       true
+    Max Log Size:  500Mi
+    Periodicity:   daily
+  Mgr:
+    Count:  2
+    Modules:
+      Enabled:  true
+      Name:     pg_autoscaler
+      Settings:
+      Enabled:  true
+      Name:     balancer
+      Settings:
+      Name:  rook
+      Settings:
+  Mon:
+    Count:  3
+  Monitoring:
+    Enabled:   true
+    Interval:  30s
+  Network:
+    Connections:
+      requireMsgr2:  true
+    Multi Cluster Service:
+  Placement:
+    All:
+      Node Affinity:
+        Required During Scheduling Ignored During Execution:
+          Node Selector Terms:
+            Match Expressions:
+              Key:       cluster.ocs.openshift.io/openshift-storage
+              Operator:  Exists
+      Tolerations:
+        Effect:    NoSchedule
+        Key:       node.ocs.openshift.io/storage
+        Operator:  Equal
+        Value:     true
+    Arbiter:
+      Tolerations:
+        Effect:    NoSchedule
+        Key:       node-role.kubernetes.io/master
+        Operator:  Exists
+    Mon:
+      Pod Anti Affinity:
+        Required During Scheduling Ignored During Execution:
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-mon
+          Topology Key:  topology.rook.io/rack
+  Priority Class Names:
+    Mgr:  system-node-critical
+    Mon:  system-node-critical
+    Osd:  system-node-critical
+  Resources:
+    Mds:
+      Limits:
+        Cpu:     3
+        Memory:  8Gi
+      Requests:
+        Cpu:     3
+        Memory:  8Gi
+    Mgr:
+      Limits:
+        Cpu:     2
+        Memory:  3Gi
+      Requests:
+        Cpu:     1
+        Memory:  1536Mi
+    Mon:
+      Limits:
+        Cpu:     1
+        Memory:  2Gi
+      Requests:
+        Cpu:     1
+        Memory:  2Gi
+  Security:
+    Key Rotation:
+      Enabled:   false
+      Schedule:  @weekly
+    Kms:
+  Storage:
+    Allow Osd Crush Weight Update:    true
+    Flapping Restart Interval Hours:  24
+    Storage Class Device Sets:
+      Count:  1
+      Name:   ocs-deviceset-0
+      Placement:
+        Topology Spread Constraints:
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+          Max Skew:            1
+          Topology Key:        kubernetes.io/hostname
+          When Unsatisfiable:  ScheduleAnyway
+      Prepare Placement:
+        Topology Spread Constraints:
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+                rook-ceph-osd-prepare
+          Max Skew:            1
+          Topology Key:        topology.rook.io/rack
+          When Unsatisfiable:  DoNotSchedule
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+                rook-ceph-osd-prepare
+          Max Skew:            1
+          Topology Key:        kubernetes.io/hostname
+          When Unsatisfiable:  ScheduleAnyway
+      Resources:
+        Limits:
+          Cpu:     2
+          Memory:  5Gi
+        Requests:
+          Cpu:                 2
+          Memory:              5Gi
+      Tune Fast Device Class:  true
+      Volume Claim Templates:
+        Metadata:
+          Annotations:
+            Crush Device Class:  ssd
+        Spec:
+          Access Modes:
+            ReadWriteOnce
+          Resources:
+            Requests:
+              Storage:         850Gi
+          Storage Class Name:  local-volume
+          Volume Mode:         Block
+      Count:                   1
+      Name:                    ocs-deviceset-1
+      Placement:
+        Topology Spread Constraints:
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+          Max Skew:            1
+          Topology Key:        kubernetes.io/hostname
+          When Unsatisfiable:  ScheduleAnyway
+      Prepare Placement:
+        Topology Spread Constraints:
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+                rook-ceph-osd-prepare
+          Max Skew:            1
+          Topology Key:        topology.rook.io/rack
+          When Unsatisfiable:  DoNotSchedule
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+                rook-ceph-osd-prepare
+          Max Skew:            1
+          Topology Key:        kubernetes.io/hostname
+          When Unsatisfiable:  ScheduleAnyway
+      Resources:
+        Limits:
+          Cpu:     2
+          Memory:  5Gi
+        Requests:
+          Cpu:                 2
+          Memory:              5Gi
+      Tune Fast Device Class:  true
+      Volume Claim Templates:
+        Metadata:
+          Annotations:
+            Crush Device Class:  ssd
+        Spec:
+          Access Modes:
+            ReadWriteOnce
+          Resources:
+            Requests:
+              Storage:         850Gi
+          Storage Class Name:  local-volume
+          Volume Mode:         Block
+      Count:                   1
+      Name:                    ocs-deviceset-2
+      Placement:
+        Topology Spread Constraints:
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+          Max Skew:            1
+          Topology Key:        kubernetes.io/hostname
+          When Unsatisfiable:  ScheduleAnyway
+      Prepare Placement:
+        Topology Spread Constraints:
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+                rook-ceph-osd-prepare
+          Max Skew:            1
+          Topology Key:        topology.rook.io/rack
+          When Unsatisfiable:  DoNotSchedule
+          Label Selector:
+            Match Expressions:
+              Key:       app
+              Operator:  In
+              Values:
+                rook-ceph-osd
+                rook-ceph-osd-prepare
+          Max Skew:            1
+          Topology Key:        kubernetes.io/hostname
+          When Unsatisfiable:  ScheduleAnyway
+      Resources:
+        Limits:
+          Cpu:     2
+          Memory:  5Gi
+        Requests:
+          Cpu:                 2
+          Memory:              5Gi
+      Tune Fast Device Class:  true
+      Volume Claim Templates:
+        Metadata:
+          Annotations:
+            Crush Device Class:  ssd
+        Spec:
+          Access Modes:
+            ReadWriteOnce
+          Resources:
+            Requests:
+              Storage:         850Gi
+          Storage Class Name:  local-volume
+          Volume Mode:         Block
+    Store:
+Status:
+  Conditions:
+    Last Heartbeat Time:   2026-08-07T05:56:49Z
+    Last Transition Time:  2026-08-07T05:56:49Z
+    Message:               Configuring Ceph Mons
+    Reason:                ClusterProgressing
+    Status:                True
+    Type:                  Progressing
+  Message:                 Configuring Ceph Mons
+  Phase:                   Progressing
+  State:                   Creating
+  Version:
+    Image:    registry.redhat.io/rhceph/rhceph-8-rhel9@sha256:8efe3636c40c493bfa8bf916cb82b10f2bb71dbd18e6fcc41d24ac2c743e7129
+    Version:  19.2.0-139
+Events:
+  Type     Reason           Age    From                          Message
+  ----     ------           ----   ----                          -------
+  Warning  ReconcileFailed  2m10s  rook-ceph-cluster-controller  failed to reconcile CephCluster "openshift-storage/ocs-storagecluster-cephcluster". failed to reconcile cluster "ocs-storagecluster-cephcluster": failed to configure local ceph cluster: failed to create cluster: failed to start ceph monitors: failed to start mon pods: failed to wait for mon quorum: exceeded max retry count waiting for monitors to reach quorum
+[root@bastion odf]#
+[root@bastion odf]#
+[root@bastion odf]# oc get po
+NAME                                               READY   STATUS    RESTARTS   AGE
+ceph-csi-controller-manager-6586f5bb45-br6vx       2/2     Running   0          25m
+csi-addons-controller-manager-75dbbbb78d-8qwwg     2/2     Running   0          24m
+csi-rbdplugin-9r8dh                                4/4     Running   0          8m11s
+csi-rbdplugin-fdmw4                                4/4     Running   0          8m11s
+csi-rbdplugin-lp6lw                                4/4     Running   0          8m11s
+csi-rbdplugin-provisioner-6bffff8b84-7kxlz         7/7     Running   0          8m11s
+csi-rbdplugin-provisioner-6bffff8b84-bq79d         7/7     Running   0          8m11s
+noobaa-operator-69597c779c-nrngr                   1/1     Running   0          24m
+ocs-operator-78f6855846-25ftw                      1/1     Running   0          25m
+odf-console-5f4669899b-bcbzj                       1/1     Running   0          26m
+odf-operator-controller-manager-75864c9659-h7j5s   2/2     Running   0          26m
+rook-ceph-mon-a-7f496d8555-fgdvn                   2/2     Running   0          8m3s
+rook-ceph-mon-b-74bd4877cb-v9p7x                   2/2     Running   0          7m39s
+rook-ceph-mon-c-796fc9cbb8-g8vqk                   2/2     Running   0          2m27s
+rook-ceph-operator-85585c8c4d-9vqxh                1/1     Running   0          24m
+ux-backend-server-7c4f7945f6-l9vmm                 2/2     Running   0          25m
 [root@bastion odf]#
 [root@bastion odf]#
