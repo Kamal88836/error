@@ -1,18 +1,38 @@
-Technical Issue and Request for Red Hat Confirmation
+நீங்கள் சொன்னதை ஒரு professional technical discussion / meeting summary ஆக ஆங்கிலத்தில் இப்படி சொல்லலாம்.
 
-Based on the update provided by Red Hat, it appears that the BAP3 pod is not being scheduled on NUMA 0 and is instead running exclusively on NUMA 1 while utilizing the interface associated with NUMA 0.
+### Technical Discussion – NFS Issue & OCP Upgrade
 
-However, this does not align with the intended application architecture and design. As per the actual architecture, the BAP3 pod is expected to run on NUMA 0 and utilize the corresponding interface.
+1\. Issue Confirmation: The issue is not yet confirmed as resolved after deploying the suggested workaround.
 
-Currently, the pod is running on NUMA 1 while using the interface associated with NUMA 0. This NUMA misalignment could potentially lead to performance degradation due to cross-NUMA communication and increased latency.
+2\. Version Validation: Check whether the same issue is occurring on other nodes running the same OCP version. Identify the affected nodes and compare their configurations.
 
-Implementing the proposed workaround may be challenging and could potentially introduce additional issues rather than resolving the existing problem.
+3\. OCP Upgrade Limitation: We cannot upgrade the OCP cluster to the suggested version at this time, as OCP 4.22 is already available in the update plan. Request Red Hat to provide a patch or driver fix for the current version.
 
-Therefore, we would like to request Red Hat to investigate and confirm the following:
+4\. Temporary Workaround: Request Red Hat's confirmation on whether restarting the affected nodes individually is an acceptable temporary workaround.
 
-1. We understand that this issue is a known bug and has been addressed in a specific OpenShift version. Please confirm the exact version in which the fix was introduced.
-2. Since our cluster is already on the upgrade path to OpenShift 4.22, we are unable to upgrade to an intermediate version containing the fix.
-3. Is it possible to provide a specific patch, hotfix, or backport of the relevant fix that can be applied to our current OpenShift version without requiring a full cluster upgrade?
-4. If such a fix is available, please share the details, including the applicable version, patch information, and recommended procedure.
+5\. Issue Timeline: Confirm when the last OCP upgrade was performed on the affected node. The NFS issue started after the upgrade. Identify the time elapsed between the upgrade and the issue occurrence.
 
-We would appreciate Red Hat's guidance on a suitable resolution that aligns with our existing architecture and avoids introducing any additional performance or operational issues.
+6\. Red Hat Support: Submit the findings to Red Hat Support, tag the concerned team, and request a permanent fix.
+
+### Suggested Message to Red Hat Support
+
+Hi Team,
+
+We are experiencing an NFS-related issue following the recent OCP upgrade.
+
+As OCP 4.22 is already available in the update plan, upgrading to another version is currently not feasible.
+
+We request your assistance with the following:
+
+- Confirm whether the same issue is observed on other nodes running the same OCP version.
+- Provide a patch or driver fix for the current OCP version.
+- Confirm whether restarting the affected nodes one by one is an acceptable temporary workaround.
+- Investigate the issue timeline and its correlation with the recent OCP upgrade.
+
+Please review the issue and provide your recommendations for a permanent resolution.
+
+We will update the support case with the relevant logs and findings.
+
+Thanks.
+
+நீங்கள் விரும்பினால், இதை Red Hat support case-க்கு ஏற்ற technical English-ல் இன்னும் detailed-ஆக எழுதித் தரலாம்.
