@@ -1,13 +1,75 @@
-The customer is reporting a performance issue. It means they are observing slowness when they are trying to access the application. Now, being an infrastructure admin, right, you are managing the platform. So, what all things you would check?
+சரி. முந்தைய NFS Issue & OCP Upgrade meeting summary-யுடன், இப்போது நீங்கள் பகிர்ந்த NUMA 0 / NUMA 1 மற்றும் BAP3 pod scheduling issue-ஐயும் சேர்த்து, ஒரே professional technical discussion summary ஆகத் தொகுத்துள்ளேன்.
 
+# Technical Discussion Summary – NFS Issue, NUMA Alignment, and OCP Upgrade
 
-Listener, okay. Okay, and one of the worker node is down. So, how we would troubleshoot, what would be your approach?
+## 1. Issue Confirmation
+The issue is not yet confirmed as resolved following the deployment of the suggested workaround. Further validation is required to determine whether the workaround addresses the root cause or introduces additional issues.
 
-Example of SCC, I mean, how you define SCC, where, let's say you have a deployment, okay? And that, it's giving the privilege, like, like the container is not able to initialize. Now, how you would define which SCC is applicable and how you would fix it?
+## 2. Version Validation
+Verify whether the same issue is observed on other nodes running the same OCP version. Identify the affected nodes and compare their configurations, driver versions, and NUMA topology.
 
-what is SCC in OpenShift?
+## 3. NUMA Alignment and BAP3 Pod Scheduling
+Based on the update provided by Red Hat, the BAP3 pod appears to be scheduled exclusively on NUMA 1 while utilizing the interface associated with NUMA 0.
 
+However, this behavior does not align with the intended application architecture. As per the expected design, the BAP3 pod should be scheduled on NUMA 0 and utilize the corresponding NUMA-local interface.
 
-So there is a Linux server, okay? I have created a directory and created and mounted it on the server. So I created a mount point, okay? But after the reboot, I don't see that mount point.
+The current NUMA misalignment could potentially result in cross-NUMA communication, increased latency, and performance degradation.
 
-build the infrastructure with OpenShift. Correct, yeah. Yeah, so suppose, yeah, you, whatever you build, and now application team deploy the pods, application is running. Later on, you, next day you observe like it's, your data center is completely down. So what, which order you will take to bring back all the infrastructure component?
+The proposed workaround may be difficult to implement and could introduce additional performance or operational issues. Therefore, we request Red Hat to validate the current behavior against the intended architecture and recommend an appropriate resolution.
+
+## 4. OCP Upgrade Limitation
+We are currently unable to upgrade the OCP cluster to an intermediate version containing the suggested fix, as OCP 4.22 is already available in the update plan.
+
+We request Red Hat to confirm whether a specific patch, driver fix, hotfix, or backport can be provided for the currently deployed OCP version without requiring a full cluster upgrade.
+
+Please share the exact version in which the issue was fixed and the applicable patch details.
+
+## 5. Temporary Workaround
+Request Red Hat's confirmation on whether restarting the affected nodes individually is an acceptable temporary workaround.
+
+The proposed approach should be validated to ensure that it does not introduce any additional application, networking, or performance-related issues.
+
+## 6. Issue Timeline
+Confirm when the last OCP upgrade was performed on the affected nodes.
+
+The NFS issue was observed following the recent OCP upgrade. Identify the exact time elapsed between the upgrade and the issue occurrence, and validate whether there is a direct correlation.
+
+## 7. Red Hat Support and Permanent Resolution
+Submit the findings to Red Hat Support and involve the concerned teams for further investigation.
+
+Request Red Hat to:
+- Confirm the root cause of the NFS and NUMA alignment issues.
+- Validate the current pod scheduling behavior against the intended architecture.
+- Identify the OCP version in which the relevant bug was fixed.
+- Provide a suitable patch or driver fix for the current OCP version.
+- Recommend a permanent resolution without requiring an intermediate cluster upgrade.
+
+---
+
+# Suggested Message to Red Hat Support
+
+Hi Team,
+
+We are experiencing an NFS-related issue following the recent OCP upgrade. Additionally, we have identified a NUMA alignment issue related to the BAP3 pod scheduling behavior.
+
+Based on the update provided by Red Hat, the BAP3 pod appears to be scheduled on NUMA 1 while utilizing the interface associated with NUMA 0. However, as per our intended application architecture, the BAP3 pod is expected to run on NUMA 0 and utilize the corresponding NUMA-local interface.
+
+The current behavior could potentially result in cross-NUMA communication and performance degradation. The proposed workaround may also introduce additional operational or performance-related issues.
+
+As OCP 4.22 is already available in our update plan, upgrading to an intermediate version containing the fix is currently not feasible.
+
+We request your assistance with the following:
+
+1. Confirm whether the same issue is observed on other nodes running the same OCP version.
+2. Validate the BAP3 pod scheduling behavior and NUMA alignment against the intended application architecture.
+3. Confirm the exact OCP version in which the relevant bug was fixed.
+4. Provide a specific patch, driver fix, hotfix, or backport for our currently deployed OCP version.
+5. Confirm whether restarting the affected nodes one by one is an acceptable temporary workaround.
+6. Investigate the issue timeline and its correlation with the recent OCP upgrade.
+7. Recommend a permanent resolution that does not require an intermediate cluster upgrade.
+
+We will update the support case with the relevant logs, node configurations, NUMA topology details, and findings.
+
+Please review the issue and provide your technical recommendations for a suitable resolution.
+
+Thanks.
